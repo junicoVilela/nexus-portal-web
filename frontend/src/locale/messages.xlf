@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="pt-BR" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="shell.openMenu" datatype="html">
+        <source>Menu</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">51,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shell.portalLabel" datatype="html">
+        <source>Portal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shell.openCommandPalette" datatype="html">
+        <source>Abrir paleta de comandos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">63,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shell.search" datatype="html">
+        <source>Buscar…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">66,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.network.title" datatype="html">
+        <source>Sem conexão com o servidor</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.network.desc" datatype="html">
+        <source>Verifique sua conexão e tente novamente.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.permission.title" datatype="html">
+        <source>Sem permissão</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.permission.desc" datatype="html">
+        <source>Seu usuário não pode acessar este conteúdo. Procure um administrador.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.notfound.title" datatype="html">
+        <source>Não encontrado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.notfound.desc" datatype="html">
+        <source>O conteúdo que você procura não existe ou foi removido.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.server.title" datatype="html">
+        <source>Erro no servidor</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.server.desc" datatype="html">
+        <source>Algo deu errado do nosso lado. Tente novamente em instantes.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.generic.title" datatype="html">
+        <source>Algo deu errado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.errorState.generic.desc" datatype="html">
+        <source>Não foi possível concluir a operação.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/error-state/error-state.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.notifCenter.aria" datatype="html">
+        <source>Notificações</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/notification-center/notification-center.component.html</context>
+          <context context-type="linenumber">9,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.notifCenter.title" datatype="html">
+        <source>Notificações</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/notification-center/notification-center.component.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.notifCenter.clearAll" datatype="html">
+        <source> Limpar tudo </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/notification-center/notification-center.component.html</context>
+          <context context-type="linenumber">25,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.notifCenter.empty" datatype="html">
+        <source>Nenhuma notificação por aqui.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/notification-center/notification-center.component.html</context>
+          <context context-type="linenumber">33,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.notifCenter.dismiss" datatype="html">
+        <source>Descartar notificação</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/notification-center/notification-center.component.html</context>
+          <context context-type="linenumber">64,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ui.offlineBanner.message" datatype="html">
+        <source>Você está offline. As ações que dependem de rede ficarão suspensas.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/offline-banner/offline-banner.component.ts</context>
+          <context context-type="linenumber">15,21</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

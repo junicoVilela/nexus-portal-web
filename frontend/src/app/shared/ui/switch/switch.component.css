@@ -1,0 +1,54 @@
+.ui-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  user-select: none;
+}
+.ui-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ui-switch__track {
+  width: 36px;
+  height: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  position: relative;
+  transition:
+    background-color var(--motion-default) var(--ease-out),
+    border-color var(--motion-default) var(--ease-out);
+}
+.ui-switch__thumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
+  background: var(--surface);
+  border-radius: 50%;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--motion-default) var(--ease-out);
+}
+.ui-switch input:checked + .ui-switch__track {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.ui-switch input:checked + .ui-switch__track .ui-switch__thumb {
+  transform: translateX(16px);
+  background: #fff;
+}
+.ui-switch input:focus-visible + .ui-switch__track {
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.ui-switch__label {
+  font: 600 13px/1 var(--font-body);
+  color: var(--text);
+}
+.ui-switch input:disabled + .ui-switch__track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

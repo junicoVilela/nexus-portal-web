@@ -1,0 +1,94 @@
+<div class="ui-empty">
+  @switch (illustration()) {
+    @case ('inbox') {
+      <svg class="ui-empty__illust" viewBox="0 0 220 140" aria-hidden="true">
+        <defs>
+          <linearGradient id="ueInboxA" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="var(--accent)" stop-opacity="0.18" />
+            <stop offset="1" stop-color="var(--accent)" stop-opacity="0.04" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="110" cy="120" rx="80" ry="8" fill="currentColor" opacity="0.08" />
+        <path
+          d="M50 50 H170 L160 110 H60 Z"
+          fill="url(#ueInboxA)"
+          stroke="var(--accent)"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
+        <path d="M50 50 L60 110 M170 50 L160 110" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" />
+        <path
+          d="M80 50 L90 80 L130 80 L140 50"
+          fill="none"
+          stroke="var(--accent)"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="110" cy="38" r="4" fill="var(--accent)" opacity="0.6" />
+        <circle cx="80" cy="32" r="3" fill="var(--accent)" opacity="0.4" />
+        <circle cx="140" cy="34" r="3" fill="var(--accent)" opacity="0.4" />
+      </svg>
+    }
+    @case ('search') {
+      <svg class="ui-empty__illust" viewBox="0 0 220 140" aria-hidden="true">
+        <ellipse cx="110" cy="125" rx="70" ry="6" fill="currentColor" opacity="0.08" />
+        <circle cx="98" cy="62" r="34" fill="none" stroke="var(--accent)" stroke-width="2.5" opacity="0.7" />
+        <path d="M122 86 L150 114" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+        <path d="M85 62 H111 M98 49 V75" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+      </svg>
+    }
+    @case ('list') {
+      <svg class="ui-empty__illust" viewBox="0 0 220 140" aria-hidden="true">
+        <ellipse cx="110" cy="125" rx="70" ry="6" fill="currentColor" opacity="0.08" />
+        <rect
+          x="55"
+          y="35"
+          width="110"
+          height="78"
+          rx="6"
+          fill="var(--surface-2)"
+          stroke="var(--accent)"
+          stroke-width="1.5"
+          opacity="0.85"
+        />
+        <line x1="68" y1="54" x2="152" y2="54" stroke="var(--accent)" stroke-width="2" opacity="0.6" />
+        <line x1="68" y1="68" x2="120" y2="68" stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+        <line x1="68" y1="82" x2="140" y2="82" stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+        <line x1="68" y1="96" x2="100" y2="96" stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+      </svg>
+    }
+    @case ('success') {
+      <svg class="ui-empty__illust" viewBox="0 0 220 140" aria-hidden="true">
+        <ellipse cx="110" cy="125" rx="70" ry="6" fill="currentColor" opacity="0.08" />
+        <circle cx="110" cy="65" r="36" fill="var(--success-soft)" stroke="var(--success)" stroke-width="2" />
+        <path
+          d="M94 65 L106 78 L128 55"
+          fill="none"
+          stroke="var(--success)"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    }
+    @case ('document') {
+      <svg class="ui-empty__illust" viewBox="0 0 220 140" aria-hidden="true">
+        <ellipse cx="110" cy="125" rx="70" ry="6" fill="currentColor" opacity="0.08" />
+        <path d="M70 30 H130 L150 50 V115 H70 Z" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="1.6" />
+        <path d="M130 30 V50 H150" fill="none" stroke="var(--accent)" stroke-width="1.6" />
+        <line x1="82" y1="65" x2="138" y2="65" stroke="var(--accent)" stroke-width="2" opacity="0.5" />
+        <line x1="82" y1="78" x2="120" y2="78" stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+        <line x1="82" y1="91" x2="130" y2="91" stroke="var(--accent)" stroke-width="2" opacity="0.4" />
+      </svg>
+    }
+    @default {
+      <span class="ui-empty__ico"><lucide-icon [name]="icon()" /></span>
+    }
+  }
+  <h3 class="ui-empty__title">{{ title() }}</h3>
+  @if (description()) {
+    <p class="ui-empty__desc">{{ description() }}</p>
+  }
+  <div class="ui-empty__actions"><ng-content /></div>
+</div>

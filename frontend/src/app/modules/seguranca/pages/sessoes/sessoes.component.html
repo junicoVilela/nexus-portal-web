@@ -1,0 +1,86 @@
+<ui-list-page
+  title="Sessões ativas"
+  subtitle="Acompanhe acessos abertos e encerre sessões suspeitas."
+  icon="Network"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhuma sessão encontrada"
+  emptyDescription="Sessões abertas aparecem aqui após login bem-sucedido."
+  emptyIllustration="inbox"
+  emptyIcon="Network"
+>
+  <div filters class="sessoes__filters">
+    <select class="sessoes__select" [value]="filtroUsuario" (change)="alterarUsuario($any($event.target).value)">
+      <option value="">Todos os usuários</option>
+      @for (u of usuarios(); track u.id) {
+        <option [value]="u.id">{{ u.nome }}</option>
+      }
+    </select>
+    <select class="sessoes__select" [value]="filtroAtiva" (change)="alterarAtiva($any($event.target).value)">
+      <option value="true">Apenas ativas</option>
+      <option value="false">Apenas encerradas</option>
+      <option value="">Todas</option>
+    </select>
+    <span class="sessoes__count">{{ total() }} sessões</span>
+  </div>
+
+  <table class="sessoes__table">
+    <thead>
+      <tr>
+        <th class="sessoes__th">Usuário</th>
+        <th class="sessoes__th">Início</th>
+        <th class="sessoes__th">Encerramento</th>
+        <th class="sessoes__th">User-agent</th>
+        <th class="sessoes__th">Status</th>
+        <th class="sessoes__th sessoes__th--right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of sessoes(); track s.id) {
+        <tr class="sessoes__row" [class.sessoes__row--encerrada]="!s.ativa">
+          <td class="sessoes__td">
+            <strong>{{ nomeUsuario(s.usuarioId) }}</strong>
+          </td>
+          <td class="sessoes__td">{{ s.iniciadaEm | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="sessoes__td">
+            @if (s.encerradaEm) {
+              {{ s.encerradaEm | date: 'dd/MM/yyyy HH:mm:ss' }}
+              @if (s.motivoEncerramento) {
+                <small class="sessoes__sub">{{ s.motivoEncerramento }}</small>
+              }
+            } @else {
+              —
+            }
+          </td>
+          <td class="sessoes__td sessoes__td--ua" [title]="s.userAgent ?? ''">
+            {{ truncarUa(s.userAgent) }}
+          </td>
+          <td class="sessoes__td">
+            @if (s.ativa) {
+              <ui-badge tone="success" [dot]="true">Ativa</ui-badge>
+            } @else if (s.revogada) {
+              <ui-badge tone="danger" [dot]="true">Revogada</ui-badge>
+            } @else {
+              <ui-badge tone="neutral" [dot]="true">Encerrada</ui-badge>
+            }
+          </td>
+          <td class="sessoes__td sessoes__td--actions">
+            @if (s.ativa) {
+              <ui-button *appPermissao="'SESSAO:REVOGAR'" variant="ghost" size="sm" icon="X" (clicked)="revogar(s)"
+                >Revogar</ui-button
+              >
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>

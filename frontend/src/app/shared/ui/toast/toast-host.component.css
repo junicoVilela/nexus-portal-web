@@ -1,0 +1,121 @@
+.ui-toast-host {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(420px, calc(100vw - 40px));
+}
+
+.ui-toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  animation: ui-toast-in 200ms var(--ease-out);
+}
+
+@keyframes ui-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ui-toast--success {
+  border-left-color: var(--success);
+}
+.ui-toast--error {
+  border-left-color: var(--danger);
+}
+.ui-toast--warn {
+  border-left-color: var(--warn);
+}
+.ui-toast--info {
+  border-left-color: var(--info);
+}
+
+.ui-toast__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  line-height: 0;
+}
+.ui-toast__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-toast--success .ui-toast__icon {
+  color: var(--success);
+}
+.ui-toast--error .ui-toast__icon {
+  color: var(--danger);
+}
+.ui-toast--warn .ui-toast__icon {
+  color: var(--warn);
+}
+.ui-toast--info .ui-toast__icon {
+  color: var(--info);
+}
+
+.ui-toast__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--text);
+}
+.ui-toast__title {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.ui-toast__msg {
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.ui-toast__close {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+.ui-toast__close:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.ui-toast__close lucide-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+}
+.ui-toast__close lucide-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,82 @@
+<ui-page-header
+  [title]="editId() ? 'Editar usuário' : 'Novo usuário'"
+  [subtitle]="editId() ? (usuarioAtual()?.nome ?? '') : 'Preencha os dados para cadastrar um novo usuário.'"
+  icon="UserPlus"
+/>
+
+@if (loading()) {
+  <div class="usuario-form__loading">Carregando...</div>
+} @else {
+  <form class="usuario-form" [formGroup]="form" (ngSubmit)="salvar()">
+    <ui-card padding="lg">
+      <div class="usuario-form__grid">
+        <label class="usuario-form__field">
+          <span class="usuario-form__label">Nome <em>*</em></span>
+          <input class="usuario-form__input" type="text" formControlName="nome" autocomplete="off" />
+          @if (form.controls.nome.touched && form.controls.nome.invalid) {
+            <small class="usuario-form__error">Nome obrigatório (mín. 2 caracteres).</small>
+          }
+        </label>
+
+        <label class="usuario-form__field">
+          <span class="usuario-form__label">Login <em>*</em></span>
+          <input class="usuario-form__input" type="text" formControlName="login" autocomplete="off" />
+          @if (form.controls.login.touched && form.controls.login.invalid) {
+            <small class="usuario-form__error">Login obrigatório (mín. 3 caracteres).</small>
+          }
+        </label>
+
+        <label class="usuario-form__field">
+          <span class="usuario-form__label">E-mail <em>*</em></span>
+          <input class="usuario-form__input" type="email" formControlName="email" autocomplete="off" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="usuario-form__error">Informe um e-mail válido.</small>
+          }
+        </label>
+
+        <label class="usuario-form__field">
+          <span class="usuario-form__label"> Senha {{ editId() ? '(deixe em branco para manter)' : '*' }} </span>
+          <input class="usuario-form__input" type="password" formControlName="senha" autocomplete="new-password" />
+          @if (historicoSenhas() && historicoSenhas()!.limite > 0) {
+            <small class="usuario-form__hint">
+              Política: não reutilizar as últimas {{ historicoSenhas()!.limite }} senhas.
+              {{ historicoSenhas()!.atual }} já registrada(s) no histórico deste usuário.
+            </small>
+          }
+        </label>
+
+        <label class="usuario-form__field usuario-form__field--switch">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Usuário ativo</span>
+        </label>
+      </div>
+    </ui-card>
+
+    <ui-card padding="lg">
+      <div class="usuario-form__section">
+        <h3 class="usuario-form__section-title">Grupos de acesso</h3>
+        <p class="usuario-form__section-sub">Selecione os grupos para conceder as permissões correspondentes.</p>
+        <div class="usuario-form__grupos">
+          @for (g of grupos(); track g.id) {
+            <label class="usuario-form__grupo">
+              <input type="checkbox" [checked]="selecionado(g.id)" (change)="toggleGrupo(g.id)" />
+              <span class="usuario-form__grupo-info">
+                <strong>{{ g.nome }}</strong>
+                <small>{{ g.codigo }}{{ g.descricao ? ' · ' + g.descricao : '' }}</small>
+              </span>
+            </label>
+          } @empty {
+            <div class="usuario-form__empty">Nenhum grupo cadastrado.</div>
+          }
+        </div>
+      </div>
+    </ui-card>
+
+    <div class="usuario-form__actions">
+      <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">
+        {{ editId() ? 'Salvar alterações' : 'Cadastrar usuário' }}
+      </ui-button>
+    </div>
+  </form>
+}

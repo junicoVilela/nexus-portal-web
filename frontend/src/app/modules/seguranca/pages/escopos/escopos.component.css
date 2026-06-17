@@ -1,0 +1,243 @@
+.escopos__loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 18px;
+  }
+}
+
+.escopos__layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.escopos__tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.escopos__tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.escopos__tab--active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.escopos__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.escopos__list-item {
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--surface);
+}
+
+.escopos__list-item:hover {
+  background: var(--surface-2);
+}
+
+.escopos__list-item--active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.escopos__list-item strong {
+  display: block;
+  font-size: 0.875rem;
+}
+
+.escopos__list-item small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+}
+
+.escopos__empty {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.75rem 0;
+}
+
+.escopos__placeholder {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.escopos__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.escopos__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.escopos__title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.escopos__sub {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.escopos__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.escopos__form-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.escopos__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.escopos__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+}
+
+.escopos__field span {
+  font-weight: 500;
+}
+
+.escopos__field input[type='text'],
+.escopos__field select {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+}
+
+.escopos__field--check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.escopos__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.escopos__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.escopos__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.escopos__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.escopos__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.escopos__item-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  align-items: center;
+}
+
+.escopos__item-source {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.escopos__item-desc {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--text);
+}
+
+.escopos__item-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.escopos__item-locked {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-style: italic;
+}
+
+@media (max-width: 960px) {
+  .escopos__layout {
+    grid-template-columns: 1fr;
+  }
+  .escopos__form-grid {
+    grid-template-columns: 1fr;
+  }
+}

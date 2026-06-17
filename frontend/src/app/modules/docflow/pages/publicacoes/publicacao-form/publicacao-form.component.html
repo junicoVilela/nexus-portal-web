@@ -1,0 +1,101 @@
+<div class="df-form">
+  <ui-page-header
+    title="Gerar publicação"
+    subtitle="Monte e valide o pacote antes de gerar o ZIP."
+    icon="PackagePlus"
+  />
+
+  @if (diagnosticos().length) {
+    <ui-card padding="md">
+      <h3 class="pubf__diag-title">Diagnóstico antes de publicar</h3>
+      <p class="pubf__diag-sub">Revise ERROs obrigatórios e AVISOS recomendados. Atualizado ao mudar o cliente.</p>
+      <div class="pubf__diag-list">
+        @for (item of diagnosticos(); track item.mensagem + item.paginaTitulo) {
+          <div class="pubf__diag-item" [class.pubf__diag-item--err]="item.severidade === 'ERRO'">
+            <ui-badge [tone]="item.severidade === 'ERRO' ? 'danger' : 'warn'">{{ item.severidade }}</ui-badge>
+            <span>{{ item.mensagem }}</span>
+            @if (item.paginaTitulo) {
+              <small>{{ item.paginaTitulo }}</small>
+            }
+          </div>
+        }
+      </div>
+    </ui-card>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="gerar()">
+    <ui-card padding="lg">
+      <div class="df-form__grid">
+        <div class="df-form__field df-form__field--4">
+          <label class="df-form__label">Cliente</label>
+          <select class="df-form__select" formControlName="clienteId" (change)="preview()">
+            <option value="">Selecione</option>
+            @for (cliente of clientes(); track cliente.id) {
+              <option [value]="cliente.id">{{ cliente.nome }}</option>
+            }
+          </select>
+        </div>
+        <div class="df-form__field df-form__field--3">
+          <label class="df-form__label">Versão</label>
+          <input class="df-form__input" formControlName="versao" placeholder="2026.04" />
+        </div>
+        <div class="df-form__field df-form__field--12">
+          <label class="df-form__label">Observação</label>
+          <textarea class="df-form__textarea" formControlName="observacao"></textarea>
+        </div>
+      </div>
+    </ui-card>
+    <div class="df-form__actions">
+      <ui-button
+        variant="secondary"
+        type="button"
+        [loading]="loadingPreview()"
+        [disabled]="!form.controls.clienteId.value"
+        (clicked)="preview(true)"
+      >
+        {{ loadingPreview() ? 'Carregando...' : 'Visualizar páginas' }}
+      </ui-button>
+      <ui-button type="submit" [loading]="generating()" [disabled]="form.invalid">Gerar pacote</ui-button>
+    </div>
+  </form>
+
+  <ui-card padding="none">
+    <div class="pubf__preview-head">
+      <h3 class="pubf__preview-title">Páginas elegíveis</h3>
+      <ui-badge tone="neutral">{{ paginasPreview().length }} páginas</ui-badge>
+    </div>
+    @if (loadingPreview()) {
+      <div class="pubf__preview-empty">Carregando páginas elegíveis...</div>
+    } @else if (paginasPreview().length === 0) {
+      <div class="pubf__preview-empty">Selecione um cliente e visualize as páginas antes de gerar.</div>
+    } @else {
+      <div class="pubf__preview-layout">
+        <div class="pubf__preview-list">
+          @for (pagina of paginasPreview(); track pagina.id) {
+            <button
+              type="button"
+              class="pubf__preview-item"
+              [class.pubf__preview-item--active]="pagina.id === selectedPaginaId()"
+              (click)="selecionarPagina(pagina)"
+            >
+              <strong>{{ pagina.titulo }}</strong>
+              <small>{{ pagina.moduloNome }} · {{ pagina.codigoTela }}</small>
+            </button>
+          }
+        </div>
+        <article class="pubf__html-preview">
+          @if (paginaSelecionada()) {
+            <header class="pubf__html-head">
+              <h4>{{ paginaSelecionada()!.titulo }}</h4>
+              <small>{{ paginaSelecionada()!.moduloNome }} · {{ paginaSelecionada()!.codigoTela }}</small>
+            </header>
+            <div
+              class="pubf__html-content"
+              [innerHTML]="paginaSelecionada()!.conteudoHtml || '<p>Sem conteúdo HTML cadastrado.</p>'"
+            ></div>
+          }
+        </article>
+      </div>
+    }
+  </ui-card>
+</div>

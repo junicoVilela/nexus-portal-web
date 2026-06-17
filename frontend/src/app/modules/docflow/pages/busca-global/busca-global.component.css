@@ -1,0 +1,207 @@
+.busca {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 32px;
+}
+.busca__msg {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font: 500 13px var(--font-body);
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+}
+.busca__msg--err {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.busca__form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.busca__input {
+  flex: 1;
+  padding: 8px 12px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  transition: border-color var(--motion-default);
+}
+.busca__input:focus {
+  border-color: var(--accent);
+}
+.busca__input::placeholder {
+  color: var(--text-muted);
+}
+
+.busca__state {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font: 400 13.5px var(--font-body);
+}
+
+.busca__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.busca__chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
+  font: 500 12.5px var(--font-body);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background var(--motion-default),
+    border-color var(--motion-default);
+}
+.busca__chip:hover {
+  background: var(--surface);
+}
+.busca__chip--active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.busca__result-row mark,
+.busca__td mark {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.busca__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.busca__card-title {
+  font: 700 14px/1.2 var(--font-display);
+  color: var(--text);
+  margin: 0 0 2px;
+}
+.busca__card-sub {
+  font: 400 12px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+.busca__empty {
+  font: 400 13px var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+.busca__empty--pad {
+  padding: 24px 20px;
+}
+
+.busca__result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.busca__result-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--motion-default);
+}
+.busca__result-row:hover {
+  background: var(--surface-2);
+}
+.busca__result-row strong {
+  font: 600 13px/1.3 var(--font-body);
+}
+.busca__result-row small {
+  font: 400 12px/1 var(--font-body);
+  color: var(--text-muted);
+}
+
+.busca__table-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.busca__table-wrap {
+  overflow-x: auto;
+}
+.busca__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.busca__th {
+  background: var(--surface-2);
+  padding: 9px 14px;
+  text-align: left;
+  font: 700 11px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.busca__th--sort {
+  cursor: pointer;
+  user-select: none;
+}
+.busca__th--sort span {
+  opacity: 0.5;
+  font-size: 10px;
+  margin-left: 4px;
+}
+.busca__td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+  font: 400 13.5px var(--font-body);
+}
+.busca__td--mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.busca__td--muted small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+.busca__td--actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.busca__row:hover .busca__td {
+  background: var(--surface-2);
+}
+.busca__row:last-child .busca__td {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .busca {
+    padding: 18px;
+  }
+  .busca__grid {
+    grid-template-columns: 1fr;
+  }
+}

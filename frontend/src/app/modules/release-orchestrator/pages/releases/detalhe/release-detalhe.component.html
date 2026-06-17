@@ -1,0 +1,263 @@
+@if (loading()) {
+  <div class="rf-det rf-det--loading" aria-busy="true" aria-label="Carregando release">
+    <ui-skeleton width="40%" height="32px" />
+    <ui-skeleton width="80%" height="20px" />
+    <ui-skeleton width="100%" height="120px" />
+    <ui-skeleton width="100%" height="200px" />
+  </div>
+} @else if (erro()) {
+  <div class="rf-det rf-det--errored">
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="recarregar()">
+      <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/releases']"
+        >Voltar para releases</ui-button
+      >
+    </ui-error-state>
+  </div>
+} @else if (release()) {
+  <div class="rf-det">
+    <div class="rf-det__header">
+      <div class="rf-det__meta">
+        <div
+          class="rf-det__prod-badge"
+          [style.background]="release()!.produtoCor + '18'"
+          [style.color]="release()!.produtoCor"
+        >
+          {{ release()!.produtoSigla }}
+        </div>
+        <div>
+          <div class="rf-det__versao-row">
+            <code class="rf-det__versao">{{ release()!.versao }}</code>
+            <app-release-status-badge [status]="release()!.status" />
+            <span class="rf-det__tipo">{{ tipoLabels[release()!.tipo] }}</span>
+          </div>
+          <h1 class="rf-det__titulo">{{ release()!.titulo }}</h1>
+        </div>
+      </div>
+      <div class="rf-det__actions">
+        @if (podeEditarRelease()) {
+          <ui-button
+            variant="secondary"
+            icon="Pencil"
+            [routerLink]="['/release-orchestrator/releases', release()!.id, 'editar']"
+            >Editar</ui-button
+          >
+        }
+        @if (release()!.status === 'RASCUNHO' || release()!.status === 'EM_DESENVOLVIMENTO') {
+          <ui-button variant="secondary" icon="Send" (clicked)="alterarStatus('EM_REVISAO')"
+            >Enviar para revisão</ui-button
+          >
+        }
+        @if (release()!.status === 'EM_REVISAO') {
+          <ui-button variant="secondary" icon="Check" (clicked)="alterarStatus('APROVADA')">Aprovar</ui-button>
+        }
+        @if (release()!.status === 'APROVADA') {
+          <ui-button icon="CheckCircle" (clicked)="irParaRevisao()">Publicar</ui-button>
+        }
+        <ui-button variant="secondary" icon="FileText" (clicked)="gerarPdf()">PDF</ui-button>
+      </div>
+    </div>
+
+    <div class="rf-det__info-strip">
+      @if (release()!.responsavel) {
+        <div class="rf-det__info-item">
+          <span class="rf-det__info-label">Responsável</span>
+          <span class="rf-det__info-value">{{ release()!.responsavel }}</span>
+        </div>
+      }
+      @if (release()!.dataPrevista) {
+        <div class="rf-det__info-item">
+          <span class="rf-det__info-label">Data prevista</span>
+          <span class="rf-det__info-value">{{ release()!.dataPrevista | date: 'dd/MM/yyyy' }}</span>
+        </div>
+      }
+      @if (release()!.dataPublicacao) {
+        <div class="rf-det__info-item">
+          <span class="rf-det__info-label">Publicado em</span>
+          <span class="rf-det__info-value rf-det__info-value--accent">{{
+            release()!.dataPublicacao | date: 'dd/MM/yyyy'
+          }}</span>
+        </div>
+      }
+      <div class="rf-det__info-item">
+        <span class="rf-det__info-label">Itens cadastrados</span>
+        <span class="rf-det__info-value">{{ itens().length }}</span>
+      </div>
+      <div class="rf-det__info-item">
+        <span class="rf-det__info-label">Criado em</span>
+        <span class="rf-det__info-value">{{ release()!.createdAt | date: 'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+
+    @if (release()!.resumo) {
+      <ui-card padding="md">
+        <p class="rf-det__resumo">{{ release()!.resumo }}</p>
+      </ui-card>
+    }
+
+    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="activeTab.set($event)" />
+
+    @if (activeTab() === 'itens') {
+      <div class="rf-det__tab-content">
+        @if (podeEditarRelease()) {
+          <div class="rf-det__items-header">
+            <ui-button icon="Plus" (clicked)="abrirNovoItem()">Adicionar item</ui-button>
+          </div>
+        }
+        @if (itens().length === 0) {
+          <ui-empty-state
+            icon="List"
+            illustration="list"
+            title="Nenhum item cadastrado"
+            description="Adicione novidades, melhorias e correções que farão parte desta release."
+          >
+            @if (podeEditarRelease()) {
+              <ui-button variant="ghost" size="sm" (clicked)="abrirNovoItem()">Adicionar primeiro item</ui-button>
+            }
+          </ui-empty-state>
+        } @else {
+          @for (grupo of itensPorCategoria(); track grupo.categoria) {
+            <div class="rf-det__cat-grupo">
+              <div class="rf-det__cat-header rf-det__cat-header--{{ grupo.cor }}">
+                <span>{{ grupo.label }}</span>
+                <span class="rf-det__cat-count">{{ grupo.itens.length }}</span>
+              </div>
+              <div
+                class="rf-det__item-list"
+                cdkDropList
+                [cdkDropListData]="grupo.itens"
+                [cdkDropListDisabled]="!podeEditarRelease()"
+                (cdkDropListDropped)="onItemDrop($event, grupo.categoria)"
+              >
+                @for (item of grupo.itens; track item.id) {
+                  <div class="rf-det__item-card" cdkDrag [cdkDragDisabled]="!podeEditarRelease()">
+                    <div class="rf-det__item-body">
+                      <div class="rf-det__item-top">
+                        <span class="rf-det__item-titulo">{{ item.titulo }}</span>
+                        <div class="rf-det__item-badges">
+                          <span class="rf-det__vis-badge rf-det__vis-badge--{{ item.visibilidade.toLowerCase() }}">
+                            {{ visibilidadeItemLabels[item.visibilidade] }}
+                          </span>
+                          @if (item.ticket) {
+                            <span class="rf-det__ref-badge">
+                              <lucide-icon name="Ticket" [size]="11" /> {{ item.ticket }}
+                            </span>
+                          }
+                          @if (item.commit) {
+                            <span class="rf-det__ref-badge">
+                              <lucide-icon name="GitCommit" [size]="11" /> {{ item.commit | slice: 0 : 8 }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                      @if (item.descricao) {
+                        <p class="rf-det__item-desc">{{ item.descricao }}</p>
+                      }
+                    </div>
+                    @if (podeEditarRelease()) {
+                      <div class="rf-det__item-actions">
+                        <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editarItem(item)" />
+                        <ui-button variant="ghost" size="sm" icon="Copy" (clicked)="duplicarItem(item)" />
+                        <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="removerItem(item)" />
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'historico') {
+      <div class="rf-det__tab-content">
+        @if (historico().length === 0) {
+          <div class="rf-det__empty"><p>Sem registros no histórico.</p></div>
+        } @else {
+          <app-historico-timeline [historico]="historico()" />
+        }
+      </div>
+    }
+  </div>
+}
+
+@if (showItemForm()) {
+  <div class="rf-overlay" (click)="fecharItemForm()">
+    <div class="rf-modal rf-modal--wide" (click)="$event.stopPropagation()">
+      <div class="rf-modal__header">
+        <h2 class="rf-modal__title">{{ editItemId() ? 'Editar item' : 'Novo item' }}</h2>
+        <button type="button" class="rf-modal__close" aria-label="Fechar modal" (click)="fecharItemForm()">
+          <lucide-icon name="X" [size]="16" />
+        </button>
+      </div>
+
+      <form [formGroup]="itemForm" (ngSubmit)="salvarItem()" class="rf-modal__body">
+        <div class="rf-modal__row">
+          <div class="rf-modal__field">
+            <label class="rf-modal__label">Categoria <span class="rf-modal__req">*</span></label>
+            <select
+              class="rf-modal__select"
+              formControlName="categoria"
+              [class.rf-modal__select--err]="itemFieldError('categoria')"
+            >
+              @for (c of todasCategorias; track c) {
+                <option [value]="c">{{ categoriaLabels[c] }}</option>
+              }
+            </select>
+          </div>
+          <div class="rf-modal__field">
+            <label class="rf-modal__label">Visibilidade</label>
+            <select class="rf-modal__select" formControlName="visibilidade">
+              @for (v of todasVisibilidades; track v) {
+                <option [value]="v">{{ visibilidadeItemLabels[v] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Título <span class="rf-modal__req">*</span></label>
+          <input
+            class="rf-modal__input"
+            formControlName="titulo"
+            placeholder="Título do item"
+            [class.rf-modal__input--err]="itemFieldError('titulo')"
+          />
+          @if (itemFieldError('titulo')) {
+            <span class="rf-modal__err">Título é obrigatório</span>
+          }
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Descrição</label>
+          <textarea
+            class="rf-modal__textarea"
+            formControlName="descricao"
+            rows="3"
+            placeholder="Detalhes da mudança…"
+          ></textarea>
+        </div>
+
+        <div class="rf-modal__row">
+          <div class="rf-modal__field">
+            <label class="rf-modal__label">Ticket</label>
+            <input class="rf-modal__input" formControlName="ticket" placeholder="#1234" />
+          </div>
+          <div class="rf-modal__field">
+            <label class="rf-modal__label">Commit</label>
+            <input class="rf-modal__input" formControlName="commit" placeholder="Hash do commit" />
+          </div>
+          <div class="rf-modal__field">
+            <label class="rf-modal__label">Pull Request</label>
+            <input class="rf-modal__input" formControlName="pullRequest" placeholder="URL ou número" />
+          </div>
+        </div>
+
+        <div class="rf-modal__footer">
+          <ui-button variant="ghost" type="button" (clicked)="fecharItemForm()">Cancelar</ui-button>
+          <ui-button type="submit" [loading]="salvandoItem()">Salvar item</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

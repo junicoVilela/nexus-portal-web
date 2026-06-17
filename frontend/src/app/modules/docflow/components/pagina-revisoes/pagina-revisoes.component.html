@@ -1,0 +1,71 @@
+<div class="pf-revisoes">
+  <div class="pf-revisoes-head">
+    <h3 class="pf-revisoes-title">Revisões da página</h3>
+    @if (revisoes().length >= 2) {
+      <ui-button variant="ghost" size="sm" (clicked)="toggleDiff.emit()">{{
+        showDiff() ? 'Ocultar diff' : 'Ver diff'
+      }}</ui-button>
+    }
+  </div>
+
+  @if (showDiff() && diffLinhas().length > 0) {
+    <div class="pf-diff">
+      @for (linha of diffLinhas(); track $index) {
+        <div
+          class="pf-diff-linha"
+          [class.pf-diff-linha--add]="linha.tipo === '+'"
+          [class.pf-diff-linha--rem]="linha.tipo === '-'"
+        >
+          <span class="pf-diff-sinal">{{ linha.tipo }}</span>
+          <span>
+            @for (tok of linha.tokens; track $index) {
+              @if (tok.tipo === '+') {
+                <mark class="pf-diff-mark pf-diff-mark--add">{{ tok.texto }}</mark>
+              } @else if (tok.tipo === '-') {
+                <mark class="pf-diff-mark pf-diff-mark--rem">{{ tok.texto }}</mark>
+              } @else {
+                <span>{{ tok.texto }}</span>
+              }
+            }
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+  <table class="pf-rev-table">
+    <thead>
+      <tr>
+        <th class="pf-th pf-th--sort" (click)="sortChange.emit('numero')">
+          # <span>{{ indicacao('numero') }}</span>
+        </th>
+        <th class="pf-th pf-th--sort" (click)="sortChange.emit('status')">
+          Status <span>{{ indicacao('status') }}</span>
+        </th>
+        <th class="pf-th pf-th--sort" (click)="sortChange.emit('createdAt')">
+          Data <span>{{ indicacao('createdAt') }}</span>
+        </th>
+        <th class="pf-th pf-th--sort" (click)="sortChange.emit('createdBy')">
+          Usuário <span>{{ indicacao('createdBy') }}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (revisao of revisoes(); track revisao.id) {
+        <tr class="pf-row">
+          <td class="pf-td">{{ revisao.numero }}</td>
+          <td class="pf-td">{{ revisao.status }}</td>
+          <td class="pf-td">{{ revisao.createdAt | date: 'short' }}</td>
+          <td class="pf-td">{{ nomeUsuario()(revisao.createdBy) }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <app-table-pagination
+    [totalItems]="totalRevisoes()"
+    [page]="revisoesPage()"
+    [pageSize]="revisoesPageSize()"
+    (pageChange)="pageChange.emit($event)"
+    (pageSizeChange)="pageSizeChange.emit($event)"
+  />
+</div>

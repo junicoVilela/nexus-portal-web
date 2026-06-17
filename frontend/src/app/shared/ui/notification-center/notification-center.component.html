@@ -1,0 +1,73 @@
+<div class="ui-notif">
+  <button
+    type="button"
+    class="ui-notif__trigger"
+    [class.ui-notif__trigger--open]="open()"
+    [attr.aria-expanded]="open()"
+    aria-haspopup="dialog"
+    i18n-aria-label="@@ui.notifCenter.aria"
+    aria-label="Notificações"
+    (click)="toggle()"
+  >
+    <lucide-icon name="Bell" [size]="17" />
+    @if (svc.unreadCount() > 0) {
+      <span class="ui-notif__badge" aria-hidden="true">{{ svc.unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="ui-notif__backdrop" (click)="close()" aria-hidden="true"></div>
+    <div class="ui-notif__panel" role="dialog" aria-label="Painel de notificações">
+      <header class="ui-notif__head">
+        <strong i18n="@@ui.notifCenter.title">Notificações</strong>
+        @if (hasItems()) {
+          <button type="button" class="ui-notif__link" (click)="svc.clear()" i18n="@@ui.notifCenter.clearAll">
+            Limpar tudo
+          </button>
+        }
+      </header>
+
+      @if (!hasItems()) {
+        <div class="ui-notif__empty">
+          <lucide-icon name="Inbox" [size]="28" />
+          <p i18n="@@ui.notifCenter.empty">Nenhuma notificação por aqui.</p>
+        </div>
+      } @else {
+        <ul class="ui-notif__list">
+          @for (n of svc.items(); track n.id) {
+            <li class="ui-notif__item ui-notif__item--{{ n.level }}" [class.ui-notif__item--read]="n.read">
+              @if (n.href) {
+                <button class="ui-notif__row" type="button" (click)="abrir(n.id, n.href)">
+                  <span class="ui-notif__dot"></span>
+                  <span class="ui-notif__body">
+                    <strong class="ui-notif__title">{{ n.title }}</strong>
+                    @if (n.description) {
+                      <span class="ui-notif__desc">{{ n.description }}</span>
+                    }
+                  </span>
+                </button>
+              } @else {
+                <div class="ui-notif__row">
+                  <span class="ui-notif__dot"></span>
+                  <span class="ui-notif__body">
+                    <strong class="ui-notif__title">{{ n.title }}</strong>
+                    @if (n.description) {
+                      <span class="ui-notif__desc">{{ n.description }}</span>
+                    }
+                  </span>
+                </div>
+              }
+              <ui-icon-button
+                icon="X"
+                size="sm"
+                i18n-ariaLabel="@@ui.notifCenter.dismiss"
+                ariaLabel="Descartar notificação"
+                (clicked)="svc.remove(n.id)"
+              />
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+</div>

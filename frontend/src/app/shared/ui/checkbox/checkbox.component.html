@@ -1,0 +1,11 @@
+<label class="ui-checkbox">
+  <input type="checkbox" [checked]="checked()" [disabled]="disabledSig()" (change)="onToggle($event)" />
+  <span class="ui-checkbox__box">
+    @if (checked()) {
+      <lucide-icon name="Check" />
+    }
+  </span>
+  @if (label()) {
+    <span class="ui-checkbox__label">{{ label() }}</span>
+  }
+</label>

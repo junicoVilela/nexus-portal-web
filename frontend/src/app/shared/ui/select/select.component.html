@@ -1,0 +1,21 @@
+<label class="ui-select">
+  @if (label()) {
+    <span class="ui-select__label">{{ label() }}</span>
+  }
+  <span class="ui-select__field" [class.ui-select__field--error]="!!error()">
+    <select [value]="value()" [disabled]="disabledSig()" (change)="onSelect($event)" (blur)="value.set(value())">
+      @if (placeholder()) {
+        <option value="" disabled hidden>{{ placeholder() }}</option>
+      }
+      @for (opt of options(); track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <lucide-icon name="ChevronDown" class="ui-select__chev" />
+  </span>
+  @if (error()) {
+    <span class="ui-select__error">{{ error() }}</span>
+  } @else if (hint()) {
+    <span class="ui-select__hint">{{ hint() }}</span>
+  }
+</label>

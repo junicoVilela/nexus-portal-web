@@ -1,0 +1,256 @@
+<ui-page-header
+  title="Matriz de segurança"
+  subtitle="Gerencie domínios, funcionalidades e permissões. Selecione um item à esquerda para ver os filhos."
+  icon="ShieldHalf"
+/>
+
+@if (loading()) {
+  <div class="matriz__loading">Carregando matriz...</div>
+} @else {
+  <div class="matriz__grid">
+    <!-- ============================ DOMÍNIOS ============================ -->
+    <ui-card padding="lg">
+      <div class="matriz__col-head">
+        <div>
+          <h3 class="matriz__col-title">Domínios</h3>
+          <small class="matriz__col-sub">{{ dominios().length }} cadastrados</small>
+        </div>
+        <ui-button *appPermissao="'DOMINIO:CRIAR'" variant="ghost" size="sm" icon="Plus" (clicked)="abrirFormDominio()"
+          >Novo</ui-button
+        >
+      </div>
+
+      @if (mostraFormDominio()) {
+        <form class="matriz__form" [formGroup]="formDominio" (ngSubmit)="salvarDominio()">
+          <h4 class="matriz__form-title">{{ editDominio() ? 'Editar domínio' : 'Novo domínio' }}</h4>
+          <input class="matriz__input" placeholder="Nome" formControlName="nome" />
+          <input class="matriz__input" placeholder="Código (UPPERCASE)" formControlName="codigo" />
+          <textarea
+            class="matriz__input matriz__textarea"
+            placeholder="Descrição (opcional)"
+            formControlName="descricao"
+            rows="2"
+          ></textarea>
+          <label class="matriz__check">
+            <input type="checkbox" formControlName="ativo" />
+            <span>Ativo</span>
+          </label>
+          <div class="matriz__form-actions">
+            <ui-button variant="ghost" size="sm" type="button" (clicked)="fecharForms()">Cancelar</ui-button>
+            <ui-button size="sm" type="submit" [loading]="saving()" [disabled]="formDominio.invalid">Salvar</ui-button>
+          </div>
+        </form>
+      }
+
+      <ul class="matriz__list">
+        @for (d of dominios(); track d.id) {
+          <li
+            class="matriz__item"
+            [class.matriz__item--active]="dominioSelId() === d.id"
+            (click)="selecionarDominio(d)"
+          >
+            <div class="matriz__item-info">
+              <strong>{{ d.nome }}</strong>
+              <small>{{ d.codigo }}</small>
+            </div>
+            <div class="matriz__item-actions" (click)="$event.stopPropagation()">
+              <ui-badge [tone]="d.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                d.ativo ? 'Ativo' : 'Inativo'
+              }}</ui-badge>
+              <button
+                *appPermissao="'DOMINIO:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                title="Editar"
+                (click)="abrirFormDominio(d)"
+              >
+                <lucide-icon name="Pencil" [size]="14" />
+              </button>
+              <button
+                *appPermissao="'DOMINIO:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                [title]="d.ativo ? 'Inativar' : 'Ativar'"
+                (click)="toggleStatusDominio(d)"
+              >
+                <lucide-icon [name]="d.ativo ? 'CircleOff' : 'CircleCheck'" [size]="14" />
+              </button>
+            </div>
+          </li>
+        } @empty {
+          <li class="matriz__empty">Nenhum domínio cadastrado.</li>
+        }
+      </ul>
+    </ui-card>
+
+    <!-- ============================ FUNCIONALIDADES ============================ -->
+    <ui-card padding="lg">
+      <div class="matriz__col-head">
+        <div>
+          <h3 class="matriz__col-title">Funcionalidades</h3>
+          <small class="matriz__col-sub">
+            {{ dominioSel() ? dominioSel()!.nome : 'Selecione um domínio' }}
+          </small>
+        </div>
+        <ui-button
+          *appPermissao="'FUNCIONALIDADE:CRIAR'"
+          variant="ghost"
+          size="sm"
+          icon="Plus"
+          [disabled]="!dominioSelId()"
+          (clicked)="abrirFormFunc()"
+          >Nova</ui-button
+        >
+      </div>
+
+      @if (mostraFormFunc()) {
+        <form class="matriz__form" [formGroup]="formFunc" (ngSubmit)="salvarFuncionalidade()">
+          <h4 class="matriz__form-title">
+            {{ editFunc() ? 'Editar funcionalidade' : 'Nova funcionalidade' }}
+          </h4>
+          <input class="matriz__input" placeholder="Nome" formControlName="nome" />
+          <input class="matriz__input" placeholder="Código (UPPERCASE)" formControlName="codigo" />
+          <textarea
+            class="matriz__input matriz__textarea"
+            placeholder="Descrição (opcional)"
+            formControlName="descricao"
+            rows="2"
+          ></textarea>
+          <label class="matriz__check">
+            <input type="checkbox" formControlName="ativo" />
+            <span>Ativa</span>
+          </label>
+          <div class="matriz__form-actions">
+            <ui-button variant="ghost" size="sm" type="button" (clicked)="fecharForms()">Cancelar</ui-button>
+            <ui-button size="sm" type="submit" [loading]="saving()" [disabled]="formFunc.invalid">Salvar</ui-button>
+          </div>
+        </form>
+      }
+
+      <ul class="matriz__list">
+        @for (f of funcionalidadesDoDominio(); track f.id) {
+          <li
+            class="matriz__item"
+            [class.matriz__item--active]="funcionalidadeSelId() === f.id"
+            (click)="selecionarFuncionalidade(f)"
+          >
+            <div class="matriz__item-info">
+              <strong>{{ f.nome }}</strong>
+              <small>{{ f.codigo }}</small>
+            </div>
+            <div class="matriz__item-actions" (click)="$event.stopPropagation()">
+              <ui-badge [tone]="f.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                f.ativo ? 'Ativa' : 'Inativa'
+              }}</ui-badge>
+              <button
+                *appPermissao="'FUNCIONALIDADE:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                title="Editar"
+                (click)="abrirFormFunc(f)"
+              >
+                <lucide-icon name="Pencil" [size]="14" />
+              </button>
+              <button
+                *appPermissao="'FUNCIONALIDADE:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                [title]="f.ativo ? 'Inativar' : 'Ativar'"
+                (click)="toggleStatusFunc(f)"
+              >
+                <lucide-icon [name]="f.ativo ? 'CircleOff' : 'CircleCheck'" [size]="14" />
+              </button>
+            </div>
+          </li>
+        } @empty {
+          <li class="matriz__empty">
+            {{ dominioSelId() ? 'Nenhuma funcionalidade neste domínio.' : 'Selecione um domínio.' }}
+          </li>
+        }
+      </ul>
+    </ui-card>
+
+    <!-- ============================ PERMISSÕES ============================ -->
+    <ui-card padding="lg">
+      <div class="matriz__col-head">
+        <div>
+          <h3 class="matriz__col-title">Permissões</h3>
+          <small class="matriz__col-sub">
+            {{ funcionalidadeSel() ? funcionalidadeSel()!.nome : 'Selecione uma funcionalidade' }}
+          </small>
+        </div>
+        <ui-button
+          *appPermissao="'PERMISSAO:CRIAR'"
+          variant="ghost"
+          size="sm"
+          icon="Plus"
+          [disabled]="!funcionalidadeSelId()"
+          (clicked)="abrirFormPerm()"
+          >Nova</ui-button
+        >
+      </div>
+
+      @if (mostraFormPerm()) {
+        <form class="matriz__form" [formGroup]="formPerm" (ngSubmit)="salvarPermissao()">
+          <h4 class="matriz__form-title">{{ editPerm() ? 'Editar permissão' : 'Nova permissão' }}</h4>
+          <input class="matriz__input" placeholder="Ação (ex.: LER, CRIAR, EXECUTAR)" formControlName="acao" />
+          <small class="matriz__hint">
+            Código final: <code>{{ funcionalidadeSel()?.codigo }}:{{ formPerm.controls.acao.value || 'ACAO' }}</code>
+          </small>
+          <textarea
+            class="matriz__input matriz__textarea"
+            placeholder="Descrição (opcional)"
+            formControlName="descricao"
+            rows="2"
+          ></textarea>
+          <label class="matriz__check">
+            <input type="checkbox" formControlName="ativo" />
+            <span>Ativa</span>
+          </label>
+          <div class="matriz__form-actions">
+            <ui-button variant="ghost" size="sm" type="button" (clicked)="fecharForms()">Cancelar</ui-button>
+            <ui-button size="sm" type="submit" [loading]="saving()" [disabled]="formPerm.invalid">Salvar</ui-button>
+          </div>
+        </form>
+      }
+
+      <ul class="matriz__list">
+        @for (p of permissoesDaFuncionalidade(); track p.id) {
+          <li class="matriz__item matriz__item--static">
+            <div class="matriz__item-info">
+              <strong>{{ p.acao }}</strong>
+              <small>{{ p.codigo }}</small>
+            </div>
+            <div class="matriz__item-actions">
+              <ui-badge [tone]="p.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                p.ativo ? 'Ativa' : 'Inativa'
+              }}</ui-badge>
+              <button
+                *appPermissao="'PERMISSAO:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                title="Editar"
+                (click)="abrirFormPerm(p)"
+              >
+                <lucide-icon name="Pencil" [size]="14" />
+              </button>
+              <button
+                *appPermissao="'PERMISSAO:EDITAR'"
+                class="matriz__icon-btn"
+                type="button"
+                [title]="p.ativo ? 'Inativar' : 'Ativar'"
+                (click)="toggleStatusPerm(p)"
+              >
+                <lucide-icon [name]="p.ativo ? 'CircleOff' : 'CircleCheck'" [size]="14" />
+              </button>
+            </div>
+          </li>
+        } @empty {
+          <li class="matriz__empty">
+            {{ funcionalidadeSelId() ? 'Nenhuma permissão nesta funcionalidade.' : 'Selecione uma funcionalidade.' }}
+          </li>
+        }
+      </ul>
+    </ui-card>
+  </div>
+}

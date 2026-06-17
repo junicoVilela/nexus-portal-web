@@ -1,0 +1,43 @@
+<form [formGroup]="form()" (ngSubmit)="aplicarFiltros.emit()" class="paginas__filters">
+  <div class="paginas__filter-row">
+    <input
+      class="paginas__search"
+      formControlName="busca"
+      placeholder="Busca full-text em título, resumo e código..."
+    />
+    <input class="paginas__input" formControlName="titulo" placeholder="Título" />
+    <input class="paginas__input" formControlName="codigoTela" placeholder="Código tela" />
+  </div>
+  <div class="paginas__filter-row">
+    <select class="paginas__select" formControlName="projetoId" (change)="projetoChange.emit()">
+      <option value="">Todos os projetos</option>
+      @for (p of projetos(); track p.id) {
+        <option [value]="p.id">{{ p.nome }}</option>
+      }
+    </select>
+    <select class="paginas__select" formControlName="moduloId">
+      <option value="">Todos os módulos</option>
+      @for (m of modulos(); track m.id) {
+        <option [value]="m.id">{{ m.nome }}</option>
+      }
+    </select>
+    <select class="paginas__select" formControlName="status">
+      <option value="">Todos os status</option>
+      <option>RASCUNHO</option>
+      <option>EM_REVISAO</option>
+      <option>APROVADO</option>
+      <option>PUBLICADO</option>
+      <option>ARQUIVADO</option>
+    </select>
+    <div class="paginas__filter-actions">
+      <ui-button variant="secondary" size="sm" type="button" (clicked)="limparFiltros.emit()">Limpar</ui-button>
+      <ui-button size="sm" type="submit">Filtrar</ui-button>
+    </div>
+  </div>
+  <ui-status-pill-bar
+    [items]="pillItems()"
+    [value]="form().controls['status'].value"
+    [todosCount]="totalSistema()"
+    (selecionar)="statusEditorial.emit($event)"
+  />
+</form>

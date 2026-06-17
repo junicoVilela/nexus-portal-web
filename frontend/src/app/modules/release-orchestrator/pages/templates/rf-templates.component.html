@@ -1,0 +1,164 @@
+<div class="rf-tpl">
+  <ui-page-header
+    title="Templates de release"
+    subtitle="Modelos de texto para padronizar publicações"
+    icon="LayoutTemplate"
+  >
+    <div actions>
+      <ui-button icon="Plus" (clicked)="abrirNovo()">Novo template</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
+  }
+
+  @if (loading()) {
+    <div class="rf-tpl__grid" aria-busy="true" aria-label="Carregando templates">
+      <ui-skeleton width="100%" height="140px" />
+      <ui-skeleton width="100%" height="140px" />
+      <ui-skeleton width="100%" height="140px" />
+    </div>
+  } @else if (templates().length === 0) {
+    <ui-empty-state
+      icon="LayoutTemplate"
+      illustration="document"
+      title="Nenhum template cadastrado"
+      description="Templates permitem reutilizar estrutura entre releases."
+    >
+      <ui-button icon="Plus" (clicked)="abrirNovo()">Criar template</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="rf-tpl__grid">
+      @for (t of templates(); track t.id) {
+        <div class="rf-tpl__card" [class.rf-tpl__card--inativo]="!t.ativo">
+          <div class="rf-tpl__card-header">
+            <div class="rf-tpl__icon">
+              <lucide-icon name="FilePen" [size]="16" />
+            </div>
+            <div class="rf-tpl__meta">
+              <span class="rf-tpl__nome">{{ t.nome }}</span>
+              @if (t.tipoRelease) {
+                <span class="rf-tpl__tipo">{{ tipoLabels[t.tipoRelease] }}</span>
+              }
+            </div>
+            <ui-badge [tone]="t.ativo ? 'success' : 'neutral'" [dot]="true">{{
+              t.ativo ? 'Ativo' : 'Inativo'
+            }}</ui-badge>
+          </div>
+          @if (t.descricao) {
+            <p class="rf-tpl__desc">{{ t.descricao }}</p>
+          }
+          <pre class="rf-tpl__preview">{{ t.estrutura }}</pre>
+          <div class="rf-tpl__footer">
+            <span class="rf-tpl__data">{{ t.createdAt | date: 'dd/MM/yyyy' }}</span>
+            <div class="rf-tpl__actions">
+              <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(t)">Editar</ui-button>
+              <ui-button variant="ghost" size="sm" [icon]="t.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(t)">
+                {{ t.ativo ? 'Inativar' : 'Ativar' }}
+              </ui-button>
+              @if (excluindoId() === t.id) {
+                <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(t)">Confirmar</ui-button>
+                <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+              } @else {
+                <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluindoId.set(t.id)"
+                  >Excluir</ui-button
+                >
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <div class="rf-overlay" (click)="fecharForm()">
+    <div class="rf-modal rf-modal--wide" (click)="$event.stopPropagation()">
+      <div class="rf-modal__header">
+        <h2 class="rf-modal__title">{{ editId() ? 'Editar template' : 'Novo template' }}</h2>
+        <button type="button" class="rf-modal__close" aria-label="Fechar modal" (click)="fecharForm()">
+          <lucide-icon name="X" [size]="16" />
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="rf-modal__body">
+        <div class="rf-modal__row">
+          <div class="rf-modal__field u-flex-grow-2">
+            <label class="rf-modal__label">Nome <span class="rf-modal__req">*</span></label>
+            <input
+              class="rf-modal__input"
+              formControlName="nome"
+              placeholder="Nome do template"
+              [class.rf-modal__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="rf-modal__err">Nome é obrigatório</span>
+            }
+          </div>
+          <div class="rf-modal__field u-flex-grow-1">
+            <label class="rf-modal__label">Tipo de release</label>
+            <select class="rf-modal__select" formControlName="tipoRelease">
+              <option value="">Todos os tipos</option>
+              @for (t of tipos; track t) {
+                <option [value]="t">{{ tipoLabels[t] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Descrição</label>
+          <input class="rf-modal__input" formControlName="descricao" placeholder="Descrição do template" />
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Estrutura do texto (Markdown) <span class="rf-modal__req">*</span></label>
+          <div class="rf-md-toolbar" role="toolbar" aria-label="Atalhos Markdown">
+            @for (b of mdToolbar; track b.label) {
+              <button type="button" class="rf-md-btn" (click)="aplicarMd(b)" [title]="b.label">{{ b.label }}</button>
+            }
+            <button
+              type="button"
+              class="rf-md-btn rf-md-btn--toggle"
+              (click)="togglePreview()"
+              [class.rf-md-btn--active]="showPreview()"
+            >
+              {{ showPreview() ? 'Ocultar prévia' : 'Mostrar prévia' }}
+            </button>
+          </div>
+          <div class="rf-md-grid" [class.rf-md-grid--no-preview]="!showPreview()">
+            <textarea
+              #estruturaTextarea
+              class="rf-modal__textarea rf-md-textarea"
+              formControlName="estrutura"
+              rows="14"
+              placeholder="# Release {{ '{{produto}}' }} {{ '{{versao}}' }}&#10;&#10;Use Markdown: **negrito**, *itálico*, # H1, ## H2, - listas, [link](url)."
+              [class.rf-modal__textarea--err]="fieldError('estrutura')"
+            ></textarea>
+            @if (showPreview()) {
+              <div class="rf-md-preview" aria-label="Prévia renderizada" [innerHTML]="estruturaPreviewHtml()"></div>
+            }
+          </div>
+          @if (fieldError('estrutura')) {
+            <span class="rf-modal__err">Estrutura é obrigatória</span>
+          }
+          <span class="rf-modal__hint"
+            >Markdown completo + marcadores como [Produto], [Versão], [Data], [Resumo] para campos dinâmicos.</span
+          >
+        </div>
+
+        <label class="rf-modal__check">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Template ativo</span>
+        </label>
+
+        <div class="rf-modal__footer">
+          <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
+          <ui-button type="submit" [loading]="salvando()">Salvar</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,28 @@
+<div class="ui-toast-host">
+  @for (t of toasts(); track t.id) {
+    <div
+      class="ui-toast ui-toast--{{ t.variant }}"
+      [attr.role]="t.variant === 'error' || t.variant === 'warn' ? 'alert' : 'status'"
+      [attr.aria-live]="t.variant === 'error' || t.variant === 'warn' ? 'assertive' : 'polite'"
+      aria-atomic="true"
+    >
+      <span class="ui-toast__icon" aria-hidden="true">
+        <lucide-icon [name]="icons[t.variant]" />
+      </span>
+      <div class="ui-toast__body">
+        @if (t.title) {
+          <strong class="ui-toast__title">{{ t.title }}</strong>
+        }
+        <span class="ui-toast__msg">{{ t.message }}</span>
+      </div>
+      <button
+        type="button"
+        class="ui-toast__close"
+        (click)="dismiss(t.id)"
+        [attr.aria-label]="'Fechar mensagem: ' + (t.title ? t.title + '. ' : '') + t.message"
+      >
+        <lucide-icon name="X" aria-hidden="true" />
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,89 @@
+<div class="rf-bt">
+  <div class="rf-bt__header">
+    <span class="rf-bt__title">
+      <lucide-icon name="List" [size]="13" />
+      Changelog em andamento
+    </span>
+    @if (entradas().length > 0) {
+      <span class="rf-bt__count">{{ entradas().length }}</span>
+    }
+  </div>
+
+  @if (entradas().length === 0) {
+    <div class="rf-bt__empty">
+      <lucide-icon name="Inbox" [size]="36" />
+      <p>As entradas aparecerão aqui</p>
+      <span>Selecione um tipo e adicione a primeira mudança</span>
+    </div>
+  } @else {
+    <div
+      class="rf-bt__entries"
+      cdkDropList
+      [cdkDropListData]="entradas()"
+      (cdkDropListDropped)="entradaDrop.emit($event)"
+    >
+      @for (entrada of entradas(); track entrada.id) {
+        <div
+          class="rf-bt__entry"
+          cdkDrag
+          [cdkDragDisabled]="entrada.saving"
+          [class.rf-bt__entry--saving]="entrada.saving"
+        >
+          <div class="rf-bt__dot rf-bt__dot--{{ categoriaCores[entrada.categoria] }}">
+            <lucide-icon [name]="categoriaIconesLucide[entrada.categoria]" [size]="11" />
+          </div>
+
+          <div class="rf-bt__card">
+            <div class="rf-bt__top">
+              <div class="rf-bt__meta">
+                <span class="rf-bt__cat rf-bt__cat--{{ categoriaCores[entrada.categoria] }}">
+                  {{ categoriaLabels[entrada.categoria] }}
+                </span>
+                @if (entrada.ticket) {
+                  <span class="rf-bt__ref"><lucide-icon name="Ticket" [size]="10" /> {{ entrada.ticket }}</span>
+                }
+                @if (entrada.commit) {
+                  <span class="rf-bt__ref">
+                    <lucide-icon name="Code" [size]="10" /> {{ entrada.commit | slice: 0 : 8 }}
+                  </span>
+                }
+              </div>
+              <div class="rf-bt__status">
+                @if (entrada.saving) {
+                  <span class="rf-bt__saving">
+                    <lucide-icon name="Loader2" [size]="11" class="rf-bt__spin" /> Salvando
+                  </span>
+                } @else if (entrada.saved) {
+                  <span class="rf-bt__saved"><lucide-icon name="Check" [size]="11" /> Salvo</span>
+                }
+                <button
+                  type="button"
+                  class="rf-bt__remove"
+                  (click)="removerEntrada.emit(entrada)"
+                  title="Remover"
+                  aria-label="Remover entrada"
+                >
+                  <lucide-icon name="X" [size]="13" />
+                </button>
+              </div>
+            </div>
+
+            <div class="rf-bt__titulo">{{ entrada.titulo }}</div>
+
+            @if (entrada.descricao) {
+              <p class="rf-bt__desc">{{ entrada.descricao }}</p>
+            }
+
+            <div class="rf-bt__time">{{ entrada.savedAt | date: 'HH:mm:ss' }}</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="rf-bt__footer">
+      <ui-button icon="CheckCircle" (clicked)="encerrar.emit()" [loading]="encerrando()">
+        {{ encerrando() ? 'Encerrando...' : 'Encerrar e enviar para revisão' }}
+      </ui-button>
+    </div>
+  }
+</div>

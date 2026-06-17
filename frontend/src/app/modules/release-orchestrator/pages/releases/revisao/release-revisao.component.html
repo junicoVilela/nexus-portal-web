@@ -1,0 +1,155 @@
+@if (loading()) {
+  <div class="rf-rev rf-rev--loading">Carregando release…</div>
+} @else if (erro()) {
+  <div class="rf-rev">
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()">
+      <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/releases']"
+        >Voltar para releases</ui-button
+      >
+    </ui-error-state>
+  </div>
+} @else if (release()) {
+  <div class="rf-rev">
+    <div class="rf-rev__breadcrumb">
+      <a class="rf-rev__bc-link" routerLink="/release-orchestrator/releases">Releases</a>
+      <lucide-icon name="ChevronRight" [size]="13" />
+      <a class="rf-rev__bc-link" [routerLink]="['/release-orchestrator/releases', release()!.id]"
+        >{{ release()!.produtoSigla }} {{ release()!.versao }}</a
+      >
+      <lucide-icon name="ChevronRight" [size]="13" />
+      <span>Revisão e publicação</span>
+    </div>
+
+    <ui-page-header
+      title="Revisão da release"
+      subtitle="Confirme os itens antes de marcar como publicada"
+      icon="ClipboardCheck"
+    >
+      <div actions>
+        <ui-button variant="secondary" icon="FileText" (clicked)="gerarPdf()">Gerar PDF</ui-button>
+        <ui-button
+          icon="CheckCircle"
+          [disabled]="!validacao()?.valida || publicando()"
+          [loading]="publicando()"
+          (clicked)="publicar()"
+          >{{ publicando() ? 'Publicando…' : 'Confirmar publicação' }}</ui-button
+        >
+      </div>
+    </ui-page-header>
+
+    <div class="rf-rev__grid">
+      <div class="rf-rev__main">
+        <ui-card padding="md">
+          <div class="rf-rev__release-head">
+            <div
+              class="rf-rev__prod-badge"
+              [style.background]="release()!.produtoCor + '18'"
+              [style.color]="release()!.produtoCor"
+            >
+              {{ release()!.produtoSigla }}
+            </div>
+            <code class="rf-rev__versao">{{ release()!.versao }}</code>
+            <h2 class="rf-rev__titulo">{{ release()!.titulo }}</h2>
+          </div>
+
+          @if (release()!.resumo) {
+            <p class="rf-rev__resumo">{{ release()!.resumo }}</p>
+          }
+
+          @if (itens().length === 0) {
+            <div class="rf-rev__missing">
+              <lucide-icon name="AlertTriangle" [size]="16" />
+              Nenhum item registrado nesta release
+            </div>
+          } @else {
+            @for (grupo of itensPorCategoria(); track grupo.categoria) {
+              <div class="rf-rev__section">
+                <h3 class="rf-rev__section-title">{{ grupo.label }}</h3>
+                @for (item of grupo.itens; track item.id) {
+                  <div class="rf-rev__item">
+                    <span class="rf-rev__item-titulo">{{ item.titulo }}</span>
+                    @if (item.descricao) {
+                      <p class="rf-rev__item-desc">{{ item.descricao }}</p>
+                    }
+                    @if (item.ticket) {
+                      <span class="rf-rev__ref-badge">
+                        <lucide-icon name="Ticket" [size]="11" /> {{ item.ticket }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        </ui-card>
+      </div>
+
+      <div class="rf-rev__aside">
+        <ui-card padding="none">
+          <div
+            class="rf-rev__val-header"
+            [class.rf-rev__val-header--ok]="validacao()?.valida"
+            [class.rf-rev__val-header--nok]="!validacao()?.valida"
+          >
+            <lucide-icon [name]="validacao()?.valida ? 'CheckCircle' : 'XCircle'" [size]="16" />
+            <span>{{ validacao()?.valida ? 'Pronto para publicar' : 'Pendências encontradas' }}</span>
+          </div>
+
+          @if (validacao()?.pendencias?.length) {
+            <div class="rf-rev__val-section">
+              <div class="rf-rev__val-section-title rf-rev__val-section-title--danger">
+                <lucide-icon name="XCircle" [size]="13" /> Pendências
+              </div>
+              @for (p of validacao()!.pendencias; track p) {
+                <div class="rf-rev__val-item rf-rev__val-item--danger">
+                  <lucide-icon name="X" [size]="12" /> {{ p }}
+                </div>
+              }
+            </div>
+          }
+
+          @if (validacao()?.alertas?.length) {
+            <div class="rf-rev__val-section">
+              <div class="rf-rev__val-section-title rf-rev__val-section-title--warn">
+                <lucide-icon name="AlertTriangle" [size]="13" /> Alertas
+              </div>
+              @for (a of validacao()!.alertas; track a) {
+                <div class="rf-rev__val-item rf-rev__val-item--warn">
+                  <lucide-icon name="AlertTriangle" [size]="12" /> {{ a }}
+                </div>
+              }
+            </div>
+          }
+
+          <div class="rf-rev__val-footer">
+            <span>Total de itens</span>
+            <strong>{{ itens().length }}</strong>
+          </div>
+        </ui-card>
+
+        <ui-card padding="md">
+          <h3 class="rf-rev__info-title">Dados da release</h3>
+          <div class="rf-rev__info-grid">
+            <div class="rf-rev__info-row">
+              <span>Tipo</span><span>{{ tipoLabels[release()!.tipo] }}</span>
+            </div>
+            @if (release()!.responsavel) {
+              <div class="rf-rev__info-row">
+                <span>Responsável</span><span>{{ release()!.responsavel }}</span>
+              </div>
+            }
+            @if (release()!.dataPrevista) {
+              <div class="rf-rev__info-row">
+                <span>Data prevista</span><span>{{ release()!.dataPrevista | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            }
+          </div>
+        </ui-card>
+
+        <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/releases', release()!.id]"
+          >Voltar para a release</ui-button
+        >
+      </div>
+    </div>
+  </div>
+}

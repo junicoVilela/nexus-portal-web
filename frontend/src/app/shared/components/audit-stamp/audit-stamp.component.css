@@ -1,0 +1,13 @@
+:host {
+  display: grid;
+  gap: 3px;
+}
+
+strong {
+  color: inherit;
+}
+
+small {
+  color: var(--muted, #667085);
+  font-size: 12px;
+}

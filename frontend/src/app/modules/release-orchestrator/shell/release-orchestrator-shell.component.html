@@ -1,0 +1,27 @@
+<div class="rf-shell">
+  <aside class="rf-shell__side" aria-label="Release Orchestrator">
+    <div class="rf-shell__brand">
+      <span class="rf-shell__brand-icon"><lucide-icon name="Tag" /></span>
+      <div class="rf-shell__brand-text">
+        <span class="rf-shell__brand-name">Release Orchestrator</span>
+        <span class="rf-shell__brand-sub">Gestão de releases</span>
+      </div>
+    </div>
+    <nav class="rf-shell__nav">
+      @for (item of navItems(); track item.route.join('/')) {
+        <a
+          class="rf-shell__nav-link"
+          [routerLink]="item.route"
+          routerLinkActive="rf-shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        >
+          <lucide-icon [name]="item.icon" class="rf-shell__nav-icon" />
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+  <main class="rf-shell__main">
+    <router-outlet />
+  </main>
+</div>

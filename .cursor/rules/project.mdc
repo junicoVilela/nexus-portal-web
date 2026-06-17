@@ -1,0 +1,28 @@
+---
+description: Padrões do projeto Softon Portal Web
+alwaysApply: true
+---
+
+# Softon Portal Web
+
+Frontend Angular 21+ / TypeScript / PrimeNG.
+
+Toda a documentação de padrões está centralizada em `.ai/`. Consulte antes de gerar código:
+
+## Padrões obrigatórios
+
+- `.ai/project/FRONTEND_ARCHITECTURE.md` — estrutura de pastas, core/shared/modules, rotas, aliases
+- `.ai/project/FRONTEND_STANDARDS.md` — nomenclatura, components, services, forms, rotas
+- `.ai/project/UI_UX_STANDARDS.md` — layout, tabelas, formulários, badges
+- `.ai/project/API_INTEGRATION.md` — prefixos API, services Angular, JWT, paginação
+
+## Specs por módulo
+
+- `.ai/modules/` — specs de cada módulo (docflow, releases, auth, etc.)
+- `docs/release-orchestrator/` — spec técnica do Release Orchestrator (endpoints, DTOs)
+- `docs/release-orchestrator/` — spec funcional das telas
+
+## Prompts e exemplos
+
+- `.ai/prompts/` — prompts para criar feature, page, form, service
+- `.ai/examples/` — exemplo de estrutura de feature

@@ -1,0 +1,196 @@
+.rf-rel__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.rf-rel__search {
+  flex: 1;
+  min-width: 200px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  transition: border-color var(--motion-default);
+}
+.rf-rel__search:focus {
+  border-color: var(--accent);
+}
+.rf-rel__search::placeholder {
+  color: var(--text-muted);
+}
+.rf-rel__select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  cursor: pointer;
+}
+.rf-rel__select:focus {
+  border-color: var(--accent);
+}
+.rf-rel__filters--avancados {
+  margin-top: -4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  align-items: flex-end;
+  gap: 16px;
+}
+.rf-rel__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rf-rel__filter-label {
+  font: 600 11.5px var(--font-body);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.rf-rel__date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rf-rel__date {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13px var(--font-body);
+  outline: none;
+}
+.rf-rel__date:focus {
+  border-color: var(--accent);
+}
+.rf-rel__date-sep {
+  font: 500 12.5px var(--font-body);
+  color: var(--text-muted);
+}
+
+.rf-rel__alert {
+  margin: 0 20px 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font: 500 13px var(--font-body);
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.rf-rel__table-wrap {
+  overflow-x: auto;
+}
+.rf-rel__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.rf-rel__th--check,
+.rf-rel__td--check {
+  width: 32px;
+  padding: 0 4px;
+  text-align: center;
+}
+.rf-rel__row--selected .rf-rel__td {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.rf-rel__th {
+  background: var(--surface-2);
+  padding: 9px 14px;
+  text-align: left;
+  font: 700 11px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.rf-rel__th--center {
+  text-align: center;
+}
+.rf-rel__th--actions {
+  text-align: right;
+}
+.rf-rel__td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+  font: 400 13.5px var(--font-body);
+}
+.rf-rel__td--mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.rf-rel__td--titulo {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rf-rel__td--muted {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.rf-rel__td--center {
+  text-align: center;
+}
+.rf-rel__td--actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.rf-rel__row:hover .rf-rel__td {
+  background: var(--surface-2);
+}
+.rf-rel__row:last-child .rf-rel__td {
+  border-bottom: none;
+}
+.rf-rel__row-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.rf-rel__prod-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font: 700 11.5px/1 var(--font-mono);
+  letter-spacing: 0.03em;
+  min-width: 40px;
+  text-align: center;
+}
+.rf-rel__tipo {
+  font: 500 12px var(--font-body);
+  color: var(--text-muted);
+}
+.rf-rel__titulo-link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+.rf-rel__titulo-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.rf-rel__pagination {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}

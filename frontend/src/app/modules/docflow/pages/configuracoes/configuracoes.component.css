@@ -1,0 +1,82 @@
+.config {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.config__msg {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font: 500 13px var(--font-body);
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+}
+.config__msg--err {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.config__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: center;
+}
+.config__col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.config__title {
+  font: 700 15px/1.2 var(--font-display);
+  color: var(--text);
+}
+.config__desc {
+  font: 500 13px/1.5 var(--font-body);
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.config__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.config__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+  padding: 16px;
+}
+.config__preview img {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+}
+.config__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font: 500 13px var(--font-body);
+}
+.config__placeholder lucide-icon {
+  width: 28px;
+  height: 28px;
+}
+
+@media (max-width: 900px) {
+  .config__row {
+    grid-template-columns: 1fr;
+  }
+  .config {
+    padding: 18px;
+  }
+}

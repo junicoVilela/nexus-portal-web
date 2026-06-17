@@ -1,0 +1,27 @@
+@if (svc.isOpen()) {
+  <div class="ui-palette__backdrop" (click)="onBackdrop($event)">
+    <div class="ui-palette" role="dialog" aria-modal="true" aria-label="Paleta de comandos">
+      <div class="ui-palette__search">
+        <lucide-icon name="Search" class="ui-palette__search-ico" />
+        <input
+          autofocus
+          type="search"
+          placeholder="Para onde você quer ir?"
+          [value]="svc.query()"
+          (input)="onQuery($event)"
+        />
+        <kbd>esc</kbd>
+      </div>
+      <ul class="ui-palette__list">
+        @for (cmd of svc.results(); track cmd.id) {
+          <li class="ui-palette__item" (click)="run(cmd)">
+            <span class="ui-palette__label">{{ cmd.label }}</span>
+            <span class="ui-palette__group">{{ cmd.group }}</span>
+          </li>
+        } @empty {
+          <li class="ui-palette__empty">Nenhum comando.</li>
+        }
+      </ul>
+    </div>
+  </div>
+}

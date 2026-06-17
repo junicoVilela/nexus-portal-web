@@ -1,0 +1,7 @@
+<span [class]="'ui-avatar ui-avatar--' + size() + (gradient() ? ' ui-avatar--grad' : '')" [attr.aria-label]="name()">
+  @if (src()) {
+    <img [src]="src()!" [alt]="name()" />
+  } @else {
+    <span class="ui-avatar__initials">{{ initials() }}</span>
+  }
+</span>

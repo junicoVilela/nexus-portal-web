@@ -1,0 +1,27 @@
+:root {
+  --motion-fast: 120ms;
+  --motion-default: 150ms;
+  --motion-slow: 200ms;
+  --motion-slower: 240ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-default: 0ms;
+    --motion-slow: 0ms;
+    --motion-slower: 0ms;
+  }
+  /* Neutraliza animações declaradas em keyframes / segundos hardcoded.
+     Mantém o resultado final visível, apenas remove o movimento. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

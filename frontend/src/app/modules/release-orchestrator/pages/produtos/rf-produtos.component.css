@@ -1,0 +1,312 @@
+.rf-prod {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 32px;
+}
+.rf-prod__filter {
+  display: flex;
+}
+.rf-prod__search {
+  max-width: 320px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  width: 100%;
+}
+.rf-prod__search:focus {
+  border-color: var(--accent);
+}
+.rf-prod__search::placeholder {
+  color: var(--text-muted);
+}
+
+.rf-prod__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font: 400 13.5px var(--font-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.rf-prod__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.rf-prod__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--motion-default);
+}
+.rf-prod__card:hover {
+  box-shadow: var(--shadow-xs);
+}
+.rf-prod__card--inativo {
+  opacity: 0.65;
+}
+.rf-prod__color-bar {
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.rf-prod__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+.rf-prod__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.rf-prod__header-end {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.rf-prod__sigla {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: 0.05em;
+}
+.rf-prod__nome {
+  font: 700 14px/1.35 var(--font-display);
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.rf-prod__desc {
+  font: 400 12.5px/1.45 var(--font-body);
+  color: var(--text-muted);
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.9em;
+}
+.rf-prod__stats {
+  font: 400 12px/1 var(--font-body);
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.rf-prod__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.rf-prod__cor-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  align-items: center;
+}
+.rf-prod__cor-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  transition:
+    transform var(--motion-default),
+    border-color var(--motion-default);
+}
+.rf-prod__cor-btn:hover {
+  transform: scale(1.15);
+}
+.rf-prod__cor-btn--selected {
+  border-color: var(--text);
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+.rf-prod__cor-custom {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 1px;
+  background: none;
+}
+.rf-prod__cor-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.rf-prod__cor-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.rf-prod__cor-preview span {
+  font: 400 12px/1 var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ─── Shared modal styles (used in this file and others) ─── */
+.rf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+.rf-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 500px;
+}
+.rf-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.rf-modal__title {
+  font: 700 15px/1.2 var(--font-display);
+  color: var(--text);
+  margin: 0;
+}
+.rf-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.rf-modal__close:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.rf-modal__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rf-modal__row {
+  display: flex;
+  gap: 12px;
+}
+.rf-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+.rf-modal__label {
+  font: 600 12.5px/1 var(--font-body);
+  color: var(--text);
+}
+.rf-modal__req {
+  color: var(--danger);
+  margin-left: 2px;
+}
+.rf-modal__input,
+.rf-modal__select,
+.rf-modal__textarea {
+  padding: 8px 12px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  transition: border-color var(--motion-default);
+  width: 100%;
+}
+.rf-modal__input:focus,
+.rf-modal__select:focus,
+.rf-modal__textarea:focus {
+  border-color: var(--accent);
+}
+.rf-modal__input--err,
+.rf-modal__select--err {
+  border-color: var(--danger);
+}
+.rf-modal__textarea {
+  height: auto;
+  resize: vertical;
+  padding-top: 10px;
+}
+.rf-modal__err {
+  font: 400 12px/1 var(--font-body);
+  color: var(--danger);
+}
+.rf-modal__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font: 500 13px var(--font-body);
+  color: var(--text);
+}
+.rf-modal__check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+}
+.rf-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .rf-prod {
+    padding: 18px;
+  }
+  .rf-modal {
+    width: 100%;
+  }
+}

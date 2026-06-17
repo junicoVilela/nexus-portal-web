@@ -1,0 +1,81 @@
+<ui-list-page
+  title="Projetos"
+  subtitle="Organize as frentes principais do manual e mantenha a base editorial segmentada."
+  icon="FolderOpen"
+  [isEmpty]="totalProjetos() === 0"
+  emptyTitle="Nenhum projeto encontrado"
+  emptyDescription="Crie o primeiro projeto para organizar o manual."
+  emptyIllustration="document"
+  emptyIcon="FolderOpen"
+>
+  <div actions>
+    <ui-button icon="Plus" (clicked)="novo()">Novo projeto</ui-button>
+  </div>
+
+  <div filters class="projetos__filters">
+    <input
+      class="projetos__search"
+      [value]="filtroNome"
+      (input)="atualizarFiltro($event)"
+      placeholder="Buscar por nome..."
+    />
+    <span class="projetos__count">{{ totalProjetos() }} {{ totalProjetos() === 1 ? 'projeto' : 'projetos' }}</span>
+  </div>
+
+  <table class="projetos__table">
+    <thead>
+      <tr>
+        <th class="projetos__th projetos__th--sort" (click)="ordenar('nome')">
+          Nome <span>{{ indicacaoOrdenacao('nome') }}</span>
+        </th>
+        <th class="projetos__th projetos__th--sort" (click)="ordenar('slug')">
+          Slug <span>{{ indicacaoOrdenacao('slug') }}</span>
+        </th>
+        <th class="projetos__th">Descrição</th>
+        <th class="projetos__th projetos__th--sort" (click)="ordenar('ativo')">
+          Status <span>{{ indicacaoOrdenacao('ativo') }}</span>
+        </th>
+        <th class="projetos__th projetos__th--sort" (click)="ordenar('createdAt')">
+          Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
+        </th>
+        <th class="projetos__th projetos__th--sort" (click)="ordenar('updatedAt')">
+          Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
+        </th>
+        <th class="projetos__th"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (projeto of projetos(); track projeto.id) {
+        <tr class="projetos__row">
+          <td class="projetos__td">
+            <strong>{{ projeto.nome }}</strong>
+          </td>
+          <td class="projetos__td projetos__td--mono">{{ projeto.slug }}</td>
+          <td class="projetos__td projetos__td--muted">{{ projeto.descricao || '—' }}</td>
+          <td class="projetos__td">
+            <ui-badge [tone]="projeto.ativo ? 'success' : 'neutral'" [dot]="true">{{
+              projeto.ativo ? 'Ativo' : 'Inativo'
+            }}</ui-badge>
+          </td>
+          <td class="projetos__td"><app-audit-stamp [user]="projeto.createdBy" [date]="projeto.createdAt" /></td>
+          <td class="projetos__td">
+            <app-audit-stamp
+              [user]="projeto.updatedBy || projeto.createdBy"
+              [date]="projeto.updatedAt || projeto.createdAt"
+            />
+          </td>
+          <td class="projetos__td projetos__td--actions">
+            <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(projeto)">Editar</ui-button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <app-table-pagination
+    [totalItems]="totalProjetos()"
+    [page]="projetosPage()"
+    [pageSize]="projetosPageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarTamanhoPagina($event)"
+  />
+</ui-list-page>

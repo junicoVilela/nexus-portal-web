@@ -1,0 +1,21 @@
+<section class="pf-attachments">
+  <div class="pf-attachments-head">
+    <div>
+      <h3 class="pf-attachments-title">Anexos</h3>
+      <p class="pf-attachments-sub">{{ anexos().length }} imagens anexadas</p>
+    </div>
+    <ui-button variant="ghost" size="sm" (clicked)="anexarSolicitado.emit()">Anexar fotos</ui-button>
+  </div>
+  <div class="pf-attachment-grid">
+    @for (anexo of anexos(); track anexo.id) {
+      <article class="pf-attachment">
+        <img [src]="anexoUrl()(anexo)" [alt]="anexo.nomeOriginal" class="pf-attachment-img" />
+        <strong class="pf-attachment-name">{{ anexo.nomeOriginal }}</strong>
+        <small class="pf-attachment-size">{{ anexo.tamanhoBytes / 1024 | number: '1.0-0' }} KB</small>
+        <ui-button variant="danger" size="sm" (clicked)="excluirSolicitado.emit(anexo)">Remover</ui-button>
+      </article>
+    } @empty {
+      <div class="pf-attachments-empty">Nenhuma imagem anexada.</div>
+    }
+  </div>
+</section>

@@ -1,0 +1,24 @@
+<div
+  class="ui-confirm"
+  [class.ui-confirm--danger]="data.variant === 'danger'"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="'ui-confirm-title'"
+  [attr.aria-describedby]="'ui-confirm-msg'"
+>
+  @if (data.icon) {
+    <div class="ui-confirm__icon">
+      <lucide-icon [name]="data.icon" />
+    </div>
+  }
+  <div class="ui-confirm__body">
+    <h3 id="ui-confirm-title" class="ui-confirm__title">{{ data.title }}</h3>
+    <p id="ui-confirm-msg" class="ui-confirm__message">{{ data.message }}</p>
+  </div>
+  <div class="ui-confirm__actions">
+    <ui-button variant="secondary" (clicked)="reject()">{{ data.rejectLabel ?? 'Cancelar' }}</ui-button>
+    <ui-button [variant]="data.variant === 'danger' ? 'danger' : 'primary'" (clicked)="accept()">{{
+      data.acceptLabel ?? 'Confirmar'
+    }}</ui-button>
+  </div>
+</div>

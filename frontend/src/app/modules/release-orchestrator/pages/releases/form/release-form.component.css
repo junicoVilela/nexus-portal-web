@@ -1,0 +1,118 @@
+.df-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 32px;
+}
+.df-form__loading {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-muted);
+  font: 400 13.5px var(--font-body);
+}
+.df-form__section-title {
+  font: 700 13.5px/1 var(--font-display);
+  color: var(--text);
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.df-form__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+.df-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.df-form__field--3 {
+  grid-column: span 3;
+}
+.df-form__field--4 {
+  grid-column: span 4;
+}
+.df-form__field--5 {
+  grid-column: span 5;
+}
+.df-form__field--12 {
+  grid-column: span 12;
+}
+.df-form__label {
+  font: 600 12.5px/1 var(--font-body);
+  color: var(--text);
+}
+.df-form__req {
+  color: var(--danger);
+  margin-left: 2px;
+}
+.df-form__input,
+.df-form__select,
+.df-form__textarea {
+  padding: 8px 12px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  transition: border-color var(--motion-default);
+  width: 100%;
+}
+.df-form__input:focus,
+.df-form__select:focus,
+.df-form__textarea:focus {
+  border-color: var(--accent);
+}
+.df-form__input--err,
+.df-form__select--err {
+  border-color: var(--danger);
+}
+.df-form__textarea {
+  height: auto;
+  resize: vertical;
+  padding-top: 10px;
+}
+.df-form__select {
+  cursor: pointer;
+}
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.df-form__hint {
+  font: 400 12px/1.4 var(--font-body);
+  color: var(--text-muted);
+}
+.df-form__field-msg {
+  font: 400 12px/1 var(--font-body);
+  color: var(--danger);
+}
+.df-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+.df-form__autosave {
+  margin-right: auto;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .df-form {
+    padding: 18px;
+  }
+  .df-form__grid {
+    grid-template-columns: 1fr;
+  }
+  .df-form__field--3,
+  .df-form__field--4,
+  .df-form__field--5 {
+    grid-column: span 1;
+  }
+}

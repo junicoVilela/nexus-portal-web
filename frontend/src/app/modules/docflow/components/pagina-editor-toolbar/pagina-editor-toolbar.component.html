@@ -1,0 +1,55 @@
+<div class="pf-toolbar" aria-label="Ferramentas do editor">
+  <div class="pf-toolbar-block">
+    <span class="pf-toolbar-label">Estrutura</span>
+    <div class="pf-chips">
+      @for (atalho of atalhosEstrutura(); track atalho.label) {
+        <button type="button" class="pf-chip" (click)="atalhoSelecionado.emit(atalho)">{{ atalho.label }}</button>
+      }
+    </div>
+  </div>
+  <div class="pf-toolbar-block">
+    <span class="pf-toolbar-label">Blocos úteis</span>
+    <div class="pf-chips">
+      @for (atalho of atalhosBlocos(); track atalho.label) {
+        <button type="button" class="pf-chip" (click)="atalhoSelecionado.emit(atalho)">{{ atalho.label }}</button>
+      }
+    </div>
+  </div>
+  <div class="pf-toolbar-block">
+    <span class="pf-toolbar-label">Visualização</span>
+    <div class="pf-mode-switch">
+      <button
+        type="button"
+        class="pf-mode-btn"
+        [class.pf-mode-btn--active]="modo() === 'rico'"
+        (click)="modoChange.emit('rico')"
+      >
+        Rico
+      </button>
+      <button
+        type="button"
+        class="pf-mode-btn"
+        [class.pf-mode-btn--active]="modo() === 'codigo'"
+        (click)="modoChange.emit('codigo')"
+      >
+        Código
+      </button>
+      <button
+        type="button"
+        class="pf-mode-btn"
+        [class.pf-mode-btn--active]="modo() === 'split'"
+        (click)="modoChange.emit('split')"
+      >
+        Dividido
+      </button>
+      <button
+        type="button"
+        class="pf-mode-btn"
+        [class.pf-mode-btn--active]="modo() === 'preview'"
+        (click)="modoChange.emit('preview')"
+      >
+        Prévia
+      </button>
+    </div>
+  </div>
+</div>

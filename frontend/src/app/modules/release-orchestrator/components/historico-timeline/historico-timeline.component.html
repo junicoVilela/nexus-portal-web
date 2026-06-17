@@ -1,0 +1,26 @@
+<ol class="rf-timeline">
+  @for (h of historico(); track h.id) {
+    <li class="rf-timeline__item rf-timeline__item--{{ acaoTons[h.acao] }}">
+      <div class="rf-timeline__dot">
+        <lucide-icon [name]="acaoIconesLucide[h.acao]" [size]="13" />
+      </div>
+      <div class="rf-timeline__card">
+        <div class="rf-timeline__head">
+          <strong class="rf-timeline__title">{{ acaoLabels[h.acao] }}</strong>
+          <time class="rf-timeline__time">{{ h.createdAt | date: 'dd/MM/yyyy HH:mm' }}</time>
+        </div>
+        @if (h.descricao) {
+          <p class="rf-timeline__desc">{{ h.descricao }}</p>
+        }
+        @if (h.statusAnterior && h.statusNovo) {
+          <div class="rf-timeline__status">
+            <ui-badge [tone]="getStatusTone(h.statusAnterior)">{{ getStatusLabel(h.statusAnterior) }}</ui-badge>
+            <lucide-icon name="ArrowRight" [size]="12" />
+            <ui-badge [tone]="getStatusTone(h.statusNovo)">{{ getStatusLabel(h.statusNovo) }}</ui-badge>
+          </div>
+        }
+        <span class="rf-timeline__user">por {{ h.usuario }}</span>
+      </div>
+    </li>
+  }
+</ol>

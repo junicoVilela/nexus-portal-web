@@ -1,0 +1,55 @@
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font: 500 12px/1 var(--font-body);
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.ui-chip--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.ui-chip--success {
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 30%, transparent);
+}
+.ui-chip--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 30%, transparent);
+}
+.ui-chip--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+.ui-chip__remove {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+  border-radius: 50%;
+  transition:
+    opacity var(--motion-default) var(--ease-out),
+    background-color var(--motion-default) var(--ease-out);
+}
+.ui-chip__remove:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+.ui-chip__remove lucide-icon {
+  width: 10px;
+  height: 10px;
+}

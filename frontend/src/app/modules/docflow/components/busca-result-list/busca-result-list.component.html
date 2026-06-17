@@ -1,0 +1,18 @@
+<ui-card padding="md">
+  <h3 class="busca-rl__title">{{ titulo() }}</h3>
+  <p class="busca-rl__sub">{{ subtitulo() }}</p>
+  @if (items().length === 0) {
+    <p class="busca-rl__empty">{{ emptyLabel() }}</p>
+  } @else {
+    <div class="busca-rl__list">
+      @for (item of items(); track item.id) {
+        <button type="button" class="busca-rl__row" (click)="abrir.emit(item)">
+          <strong [innerHTML]="primaryFn()(item) | highlight: termo()"></strong>
+          @if (secondaryFn()(item); as sec) {
+            <small [innerHTML]="sec | highlight: termo()"></small>
+          }
+        </button>
+      }
+    </div>
+  }
+</ui-card>

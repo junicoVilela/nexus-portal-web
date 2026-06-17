@@ -1,0 +1,152 @@
+.login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg);
+}
+
+.login__aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  color: #fff;
+  overflow: hidden;
+  background: linear-gradient(155deg, #0f1226 0%, #1e2a5e 50%, #4f46e5 100%);
+}
+.login__aside-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(124, 58, 237, 0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(34, 211, 238, 0.25) 0%, transparent 55%);
+  animation: login-bg-pulse 18s ease-in-out infinite;
+}
+@keyframes login-bg-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.login__aside-brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.login__brand-mark {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font: 800 18px var(--font-display);
+  letter-spacing: -0.04em;
+  backdrop-filter: blur(8px);
+}
+.login__brand-name {
+  font: 700 18px/1 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.login__aside-content {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+}
+.login__aside-content h1 {
+  font: 700 36px/1.1 var(--font-display);
+  letter-spacing: -0.04em;
+  margin-bottom: 14px;
+  color: #fff;
+}
+.login__aside-content p {
+  font: 500 15px/1.6 var(--font-body);
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 380px;
+}
+.login__features {
+  list-style: none;
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.login__features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 13px/1 var(--font-body);
+  color: rgba(255, 255, 255, 0.78);
+}
+.login__features lucide-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan-400);
+}
+
+.login__aside-footer {
+  position: relative;
+  z-index: 1;
+  font: 500 12px/1 var(--font-body);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.login__form-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: var(--surface);
+}
+.login__form-box {
+  width: 100%;
+  max-width: 380px;
+}
+.login__form-box h2 {
+  font: 700 24px/1.15 var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.login__sub {
+  font: 500 13.5px/1.5 var(--font-body);
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+.login__server-error {
+  background: var(--danger-soft);
+  color: var(--danger);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  font: 500 12.5px var(--font-body);
+  margin-bottom: 16px;
+}
+
+.login__form-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .login__aside {
+    display: none;
+  }
+}

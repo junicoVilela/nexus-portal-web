@@ -1,0 +1,57 @@
+.ui-card {
+  position: relative;
+  isolation: isolate;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition:
+    border-color var(--motion-default) var(--ease-out),
+    box-shadow var(--motion-default) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+.ui-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  opacity: 0;
+  transition: opacity var(--motion-slow) var(--ease-out);
+  pointer-events: none;
+  z-index: -1;
+}
+[data-theme='dark'] .ui-card::before {
+  opacity: 1;
+}
+[data-theme='dark'] .ui-card {
+  backdrop-filter: blur(8px);
+  box-shadow:
+    var(--shadow-xs),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+[data-theme='dark'] .ui-card--interactive:hover {
+  box-shadow: var(--shadow-md), var(--glow);
+}
+
+.ui-card--pad-none {
+  padding: 0;
+}
+.ui-card--pad-sm {
+  padding: var(--space-3);
+}
+.ui-card--pad-md {
+  padding: var(--space-5);
+}
+.ui-card--pad-lg {
+  padding: var(--space-6);
+}
+
+.ui-card--interactive {
+  cursor: pointer;
+}
+.ui-card--interactive:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}

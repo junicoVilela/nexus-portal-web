@@ -1,0 +1,48 @@
+<div class="home">
+  <header class="home__hero">
+    <h1>{{ greeting() }}, {{ userName() }}.</h1>
+    <p>Você tem tudo o que precisa para tocar o dia abaixo. Use ⌘K para pular direto ao que quiser.</p>
+  </header>
+
+  <section class="home__kpis" aria-label="Indicadores do portal">
+    @for (kpi of kpis; track kpi.label) {
+      <ui-card padding="md">
+        <div class="home__kpi">
+          <span class="home__kpi-label">{{ kpi.label }}</span>
+          <span class="home__kpi-value">{{ kpi.value }}</span>
+          @if (kpi.trend) {
+            <span class="home__kpi-trend" [attr.data-dir]="kpi.trend.dir">{{ kpi.trend.text }}</span>
+          }
+        </div>
+      </ui-card>
+    }
+  </section>
+
+  <section class="home__modules">
+    <div class="home__section-title">Seus módulos</div>
+    <div class="home__module-grid">
+      @for (m of modules; track m.id) {
+        <ui-card padding="md" [interactive]="m.available">
+          <a
+            class="home__module"
+            [class.home__module--disabled]="!m.available"
+            (click)="onModule(m)"
+            [attr.href]="m.available ? m.route : null"
+          >
+            <span class="home__module-ico"><lucide-icon [name]="lucideFor(m)" /></span>
+            <span class="home__module-body">
+              <span class="home__module-name">{{ m.label }}</span>
+              <span class="home__module-desc">{{ m.description }}</span>
+              @if (!m.available) {
+                <ui-badge tone="neutral">Em breve</ui-badge>
+              }
+            </span>
+            @if (m.available) {
+              <lucide-icon name="ArrowRight" class="home__module-arrow" />
+            }
+          </a>
+        </ui-card>
+      }
+    </div>
+  </section>
+</div>

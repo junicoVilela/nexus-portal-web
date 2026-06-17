@@ -1,0 +1,56 @@
+<div class="df-form">
+  <ui-page-header
+    [title]="editId() ? 'Editar módulo' : 'Novo módulo'"
+    [subtitle]="
+      moduloAtual()
+        ? 'Criado por ' +
+          (moduloAtual()!.createdBy || 'system') +
+          ' · Atualizado por ' +
+          (moduloAtual()!.updatedBy || moduloAtual()!.createdBy || 'system')
+        : null
+    "
+    icon="Layers"
+  />
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+    <ui-card padding="lg">
+      <div class="df-form__grid">
+        <div class="df-form__field df-form__field--4">
+          <label class="df-form__label">Nome</label>
+          <input class="df-form__input" formControlName="nome" />
+        </div>
+        <div class="df-form__field df-form__field--4">
+          <label class="df-form__label">Slug</label>
+          <input class="df-form__input" formControlName="slug" placeholder="gerado pelo backend se vazio" />
+        </div>
+        <div class="df-form__field df-form__field--3">
+          <label class="df-form__label">Ordem</label>
+          <input class="df-form__input" type="number" formControlName="ordem" />
+        </div>
+        <div class="df-form__field df-form__field--6">
+          <label class="df-form__label">Projeto</label>
+          <select class="df-form__select" formControlName="projetoId">
+            <option value="">Selecione</option>
+            @for (projeto of projetos(); track projeto.id) {
+              <option [value]="projeto.id">{{ projeto.nome }}</option>
+            }
+          </select>
+        </div>
+        <div class="df-form__field df-form__field--12">
+          <label class="df-form__label">Descrição</label>
+          <textarea class="df-form__textarea" formControlName="descricao"></textarea>
+        </div>
+        <div class="df-form__field df-form__field--3">
+          <label class="df-form__check">
+            <input type="checkbox" formControlName="ativo" />
+            <span>Ativo</span>
+          </label>
+        </div>
+      </div>
+    </ui-card>
+    <div class="df-form__actions">
+      <ui-button variant="ghost" type="button" [disabled]="saving()" (clicked)="voltar()">Cancelar</ui-button>
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">Salvar</ui-button>
+    </div>
+  </form>
+</div>

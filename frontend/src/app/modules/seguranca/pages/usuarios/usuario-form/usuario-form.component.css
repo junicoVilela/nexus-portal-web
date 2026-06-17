@@ -1,0 +1,128 @@
+.usuario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 18px;
+  }
+}
+
+.usuario-form__loading {
+  padding: 2rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.usuario-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.usuario-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.usuario-form__field--switch {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usuario-form__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.usuario-form__label em {
+  color: var(--danger);
+  font-style: normal;
+}
+
+.usuario-form__input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.usuario-form__error {
+  color: var(--danger);
+  font-size: 0.75rem;
+}
+
+.usuario-form__hint {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.usuario-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.usuario-form__section-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.usuario-form__section-sub {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.usuario-form__grupos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.5rem;
+}
+
+.usuario-form__grupo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.usuario-form__grupo:hover {
+  background: var(--surface-2);
+}
+
+.usuario-form__grupo-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario-form__grupo-info small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.usuario-form__empty {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.usuario-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .usuario-form__grid {
+    grid-template-columns: 1fr;
+  }
+}

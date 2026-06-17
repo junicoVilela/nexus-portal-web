@@ -1,0 +1,38 @@
+<div class="config">
+  <ui-page-header title="Configurações" subtitle="Preferências globais do portal." icon="Settings" />
+
+  @if (message()) {
+    <div class="config__msg" [class.config__msg--err]="isError()" role="status">{{ message() }}</div>
+  }
+
+  <ui-card padding="lg">
+    <div class="config__row">
+      <div class="config__col">
+        <h3 class="config__title">Logo da empresa</h3>
+        <p class="config__desc">
+          Exibido no topo do portal e na tela de login. PNG ou SVG, fundo transparente, máximo 256 KB.
+        </p>
+        <div class="config__actions">
+          <label class="config__upload">
+            <input type="file" accept="image/*" (change)="onLogoEmpresaSelected($event)" hidden #file />
+            <ui-button icon="Upload" [loading]="uploadingLogo()" (clicked)="file.click()">
+              {{ logoEmpresaUrl() ? 'Trocar logo' : 'Enviar logo' }}
+            </ui-button>
+          </label>
+          @if (logoEmpresaUrl()) {
+            <ui-button variant="danger" icon="Trash2" [loading]="removingLogo()" (clicked)="removerLogoEmpresa()"
+              >Remover</ui-button
+            >
+          }
+        </div>
+      </div>
+      <div class="config__preview">
+        @if (logoEmpresaUrl()) {
+          <img [src]="logoEmpresaUrl()" alt="Logo atual" />
+        } @else {
+          <div class="config__placeholder"><lucide-icon name="ImageOff" /><span>Sem logo configurado</span></div>
+        }
+      </div>
+    </div>
+  </ui-card>
+</div>

@@ -1,0 +1,75 @@
+.ui-confirm {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 14px 16px;
+  padding: 22px 22px 18px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 320px;
+  max-width: 460px;
+  border: 1px solid var(--border);
+}
+
+.ui-confirm__icon {
+  grid-row: 1;
+  grid-column: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.ui-confirm--danger .ui-confirm__icon {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.ui-confirm__icon lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  line-height: 0;
+}
+
+.ui-confirm__icon lucide-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-confirm__body {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.ui-confirm__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+
+.ui-confirm__message {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.ui-confirm__actions {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}

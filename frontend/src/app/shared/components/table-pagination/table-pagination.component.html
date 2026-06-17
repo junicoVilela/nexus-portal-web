@@ -1,0 +1,78 @@
+<div class="pagination-bar">
+  <div class="pagination-summary">
+    @if (totalItems() === 0) {
+      <span class="pagination-empty">Nenhum registro encontrado</span>
+    } @else {
+      <span>
+        <strong>{{ startItem() }}–{{ endItem() }}</strong>
+        <span class="pagination-total"> de {{ totalItems() }} registros</span>
+      </span>
+    }
+  </div>
+
+  <div class="pagination-controls">
+    <label class="pagination-size-label">
+      <span>Por página</span>
+      <select [value]="pageSize()" (change)="onPageSizeChange($event)">
+        @for (option of pageSizeOptions(); track option) {
+          <option [value]="option">{{ option }}</option>
+        }
+      </select>
+    </label>
+
+    @if (totalPages() > 1) {
+      <div class="pagination-nav">
+        <button
+          type="button"
+          class="page-nav-btn"
+          (click)="goTo(1)"
+          [disabled]="currentPage() === 1"
+          title="Primeira página"
+        >
+          <lucide-icon name="chevrons-left" class="page-nav-icon" />
+        </button>
+        <button
+          type="button"
+          class="page-nav-btn"
+          (click)="goTo(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
+          title="Página anterior"
+        >
+          <lucide-icon name="chevron-left" class="page-nav-icon" />
+        </button>
+
+        @for (item of visiblePages(); track item) {
+          <button
+            type="button"
+            class="page-chip"
+            [class.active]="item === currentPage()"
+            [attr.aria-label]="'Página ' + item"
+            [attr.aria-current]="item === currentPage() ? 'page' : null"
+            (click)="goTo(item)"
+          >
+            {{ item }}
+          </button>
+        }
+
+        <button
+          type="button"
+          class="page-nav-btn"
+          (click)="goTo(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
+          title="Próxima página"
+        >
+          <lucide-icon name="chevron-right" class="page-nav-icon" />
+        </button>
+        <button
+          type="button"
+          class="page-nav-btn"
+          (click)="goTo(totalPages())"
+          [disabled]="currentPage() === totalPages()"
+          title="Última página"
+        >
+          <lucide-icon name="chevrons-right" class="page-nav-icon" />
+        </button>
+      </div>
+    }
+  </div>
+</div>

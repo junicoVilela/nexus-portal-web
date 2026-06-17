@@ -1,0 +1,152 @@
+<div class="rf-prod">
+  <ui-page-header title="Produtos" subtitle="Sistemas e plataformas com releases cadastradas" icon="Package">
+    <div actions>
+      <ui-button icon="Plus" (clicked)="abrirNovo()">Novo produto</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
+  }
+
+  <div class="rf-prod__filter">
+    <input
+      class="rf-prod__search"
+      type="text"
+      placeholder="Buscar por nome ou sigla…"
+      [(ngModel)]="filtroNome"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="salvarFiltro()"
+    />
+  </div>
+
+  @if (loading()) {
+    <div class="rf-prod__grid" aria-busy="true" aria-label="Carregando produtos">
+      <ui-skeleton width="100%" height="120px" />
+      <ui-skeleton width="100%" height="120px" />
+      <ui-skeleton width="100%" height="120px" />
+    </div>
+  } @else if (produtosFiltrados().length === 0) {
+    <ui-empty-state
+      icon="Package"
+      illustration="document"
+      title="Nenhum produto encontrado"
+      description="Cadastre o primeiro produto para começar a emitir releases."
+    >
+      <ui-button icon="Plus" (clicked)="abrirNovo()">Cadastrar produto</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="rf-prod__grid">
+      @for (p of produtosFiltrados(); track p.id) {
+        <div class="rf-prod__card" [class.rf-prod__card--inativo]="!p.ativo">
+          <div class="rf-prod__color-bar" [style.background]="p.cor"></div>
+          <div class="rf-prod__body">
+            <div class="rf-prod__header">
+              <div class="rf-prod__sigla" [style.background]="p.cor + '18'" [style.color]="p.cor">{{ p.sigla }}</div>
+              <div class="rf-prod__header-end">
+                <ui-badge [tone]="p.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                  p.ativo ? 'Ativo' : 'Inativo'
+                }}</ui-badge>
+                @if (excluindoId() === p.id) {
+                  <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(p)" />
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+                } @else {
+                  <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluindoId.set(p.id)" />
+                }
+              </div>
+            </div>
+            <h3 class="rf-prod__nome">{{ p.nome }}</h3>
+            <p class="rf-prod__desc">{{ p.descricao || '—' }}</p>
+            <div class="rf-prod__stats">
+              <lucide-icon name="Tag" [size]="13" />
+              {{ p.totalReleases ?? 0 }} releases
+            </div>
+            <div class="rf-prod__actions">
+              <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(p)">Editar</ui-button>
+              <ui-button variant="ghost" size="sm" [icon]="p.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(p)">
+                {{ p.ativo ? 'Inativar' : 'Ativar' }}
+              </ui-button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <div class="rf-overlay" (click)="fecharForm()">
+    <div class="rf-modal" (click)="$event.stopPropagation()">
+      <div class="rf-modal__header">
+        <h2 class="rf-modal__title">{{ editId() ? 'Editar produto' : 'Novo produto' }}</h2>
+        <button type="button" class="rf-modal__close" aria-label="Fechar modal" (click)="fecharForm()">
+          <lucide-icon name="X" [size]="16" />
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="rf-modal__body">
+        <div class="rf-modal__row">
+          <div class="rf-modal__field u-flex-grow-2">
+            <label class="rf-modal__label">Nome <span class="rf-modal__req">*</span></label>
+            <input
+              class="rf-modal__input"
+              formControlName="nome"
+              placeholder="Ex: DTEC-LD"
+              [class.rf-modal__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="rf-modal__err">Nome é obrigatório</span>
+            }
+          </div>
+          <div class="rf-modal__field u-flex-grow-1">
+            <label class="rf-modal__label">Sigla <span class="rf-modal__req">*</span></label>
+            <input
+              class="rf-modal__input u-uppercase"
+              formControlName="sigla"
+              placeholder="Ex: DTEC-LD"
+              [class.rf-modal__input--err]="fieldError('sigla')"
+            />
+            @if (fieldError('sigla')) {
+              <span class="rf-modal__err">Sigla é obrigatória</span>
+            }
+          </div>
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Descrição</label>
+          <input class="rf-modal__input" formControlName="descricao" placeholder="Descrição do produto" />
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Cor de identificação</label>
+          <div class="rf-prod__cor-picker">
+            @for (cor of presetCores; track cor) {
+              <button
+                type="button"
+                class="rf-prod__cor-btn"
+                [style.background]="cor"
+                [class.rf-prod__cor-btn--selected]="cor === corSelecionada"
+                (click)="escolherCor(cor)"
+              ></button>
+            }
+            <input type="color" formControlName="cor" class="rf-prod__cor-custom" title="Cor personalizada" />
+          </div>
+          <div class="rf-prod__cor-preview">
+            <div class="rf-prod__cor-dot" [style.background]="corSelecionada"></div>
+            <span>{{ corSelecionada }}</span>
+          </div>
+        </div>
+
+        <label class="rf-modal__check">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Produto ativo</span>
+        </label>
+
+        <div class="rf-modal__footer">
+          <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
+          <ui-button type="submit" [loading]="salvando()">Salvar</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,16 @@
+@import '../src/styles/tokens/_primitives.css';
+@import '../src/styles/tokens/_semantic-light.css';
+@import '../src/styles/tokens/_semantic-dark.css';
+@import '../src/styles/tokens/_typography.css';
+@import '../src/styles/tokens/_radii.css';
+@import '../src/styles/tokens/_shadows.css';
+@import '../src/styles/tokens/_motion.css';
+@import '../src/styles/base/reset.css';
+@import '../src/styles/base/elements.css';
+
+body {
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-body);
+  padding: 24px;
+}

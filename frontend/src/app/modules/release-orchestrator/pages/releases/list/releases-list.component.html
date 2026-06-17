@@ -1,0 +1,229 @@
+<ui-list-page
+  title="Releases"
+  subtitle="Gestão completa de versões e publicações"
+  icon="Tag"
+  [loading]="loading()"
+  [isEmpty]="!loading() && releases().length === 0"
+  emptyMessage="Nenhuma release encontrada com os filtros aplicados"
+>
+  <div actions>
+    <ui-button icon="Plus" [routerLink]="['/release-orchestrator/builder']">Nova release</ui-button>
+  </div>
+
+  <div filters class="rf-rel__filters">
+    <input
+      class="rf-rel__search"
+      type="text"
+      placeholder="Buscar por título, versão, produto…"
+      [(ngModel)]="filtros.q"
+      (ngModelChange)="agendarBusca()"
+    />
+
+    <select class="rf-rel__select" [(ngModel)]="filtros.produtoId" (change)="buscar()">
+      <option value="">Todos os produtos</option>
+      @for (p of produtos(); track p.id) {
+        <option [value]="p.id">{{ p.sigla }}</option>
+      }
+    </select>
+
+    <select class="rf-rel__select" [(ngModel)]="filtros.status" (change)="buscar()">
+      <option value="">Todos os status</option>
+      @for (s of todosStatus; track s) {
+        <option [value]="s">{{ statusLabels[s] }}</option>
+      }
+    </select>
+
+    <select class="rf-rel__select" [(ngModel)]="filtros.tipo" (change)="buscar()">
+      <option value="">Todos os tipos</option>
+      <option value="MAJOR">Major</option>
+      <option value="MINOR">Minor</option>
+      <option value="PATCH">Patch</option>
+      <option value="HOTFIX">Hotfix</option>
+      <option value="FEATURE">Feature</option>
+    </select>
+
+    <ui-button
+      variant="ghost"
+      size="sm"
+      [icon]="mostrarFiltrosAvancados() ? 'ChevronUp' : 'SlidersHorizontal'"
+      (clicked)="toggleAvancados()"
+    >
+      {{ mostrarFiltrosAvancados() ? 'Ocultar período' : 'Período' }}
+    </ui-button>
+
+    <ui-filter-presets
+      escopo="release-orchestrator:releases"
+      [filtrosAtuais]="filtros"
+      [filtrosAtivos]="filtrosAtivos()"
+      (presetSelecionado)="aplicarPreset($event)"
+    />
+
+    @if (filtrosAtivos() > 0) {
+      <ui-button variant="ghost" size="sm" icon="X" (clicked)="limparFiltros()">
+        Limpar ({{ filtrosAtivos() }})
+      </ui-button>
+    }
+  </div>
+
+  @if (mostrarFiltrosAvancados()) {
+    <div filters class="rf-rel__filters rf-rel__filters--avancados">
+      <div class="rf-rel__filter-group">
+        <label class="rf-rel__filter-label">Data prevista</label>
+        <div class="rf-rel__date-range">
+          <input
+            type="date"
+            class="rf-rel__date"
+            [(ngModel)]="filtros.dataPrevistaInicio"
+            (change)="buscar()"
+            aria-label="Data prevista início"
+          />
+          <span class="rf-rel__date-sep">até</span>
+          <input
+            type="date"
+            class="rf-rel__date"
+            [(ngModel)]="filtros.dataPrevistaFim"
+            (change)="buscar()"
+            aria-label="Data prevista fim"
+          />
+        </div>
+      </div>
+
+      <div class="rf-rel__filter-group">
+        <label class="rf-rel__filter-label">Data de publicação</label>
+        <div class="rf-rel__date-range">
+          <input
+            type="date"
+            class="rf-rel__date"
+            [(ngModel)]="filtros.dataPublicacaoInicio"
+            (change)="buscar()"
+            aria-label="Data publicação início"
+          />
+          <span class="rf-rel__date-sep">até</span>
+          <input
+            type="date"
+            class="rf-rel__date"
+            [(ngModel)]="filtros.dataPublicacaoFim"
+            (change)="buscar()"
+            aria-label="Data publicação fim"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  <ui-bulk-action-bar [count]="totalSelecionados()" (limpar)="limparSelecao()">
+    @if (podeComparar()) {
+      <ui-button variant="secondary" size="sm" icon="Columns2" (clicked)="compararSelecionados()">Comparar</ui-button>
+    }
+    <ui-button variant="ghost" size="sm" icon="XCircle" (clicked)="cancelarSelecionados()">Cancelar</ui-button>
+    <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluirSelecionados()">Excluir</ui-button>
+  </ui-bulk-action-bar>
+
+  @if (comparandoIds(); as cmp) {
+    <app-release-compare [leftId]="cmp.left" [rightId]="cmp.right" (fechar)="fecharComparacao()" />
+  }
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Tentar novamente" (retry)="buscar()" />
+  } @else {
+    <div class="rf-rel__table-wrap">
+      <table class="rf-rel__table">
+        <thead>
+          <tr>
+            <th class="rf-rel__th rf-rel__th--check">
+              <input
+                type="checkbox"
+                [checked]="todosVisiveisSelecionados()"
+                (change)="toggleSelecionarTodos()"
+                aria-label="Selecionar todas"
+              />
+            </th>
+            <th class="rf-rel__th">Produto</th>
+            <th class="rf-rel__th">Versão</th>
+            <th class="rf-rel__th">Título</th>
+            <th class="rf-rel__th">Status</th>
+            <th class="rf-rel__th">Tipo</th>
+            <th class="rf-rel__th">Data</th>
+            <th class="rf-rel__th rf-rel__th--center">Itens</th>
+            <th class="rf-rel__th rf-rel__th--actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rel of releases(); track rel.id) {
+            <tr class="rf-rel__row" [class.rf-rel__row--selected]="selecionados().has(rel.id)">
+              <td class="rf-rel__td rf-rel__td--check">
+                <input
+                  type="checkbox"
+                  [checked]="selecionados().has(rel.id)"
+                  (change)="toggleSelecionado(rel.id)"
+                  [attr.aria-label]="'Selecionar ' + rel.titulo"
+                />
+              </td>
+              <td class="rf-rel__td">
+                <div
+                  class="rf-rel__prod-badge"
+                  [style.background]="rel.produtoCor + '18'"
+                  [style.color]="rel.produtoCor"
+                >
+                  {{ rel.produtoSigla }}
+                </div>
+              </td>
+              <td class="rf-rel__td rf-rel__td--mono">{{ rel.versao }}</td>
+              <td class="rf-rel__td rf-rel__td--titulo">
+                <a class="rf-rel__titulo-link" [routerLink]="['/release-orchestrator/releases', rel.id]">{{ rel.titulo }}</a>
+              </td>
+              <td class="rf-rel__td">
+                <app-release-status-badge [status]="rel.status" />
+              </td>
+              <td class="rf-rel__td">
+                <span class="rf-rel__tipo">{{ tipoLabels[rel.tipo] }}</span>
+              </td>
+              <td class="rf-rel__td rf-rel__td--muted">
+                {{ rel.dataPublicacao || rel.dataPrevista || rel.createdAt | date: 'dd/MM/yy' }}
+              </td>
+              <td class="rf-rel__td rf-rel__td--center">{{ rel.totalItens ?? 0 }}</td>
+              <td class="rf-rel__td rf-rel__td--actions">
+                <div class="rf-rel__row-actions">
+                  <ui-button variant="ghost" size="sm" icon="Eye" [routerLink]="['/release-orchestrator/releases', rel.id]" />
+                  <ui-button
+                    variant="ghost"
+                    size="sm"
+                    icon="Pencil"
+                    [routerLink]="['/release-orchestrator/releases', rel.id, 'editar']"
+                  />
+                  <ui-button variant="ghost" size="sm" icon="Copy" (clicked)="duplicar(rel)" />
+                  <ui-button variant="ghost" size="sm" icon="FileText" (clicked)="gerarPdf(rel)" />
+                  @if (rel.status !== 'CANCELADA' && rel.status !== 'PUBLICADA') {
+                    @if (confirmandoId() === rel.id) {
+                      <ui-button variant="danger" size="sm" icon="Check" (clicked)="cancelar(rel)" />
+                      <ui-button variant="ghost" size="sm" icon="X" (clicked)="confirmandoId.set(null)" />
+                    } @else {
+                      <ui-button variant="ghost" size="sm" icon="XCircle" (clicked)="iniciarCancelamento(rel.id)" />
+                    }
+                  }
+                  @if (podeExcluir(rel)) {
+                    @if (excluindoId() === rel.id) {
+                      <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(rel)" />
+                      <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+                    } @else {
+                      <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="iniciarExclusao(rel.id)" />
+                    }
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rf-rel__pagination">
+      <app-table-pagination
+        [totalItems]="totalItems()"
+        [pageSize]="pageSize()"
+        [page]="page()"
+        (pageChange)="onPageChange($event)"
+      />
+    </div>
+  }
+</ui-list-page>

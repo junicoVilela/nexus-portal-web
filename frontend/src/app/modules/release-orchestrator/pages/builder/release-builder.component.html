@@ -1,0 +1,265 @@
+<div class="rf-builder">
+  <!-- ═══════════════════════════════════════════════
+       STEP 1 — Configurar a release
+  ═══════════════════════════════════════════════ -->
+  @if (!releaseAberta()) {
+    <ui-page-header
+      title="Registrar release"
+      subtitle="Configure a versão e comece a registrar as mudanças em tempo real"
+      icon="Pencil"
+    />
+
+    <div class="rf-builder__setup-grid">
+      <!-- Formulário principal -->
+      <div class="rf-builder__setup-card">
+        <div class="rf-builder__setup-header">
+          <div class="rf-builder__setup-icon">
+            <lucide-icon name="Tag" [size]="18" />
+          </div>
+          <div>
+            <h2 class="rf-builder__setup-title">Identificação da release</h2>
+            <p class="rf-builder__setup-sub">Preencha os dados básicos da versão que será registrada</p>
+          </div>
+        </div>
+
+        <form [formGroup]="releaseForm" (ngSubmit)="iniciarRelease()" class="rf-builder__form">
+          <div class="rf-builder__row">
+            <div class="rf-builder__field u-flex-grow-2">
+              <label class="rf-builder__label">Produto <span class="rf-builder__req">*</span></label>
+              <select
+                class="rf-builder__select"
+                formControlName="produtoId"
+                [class.rf-builder__select--err]="fieldError(releaseForm, 'produtoId')"
+              >
+                <option value="">Selecione o produto</option>
+                @for (p of produtos(); track p.id) {
+                  <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+                }
+              </select>
+              @if (fieldError(releaseForm, 'produtoId')) {
+                <span class="rf-builder__err">Produto é obrigatório</span>
+              }
+            </div>
+            <div class="rf-builder__field u-flex-grow-1">
+              <label class="rf-builder__label">Versão <span class="rf-builder__req">*</span></label>
+              <input
+                class="rf-builder__input"
+                type="text"
+                formControlName="versao"
+                placeholder="Ex: 5.13.0"
+                [class.rf-builder__input--err]="fieldError(releaseForm, 'versao')"
+              />
+              @if (fieldError(releaseForm, 'versao')) {
+                <span class="rf-builder__err">Versão inválida (ex: 5.13.0)</span>
+              }
+            </div>
+            <div class="rf-builder__field u-flex-grow-1">
+              <label class="rf-builder__label">Tipo</label>
+              <select class="rf-builder__select" formControlName="tipo">
+                @for (t of tipos; track t) {
+                  <option [value]="t">{{ tipoLabels[t] }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="rf-builder__field">
+            <label class="rf-builder__label">Título <span class="rf-builder__req">*</span></label>
+            <input
+              class="rf-builder__input"
+              type="text"
+              formControlName="titulo"
+              placeholder="Descreva resumidamente o que esta versão entrega"
+              [class.rf-builder__input--err]="fieldError(releaseForm, 'titulo')"
+            />
+            @if (fieldError(releaseForm, 'titulo')) {
+              <span class="rf-builder__err">Título é obrigatório</span>
+            }
+          </div>
+
+          <div class="rf-builder__field">
+            <label class="rf-builder__label">Resumo <span class="rf-builder__opt">(opcional)</span></label>
+            <textarea
+              class="rf-builder__textarea"
+              formControlName="resumo"
+              rows="3"
+              placeholder="Contexto geral sobre esta versão, principais entregas..."
+            ></textarea>
+          </div>
+
+          @if (erroCriar()) {
+            <div class="rf-builder__alert">{{ erroCriar() }}</div>
+          }
+
+          <div class="rf-builder__form-footer">
+            <ui-button variant="ghost" type="button" [routerLink]="['/release-orchestrator/releases']">Cancelar</ui-button>
+            <ui-button type="submit" icon="Play" [loading]="criandoRelease()">Iniciar registro</ui-button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Painel lateral de contexto -->
+      <div class="rf-builder__info-panel">
+        <div class="rf-builder__info-section">
+          <h3 class="rf-builder__info-title"><lucide-icon name="Map" [size]="13" /> Como funciona</h3>
+          <div class="rf-builder__steps-list">
+            <div class="rf-builder__step">
+              <span class="rf-builder__step-num">1</span>
+              <div class="rf-builder__step-body">
+                <strong>Configure a release</strong>
+                <p>Defina produto, versão e título desta entrega</p>
+              </div>
+            </div>
+            <div class="rf-builder__step">
+              <span class="rf-builder__step-num">2</span>
+              <div class="rf-builder__step-body">
+                <strong>Registre as entradas</strong>
+                <p>Adicione novidades, melhorias e correções em tempo real durante o desenvolvimento</p>
+              </div>
+            </div>
+            <div class="rf-builder__step">
+              <span class="rf-builder__step-num">3</span>
+              <div class="rf-builder__step-body">
+                <strong>Encerre para revisão</strong>
+                <p>Ao finalizar, a release entra no fluxo de aprovação antes de ser publicada</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rf-builder__info-tip">
+          <lucide-icon name="Lightbulb" [size]="15" />
+          <div>
+            <strong>Dica</strong>
+            <p>
+              A release fica em aberto enquanto você registra as mudanças. Você pode adicionar entradas ao longo do
+              desenvolvimento e encerrar quando estiver pronto.
+            </p>
+          </div>
+        </div>
+
+        <div class="rf-builder__info-section">
+          <h3 class="rf-builder__info-title"><lucide-icon name="List" [size]="13" /> Tipos de versão</h3>
+          <div class="rf-builder__tipo-list">
+            @for (t of tipos; track t) {
+              <div class="rf-builder__tipo-item">
+                <span class="rf-builder__tipo-pill">{{ tipoLabels[t] }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ═══════════════════════════════════════════════
+       STEP 2 — Builder de entradas
+  ═══════════════════════════════════════════════ -->
+  @if (releaseAberta() && release()) {
+    <!-- Topbar fixa -->
+    <div class="rf-builder__topbar">
+      <div class="rf-builder__topbar-left">
+        <div
+          class="rf-builder__produto-badge"
+          [style.background]="release()!.produtoCor + '18'"
+          [style.color]="release()!.produtoCor"
+        >
+          {{ release()!.produtoSigla }}
+        </div>
+        <div class="rf-builder__release-info">
+          <span class="rf-builder__versao">v{{ release()!.versao }}</span>
+          <span class="rf-builder__release-titulo">{{ release()!.titulo }}</span>
+        </div>
+        <ui-badge tone="neutral">Em desenvolvimento</ui-badge>
+      </div>
+      <div class="rf-builder__topbar-right">
+        <span class="rf-builder__count">
+          <lucide-icon name="List" [size]="13" />
+          {{ entradas().length }} {{ entradas().length === 1 ? 'entrada' : 'entradas' }}
+        </span>
+        <ui-button icon="CheckCircle" (clicked)="encerrar()" [loading]="encerrando()">
+          {{ encerrando() ? 'Encerrando...' : 'Encerrar release' }}
+        </ui-button>
+      </div>
+    </div>
+
+    <div class="rf-builder__body">
+      <!-- Painel esquerdo: seletor de categoria + formulário -->
+      <div class="rf-builder__input-panel">
+        <div class="rf-builder__cat-selector">
+          <span class="rf-builder__cat-label">Tipo de entrada</span>
+          <div class="rf-builder__cat-pills">
+            @for (cat of categorias; track cat) {
+              <button
+                type="button"
+                class="rf-builder__cat-pill rf-builder__cat-pill--{{ categoriaCores[cat] }}"
+                [class.rf-builder__cat-pill--active]="categoriaAtiva() === cat"
+                (click)="selecionarCategoria(cat)"
+              >
+                <lucide-icon [name]="categoriaIconesLucide[cat]" [size]="11" />
+                {{ categoriaLabels[cat] }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <form [formGroup]="entradaForm" (ngSubmit)="adicionarEntrada()" class="rf-builder__entrada-form">
+          <div class="rf-builder__entrada-header rf-builder__entrada-header--{{ categoriaCores[categoriaAtiva()] }}">
+            <lucide-icon [name]="categoriaIconesLucide[categoriaAtiva()]" [size]="13" />
+            <span>{{ categoriaLabels[categoriaAtiva()] }}</span>
+          </div>
+
+          <div class="rf-builder__field">
+            <label class="rf-builder__label">Título <span class="rf-builder__req">*</span></label>
+            <input
+              #entradaInput
+              class="rf-builder__input"
+              type="text"
+              formControlName="titulo"
+              placeholder="O que foi entregue?"
+              (keydown.enter)="$event.preventDefault(); adicionarEntrada()"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="rf-builder__field">
+            <label class="rf-builder__label">Descrição <span class="rf-builder__opt">(opcional)</span></label>
+            <textarea
+              class="rf-builder__textarea"
+              formControlName="descricao"
+              rows="3"
+              placeholder="Detalhes da mudança..."
+            ></textarea>
+          </div>
+
+          <div class="rf-builder__row">
+            <div class="rf-builder__field">
+              <label class="rf-builder__label">Ticket</label>
+              <input class="rf-builder__input" type="text" formControlName="ticket" placeholder="#1234" />
+            </div>
+            <div class="rf-builder__field">
+              <label class="rf-builder__label">Commit</label>
+              <input class="rf-builder__input" type="text" formControlName="commit" placeholder="abc1234" />
+            </div>
+          </div>
+
+          <div class="rf-builder__submit-wrap">
+            <ui-button type="submit" icon="Plus" [disabled]="!entradaForm.get('titulo')?.value?.trim()">
+              Adicionar entrada
+            </ui-button>
+            <span class="rf-builder__submit-hint">ou pressione Enter no título</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Painel direito: timeline de entradas -->
+      <app-rf-builder-timeline
+        [entradas]="entradas()"
+        [encerrando]="encerrando()"
+        (removerEntrada)="removerEntrada($event)"
+        (entradaDrop)="onEntradaDrop($event)"
+        (encerrar)="encerrar()"
+      />
+    </div>
+  }
+</div>

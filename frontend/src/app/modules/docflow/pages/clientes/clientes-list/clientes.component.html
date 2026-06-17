@@ -1,0 +1,221 @@
+<ui-list-page
+  title="Clientes"
+  subtitle="Gerencie a carteira de clientes e o escopo liberado de projetos, módulos e páginas por conta."
+  icon="Building2"
+  [loading]="loading()"
+  [isEmpty]="!loading() && totalClientes() === 0"
+  emptyTitle="Nenhum cliente encontrado"
+  emptyDescription="Crie o primeiro cliente para começar a gerenciar acessos editoriais."
+  emptyIllustration="inbox"
+  emptyIcon="Building2"
+>
+  <div actions>
+    <ui-button icon="Plus" (clicked)="novo()">Novo cliente</ui-button>
+  </div>
+
+  <div filters class="clientes__filters">
+    <input
+      class="clientes__search"
+      [value]="clienteFiltro"
+      (input)="atualizarFiltroClientes($event)"
+      placeholder="Buscar por nome ou slug..."
+    />
+    <div class="clientes__filter-stats">
+      <span class="clientes__stat">{{ totalClientes() }} clientes</span>
+      @if (clienteVinculos()) {
+        <span class="clientes__stat clientes__stat--active"
+          >Editando: <strong>{{ clienteVinculos()!.nome }}</strong></span
+        >
+      }
+    </div>
+  </div>
+
+  <table class="clientes__table">
+    <thead>
+      <tr>
+        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('nome')">
+          Cliente <span>{{ indicacaoOrdenacao('nome') }}</span>
+        </th>
+        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('ativo')">
+          Status <span>{{ indicacaoOrdenacao('ativo') }}</span>
+        </th>
+        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('createdAt')">
+          Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
+        </th>
+        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('updatedAt')">
+          Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
+        </th>
+        <th class="clientes__th clientes__th--right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (cliente of clientes(); track cliente.id) {
+        <tr class="clientes__row" [class.clientes__row--selected]="clienteVinculos()?.id === cliente.id">
+          <td class="clientes__td">
+            <strong>{{ cliente.nome }}</strong>
+            <small class="clientes__td-sub">{{ cliente.slug }}</small>
+          </td>
+          <td class="clientes__td">
+            <ui-badge [tone]="cliente.ativo ? 'success' : 'neutral'" [dot]="true">{{
+              cliente.ativo ? 'Ativo' : 'Inativo'
+            }}</ui-badge>
+          </td>
+          <td class="clientes__td"><app-audit-stamp [user]="cliente.createdBy" [date]="cliente.createdAt" /></td>
+          <td class="clientes__td">
+            <app-audit-stamp
+              [user]="cliente.updatedBy || cliente.createdBy"
+              [date]="cliente.updatedAt || cliente.createdAt"
+            />
+          </td>
+          <td class="clientes__td clientes__td--actions">
+            <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(cliente)">Editar</ui-button>
+            <ui-button
+              variant="secondary"
+              size="sm"
+              [loading]="loadingVinculos() && clienteVinculos()?.id === cliente.id"
+              (clicked)="abrirVinculos(cliente)"
+              >Vínculos</ui-button
+            >
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <app-table-pagination
+    [totalItems]="totalClientes()"
+    [page]="clientesPage()"
+    [pageSize]="clientesPageSize()"
+    (pageChange)="alterarPaginaClientes($event)"
+    (pageSizeChange)="alterarTamanhoPaginaClientes($event)"
+  />
+</ui-list-page>
+
+@if (clienteVinculos()) {
+  <div class="clientes__vinculos">
+    <div class="clientes__vinculos-head">
+      <div>
+        <h3 class="clientes__vinculos-title">Vínculos de {{ clienteVinculos()!.nome }}</h3>
+        <p class="clientes__vinculos-sub">
+          {{ projetoIds().size }} projetos · {{ moduloIds().size }} módulos · {{ paginaIds().size }} páginas
+          selecionadas
+        </p>
+      </div>
+      <div class="clientes__vinculos-actions">
+        <ui-button variant="ghost" size="sm" [disabled]="savingVinculos()" (clicked)="fecharVinculos()"
+          >Fechar</ui-button
+        >
+        <ui-button size="sm" [loading]="savingVinculos()" [disabled]="loadingVinculos()" (clicked)="salvarVinculos()"
+          >Salvar vínculos</ui-button
+        >
+      </div>
+    </div>
+
+    @if (loadingVinculos()) {
+      <div class="clientes__vinculos-loading">Carregando vínculos do cliente...</div>
+    } @else {
+      <div class="clientes__vinculos-tools">
+        <input
+          class="clientes__search clientes__search--sm"
+          [value]="paginaFiltro"
+          (input)="paginaFiltro = eventValue($event)"
+          placeholder="Filtrar páginas..."
+        />
+        <select
+          class="clientes__select"
+          [value]="copiarOrigemClienteId"
+          (change)="copiarOrigemClienteId = eventValue($event)"
+        >
+          <option value="">Copiar vínculos de outro cliente...</option>
+          @for (cliente of clientes(); track cliente.id) {
+            @if (cliente.id !== clienteVinculos()!.id) {
+              <option [value]="cliente.id">{{ cliente.nome }}</option>
+            }
+          }
+        </select>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          [disabled]="!copiarOrigemClienteId || savingVinculos()"
+          (clicked)="copiarVinculos()"
+          >Copiar</ui-button
+        >
+        <ui-button variant="ghost" size="sm" (clicked)="selecionarTodosProjetos()">Todos projetos</ui-button>
+        <ui-button variant="ghost" size="sm" (clicked)="limparProjetos()">Limpar projetos</ui-button>
+        <ui-button variant="ghost" size="sm" (clicked)="selecionarTodosModulos()">Todos módulos</ui-button>
+        <ui-button variant="ghost" size="sm" (clicked)="limparModulos()">Limpar módulos</ui-button>
+        <ui-button variant="ghost" size="sm" (clicked)="limparPaginas()">Limpar páginas</ui-button>
+      </div>
+
+      <div class="clientes__vinculos-grid">
+        <section class="clientes__vinculos-col">
+          <h4 class="clientes__vinculos-col-title">Projetos liberados</h4>
+          <div class="clientes__check-list">
+            @for (projeto of projetos(); track projeto.id) {
+              <label class="clientes__check-row">
+                <input type="checkbox" [checked]="projetoIds().has(projeto.id)" (change)="toggleProjeto(projeto.id)" />
+                <span class="clientes__check-label">
+                  <strong>{{ projeto.nome }}</strong>
+                  <small>{{ projeto.slug }}</small>
+                </span>
+              </label>
+            }
+          </div>
+        </section>
+
+        <section class="clientes__vinculos-col">
+          <h4 class="clientes__vinculos-col-title">Módulos liberados</h4>
+          <p class="clientes__vinculos-note">
+            {{ projetoIds().size > 0 ? 'Filtrado pelos projetos marcados.' : 'Todos os módulos disponíveis.' }}
+          </p>
+          @if (projetoIds().size > 0 && modulosDisponiveis().length === 0) {
+            <div class="clientes__check-empty">Nenhum módulo pertence aos projetos selecionados.</div>
+          } @else {
+            <div class="clientes__check-list">
+              @for (modulo of modulosDisponiveis(); track modulo.id) {
+                <label class="clientes__check-row">
+                  <input type="checkbox" [checked]="moduloIds().has(modulo.id)" (change)="toggleModulo(modulo.id)" />
+                  <span class="clientes__check-label">
+                    <strong>{{ modulo.nome }}</strong>
+                    <small>{{ modulo.projetoNome }} · {{ modulo.slug }}</small>
+                  </span>
+                </label>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="clientes__vinculos-col clientes__vinculos-col--full">
+          <h4 class="clientes__vinculos-col-title">Páginas diretas</h4>
+          <p class="clientes__vinculos-note">
+            {{ projetoIds().size > 0 ? 'Filtrado pelo escopo dos projetos selecionados.' : 'Agrupadas por módulo.' }}
+          </p>
+          <div class="clientes__check-list">
+            @for (grupo of paginasPorModulo(); track grupo.moduloId) {
+              <div class="clientes__module-group">
+                <div class="clientes__module-title">
+                  <strong>{{ grupo.moduloNome }}</strong>
+                  <button class="clientes__toggle-btn" type="button" (click)="alternarPaginasDoModulo(grupo.paginas)">
+                    {{ todasPaginasSelecionadas(grupo.paginas) ? 'Limpar' : 'Selecionar' }}
+                  </button>
+                </div>
+                @for (pagina of grupo.paginas; track pagina.id) {
+                  <label class="clientes__check-row">
+                    <input type="checkbox" [checked]="paginaIds().has(pagina.id)" (change)="togglePagina(pagina.id)" />
+                    <span class="clientes__check-label">
+                      <strong>{{ pagina.titulo }}</strong>
+                      <small>{{ pagina.codigoTela }} · {{ pagina.moduloNome }}</small>
+                    </span>
+                  </label>
+                }
+              </div>
+            } @empty {
+              <div class="clientes__check-empty">
+                {{ projetoIds().size > 0 ? 'Nenhuma página disponível no escopo.' : 'Nenhuma página encontrada.' }}
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    }
+  </div>
+}

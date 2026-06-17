@@ -1,0 +1,111 @@
+<ui-page-header
+  [title]="grupo() ? 'Permissões do grupo ' + grupo()!.nome : 'Permissões do grupo'"
+  [subtitle]="grupo()?.codigo ?? ''"
+  icon="Shield"
+/>
+
+@if (loading()) {
+  <div class="permissoes__loading">Carregando...</div>
+} @else if (!grupo()) {
+  <div class="permissoes__loading">Grupo não encontrado.</div>
+} @else {
+  <div class="permissoes__top">
+    <div class="permissoes__stats">
+      <span class="permissoes__stat">
+        <strong>{{ totalSelecionadas() }}</strong> / {{ totalPermissoes() }} permissões selecionadas
+      </span>
+      <span class="permissoes__stat">
+        <strong>{{ usuariosDoGrupo().length }}</strong> usuários vinculados
+      </span>
+      @if (isAdminGroup()) {
+        <ui-badge tone="warn" [dot]="true">Grupo ADMIN: permissões controladas pelo sistema</ui-badge>
+      }
+    </div>
+    <div class="permissoes__top-actions">
+      <ui-button variant="ghost" size="sm" (clicked)="marcarTudo()" [disabled]="isAdminGroup()">Marcar tudo</ui-button>
+      <ui-button variant="ghost" size="sm" (clicked)="limparTudo()" [disabled]="isAdminGroup()">Limpar tudo</ui-button>
+      <ui-button variant="ghost" (clicked)="voltar()">Voltar</ui-button>
+      <ui-button [loading]="salvando()" [disabled]="isAdminGroup()" (clicked)="salvar()">Salvar permissões</ui-button>
+    </div>
+  </div>
+
+  <div class="permissoes__layout">
+    <div class="permissoes__arvore">
+      @for (d of arvore(); track d.dominio.id) {
+        <ui-card padding="lg">
+          <div class="permissoes__dominio-head">
+            <div>
+              <h3 class="permissoes__dominio-title">{{ d.dominio.nome }}</h3>
+              <small class="permissoes__dominio-sub">{{ d.dominio.codigo }}</small>
+            </div>
+            <div class="permissoes__dominio-actions">
+              <span class="permissoes__dominio-count">{{ totalSelecionadasDominio(d) }} / {{ d.totalPermissoes }}</span>
+              <ui-button variant="ghost" size="sm" (clicked)="marcarTodosDoDominio(d)" [disabled]="isAdminGroup()"
+                >Alternar domínio</ui-button
+              >
+            </div>
+          </div>
+
+          @for (g of d.funcionalidades; track g.funcionalidade.id) {
+            <div class="permissoes__func">
+              <div class="permissoes__func-head">
+                <div>
+                  <strong>{{ g.funcionalidade.nome }}</strong>
+                  <small class="permissoes__func-sub">{{ g.funcionalidade.codigo }}</small>
+                </div>
+                <div class="permissoes__func-actions">
+                  <span class="permissoes__func-count"
+                    >{{ totalSelecionadasFuncionalidade(g) }} / {{ g.permissoes.length }}</span
+                  >
+                  <button
+                    type="button"
+                    class="permissoes__toggle"
+                    (click)="marcarTodosDaFuncionalidade(g)"
+                    [disabled]="isAdminGroup()"
+                  >
+                    Alternar
+                  </button>
+                </div>
+              </div>
+              <div class="permissoes__chips">
+                @for (p of g.permissoes; track p.id) {
+                  <label class="permissoes__chip" [class.permissoes__chip--on]="estaSelecionada(p.id)">
+                    <input
+                      type="checkbox"
+                      [checked]="estaSelecionada(p.id)"
+                      (change)="toggle(p.id)"
+                      [disabled]="isAdminGroup()"
+                    />
+                    <span>{{ p.acao }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </ui-card>
+      } @empty {
+        <ui-card padding="lg">
+          <p class="permissoes__empty">Nenhuma permissão cadastrada.</p>
+        </ui-card>
+      }
+    </div>
+
+    <aside class="permissoes__aside">
+      <ui-card padding="lg">
+        <h3 class="permissoes__aside-title">Usuários do grupo</h3>
+        @if (usuariosDoGrupo().length === 0) {
+          <p class="permissoes__empty">Nenhum usuário vinculado.</p>
+        } @else {
+          <ul class="permissoes__user-list">
+            @for (u of usuariosDoGrupo(); track u.id) {
+              <li class="permissoes__user-item">
+                <strong>{{ u.nome }}</strong>
+                <small>{{ u.login }}</small>
+              </li>
+            }
+          </ul>
+        }
+      </ui-card>
+    </aside>
+  </div>
+}

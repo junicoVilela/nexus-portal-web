@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": ["jasmine", "@angular/localize"]
+  },
+  "include": ["src/**/*.spec.ts", "src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["src/**/*.stories.ts", "e2e/**"]
+}

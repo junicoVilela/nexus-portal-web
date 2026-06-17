@@ -1,0 +1,43 @@
+<ng-container [formGroup]="form()">
+  <div class="df-form__field df-form__field--6">
+    <label class="df-form__label">Projeto</label>
+    <select class="df-form__select" formControlName="projetoId" (change)="projetoChange.emit()">
+      <option value="">Selecione</option>
+      @for (projeto of projetos(); track projeto.id) {
+        <option [value]="projeto.id">{{ projeto.nome }}</option>
+      }
+    </select>
+    <small class="pf-hint">Escolha primeiro o projeto para restringir a seleção de módulos e página pai.</small>
+  </div>
+  <div class="df-form__field df-form__field--6">
+    <label class="df-form__label">Módulo</label>
+    <select
+      class="df-form__select"
+      formControlName="moduloId"
+      (change)="moduloChange.emit()"
+      [disabled]="!form().controls['projetoId'].value"
+    >
+      <option value="">Selecione</option>
+      @for (m of modulos(); track m.id) {
+        <option [value]="m.id">{{ m.projetoNome }} / {{ m.nome }}</option>
+      }
+    </select>
+    <small class="pf-hint">{{
+      form().controls['projetoId'].value
+        ? modulos().length
+          ? 'Somente módulos do projeto selecionado.'
+          : 'Este projeto ainda não possui módulos.'
+        : 'Selecione um projeto primeiro.'
+    }}</small>
+  </div>
+  <div class="df-form__field df-form__field--6">
+    <label class="df-form__label">Página pai</label>
+    <select class="df-form__select" formControlName="parentId">
+      <option value="">Página raiz</option>
+      @for (pagina of parentOptions(); track pagina.id) {
+        <option [value]="pagina.id">{{ paginaLabel()(pagina) }}</option>
+      }
+    </select>
+    <small class="pf-hint">A página pai só considera páginas do mesmo módulo.</small>
+  </div>
+</ng-container>

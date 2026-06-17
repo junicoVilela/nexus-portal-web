@@ -1,0 +1,9 @@
+@import './styles/index.css';
+
+/* Dropdown nativo no tema escuro: força contraste das <option> e do scrollbar.
+ * Combinado com `color-scheme: dark` (em _semantic-dark.css), garante que
+ * dropdowns nativos do <select> abertos fiquem legíveis em qualquer browser. */
+[data-theme='dark'] select option {
+  background-color: var(--option-bg);
+  color: var(--text);
+}

@@ -1,0 +1,566 @@
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ModuloService } from '@modules/docflow/services/modulo.service';
+import { PaginaService } from '@modules/docflow/services/pagina.service';
+import { ProjetoService } from '@modules/docflow/services/projeto.service';
+import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
+import { Modulo } from '@modules/docflow/models/modulo.model';
+import { Pagina, StatusPagina } from '@modules/docflow/models/pagina.model';
+import { Projeto } from '@modules/docflow/models/projeto.model';
+import { AuditStampComponent } from '@shared/components/audit-stamp/audit-stamp.component';
+import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
+import {
+  compactQueryParams,
+  parsePositiveInt,
+  parseSortDirection,
+  SortDirection,
+} from '@shared/utils/query-state';
+import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
+import { ListPageComponent } from '@shared/layouts';
+import {
+  BulkActionBarComponent,
+  ButtonComponent,
+  ConfirmService,
+  NotificationService,
+  ToastService,
+} from '@shared/ui';
+import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-status-badge';
+import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-filters';
+
+@Component({
+  selector: 'app-paginas',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    AuditStampComponent,
+    TablePaginationComponent,
+    ListPageComponent,
+    ButtonComponent,
+    BulkActionBarComponent,
+    PaginaStatusBadgeComponent,
+    PaginasFiltersComponent,
+  ],
+  templateUrl: './paginas.component.html',
+  styleUrl: './paginas.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class PaginasComponent implements OnInit {
+  private readonly toast = inject(ToastService);
+  private readonly notifications = inject(NotificationService);
+  readonly projetos = signal<Projeto[]>([]);
+  readonly todosModulos = signal<Modulo[]>([]);
+  readonly modulos = signal<Modulo[]>([]);
+  readonly paginas = signal<Pagina[]>([]);
+  readonly totalPaginas = signal(0);
+  readonly draggingPaginaId = signal('');
+  readonly paginasPage = signal(1);
+  readonly paginasPageSize = signal(10);
+  readonly selecionados = signal<Set<string>>(new Set());
+  readonly totalSelecionados = computed(() => this.selecionados().size);
+  readonly todosVisiveisSelecionados = computed(() => {
+    const lista = this.paginas();
+    const sel = this.selecionados();
+    return lista.length > 0 && lista.every(p => sel.has(p.id));
+  });
+  paginaSort = 'modulo.projeto.nome';
+  paginaDir: SortDirection = 'ASC';
+  readonly ordemStatusEditorial: StatusPagina[] = [
+    'RASCUNHO',
+    'EM_REVISAO',
+    'APROVADO',
+    'PUBLICADO',
+    'ARQUIVADO',
+  ];
+  readonly filtros = this.fb.nonNullable.group({
+    busca: [''],
+    titulo: [''],
+    codigoTela: [''],
+    projetoId: [''],
+    moduloId: [''],
+    status: [''],
+  });
+  readonly resumoStatusGlobal = signal<Record<string, number>>({});
+
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly projetoService: ProjetoService,
+    private readonly moduloService: ModuloService,
+    private readonly paginaService: PaginaService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly confirmService: ConfirmService,
+  ) {}
+
+  ngOnInit(): void {
+    forkJoin({
+      projetos: this.projetoService.projetos(),
+      modulos: this.moduloService.modulos(),
+      resumo: this.paginaService.resumoPaginasPorStatusGlobal(),
+    }).subscribe({
+      next: ({ projetos, modulos, resumo }) => {
+        this.projetos.set(projetos);
+        this.todosModulos.set(modulos);
+        this.resumoStatusGlobal.set(resumo);
+        this.route.queryParamMap.subscribe(params => {
+          const temQueryParams = params.keys.length > 0;
+          const persistidos = temQueryParams
+            ? null
+            : carregarFiltros<{
+                busca: string;
+                titulo: string;
+                codigoTela: string;
+                projetoId: string;
+                moduloId: string;
+                status: string;
+                sort: string;
+                dir: SortDirection;
+                pageSize: number;
+              }>('docflow:paginas');
+          this.filtros.patchValue(
+            {
+              busca: params.get('busca') ?? persistidos?.busca ?? '',
+              titulo: params.get('titulo') ?? persistidos?.titulo ?? '',
+              codigoTela: params.get('codigoTela') ?? persistidos?.codigoTela ?? '',
+              projetoId: params.get('projetoId') ?? persistidos?.projetoId ?? '',
+              moduloId: params.get('moduloId') ?? persistidos?.moduloId ?? '',
+              status: params.get('status') ?? persistidos?.status ?? '',
+            },
+            { emitEvent: false },
+          );
+          this.paginaSort = params.get('sort') ?? persistidos?.sort ?? 'modulo.projeto.nome';
+          this.paginaDir = parseSortDirection(params.get('dir') ?? persistidos?.dir ?? null);
+          this.paginasPage.set(parsePositiveInt(params.get('page'), 1));
+          this.paginasPageSize.set(parsePositiveInt(params.get('size'), persistidos?.pageSize ?? 10));
+          this.atualizarModulosPorProjeto();
+          this.carregar();
+        });
+      },
+      error: () => this.toast.error('Erro ao carregar páginas.'),
+    });
+  }
+
+  carregar(): void {
+    const raw = this.filtros.getRawValue();
+    this.paginaService
+      .listarPaginas({
+        busca: raw.busca?.trim() || undefined,
+        titulo: raw.titulo || undefined,
+        codigoTela: raw.codigoTela || undefined,
+        projetoId: raw.projetoId || undefined,
+        moduloId: raw.moduloId || undefined,
+        status: raw.status as StatusPagina | undefined,
+        sort: this.paginaSort,
+        dir: this.paginaDir,
+        page: this.paginasPage(),
+        size: this.paginasPageSize(),
+      })
+      .subscribe({
+        next: response => {
+          this.paginas.set(response.items);
+          this.totalPaginas.set(response.totalItems);
+          this.paginasPage.set(response.page);
+          this.paginasPageSize.set(response.size);
+        },
+        error: () => this.toast.error('Erro ao filtrar páginas.'),
+      });
+  }
+
+  aplicarFiltros(): void {
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  filtroStatusEditorial(status: StatusPagina | ''): void {
+    this.filtros.controls.status.setValue(status);
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  contagemGlobalStatus(status: StatusPagina): number {
+    return this.resumoStatusGlobal()[status] ?? 0;
+  }
+
+  /** Arrow function estável para passar como `input()` ao filtro. */
+  readonly contagemGlobalStatusFn = (status: StatusPagina): number => this.contagemGlobalStatus(status);
+
+  totalPaginasSistema(): number {
+    return Object.values(this.resumoStatusGlobal()).reduce((acc, v) => acc + v, 0);
+  }
+
+  editar(pagina: Pagina): void {
+    this.router.navigate(docFlowRouterCommands(['paginas', pagina.id, 'editar']));
+  }
+
+  enviarRevisao(pagina: Pagina): void {
+    this.paginaService.enviarRevisaoPagina(pagina.id).subscribe({
+      next: () => {
+        this.toast.success('Página enviada para revisão.');
+        this.carregar();
+      },
+      error: () => this.toast.error('Erro ao enviar página para revisão.'),
+    });
+  }
+
+  aprovar(pagina: Pagina): void {
+    this.paginaService.aprovarPagina(pagina.id).subscribe({
+      next: () => {
+        this.toast.success('Página aprovada.');
+        this.notifications.add('success', `Página "${pagina.titulo}" aprovada`, {
+          href: docFlowRouterCommands(['paginas', pagina.id, 'editar']).join('/'),
+        });
+        this.carregar();
+      },
+      error: () => this.toast.error('Erro ao aprovar página.'),
+    });
+  }
+
+  publicar(pagina: Pagina): void {
+    this.paginaService.publicarPagina(pagina.id).subscribe({
+      next: () => {
+        this.toast.success('Página publicada.');
+        this.notifications.add('success', `Página "${pagina.titulo}" publicada`, {
+          description: pagina.moduloNome ? `Módulo: ${pagina.moduloNome}` : undefined,
+          href: docFlowRouterCommands(['paginas', pagina.id, 'editar']).join('/'),
+        });
+        this.carregar();
+      },
+      error: () => this.toast.error('Erro ao publicar página.'),
+    });
+  }
+
+  duplicar(pagina: Pagina): void {
+    this.paginaService.duplicarPagina(pagina.id).subscribe({
+      next: copia => {
+        this.toast.success('Página duplicada.');
+        this.router.navigate(docFlowRouterCommands(['paginas', copia.id, 'editar']));
+      },
+      error: () => this.toast.error('Erro ao duplicar página.'),
+    });
+  }
+
+  async arquivar(pagina: Pagina): Promise<void> {
+    const ok = await this.confirmService.confirm({
+      title: 'Arquivar página?',
+      message: `A página "${pagina.titulo}" sairá da listagem ativa. Você pode restaurar depois pelo filtro "ARQUIVADO".`,
+      acceptLabel: 'Arquivar',
+      variant: 'danger',
+      icon: 'AlertTriangle',
+    });
+    if (!ok) return;
+    this.paginaService.arquivarPagina(pagina.id).subscribe({
+      next: () => {
+        this.toast.success('Página arquivada.');
+        this.carregar();
+      },
+      error: () => this.toast.error('Erro ao arquivar página.'),
+    });
+  }
+
+  nova(): void {
+    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']));
+  }
+
+  toggleSelecionado(id: string): void {
+    this.selecionados.update(set => {
+      const next = new Set(set);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  toggleSelecionarTodos(): void {
+    const todos = this.todosVisiveisSelecionados();
+    this.selecionados.update(set => {
+      const next = new Set(set);
+      for (const p of this.paginas()) {
+        if (todos) next.delete(p.id);
+        else next.add(p.id);
+      }
+      return next;
+    });
+  }
+
+  limparSelecao(): void {
+    this.selecionados.set(new Set());
+  }
+
+  async arquivarSelecionadas(): Promise<void> {
+    const ids = [...this.selecionados()];
+    const lista = this.paginas().filter(p => ids.includes(p.id) && p.status !== 'ARQUIVADO');
+    if (lista.length === 0) return;
+    const ok = await this.confirmService.confirm({
+      title: 'Arquivar páginas?',
+      message: `Arquivar ${lista.length} página(s)? Elas sairão da listagem ativa.`,
+      acceptLabel: 'Arquivar',
+      variant: 'danger',
+      icon: 'AlertTriangle',
+    });
+    if (!ok) return;
+    let restantes = lista.length;
+    for (const p of lista) {
+      this.paginaService.arquivarPagina(p.id).subscribe({
+        next: () => {
+          restantes--;
+          if (restantes === 0) {
+            this.toast.success(`${lista.length} página(s) arquivada(s).`);
+            this.carregar();
+          }
+        },
+        error: () => undefined /* feedback via errorInterceptor */,
+      });
+    }
+    this.limparSelecao();
+  }
+
+  limparFiltros(): void {
+    this.filtros.reset({
+      busca: '',
+      titulo: '',
+      codigoTela: '',
+      projetoId: '',
+      moduloId: '',
+      status: '',
+    });
+    this.atualizarModulosPorProjeto();
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  onProjetoChange(): void {
+    this.atualizarModulosPorProjeto();
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  iniciarArraste(pagina: Pagina): void {
+    this.draggingPaginaId.set(pagina.id);
+  }
+
+  moverParaCima(pagina: Pagina): void {
+    this.deslocar(pagina, -1);
+  }
+  moverParaBaixo(pagina: Pagina): void {
+    this.deslocar(pagina, +1);
+  }
+
+  private deslocar(pagina: Pagina, delta: -1 | 1): void {
+    const irmaos = this.paginas()
+      .filter(p => p.moduloId === pagina.moduloId && (p.parentId ?? null) === (pagina.parentId ?? null))
+      .sort((a, b) => a.ordem - b.ordem);
+    const idx = irmaos.findIndex(p => p.id === pagina.id);
+    const novoIdx = idx + delta;
+    if (idx < 0 || novoIdx < 0 || novoIdx >= irmaos.length) return;
+    const reordenado = [...irmaos];
+    [reordenado[idx], reordenado[novoIdx]] = [reordenado[novoIdx], reordenado[idx]];
+    this.paginaService.reordenarPaginas(reordenado.map(p => p.id)).subscribe({
+      next: () => {
+        this.toast.success('Ordem atualizada.');
+        this.carregar();
+      },
+      error: () => this.toast.error('Erro ao reordenar páginas.'),
+    });
+  }
+
+  finalizarArraste(): void {
+    this.draggingPaginaId.set('');
+  }
+
+  moverComoFilha(event: DragEvent, alvo: Pagina): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const pagina = this.paginas().find(item => item.id === this.draggingPaginaId());
+    this.finalizarArraste();
+    if (!pagina || pagina.id === alvo.id) return;
+    if (pagina.moduloId !== alvo.moduloId) {
+      this.toast.error('Arraste apenas entre páginas do mesmo módulo.');
+      return;
+    }
+    this.moverPagina(pagina, alvo.id);
+  }
+
+  moverParaRaiz(event: DragEvent): void {
+    event.preventDefault();
+    const pagina = this.paginas().find(item => item.id === this.draggingPaginaId());
+    this.finalizarArraste();
+    if (!pagina || !pagina.parentId) return;
+    this.moverPagina(pagina, undefined);
+  }
+
+  readonly paginasHierarquia = computed<Pagina[]>(() => {
+    const lista = this.paginas();
+    const filhos = new Map<string, Pagina[]>();
+    const ids = new Set(lista.map(pagina => pagina.id));
+    lista.forEach(pagina => {
+      if (pagina.parentId) {
+        filhos.set(pagina.parentId, [...(filhos.get(pagina.parentId) ?? []), pagina]);
+      }
+    });
+    filhos.forEach(items => items.sort(this.compararPaginas));
+    const roots = lista
+      .filter(pagina => !pagina.parentId || !ids.has(pagina.parentId))
+      .sort(this.compararPaginas);
+    const ordenadas: Pagina[] = [];
+    const append = (pagina: Pagina) => {
+      ordenadas.push(pagina);
+      (filhos.get(pagina.id) ?? []).forEach(append);
+    };
+    roots.forEach(append);
+    return ordenadas;
+  });
+
+  alterarPagina(page: number): void {
+    this.paginasPage.set(page);
+    this.atualizarUrl();
+  }
+
+  alterarTamanhoPagina(size: number): void {
+    this.paginasPageSize.set(size);
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  ordenar(campo: string): void {
+    if (this.paginaSort === campo) {
+      this.paginaDir = this.paginaDir === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.paginaSort = campo;
+      this.paginaDir = 'ASC';
+    }
+    this.paginasPage.set(1);
+    this.atualizarUrl();
+  }
+
+  indicacaoOrdenacao(campo: string): string {
+    if (this.paginaSort !== campo) return '↕';
+    return this.paginaDir === 'ASC' ? '↑' : '↓';
+  }
+
+  paginaLabel(pagina: Pagina): string {
+    return `${'-- '.repeat(this.nivel(pagina))}${pagina.titulo}`;
+  }
+
+  nivel(pagina: Pagina): number {
+    const porId = new Map(this.paginas().map(item => [item.id, item]));
+    let nivel = 0;
+    let parentId = pagina.parentId;
+    while (parentId && porId.has(parentId)) {
+      nivel++;
+      parentId = porId.get(parentId)?.parentId;
+    }
+    return nivel;
+  }
+
+  private atualizarModulosPorProjeto(): void {
+    const projetoId = this.filtros.controls.projetoId.value;
+    this.modulos.set(
+      projetoId ? this.todosModulos().filter(modulo => modulo.projetoId === projetoId) : this.todosModulos(),
+    );
+
+    const moduloId = this.filtros.controls.moduloId.value;
+    if (moduloId && !this.modulos().some(modulo => modulo.id === moduloId)) {
+      this.filtros.controls.moduloId.setValue('');
+    }
+  }
+
+  private moverPagina(pagina: Pagina, parentId: string | undefined): void {
+    const payload = {
+      titulo: pagina.titulo,
+      slug: pagina.slug,
+      codigoTela: pagina.codigoTela,
+      resumo: pagina.resumo,
+      conteudoHtml: pagina.conteudoHtml,
+      ordem: pagina.ordem,
+      ativo: pagina.ativo,
+      moduloId: pagina.moduloId,
+      parentId,
+    };
+    this.paginaService.salvarPagina(payload, pagina.id).subscribe({
+      next: () => {
+        this.toast.success(parentId ? 'Página movida como subpágina.' : 'Página movida para a raiz.');
+        this.carregar();
+      },
+      error: () => this.toast.error('Não foi possível mover a página.'),
+    });
+  }
+
+  private compararPaginas = (a: Pagina, b: Pagina): number => {
+    const comparacao = this.compararValores(
+      this.valorOrdenacaoPagina(a, this.paginaSort),
+      this.valorOrdenacaoPagina(b, this.paginaSort),
+    );
+    if (comparacao !== 0) {
+      return this.paginaDir === 'DESC' ? -comparacao : comparacao;
+    }
+    return a.titulo.localeCompare(b.titulo);
+  };
+
+  private valorOrdenacaoPagina(pagina: Pagina, campo: string): string | number {
+    switch (campo) {
+      case 'modulo.projeto.nome':
+        return pagina.projetoNome ?? '';
+      case 'modulo.nome':
+        return pagina.moduloNome ?? '';
+      case 'parent.ordem':
+        return pagina.parentTitulo ?? '';
+      case 'ordem':
+        return pagina.ordem ?? 0;
+      case 'titulo':
+        return pagina.titulo ?? '';
+      case 'codigoTela':
+        return pagina.codigoTela ?? '';
+      case 'status':
+        return pagina.status ?? '';
+      case 'createdAt':
+        return pagina.createdAt ?? '';
+      case 'updatedAt':
+        return pagina.updatedAt ?? '';
+      default:
+        return pagina.titulo ?? '';
+    }
+  }
+
+  private compararValores(a: string | number, b: string | number): number {
+    if (typeof a === 'number' && typeof b === 'number') {
+      return a - b;
+    }
+    return String(a).localeCompare(String(b));
+  }
+
+  private atualizarUrl(): void {
+    const raw = this.filtros.getRawValue();
+    salvarFiltros('docflow:paginas', {
+      busca: raw.busca.trim(),
+      titulo: raw.titulo.trim(),
+      codigoTela: raw.codigoTela.trim(),
+      projetoId: raw.projetoId,
+      moduloId: raw.moduloId,
+      status: raw.status,
+      sort: this.paginaSort,
+      dir: this.paginaDir,
+      pageSize: this.paginasPageSize(),
+    });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      replaceUrl: true,
+      queryParams: compactQueryParams(
+        {
+          busca: raw.busca.trim() || null,
+          titulo: raw.titulo.trim() || null,
+          codigoTela: raw.codigoTela.trim() || null,
+          projetoId: raw.projetoId || null,
+          moduloId: raw.moduloId || null,
+          status: raw.status || null,
+          sort:
+            this.paginaSort === 'modulo.projeto.nome' && this.paginaDir === 'ASC' ? null : this.paginaSort,
+          dir: this.paginaSort === 'modulo.projeto.nome' && this.paginaDir === 'ASC' ? null : this.paginaDir,
+          page: this.paginasPage(),
+          size: this.paginasPageSize(),
+        },
+        { page: 1, size: 10 },
+      ),
+    });
+  }
+}

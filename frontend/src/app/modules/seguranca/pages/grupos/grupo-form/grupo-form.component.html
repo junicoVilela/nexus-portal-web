@@ -1,0 +1,49 @@
+<ui-page-header
+  [title]="editId() ? 'Editar grupo' : 'Novo grupo'"
+  [subtitle]="editId() ? (grupoAtual()?.nome ?? '') : 'Defina o nome, código e descrição do grupo de acesso.'"
+  icon="ShieldPlus"
+/>
+
+@if (loading()) {
+  <div class="grupo-form__loading">Carregando...</div>
+} @else {
+  <form class="grupo-form" [formGroup]="form" (ngSubmit)="salvar()">
+    <ui-card padding="lg">
+      <div class="grupo-form__grid">
+        <label class="grupo-form__field">
+          <span class="grupo-form__label">Nome <em>*</em></span>
+          <input class="grupo-form__input" type="text" formControlName="nome" autocomplete="off" />
+          @if (form.controls.nome.touched && form.controls.nome.invalid) {
+            <small class="grupo-form__error">Nome obrigatório (mín. 2 caracteres).</small>
+          }
+        </label>
+
+        <label class="grupo-form__field">
+          <span class="grupo-form__label">Código <em>*</em></span>
+          <input class="grupo-form__input" type="text" formControlName="codigo" autocomplete="off" />
+          <small class="grupo-form__hint">MAIÚSCULAS, números e underscore. Ex.: ADMIN, REVISOR_DOCS.</small>
+          @if (form.controls.codigo.touched && form.controls.codigo.invalid) {
+            <small class="grupo-form__error">Use apenas letras MAIÚSCULAS, números e underscore.</small>
+          }
+        </label>
+
+        <label class="grupo-form__field grupo-form__field--full">
+          <span class="grupo-form__label">Descrição</span>
+          <textarea class="grupo-form__input grupo-form__textarea" formControlName="descricao" rows="3"></textarea>
+        </label>
+
+        <label class="grupo-form__field grupo-form__field--switch">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Grupo ativo</span>
+        </label>
+      </div>
+    </ui-card>
+
+    <div class="grupo-form__actions">
+      <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">
+        {{ editId() ? 'Salvar alterações' : 'Cadastrar grupo' }}
+      </ui-button>
+    </div>
+  </form>
+}

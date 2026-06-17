@@ -1,0 +1,110 @@
+<div class="df-form">
+  <ui-page-header [title]="titulo" subtitle="Preencha os dados da release antes de adicionar itens" icon="FilePen" />
+
+  @if (loading()) {
+    <div class="df-form__loading">Carregando…</div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()">
+      <ui-card padding="lg">
+        <h2 class="df-form__section-title">Identificação</h2>
+        <div class="df-form__grid">
+          <div class="df-form__field df-form__field--5">
+            <label class="df-form__label">Produto <span class="df-form__req">*</span></label>
+            <select
+              class="df-form__select"
+              formControlName="produtoId"
+              [class.df-form__select--err]="fieldError('produtoId')"
+            >
+              <option value="">Selecione o produto</option>
+              @for (p of produtos(); track p.id) {
+                <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+              }
+            </select>
+            @if (fieldError('produtoId')) {
+              <span class="df-form__field-msg">Produto é obrigatório</span>
+            }
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Versão <span class="df-form__req">*</span></label>
+            <input
+              class="df-form__input"
+              formControlName="versao"
+              placeholder="Ex: 5.13.0"
+              [class.df-form__input--err]="fieldError('versao')"
+            />
+            @if (fieldError('versao')) {
+              <span class="df-form__field-msg">Versão é obrigatória</span>
+            }
+          </div>
+          <div class="df-form__field df-form__field--3">
+            <label class="df-form__label">Tipo <span class="df-form__req">*</span></label>
+            <select class="df-form__select" formControlName="tipo">
+              @for (t of tipos; track t) {
+                <option [value]="t">{{ tipoLabels[t] }}</option>
+              }
+            </select>
+          </div>
+          <div class="df-form__field df-form__field--12">
+            <label class="df-form__label">Título <span class="df-form__req">*</span></label>
+            <input
+              class="df-form__input"
+              formControlName="titulo"
+              placeholder="Título descritivo da release"
+              [class.df-form__input--err]="fieldError('titulo')"
+            />
+            @if (fieldError('titulo')) {
+              <span class="df-form__field-msg">Título é obrigatório</span>
+            }
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Status</label>
+            <select class="df-form__select" formControlName="status" [attr.disabled]="true">
+              <option value="RASCUNHO">Rascunho</option>
+            </select>
+            <span class="df-form__hint">Gerenciado pelo fluxo de aprovação</span>
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Data prevista</label>
+            <input class="df-form__input" type="date" formControlName="dataPrevista" />
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Responsável</label>
+            <input class="df-form__input" formControlName="responsavelId" placeholder="Nome ou ID" />
+          </div>
+        </div>
+
+        <h2 class="df-form__section-title u-mt-20">Descrição</h2>
+        <div class="df-form__grid">
+          <div class="df-form__field df-form__field--12">
+            <label class="df-form__label">Resumo da release</label>
+            <textarea
+              class="df-form__textarea"
+              formControlName="resumo"
+              rows="4"
+              placeholder="Descreva o que foi entregue nesta versão…"
+            ></textarea>
+          </div>
+          <div class="df-form__field df-form__field--12">
+            <label class="df-form__label">Observações internas</label>
+            <textarea
+              class="df-form__textarea"
+              formControlName="observacoes"
+              rows="2"
+              placeholder="Dependências, riscos, notas técnicas…"
+            ></textarea>
+          </div>
+        </div>
+      </ui-card>
+
+      <div class="df-form__actions">
+        @if (rascunhoSalvoEm()) {
+          <span class="df-form__autosave" title="Rascunho salvo localmente no navegador">
+            Rascunho salvo às {{ rascunhoSalvoEm() | date: 'HH:mm' }}
+          </span>
+        }
+        <ui-button variant="ghost" type="button" (clicked)="cancelar()">Cancelar</ui-button>
+        <ui-button type="submit" [loading]="salvando()" [disabled]="form.invalid">Salvar release</ui-button>
+      </div>
+    </form>
+  }
+</div>

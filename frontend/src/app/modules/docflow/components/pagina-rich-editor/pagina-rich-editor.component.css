@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+:host ngx-editor {
+  display: block;
+  min-height: 420px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+:host ::ng-deep .NgxEditor {
+  background: var(--surface) !important;
+  color: var(--text);
+  border: 0 !important;
+}
+
+:host ::ng-deep .NgxEditor__Content {
+  min-height: 380px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+:host ::ng-deep .NgxEditor__Content p {
+  margin: 0 0 12px;
+}
+
+:host ::ng-deep .NgxEditor__Content h1,
+:host ::ng-deep .NgxEditor__Content h2,
+:host ::ng-deep .NgxEditor__Content h3 {
+  margin: 16px 0 8px;
+  color: var(--text);
+}
+
+:host ::ng-deep .NgxEditor__MenuBar {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 10px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .NgxEditor__MenuItem {
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+:host ::ng-deep .NgxEditor__MenuItem:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+:host ::ng-deep .NgxEditor__MenuItem--Active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}

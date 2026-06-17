@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+/* Tokens — primitives first, then semantic mappings, then atomic groups */
+@import './tokens/_primitives.css';
+@import './tokens/_semantic-light.css';
+@import './tokens/_semantic-dark.css';
+@import './tokens/_typography.css';
+@import './tokens/_radii.css';
+@import './tokens/_shadows.css';
+@import './tokens/_motion.css';
+
+/* Base */
+@import './base/reset.css';
+@import './base/elements.css';
+@import './base/utilities.css';
+
+/* Tailwind theme — expose semantic tokens as utility classes */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-bg: var(--bg);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: var(--radius-sm);
+  --radius: var(--radius);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}

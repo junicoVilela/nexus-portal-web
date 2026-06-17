@@ -1,0 +1,13 @@
+<div class="ui-error" [class]="'ui-error--' + visual().tone" role="alert">
+  <span class="ui-error__icon" aria-hidden="true">
+    <lucide-icon [name]="visual().icon" />
+  </span>
+  <h3 class="ui-error__title">{{ resolvedTitle() }}</h3>
+  <p class="ui-error__desc">{{ resolvedDescription() }}</p>
+  <div class="ui-error__actions">
+    @if (showRetry()) {
+      <ui-button variant="secondary" icon="RotateCw" (clicked)="retry.emit()">{{ retryLabel() }}</ui-button>
+    }
+    <ng-content />
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="rf-cmp__overlay" (click)="fechar.emit()">
+  <div class="rf-cmp" role="dialog" aria-label="Comparar releases" (click)="$event.stopPropagation()">
+    <header class="rf-cmp__head">
+      <strong>Comparar releases</strong>
+      <button type="button" class="rf-cmp__close" (click)="fechar.emit()" aria-label="Fechar">
+        <lucide-icon name="X" [size]="16" />
+      </button>
+    </header>
+
+    @if (loading()) {
+      <div class="rf-cmp__loading">Carregando…</div>
+    } @else if (esquerda() && direita()) {
+      <div class="rf-cmp__cabecalho">
+        <div class="rf-cmp__col-head">
+          <div
+            class="rf-cmp__pill"
+            [style.background]="esquerda()!.produtoCor + '18'"
+            [style.color]="esquerda()!.produtoCor"
+          >
+            {{ esquerda()!.produtoSigla }} {{ esquerda()!.versao }}
+          </div>
+          <h2>{{ esquerda()!.titulo }}</h2>
+          <div class="rf-cmp__meta">
+            <ui-badge [tone]="'neutral'">{{ statusLabels[esquerda()!.status] }}</ui-badge>
+            <span>{{ tipoLabels[esquerda()!.tipo] }}</span>
+            <span>{{ esquerda()!.dataPublicacao || esquerda()!.dataPrevista | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="rf-cmp__divisor"><lucide-icon name="ArrowRight" [size]="20" /></div>
+
+        <div class="rf-cmp__col-head">
+          <div
+            class="rf-cmp__pill"
+            [style.background]="direita()!.produtoCor + '18'"
+            [style.color]="direita()!.produtoCor"
+          >
+            {{ direita()!.produtoSigla }} {{ direita()!.versao }}
+          </div>
+          <h2>{{ direita()!.titulo }}</h2>
+          <div class="rf-cmp__meta">
+            <ui-badge [tone]="'neutral'">{{ statusLabels[direita()!.status] }}</ui-badge>
+            <span>{{ tipoLabels[direita()!.tipo] }}</span>
+            <span>{{ direita()!.dataPublicacao || direita()!.dataPrevista | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rf-cmp__body">
+        @for (grupo of grupos(); track grupo.categoria) {
+          <section class="rf-cmp__grupo">
+            <h3 class="rf-cmp__grupo-titulo">{{ grupo.label }}</h3>
+            <div class="rf-cmp__grid">
+              <ul class="rf-cmp__lista">
+                @for (item of grupo.esquerda; track item.id) {
+                  <li class="rf-cmp__item">
+                    <strong>{{ item.titulo }}</strong>
+                    @if (item.descricao) {
+                      <p>{{ item.descricao }}</p>
+                    }
+                  </li>
+                } @empty {
+                  <li class="rf-cmp__vazio">—</li>
+                }
+              </ul>
+
+              <ul class="rf-cmp__lista">
+                @for (item of grupo.direita; track item.id) {
+                  <li class="rf-cmp__item">
+                    <strong>{{ item.titulo }}</strong>
+                    @if (item.descricao) {
+                      <p>{{ item.descricao }}</p>
+                    }
+                  </li>
+                } @empty {
+                  <li class="rf-cmp__vazio">—</li>
+                }
+              </ul>
+            </div>
+          </section>
+        }
+      </div>
+    }
+
+    <footer class="rf-cmp__foot">
+      <ui-button variant="ghost" (clicked)="fechar.emit()">Fechar</ui-button>
+    </footer>
+  </div>
+</div>

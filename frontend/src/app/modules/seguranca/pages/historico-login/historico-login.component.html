@@ -1,0 +1,81 @@
+<ui-list-page
+  title="Histórico de login"
+  subtitle="Auditoria de tentativas de acesso ao sistema."
+  icon="ClipboardCheck"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhum registro encontrado"
+  emptyDescription="Ajuste os filtros ou aguarde novos acessos serem registrados."
+  emptyIllustration="inbox"
+  emptyIcon="ClipboardCheck"
+>
+  <div filters class="historico__filters">
+    <input
+      class="historico__search"
+      [value]="busca"
+      (input)="aplicarBusca($event)"
+      placeholder="Buscar por login informado..."
+    />
+    <select class="historico__select" [value]="filtroUsuario" (change)="alterarUsuario($any($event.target).value)">
+      <option value="">Todos os usuários</option>
+      @for (u of usuarios(); track u.id) {
+        <option [value]="u.id">{{ u.nome }}</option>
+      }
+    </select>
+    <select class="historico__select" [value]="filtroSucesso" (change)="alterarSucesso($any($event.target).value)">
+      <option value="">Todos os resultados</option>
+      <option value="true">Sucesso</option>
+      <option value="false">Falha</option>
+    </select>
+    <label class="historico__date-field">
+      <span>De</span>
+      <input type="date" [value]="dataInicio" (change)="alterarInicio($any($event.target).value)" />
+    </label>
+    <label class="historico__date-field">
+      <span>Até</span>
+      <input type="date" [value]="dataFim" (change)="alterarFim($any($event.target).value)" />
+    </label>
+    <span class="historico__count">{{ total() }} registros</span>
+  </div>
+
+  <table class="historico__table">
+    <thead>
+      <tr>
+        <th class="historico__th">Data/hora</th>
+        <th class="historico__th">Login informado</th>
+        <th class="historico__th">Usuário</th>
+        <th class="historico__th">Resultado</th>
+        <th class="historico__th">Motivo</th>
+        <th class="historico__th">User-agent</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of registros(); track r.id) {
+        <tr class="historico__row" [class.historico__row--falha]="!r.sucesso">
+          <td class="historico__td">{{ r.criadoEm | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="historico__td">
+            <strong>{{ r.loginInformado }}</strong>
+          </td>
+          <td class="historico__td">{{ nomeUsuario(r.usuarioId) }}</td>
+          <td class="historico__td">
+            <ui-badge [tone]="r.sucesso ? 'success' : 'danger'" [dot]="true">
+              {{ r.sucesso ? 'Sucesso' : 'Falha' }}
+            </ui-badge>
+          </td>
+          <td class="historico__td">{{ r.motivoFalha ?? '—' }}</td>
+          <td class="historico__td historico__td--ua" [title]="r.userAgent ?? ''">
+            {{ truncarUa(r.userAgent) }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>

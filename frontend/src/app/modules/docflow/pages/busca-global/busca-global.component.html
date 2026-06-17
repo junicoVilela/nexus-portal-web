@@ -1,0 +1,200 @@
+<div class="busca">
+  <ui-page-header
+    title="Busca global"
+    subtitle="Encontre clientes, projetos, módulos, páginas e publicações em um único lugar."
+    icon="Search"
+  />
+
+  <ui-card padding="md">
+    <form class="busca__form" [formGroup]="form" (ngSubmit)="buscar()">
+      <input
+        class="busca__input"
+        formControlName="q"
+        placeholder="Cliente, projeto, módulo, página ou versão…"
+        (keydown.enter)="buscar()"
+      />
+      <ui-button type="submit" [loading]="carregando()">Buscar</ui-button>
+    </form>
+  </ui-card>
+
+  @if (carregando()) {
+    <div class="busca__state">Buscando…</div>
+  } @else if (!termo.trim()) {
+    <div class="busca__state">Digite um termo para iniciar a busca.</div>
+  } @else {
+    <div class="busca__summary" role="tablist" aria-label="Filtrar por tipo">
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'todos'"
+        (click)="tipoAtivo.set('todos')"
+        role="tab"
+        [attr.aria-selected]="tipoAtivo() === 'todos'"
+      >
+        Todos
+      </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'clientes'"
+        (click)="tipoAtivo.set('clientes')"
+        role="tab"
+      >
+        Clientes ({{ clientes().length }})
+      </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'projetos'"
+        (click)="tipoAtivo.set('projetos')"
+        role="tab"
+      >
+        Projetos ({{ projetos().length }})
+      </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'modulos'"
+        (click)="tipoAtivo.set('modulos')"
+        role="tab"
+      >
+        Módulos ({{ modulos().length }})
+      </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'paginas'"
+        (click)="tipoAtivo.set('paginas')"
+        role="tab"
+      >
+        Páginas ({{ paginas().length }})
+      </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'publicacoes'"
+        (click)="tipoAtivo.set('publicacoes')"
+        role="tab"
+      >
+        Publicações ({{ publicacoes().length }})
+      </button>
+    </div>
+
+    <div class="busca__grid">
+      @if (tipoAtivo() === 'todos' || tipoAtivo() === 'clientes') {
+        <app-busca-result-list
+          titulo="Clientes"
+          subtitulo="Resultados por nome ou slug."
+          emptyLabel="Sem clientes encontrados."
+          [items]="clientes()"
+          [termo]="termo"
+          [primaryFn]="clientePrimary"
+          [secondaryFn]="clienteSecondary"
+          (abrir)="abrirCliente($event)"
+        />
+      }
+
+      @if (tipoAtivo() === 'todos' || tipoAtivo() === 'projetos') {
+        <app-busca-result-list
+          titulo="Projetos"
+          subtitulo="Resultados por nome ou slug."
+          emptyLabel="Sem projetos encontrados."
+          [items]="projetos()"
+          [termo]="termo"
+          [primaryFn]="projetoPrimary"
+          [secondaryFn]="projetoSecondary"
+          (abrir)="abrirProjeto($event)"
+        />
+      }
+
+      @if (tipoAtivo() === 'todos' || tipoAtivo() === 'modulos') {
+        <app-busca-result-list
+          titulo="Módulos"
+          subtitulo="Resultados por nome, slug ou projeto."
+          emptyLabel="Sem módulos encontrados."
+          [items]="modulos()"
+          [termo]="termo"
+          [primaryFn]="moduloPrimary"
+          [secondaryFn]="moduloSecondary"
+          (abrir)="abrirModulo($event)"
+        />
+      }
+
+      @if (tipoAtivo() === 'todos' || tipoAtivo() === 'paginas') {
+        <app-busca-result-list
+          titulo="Páginas"
+          subtitulo="Busca textual pelo conteúdo editorial."
+          emptyLabel="Sem páginas encontradas."
+          [items]="paginas()"
+          [termo]="termo"
+          [primaryFn]="paginaPrimary"
+          [secondaryFn]="paginaSecondary"
+          (abrir)="abrirPagina($event)"
+        />
+      }
+    </div>
+
+    @if (tipoAtivo() === 'todos' || tipoAtivo() === 'publicacoes') {
+      <ui-card padding="none">
+        <div class="busca__table-head">
+          <h3 class="busca__card-title">Publicações</h3>
+          <p class="busca__card-sub">Resultados por cliente, versão ou arquivo.</p>
+        </div>
+        @if (publicacoes().length === 0) {
+          <p class="busca__empty busca__empty--pad">Sem publicações encontradas.</p>
+        } @else {
+          <div class="busca__table-wrap">
+            <table class="busca__table">
+              <thead>
+                <tr>
+                  <th class="busca__th busca__th--sort" (click)="ordenarPublicacoes('cliente.nome')">
+                    Cliente <span>{{ indicacaoOrdenacaoPublicacoes('cliente.nome') }}</span>
+                  </th>
+                  <th class="busca__th busca__th--sort" (click)="ordenarPublicacoes('versao')">
+                    Versão <span>{{ indicacaoOrdenacaoPublicacoes('versao') }}</span>
+                  </th>
+                  <th class="busca__th busca__th--sort" (click)="ordenarPublicacoes('status')">
+                    Status <span>{{ indicacaoOrdenacaoPublicacoes('status') }}</span>
+                  </th>
+                  <th class="busca__th busca__th--sort" (click)="ordenarPublicacoes('createdAt')">
+                    Arquivo / Data <span>{{ indicacaoOrdenacaoPublicacoes('createdAt') }}</span>
+                  </th>
+                  <th class="busca__th"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of publicacoes(); track item.id) {
+                  <tr class="busca__row">
+                    <td class="busca__td">{{ item.clienteNome }}</td>
+                    <td class="busca__td busca__td--mono">{{ item.versao }}</td>
+                    <td class="busca__td">
+                      <ui-badge
+                        [tone]="
+                          item.status === 'SUCESSO'
+                            ? 'success'
+                            : item.status === 'ERRO'
+                              ? 'danger'
+                              : item.status === 'GERANDO'
+                                ? 'warn'
+                                : 'neutral'
+                        "
+                        >{{ item.status }}</ui-badge
+                      >
+                    </td>
+                    <td class="busca__td busca__td--muted">
+                      {{ item.arquivoZipNome || 'Indisponível' }}
+                      <small>{{ item.createdAt | date: 'short' }}</small>
+                    </td>
+                    <td class="busca__td busca__td--actions">
+                      <ui-button variant="ghost" size="sm" (clicked)="abrirPublicacao(item)">Ver</ui-button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </ui-card>
+    }
+  }
+</div>

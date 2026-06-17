@@ -1,0 +1,49 @@
+<div class="ui-fp">
+  <button
+    type="button"
+    class="ui-fp__trigger"
+    (click)="toggle()"
+    [class.ui-fp__trigger--open]="mostrarLista()"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="mostrarLista()"
+  >
+    <lucide-icon name="Bookmark" [size]="13" />
+    <span>Presets</span>
+    @if (presets().length) {
+      <span class="ui-fp__badge">{{ presets().length }}</span>
+    }
+  </button>
+
+  @if (mostrarLista()) {
+    <div class="ui-fp__menu" role="menu">
+      @if (filtrosAtivos() > 0) {
+        <button type="button" class="ui-fp__action" (click)="salvar()">
+          <lucide-icon name="Plus" [size]="12" />
+          <span>Salvar atual ({{ filtrosAtivos() }} filtros)</span>
+        </button>
+      }
+      @if (presets().length === 0) {
+        <div class="ui-fp__empty">Sem presets salvos ainda.</div>
+      } @else {
+        <ul class="ui-fp__list">
+          @for (p of presets(); track p.id) {
+            <li class="ui-fp__item">
+              <button type="button" class="ui-fp__apply" (click)="aplicar(p)" role="menuitem">
+                {{ p.nome }}
+              </button>
+              <button
+                type="button"
+                class="ui-fp__remove"
+                (click)="excluir(p.id, $event)"
+                [attr.aria-label]="'Excluir preset ' + p.nome"
+                title="Excluir"
+              >
+                <lucide-icon name="X" [size]="11" />
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+</div>

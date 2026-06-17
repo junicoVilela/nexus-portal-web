@@ -1,0 +1,173 @@
+<div class="df-form">
+  <ui-page-header
+    [title]="editId() ? 'Editar página' : 'Nova página'"
+    [subtitle]="
+      paginaAtual()
+        ? 'Criado por ' +
+          nomeUsuario(paginaAtual()!.createdBy) +
+          ' · Atualizado por ' +
+          nomeUsuario(paginaAtual()!.updatedBy || paginaAtual()!.createdBy)
+        : null
+    "
+    icon="FileText"
+  />
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+    <div class="pf-body">
+      <div class="pf-fields">
+        <div class="df-form__grid">
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Título</label>
+            <input class="df-form__input" formControlName="titulo" />
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Slug</label>
+            <input class="df-form__input" formControlName="slug" />
+          </div>
+          <div class="df-form__field df-form__field--4">
+            <label class="df-form__label">Código da tela</label>
+            <input class="df-form__input" formControlName="codigoTela" />
+          </div>
+          <app-pagina-meta-fields
+            [form]="form"
+            [projetos]="projetos()"
+            [modulos]="modulos()"
+            [parentOptions]="parentOptions"
+            [paginaLabel]="paginaLabelFn"
+            (projetoChange)="onProjetoChange()"
+            (moduloChange)="onModuloChange()"
+          />
+          <div class="df-form__field df-form__field--3">
+            <label class="df-form__label">Ordem</label>
+            <input class="df-form__input" type="number" formControlName="ordem" />
+          </div>
+          <div class="df-form__field df-form__field--3">
+            <label class="df-form__check u-mt-22">
+              <input type="checkbox" formControlName="ativo" />
+              <span>Ativa</span>
+            </label>
+          </div>
+          <div class="df-form__field df-form__field--12">
+            <label class="df-form__label">Resumo</label>
+            <textarea class="df-form__textarea" formControlName="resumo"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="pf-editor">
+        <div class="pf-editor-head">
+          <div>
+            <h3 class="pf-editor-title">Conteúdo HTML</h3>
+            <p class="pf-editor-sub">Edite o markup, insira blocos recorrentes e valide o resultado antes de salvar.</p>
+          </div>
+          <div class="pf-editor-stats">
+            <ui-badge tone="neutral">{{ totalCaracteresConteudo }} chars</ui-badge>
+            <ui-badge tone="neutral">{{ totalLinhasConteudo }} linhas</ui-badge>
+          </div>
+        </div>
+        <app-pagina-editor-toolbar
+          [atalhosEstrutura]="atalhosEstrutura"
+          [atalhosBlocos]="atalhosBlocos"
+          [modo]="editorModo()"
+          (atalhoSelecionado)="executarAtalho($event)"
+          (modoChange)="definirEditorModo($event)"
+        />
+        @if (!editId()) {
+          <p class="pf-helper">Salve a página antes para anexar imagens como arquivo.</p>
+        }
+        <input #fotoInput type="file" accept="image/*" multiple hidden (change)="anexarFotos($event)" />
+        <div
+          class="pf-editor-grid"
+          [class.pf-editor-grid--code]="editorModo() === 'codigo'"
+          [class.pf-editor-grid--preview]="editorModo() === 'preview'"
+          [class.pf-editor-grid--rico]="editorModo() === 'rico'"
+        >
+          @if (editorModo() === 'rico') {
+            <section class="pf-rich-pane">
+              <div class="pf-pane-head">
+                <strong>Editor rico</strong
+                ><small>WYSIWYG com toolbar. Bold, listas, links, headings, alinhamento e cores.</small>
+              </div>
+              @defer (on immediate) {
+                <app-pagina-rich-editor [control]="$any(form.controls.conteudoHtml)" />
+              } @loading (minimum 200ms) {
+                <div class="pf-rich-loading" aria-busy="true" aria-label="Carregando editor">
+                  <ui-skeleton width="100%" height="38px" />
+                  <ui-skeleton width="100%" height="380px" />
+                </div>
+              } @error {
+                <div class="pf-rich-error">Erro ao carregar editor rico. Use o modo "Código".</div>
+              }
+            </section>
+          }
+          @if (editorModo() === 'codigo' || editorModo() === 'split') {
+            <section class="pf-code-pane">
+              <div class="pf-pane-head"><strong>Código-fonte</strong><small>HTML final da página.</small></div>
+              <textarea #conteudoHtmlInput class="pf-textarea" formControlName="conteudoHtml"></textarea>
+            </section>
+          }
+          @if (editorModo() !== 'codigo') {
+            <section class="pf-preview-pane">
+              <div class="pf-pane-head">
+                <strong>Prévia renderizada</strong><small>Estrutura aproximada do manual final.</small>
+              </div>
+              <div class="pf-preview-manual">
+                <div class="pf-preview-topbar">
+                  <span class="pf-preview-chip">Prévia local</span>
+                  <span class="pf-preview-code">{{ codigoTelaPreview }}</span>
+                </div>
+                <article class="pf-preview-article">
+                  <header class="pf-preview-header">
+                    <span class="pf-preview-breadcrumb">{{ breadcrumbPreview }}</span>
+                    <h1>{{ tituloPreview }}</h1>
+                    @if (resumoPreview) {
+                      <p>{{ resumoPreview }}</p>
+                    }
+                  </header>
+                  <div class="pf-preview-body" [innerHTML]="conteudoPreview"></div>
+                </article>
+              </div>
+            </section>
+          }
+        </div>
+      </div>
+
+      @if (editId()) {
+        <app-pagina-anexos
+          [anexos]="anexos()"
+          [anexoUrl]="anexoUrlFn"
+          (anexarSolicitado)="abrirSeletorFotos()"
+          (excluirSolicitado)="excluirAnexo($event)"
+        />
+      }
+    </div>
+
+    <div class="df-form__actions u-mt-16">
+      @if (rascunhoSalvoEm()) {
+        <span class="df-form__autosave" title="Rascunho salvo localmente no navegador">
+          Rascunho salvo às {{ rascunhoSalvoEm() | date: 'HH:mm' }}
+        </span>
+      }
+      <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">Salvar</ui-button>
+    </div>
+  </form>
+
+  @if (revisoes().length) {
+    <app-pagina-revisoes
+      [revisoes]="revisoes()"
+      [totalRevisoes]="totalRevisoes()"
+      [revisoesPage]="revisoesPage()"
+      [revisoesPageSize]="revisoesPageSize()"
+      [revisoesSort]="revisoesSort()"
+      [revisoesDir]="revisoesDir()"
+      [showDiff]="showDiff()"
+      [diffLinhas]="diffLinhas()"
+      [nomeUsuario]="nomeUsuarioFn"
+      (pageChange)="alterarPaginaRevisoes($event)"
+      (pageSizeChange)="alterarTamanhoPaginaRevisoes($event)"
+      (sortChange)="ordenarRevisoes($event)"
+      (toggleDiff)="toggleDiff()"
+    />
+  }
+</div>

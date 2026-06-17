@@ -1,0 +1,33 @@
+.ui-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 10001;
+  pointer-events: none;
+  transition:
+    width 0.3s ease-out,
+    opacity 0.25s ease-out;
+  opacity: 0;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.ui-loading-bar--active {
+  width: 70%;
+  opacity: 1;
+  animation: ui-loading-bar-grow 4s ease-out forwards;
+}
+
+@keyframes ui-loading-bar-grow {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 60%;
+  }
+  100% {
+    width: 90%;
+  }
+}

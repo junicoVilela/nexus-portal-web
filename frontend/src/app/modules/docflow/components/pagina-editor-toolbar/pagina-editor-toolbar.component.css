@@ -1,0 +1,65 @@
+.pf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  margin-top: 12px;
+}
+.pf-toolbar-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pf-toolbar-label {
+  font: 600 11px var(--font-body);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pf-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 9px;
+  font: 500 12px var(--font-body);
+  cursor: pointer;
+  color: var(--text);
+  transition: background var(--motion-default);
+}
+.pf-chip:hover {
+  background: var(--surface-2);
+}
+.pf-mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+.pf-mode-btn {
+  background: transparent;
+  border: 0;
+  padding: 5px 10px;
+  font: 500 12px var(--font-body);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background var(--motion-default),
+    color var(--motion-default);
+}
+.pf-mode-btn--active {
+  background: var(--accent);
+  color: #fff;
+}
+.pf-mode-btn:not(.pf-mode-btn--active):hover {
+  background: var(--surface-2);
+  color: var(--text);
+}

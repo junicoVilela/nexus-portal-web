@@ -1,0 +1,55 @@
+.ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
+.ui-empty__ico {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-subtle);
+  margin-bottom: 4px;
+}
+.ui-empty__ico lucide-icon {
+  width: 20px;
+  height: 20px;
+}
+.ui-empty__illust {
+  width: 220px;
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+}
+.ui-empty__title {
+  font: 700 15px/1.2 var(--font-body);
+  color: var(--text);
+  margin-top: 4px;
+}
+.ui-empty__desc {
+  font: 500 13px/1.5 var(--font-body);
+  color: var(--text-muted);
+  max-width: 360px;
+}
+.ui-empty__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ui-empty__actions:empty {
+  display: none;
+}

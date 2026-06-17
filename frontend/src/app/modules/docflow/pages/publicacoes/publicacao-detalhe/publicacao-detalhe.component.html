@@ -1,0 +1,78 @@
+<div class="df-form">
+  <ui-page-header
+    [title]="publicacao() ? 'Publicação ' + publicacao()!.versao : 'Publicação'"
+    [subtitle]="publicacao() ? publicacao()!.clienteNome + ' — changelog e validação do pacote' : null"
+    icon="Package"
+  />
+
+  @if (publicacao()) {
+    <ui-card padding="md">
+      <div class="pub-det__status-row">
+        <span class="pub-det__status-label">Status</span>
+        <ui-badge
+          [tone]="
+            publicacao()!.status === 'SUCESSO'
+              ? 'success'
+              : publicacao()!.status === 'ERRO'
+                ? 'danger'
+                : publicacao()!.status === 'GERANDO'
+                  ? 'warn'
+                  : 'neutral'
+          "
+          >{{ publicacao()!.status }}</ui-badge
+        >
+      </div>
+      <p class="pub-det__meta">{{ publicacao()!.createdAt | date: 'short' }} — {{ publicacao()!.createdBy }}</p>
+
+      @if (publicacao()!.status === 'ERRO' && publicacao()!.observacao) {
+        <div class="df-form__msg df-form__msg--err pub-det__obs">{{ publicacao()!.observacao }}</div>
+      }
+
+      @if (relatorioJson() && avisosValidacao().length) {
+        <h4 class="pub-det__section-title" class="u-mt-16">Avisos da validação</h4>
+        <ul class="pub-det__warn-list">
+          @for (a of avisosValidacao(); track a) {
+            <li>{{ a }}</li>
+          }
+        </ul>
+      }
+
+      @if (publicacao()!.relatorioValidacao) {
+        <details class="pub-det__details">
+          <summary>Relatório técnico (JSON)</summary>
+          <pre class="pub-det__pre">{{ publicacao()!.relatorioValidacao }}</pre>
+        </details>
+      }
+    </ui-card>
+
+    @if (publicacao()!.status === 'SUCESSO') {
+      <ui-card padding="md">
+        <h3 class="pub-det__section-title">Mudanças nesta versão</h3>
+        @for (tipo of mudancaTipos; track tipo) {
+          @let items = changelogPorTipo(tipo);
+          @if (items.length) {
+            <h4 class="pub-det__change-type">{{ tipo }}</h4>
+            <ul class="pub-det__change-list">
+              @for (c of items; track c.id) {
+                <li>{{ c.paginaTitulo }}</li>
+              }
+            </ul>
+          }
+        }
+        @if (!changelog().length) {
+          <p class="pub-det__empty">Sem changelog registrado para esta publicação.</p>
+        }
+      </ui-card>
+
+      <div class="pub-det__actions">
+        <ui-button variant="secondary" icon="Link" (clicked)="copiarLink()">
+          Copiar link público temporário (download ZIP sem login)
+        </ui-button>
+      </div>
+    }
+  } @else {
+    <ui-card padding="md">
+      <p class="pub-det__empty">Carregando…</p>
+    </ui-card>
+  }
+</div>

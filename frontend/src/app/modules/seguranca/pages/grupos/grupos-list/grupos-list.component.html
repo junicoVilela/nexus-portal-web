@@ -1,0 +1,97 @@
+<ui-list-page
+  title="Grupos de acesso"
+  subtitle="Configure perfis de permissão e vincule usuários a eles."
+  icon="UsersRound"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhum grupo encontrado"
+  emptyDescription="Cadastre um grupo para começar a organizar permissões."
+  emptyIllustration="inbox"
+  emptyIcon="UsersRound"
+>
+  <div actions>
+    <ui-button *appPermissao="'GRUPO_ACESSO:CRIAR'" icon="Plus" (clicked)="novo()">Novo grupo</ui-button>
+  </div>
+
+  <div filters class="grupos__filters">
+    <input
+      class="grupos__search"
+      [value]="busca"
+      (input)="aplicarBusca($event)"
+      placeholder="Buscar por nome ou código..."
+    />
+    <select class="grupos__select" [value]="filtroAtivo" (change)="alterarAtivo($any($event.target).value)">
+      <option value="">Todos os status</option>
+      <option value="true">Ativos</option>
+      <option value="false">Inativos</option>
+    </select>
+    <span class="grupos__count">{{ total() }} grupos</span>
+  </div>
+
+  <table class="grupos__table">
+    <thead>
+      <tr>
+        <th class="grupos__th">Grupo</th>
+        <th class="grupos__th">Permissões</th>
+        <th class="grupos__th">Usuários</th>
+        <th class="grupos__th">Status</th>
+        <th class="grupos__th grupos__th--right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (g of grupos(); track g.id) {
+        <tr class="grupos__row">
+          <td class="grupos__td">
+            <strong>{{ g.nome }}</strong>
+            <small class="grupos__sub">{{ g.codigo }}{{ g.descricao ? ' · ' + g.descricao : '' }}</small>
+          </td>
+          <td class="grupos__td">
+            <span class="grupos__metric">{{ g.permissaoIds?.length ?? 0 }}</span>
+          </td>
+          <td class="grupos__td">
+            <span class="grupos__metric">{{ g.totalUsuarios ?? 0 }}</span>
+          </td>
+          <td class="grupos__td">
+            <ui-badge [tone]="g.ativo ? 'success' : 'neutral'" [dot]="true">{{
+              g.ativo ? 'Ativo' : 'Inativo'
+            }}</ui-badge>
+          </td>
+          <td class="grupos__td grupos__td--actions">
+            <ui-button
+              *appPermissao="'GRUPO_ACESSO:EDITAR'"
+              variant="ghost"
+              size="sm"
+              icon="Pencil"
+              (clicked)="editar(g)"
+              >Editar</ui-button
+            >
+            <ui-button
+              *appPermissao="'GRUPO_ACESSO:VINCULAR_PERMISSAO'"
+              variant="ghost"
+              size="sm"
+              icon="Shield"
+              (clicked)="vincularPermissoes(g)"
+              >Permissões</ui-button
+            >
+            <ui-button
+              *appPermissao="'GRUPO_ACESSO:EDITAR'"
+              variant="ghost"
+              size="sm"
+              [icon]="g.ativo ? 'CircleOff' : 'CircleCheck'"
+              (clicked)="toggleAtivo(g)"
+              >{{ g.ativo ? 'Inativar' : 'Ativar' }}</ui-button
+            >
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>

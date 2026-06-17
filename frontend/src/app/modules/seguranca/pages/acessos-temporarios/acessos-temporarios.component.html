@@ -1,0 +1,149 @@
+<ui-list-page
+  title="Acessos temporários"
+  subtitle="Permissões válidas por período definido — para suporte, implantação ou exceções."
+  icon="Clock"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0 && !mostraForm()"
+  emptyTitle="Nenhum acesso temporário"
+  emptyDescription="Conceda um acesso temporário para liberar permissões por período."
+  emptyIllustration="inbox"
+  emptyIcon="Clock"
+>
+  <div actions>
+    <ui-button *appPermissao="'ACESSO_TEMPORARIO:CRIAR'" icon="Plus" (clicked)="abrirForm()" [disabled]="mostraForm()"
+      >Novo acesso</ui-button
+    >
+  </div>
+
+  <div filters class="acessos__filters">
+    <select class="acessos__select" [value]="filtroUsuario" (change)="alterarUsuario($any($event.target).value)">
+      <option value="">Todos os usuários</option>
+      @for (u of usuarios(); track u.id) {
+        <option [value]="u.id">{{ u.nome }}</option>
+      }
+    </select>
+    <select class="acessos__select" [value]="filtroStatus" (change)="alterarStatus($any($event.target).value)">
+      <option value="">Todos os status</option>
+      <option value="AGENDADO">Agendados</option>
+      <option value="ATIVO">Ativos</option>
+      <option value="EXPIRADO">Expirados</option>
+      <option value="REVOGADO">Revogados</option>
+    </select>
+    <span class="acessos__count">{{ total() }} acessos</span>
+  </div>
+
+  @if (mostraForm()) {
+    <ui-card padding="lg">
+      <form class="acessos__form" [formGroup]="form" (ngSubmit)="salvar()">
+        <h3 class="acessos__form-title">Novo acesso temporário</h3>
+        <div class="acessos__grid">
+          <label class="acessos__field">
+            <span>Usuário <em>*</em></span>
+            <select formControlName="usuarioId">
+              <option value="">Selecione...</option>
+              @for (u of usuarios(); track u.id) {
+                <option [value]="u.id">{{ u.nome }} ({{ u.login }})</option>
+              }
+            </select>
+          </label>
+          <label class="acessos__field">
+            <span>Grupo temporário</span>
+            <select formControlName="grupoAcessoId">
+              <option value="">— nenhum —</option>
+              @for (g of grupos(); track g.id) {
+                <option [value]="g.id">{{ g.nome }}</option>
+              }
+            </select>
+          </label>
+          <label class="acessos__field">
+            <span>Ou permissão única</span>
+            <select formControlName="permissaoId">
+              <option value="">— nenhuma —</option>
+              @for (p of permissoes(); track p.id) {
+                <option [value]="p.id">{{ p.codigo }}</option>
+              }
+            </select>
+          </label>
+          <label class="acessos__field">
+            <span>Início <em>*</em></span>
+            <input type="datetime-local" formControlName="inicioEm" />
+          </label>
+          <label class="acessos__field">
+            <span>Fim <em>*</em></span>
+            <input type="datetime-local" formControlName="fimEm" />
+          </label>
+          <label class="acessos__field acessos__field--full">
+            <span>Justificativa</span>
+            <textarea
+              rows="2"
+              formControlName="justificativa"
+              placeholder="Ex.: suporte ao chamado #1234, validação de release..."
+            ></textarea>
+          </label>
+        </div>
+        <p class="acessos__hint">Informe pelo menos um: grupo ou permissão. O acesso só vale entre início e fim.</p>
+        <div class="acessos__form-actions">
+          <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
+          <ui-button type="submit" [loading]="saving()">Conceder acesso</ui-button>
+        </div>
+      </form>
+    </ui-card>
+  }
+
+  <table class="acessos__table">
+    <thead>
+      <tr>
+        <th class="acessos__th">Usuário</th>
+        <th class="acessos__th">Acesso</th>
+        <th class="acessos__th">Vigência</th>
+        <th class="acessos__th">Status</th>
+        <th class="acessos__th">Justificativa</th>
+        <th class="acessos__th acessos__th--right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (a of acessos(); track a.id) {
+        <tr class="acessos__row">
+          <td class="acessos__td">
+            <strong>{{ nomeUsuario(a.usuarioId) }}</strong>
+          </td>
+          <td class="acessos__td">
+            <span class="acessos__desc">{{ descricaoAcesso(a) }}</span>
+          </td>
+          <td class="acessos__td">
+            <small>
+              {{ a.inicioEm | date: 'dd/MM/yyyy HH:mm' }} →
+              {{ a.fimEm | date: 'dd/MM/yyyy HH:mm' }}
+            </small>
+          </td>
+          <td class="acessos__td">
+            <ui-badge [tone]="toneStatus(a.status)" [dot]="true">{{ a.status }}</ui-badge>
+          </td>
+          <td class="acessos__td">
+            <small>{{ a.justificativa ?? '—' }}</small>
+          </td>
+          <td class="acessos__td acessos__td--actions">
+            @if (a.status === 'ATIVO' || a.status === 'AGENDADO') {
+              <ui-button
+                *appPermissao="'ACESSO_TEMPORARIO:REVOGAR'"
+                variant="ghost"
+                size="sm"
+                icon="X"
+                (clicked)="revogar(a)"
+                >Revogar</ui-button
+              >
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>

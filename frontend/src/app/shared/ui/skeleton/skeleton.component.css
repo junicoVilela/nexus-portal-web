@@ -1,0 +1,21 @@
+.ui-skel {
+  display: inline-block;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  animation: ui-shimmer 1.5s ease-in-out infinite;
+}
+.ui-skel--circle {
+  border-radius: 50%;
+}
+.ui-skel--block {
+  border-radius: var(--radius);
+}
+@keyframes ui-shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

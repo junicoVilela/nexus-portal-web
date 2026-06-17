@@ -1,0 +1,30 @@
+# Local / ephemeral
+.superpowers/
+.claude/
+
+# Dependencies & build
+node_modules/
+dist/
+.angular/
+coverage/
+playwright-report/
+test-results/
+storybook-static/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+
+# Logs & OS
+*.log
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.*
+!.env.example

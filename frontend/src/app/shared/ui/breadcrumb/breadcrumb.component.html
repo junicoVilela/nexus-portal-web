@@ -1,0 +1,12 @@
+<nav class="ui-crumb" aria-label="Trilha de navegação">
+  @for (item of items(); track item.label; let last = $last) {
+    @if (item.route && !last) {
+      <a class="ui-crumb__link" [routerLink]="item.route">{{ item.label }}</a>
+    } @else {
+      <span class="ui-crumb__current" [attr.aria-current]="last ? 'page' : null">{{ item.label }}</span>
+    }
+    @if (!last) {
+      <lucide-icon name="ChevronRight" class="ui-crumb__sep" />
+    }
+  }
+</nav>

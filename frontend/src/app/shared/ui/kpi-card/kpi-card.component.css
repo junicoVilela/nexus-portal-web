@@ -1,0 +1,55 @@
+.ui-kpi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+.ui-kpi__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.ui-kpi__valor {
+  font: 700 22px/1 var(--font-display);
+  color: var(--text);
+}
+.ui-kpi__label {
+  font: 500 12.5px var(--font-body);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.ui-kpi__desc {
+  font: 400 11.5px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.ui-kpi--green .ui-kpi__icon {
+  background: color-mix(in srgb, var(--success) 16%, var(--surface));
+  color: var(--success);
+}
+.ui-kpi--blue .ui-kpi__icon {
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  color: var(--accent);
+}
+.ui-kpi--amber .ui-kpi__icon {
+  background: color-mix(in srgb, var(--warn) 16%, var(--surface));
+  color: var(--warn);
+}
+.ui-kpi--purple .ui-kpi__icon {
+  background: color-mix(in srgb, #8b5cf6 16%, var(--surface));
+  color: #8b5cf6;
+}
+.ui-kpi--red .ui-kpi__icon {
+  background: color-mix(in srgb, var(--danger) 16%, var(--surface));
+  color: var(--danger);
+}

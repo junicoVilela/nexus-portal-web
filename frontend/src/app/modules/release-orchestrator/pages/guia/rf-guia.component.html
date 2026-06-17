@@ -1,0 +1,161 @@
+<div class="rf-guia">
+  <ui-page-header
+    title="Como usar o Release Orchestrator"
+    subtitle="Guia interativo passo a passo — clique nos passos ou use Anterior / Próximo"
+    icon="BookOpen"
+  >
+    <div actions>
+      <ui-button icon="PlayCircle" [routerLink]="['/release-orchestrator/builder']">Começar agora</ui-button>
+    </div>
+  </ui-page-header>
+
+  <div class="rf-guia__progress-wrap">
+    <div class="rf-guia__progress-meta">
+      <span>Passo {{ passoAtual() + 1 }} de {{ passos.length }}</span>
+      <span>{{ progressoPct() }}%</span>
+    </div>
+    <div class="rf-guia__progress-track">
+      <div class="rf-guia__progress-fill" [style.width.%]="progressoPct()"></div>
+    </div>
+  </div>
+
+  <div class="rf-guia__layout">
+    <aside class="rf-guia__steps-panel">
+      <h2 class="rf-guia__steps-title">Passos</h2>
+      <ul class="rf-guia__steps-list">
+        @for (p of passos; track p.id; let i = $index) {
+          <li>
+            <button
+              type="button"
+              class="rf-guia__step-btn"
+              [class.rf-guia__step-btn--active]="passoAtual() === i"
+              [class.rf-guia__step-btn--visited]="passoVisitado(i)"
+              (click)="selecionarPasso(i)"
+            >
+              <span class="rf-guia__step-num">
+                @if (passoVisitado(i) && passoAtual() !== i) {
+                  <lucide-icon name="Check" [size]="12" />
+                } @else {
+                  {{ i + 1 }}
+                }
+              </span>
+              <span class="rf-guia__step-text">
+                <span class="rf-guia__step-label">{{ p.titulo }}</span>
+                <span class="rf-guia__step-resumo">{{ p.resumo }}</span>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    </aside>
+
+    <section class="rf-guia__detail">
+      <div class="rf-guia__detail-header">
+        <div class="rf-guia__detail-icon">
+          <lucide-icon name="BookOpen" [size]="18" />
+        </div>
+        <div>
+          <h2 class="rf-guia__detail-title">{{ passo().titulo }}</h2>
+          <p class="rf-guia__detail-resumo">{{ passo().resumo }}</p>
+        </div>
+      </div>
+
+      <div class="rf-guia__detail-body">
+        @if (passoEhFluxo()) {
+          <div class="rf-guia__fluxo">
+            <p class="rf-guia__fluxo-hint">
+              <lucide-icon name="MousePointerClick" [size]="13" />
+              Clique em um status para ver a descrição
+            </p>
+            <div class="rf-guia__fluxo-track">
+              @for (s of fluxoPrincipal; track s.status; let last = $last) {
+                <button
+                  type="button"
+                  class="rf-guia__fluxo-node"
+                  [class.rf-guia__fluxo-node--active]="statusSelecionado() === s.status"
+                  [style.--node-color]="s.cor"
+                  (click)="selecionarStatus($any(s.status))"
+                >
+                  <span class="rf-guia__fluxo-dot"></span>
+                  <span class="rf-guia__fluxo-label">{{ s.label }}</span>
+                </button>
+                @if (!last) {
+                  <span class="rf-guia__fluxo-arrow" aria-hidden="true">
+                    <lucide-icon name="ChevronRight" [size]="14" />
+                  </span>
+                }
+              }
+            </div>
+            <div class="rf-guia__fluxo-cancel">
+              <span class="rf-guia__fluxo-cancel-label">A qualquer momento:</span>
+              <button
+                type="button"
+                class="rf-guia__fluxo-node rf-guia__fluxo-node--cancel"
+                [class.rf-guia__fluxo-node--active]="statusSelecionado() === 'CANCELADA'"
+                [style.--node-color]="'#dc2626'"
+                (click)="selecionarStatus('CANCELADA')"
+              >
+                <span class="rf-guia__fluxo-dot"></span>
+                <span class="rf-guia__fluxo-label">Cancelada</span>
+              </button>
+            </div>
+            <div class="rf-guia__fluxo-detail" [style.border-color]="statusAtivo().cor">
+              <strong [style.color]="statusAtivo().cor">{{ statusAtivo().label }}</strong>
+              <p>{{ statusAtivo().descricao }}</p>
+            </div>
+          </div>
+        } @else {
+          <ul class="rf-guia__dicas">
+            @for (dica of passo().dicas; track dica) {
+              <li>
+                <lucide-icon name="CheckCircle" [size]="15" />
+                <span>{{ dica }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="rf-guia__detail-footer">
+        <div class="rf-guia__nav-buttons">
+          <ui-button variant="ghost" icon="ChevronLeft" [disabled]="ehPrimeiro()" (clicked)="anterior()"
+            >Anterior</ui-button
+          >
+          @if (!ehUltimo()) {
+            <ui-button icon="ChevronRight" (clicked)="proximo()">Próximo</ui-button>
+          } @else {
+            <ui-button icon="PlayCircle" [routerLink]="['/release-orchestrator/builder']">Registrar minha release</ui-button>
+          }
+        </div>
+        @if (passo().rota) {
+          <a class="rf-guia__acao-link" [routerLink]="passo().rota">
+            <lucide-icon name="ExternalLink" [size]="13" />
+            {{ passo().acaoLabel ?? 'Abrir tela' }}
+          </a>
+        }
+      </div>
+    </section>
+  </div>
+
+  <div class="rf-guia__atalhos">
+    <h3 class="rf-guia__atalhos-title">Atalhos rápidos</h3>
+    <div class="rf-guia__atalhos-grid">
+      <a routerLink="/release-orchestrator/produtos" class="rf-guia__atalho-card">
+        <lucide-icon name="Box" [size]="20" />
+        <span>Produtos</span>
+      </a>
+      <a routerLink="/release-orchestrator/builder" class="rf-guia__atalho-card">
+        <lucide-icon name="PlayCircle" [size]="20" />
+        <span>Registrar</span>
+      </a>
+      <a routerLink="/release-orchestrator/releases" class="rf-guia__atalho-card">
+        <lucide-icon name="Tag" [size]="20" />
+        <span>Releases</span>
+      </a>
+      <a routerLink="/release-orchestrator/templates" class="rf-guia__atalho-card">
+        <lucide-icon name="FilePen" [size]="20" />
+        <span>Templates</span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<ui-list-page
+  title="Publicações"
+  subtitle="Acompanhe a geração dos pacotes, reprocessamentos e disponibilidade dos artefatos publicados."
+  icon="PackagePlus"
+  [isEmpty]="totalPublicacoes() === 0"
+  emptyTitle="Nenhuma publicação encontrada"
+  emptyDescription="Gere o primeiro pacote para começar a publicar manuais."
+  emptyIllustration="inbox"
+  emptyIcon="PackagePlus"
+>
+  <div actions>
+    @if (loadingHistory() || publicacoes().some(i => i.status === 'GERANDO')) {
+      <ui-badge tone="warn" [dot]="true">{{
+        publicacoes().some(i => i.status === 'GERANDO') ? 'Gerando...' : 'Atualizando'
+      }}</ui-badge>
+    }
+    <ui-button icon="PlayCircle" (clicked)="nova()">Gerar pacote</ui-button>
+  </div>
+
+  <div filters class="pubs__filters">
+    <span class="pubs__count">{{ totalPublicacoes() }} publicações</span>
+    <span class="pubs__stats">
+      <ui-badge tone="success" [dot]="true"
+        >{{ publicacoes().filter(i => i.status === 'SUCESSO').length }} concluídas</ui-badge
+      >
+      @if (publicacoes().filter(i => i.status === 'GERANDO').length > 0) {
+        <ui-badge tone="warn" [dot]="true"
+          >{{ publicacoes().filter(i => i.status === 'GERANDO').length }} em andamento</ui-badge
+        >
+      }
+      @if (publicacoes().filter(i => i.status === 'ERRO').length > 0) {
+        <ui-badge tone="danger" [dot]="true"
+          >{{ publicacoes().filter(i => i.status === 'ERRO').length }} com falha</ui-badge
+        >
+      }
+    </span>
+  </div>
+
+  <table class="pubs__table">
+    <thead>
+      <tr>
+        <th class="pubs__th pubs__th--sort" (click)="ordenar('cliente.nome')">
+          Cliente <span>{{ indicacaoOrdenacao('cliente.nome') }}</span>
+        </th>
+        <th class="pubs__th pubs__th--sort" (click)="ordenar('versao')">
+          Versão <span>{{ indicacaoOrdenacao('versao') }}</span>
+        </th>
+        <th class="pubs__th pubs__th--sort" (click)="ordenar('status')">
+          Status <span>{{ indicacaoOrdenacao('status') }}</span>
+        </th>
+        <th class="pubs__th">Páginas</th>
+        <th class="pubs__th pubs__th--sort" (click)="ordenar('createdAt')">
+          Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
+        </th>
+        <th class="pubs__th pubs__th--sort" (click)="ordenar('updatedAt')">
+          Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
+        </th>
+        <th class="pubs__th">Arquivo</th>
+        <th class="pubs__th"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of publicacoes(); track item.id) {
+        <tr class="pubs__row">
+          <td class="pubs__td pubs__td--bold">{{ item.clienteNome }}</td>
+          <td class="pubs__td pubs__td--mono">{{ item.versao }}</td>
+          <td class="pubs__td">
+            <ui-badge
+              [tone]="
+                item.status === 'SUCESSO'
+                  ? 'success'
+                  : item.status === 'GERANDO'
+                    ? 'warn'
+                    : item.status === 'ERRO'
+                      ? 'danger'
+                      : 'neutral'
+              "
+              [dot]="true"
+              >{{ item.status }}</ui-badge
+            >
+          </td>
+          <td class="pubs__td">{{ item.quantidadePaginas }}</td>
+          <td class="pubs__td"><app-audit-stamp [user]="item.createdBy" [date]="item.createdAt" /></td>
+          <td class="pubs__td">
+            <app-audit-stamp [user]="item.updatedBy || item.createdBy" [date]="item.updatedAt || item.createdAt" />
+          </td>
+          <td class="pubs__td">
+            <strong class="pubs__filename">{{ item.arquivoZipNome || 'Indisponível' }}</strong>
+            <small class="pubs__filemeta">{{ item.quantidadeModulos }} módulos</small>
+          </td>
+          <td class="pubs__td pubs__td--actions">
+            <ui-button variant="ghost" size="sm" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
+            <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="baixar(item)"
+              >Baixar</ui-button
+            >
+            <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)"
+              >Link público</ui-button
+            >
+            <ui-button
+              variant="secondary"
+              size="sm"
+              [disabled]="item.status === 'GERANDO'"
+              (clicked)="reprocessar(item)"
+              >Reprocessar</ui-button
+            >
+          </td>
+        </tr>
+        @if (item.status === 'ERRO' && item.observacao) {
+          <tr class="pubs__row pubs__row--error-detail">
+            <td class="pubs__td pubs__td--error-detail" colspan="8">{{ item.observacao }}</td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+  <app-table-pagination
+    [totalItems]="totalPublicacoes()"
+    [page]="publicacoesPage()"
+    [pageSize]="publicacoesPageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarTamanhoPagina($event)"
+  />
+</ui-list-page>

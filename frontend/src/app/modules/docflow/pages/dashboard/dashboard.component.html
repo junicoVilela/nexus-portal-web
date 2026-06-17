@@ -1,0 +1,212 @@
+<div class="df-dash">
+  <ui-page-header
+    title="Dashboard"
+    subtitle="Visão geral da plataforma e métricas operacionais."
+    icon="LayoutDashboard"
+  />
+
+  <div class="df-dash__stats">
+    <ui-kpi-card
+      label="Clientes"
+      [valor]="totalClientes()"
+      icon="Building2"
+      tone="blue"
+      description="Total de clientes cadastrados"
+    />
+    <ui-kpi-card
+      label="Projetos"
+      [valor]="totalProjetos()"
+      icon="FolderOpen"
+      tone="purple"
+      description="Projetos ativos"
+    />
+    <ui-kpi-card
+      label="Módulos"
+      [valor]="totalModulos()"
+      icon="Layers"
+      tone="neutral"
+      description="Módulos no sistema"
+    />
+    <ui-kpi-card
+      label="Páginas"
+      [valor]="totalPaginas()"
+      icon="FileText"
+      tone="neutral"
+      description="Páginas de conteúdo"
+    />
+    <ui-kpi-card
+      label="Publicações"
+      [valor]="publicacoes().length"
+      icon="CloudUpload"
+      tone="green"
+      description="Total de publicações"
+    />
+
+    <div class="df-dash__stat">
+      <div class="df-dash__stat-head">
+        <span class="df-dash__stat-label">Pendências</span>
+        <span class="df-dash__stat-icon" [class.df-dash__stat-icon--warn]="paginasPendentes().length > 0"
+          ><lucide-icon name="AlertTriangle"
+        /></span>
+      </div>
+      <div class="df-dash__stat-value" [class.df-dash__stat-value--warn]="paginasPendentes().length > 0">
+        {{ paginasPendentes().length }}
+      </div>
+      <div class="df-dash__stat-foot">Páginas aguardando revisão</div>
+    </div>
+
+    <div class="df-dash__stat">
+      <div class="df-dash__stat-head">
+        <span class="df-dash__stat-label">Erros</span>
+        <span class="df-dash__stat-icon" [class.df-dash__stat-icon--danger]="publicacoesComErro().length > 0"
+          ><lucide-icon name="XCircle"
+        /></span>
+      </div>
+      <div class="df-dash__stat-value" [class.df-dash__stat-value--danger]="publicacoesComErro().length > 0">
+        {{ publicacoesComErro().length }}
+      </div>
+      <div class="df-dash__stat-foot">Publicações com falha</div>
+    </div>
+  </div>
+
+  <div class="df-dash__grid">
+    <ui-card padding="none" class="df-dash__card">
+      <div class="df-dash__card-head">
+        <lucide-icon name="List" class="df-dash__card-icon" />
+        <span class="df-dash__card-title">Fila operacional</span>
+      </div>
+      <table class="df-dash__table">
+        <thead>
+          <tr>
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('situacao')">
+              Situação <span>{{ indicacaoOrdenacaoFila('situacao') }}</span>
+            </th>
+            <th class="df-dash__th df-dash__th--sort df-dash__th--center" (click)="ordenarFila('quantidade')">
+              Qtd <span>{{ indicacaoOrdenacaoFila('quantidade') }}</span>
+            </th>
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('acao')">
+              Ação recomendada <span>{{ indicacaoOrdenacaoFila('acao') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filaOperacionalOrdenada; track item.situacao) {
+            <tr class="df-dash__row">
+              <td class="df-dash__td">{{ item.situacao }}</td>
+              <td class="df-dash__td df-dash__td--center">
+                <ui-badge [tone]="item.destaque ? 'warn' : 'neutral'">{{ item.quantidade }}</ui-badge>
+              </td>
+              <td class="df-dash__td df-dash__td--muted">{{ item.acao }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </ui-card>
+
+    <ui-card padding="none" class="df-dash__card">
+      <div class="df-dash__card-head">
+        <lucide-icon name="BarChart2" class="df-dash__card-icon" />
+        <span class="df-dash__card-title">Páginas por status</span>
+      </div>
+      <table class="df-dash__table">
+        <thead>
+          <tr>
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarStatus('status')">
+              Status <span>{{ indicacaoOrdenacaoStatus('status') }}</span>
+            </th>
+            <th class="df-dash__th df-dash__th--sort df-dash__th--center" (click)="ordenarStatus('total')">
+              Total <span>{{ indicacaoOrdenacaoStatus('total') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of statusStatsOrdenados; track s.status) {
+            <tr class="df-dash__row">
+              <td class="df-dash__td">
+                <ui-badge
+                  [tone]="
+                    s.status === 'PUBLICADO'
+                      ? 'success'
+                      : s.status === 'ARQUIVADO'
+                        ? 'neutral'
+                        : s.status === 'EM_REVISAO' || s.status === 'APROVADO'
+                          ? 'warn'
+                          : 'neutral'
+                  "
+                  >{{ s.status }}</ui-badge
+                >
+              </td>
+              <td class="df-dash__td df-dash__td--center df-dash__td--bold">{{ s.total }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </ui-card>
+  </div>
+
+  @if (clientesSemPublicacao().length > 0) {
+    <ui-card padding="md">
+      <div class="df-dash__alert-head">
+        <lucide-icon name="AlertTriangle" class="df-dash__alert-icon" />
+        <span class="df-dash__alert-title">Clientes ativos sem publicação</span>
+      </div>
+      <div class="df-dash__alert-chips">
+        @for (c of clientesSemPublicacao(); track c.id) {
+          <ui-badge tone="warn">{{ c.nome }}</ui-badge>
+        }
+      </div>
+    </ui-card>
+  }
+
+  <ui-card padding="none">
+    <div class="df-dash__card-head">
+      <lucide-icon name="Calendar" class="df-dash__card-icon" />
+      <span class="df-dash__card-title">Últimas publicações</span>
+    </div>
+    <table class="df-dash__table">
+      <thead>
+        <tr>
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('cliente.nome')">
+            Cliente <span>{{ indicacaoOrdenacaoHistorico('cliente.nome') }}</span>
+          </th>
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('versao')">
+            Versão <span>{{ indicacaoOrdenacaoHistorico('versao') }}</span>
+          </th>
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('status')">
+            Status <span>{{ indicacaoOrdenacaoHistorico('status') }}</span>
+          </th>
+          <th class="df-dash__th df-dash__th--center">Páginas</th>
+          <th class="df-dash__th df-dash__th--center">Módulos</th>
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('createdAt')">
+            Data <span>{{ indicacaoOrdenacaoHistorico('createdAt') }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of ultimasPublicacoes(); track item.id) {
+          <tr class="df-dash__row">
+            <td class="df-dash__td df-dash__td--bold">{{ item.clienteNome }}</td>
+            <td class="df-dash__td df-dash__td--mono">{{ item.versao }}</td>
+            <td class="df-dash__td">
+              <ui-badge
+                [tone]="item.status === 'SUCESSO' ? 'success' : item.status === 'ERRO' ? 'danger' : 'neutral'"
+                [dot]="true"
+                >{{ item.status }}</ui-badge
+              >
+            </td>
+            <td class="df-dash__td df-dash__td--center">{{ item.quantidadePaginas }}</td>
+            <td class="df-dash__td df-dash__td--center">{{ item.quantidadeModulos }}</td>
+            <td class="df-dash__td df-dash__td--muted">{{ item.createdAt | date: 'dd/MM/yy HH:mm' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <app-table-pagination
+      [totalItems]="totalHistoricoPublicacoes()"
+      [page]="ultimasPublicacoesPage()"
+      [pageSize]="ultimasPublicacoesPageSize()"
+      (pageChange)="alterarPaginaHistorico($event)"
+      (pageSizeChange)="alterarTamanhoPaginaHistorico($event)"
+    />
+  </ui-card>
+</div>

@@ -1,0 +1,7 @@
+<label class="ui-switch">
+  <input type="checkbox" [checked]="checked()" [disabled]="disabledSig()" (change)="onToggle($event)" />
+  <span class="ui-switch__track"><span class="ui-switch__thumb"></span></span>
+  @if (label()) {
+    <span class="ui-switch__label">{{ label() }}</span>
+  }
+</label>

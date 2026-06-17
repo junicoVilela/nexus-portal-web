@@ -1,0 +1,27 @@
+<label class="ui-input">
+  @if (label()) {
+    <span class="ui-input__label">{{ label() }}</span>
+  }
+  <span class="ui-input__field" [class.ui-input__field--error]="!!error()">
+    @if (leadingIcon()) {
+      <lucide-icon [name]="leadingIcon()!" class="ui-input__lead" />
+    }
+    <input
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [value]="value()"
+      [disabled]="disabledSig()"
+      [autocomplete]="autocomplete()"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+    />
+    @if (trailingIcon()) {
+      <lucide-icon [name]="trailingIcon()!" class="ui-input__trail" />
+    }
+  </span>
+  @if (error()) {
+    <span class="ui-input__error">{{ error() }}</span>
+  } @else if (hint()) {
+    <span class="ui-input__hint">{{ hint() }}</span>
+  }
+</label>

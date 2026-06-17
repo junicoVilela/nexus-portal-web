@@ -1,0 +1,72 @@
+.ui-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.ui-error__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.ui-error__icon lucide-icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  line-height: 0;
+}
+
+.ui-error__icon lucide-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-error--warn .ui-error__icon {
+  background: var(--warn-soft, color-mix(in srgb, var(--warn) 18%, transparent));
+  color: var(--warn);
+}
+
+.ui-error--danger .ui-error__icon {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.ui-error--neutral .ui-error__icon {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.ui-error__title {
+  margin: 0;
+  font: 700 16px var(--font-display);
+  color: var(--text);
+}
+
+.ui-error__desc {
+  margin: 0 0 8px;
+  max-width: 480px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.ui-error__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

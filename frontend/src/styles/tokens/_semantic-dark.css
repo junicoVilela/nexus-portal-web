@@ -1,0 +1,44 @@
+[data-theme='dark'] {
+  color-scheme: dark;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --bg: var(--dark-bg);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e6e8f2;
+  --text-muted: #8b91b0;
+  --text-subtle: #5e657f;
+
+  --accent: var(--indigo-400);
+  --accent-hover: var(--indigo-300);
+  --accent-soft: rgba(129, 140, 248, 0.14);
+  --accent-text: var(--dark-base);
+  --accent-ring: rgba(129, 140, 248, 0.25);
+  --accent-grad: linear-gradient(135deg, var(--violet-600), var(--cyan-500));
+
+  --success: var(--green-300);
+  --success-soft: rgba(110, 231, 183, 0.12);
+  --warn: var(--amber-300);
+  --warn-soft: rgba(252, 211, 77, 0.12);
+  --danger: var(--red-300);
+  --danger-soft: rgba(252, 165, 165, 0.14);
+  --info: #93c5fd;
+  --info-soft: rgba(147, 197, 253, 0.14);
+
+  --sidebar-bg: rgba(255, 255, 255, 0.02);
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-text: #b5bad0;
+  --sidebar-active-bg: linear-gradient(90deg, rgba(124, 58, 237, 0.15), rgba(34, 211, 238, 0.06));
+  --sidebar-active-text: #ffffff;
+  --sidebar-active-bar: linear-gradient(180deg, var(--indigo-400), var(--cyan-400));
+
+  --topbar-bg: rgba(255, 255, 255, 0.02);
+  --topbar-border: rgba(255, 255, 255, 0.05);
+
+  /* Cor opaca para <option> de <select> nativos no tema escuro — o OS não
+   * compõe transparência sobre o parent, por isso não pode usar `--surface`. */
+  --option-bg: #1c2238;
+
+  /* Dark-only base background gradient for body */
+  --body-bg-image: radial-gradient(120% 80% at 0% 0%, #1a1f3a 0%, #0b0e1f 60%, #060818 100%);
+}

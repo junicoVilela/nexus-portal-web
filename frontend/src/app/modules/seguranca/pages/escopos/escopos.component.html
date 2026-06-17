@@ -1,0 +1,196 @@
+<ui-page-header
+  title="Escopo de acesso"
+  subtitle="Limite onde cada usuário ou grupo pode atuar — por cliente, produto, ambiente ou tipo."
+  icon="MapPinned"
+/>
+
+@if (loading()) {
+  <div class="escopos__loading">Carregando...</div>
+} @else {
+  <div class="escopos__layout">
+    <!-- Lateral: seleção de usuário/grupo -->
+    <aside class="escopos__aside">
+      <ui-card padding="lg">
+        <div class="escopos__tabs">
+          <button
+            type="button"
+            class="escopos__tab"
+            [class.escopos__tab--active]="modo() === 'usuario'"
+            (click)="alternarModo('usuario')"
+          >
+            Usuários
+          </button>
+          <button
+            type="button"
+            class="escopos__tab"
+            [class.escopos__tab--active]="modo() === 'grupo'"
+            (click)="alternarModo('grupo')"
+          >
+            Grupos
+          </button>
+        </div>
+
+        @if (modo() === 'usuario') {
+          <ul class="escopos__list">
+            @for (u of usuarios(); track u.id) {
+              <li
+                class="escopos__list-item"
+                [class.escopos__list-item--active]="selecionadoId() === u.id"
+                (click)="selecionar(u.id)"
+              >
+                <strong>{{ u.nome }}</strong>
+                <small>{{ u.login }}</small>
+              </li>
+            } @empty {
+              <li class="escopos__empty">Nenhum usuário.</li>
+            }
+          </ul>
+        } @else {
+          <ul class="escopos__list">
+            @for (g of grupos(); track g.id) {
+              <li
+                class="escopos__list-item"
+                [class.escopos__list-item--active]="selecionadoId() === g.id"
+                (click)="selecionar(g.id)"
+              >
+                <strong>{{ g.nome }}</strong>
+                <small>{{ g.codigo }}</small>
+              </li>
+            } @empty {
+              <li class="escopos__empty">Nenhum grupo.</li>
+            }
+          </ul>
+        }
+      </ui-card>
+    </aside>
+
+    <!-- Conteúdo: escopos do selecionado -->
+    <section class="escopos__content">
+      @if (!selecionadoId()) {
+        <ui-card padding="lg">
+          <p class="escopos__placeholder">
+            Selecione um {{ modo() === 'usuario' ? 'usuário' : 'grupo' }} à esquerda para gerenciar seus escopos.
+          </p>
+        </ui-card>
+      } @else {
+        <div class="escopos__header">
+          <div>
+            <h3 class="escopos__title">
+              Escopos de {{ modo() === 'usuario' ? usuarioSel()?.nome : grupoSel()?.nome }}
+            </h3>
+            <small class="escopos__sub"> {{ escoposVisiveis().length }} escopo(s) — diretos + herdados </small>
+          </div>
+          <ui-button *appPermissao="'ESCOPO:CRIAR'" icon="Plus" (clicked)="abrirForm()">Novo escopo</ui-button>
+        </div>
+
+        @if (mostraForm()) {
+          <ui-card padding="lg">
+            <form class="escopos__form" [formGroup]="form" (ngSubmit)="salvar()">
+              <h4 class="escopos__form-title">
+                {{ editando() ? 'Editar escopo' : 'Novo escopo' }}
+              </h4>
+              <div class="escopos__form-grid">
+                <label class="escopos__field">
+                  <span>Cliente</span>
+                  <input type="text" formControlName="clienteId" placeholder="ID/slug do cliente (opcional)" />
+                </label>
+                <label class="escopos__field">
+                  <span>Produto</span>
+                  <input type="text" formControlName="produtoId" placeholder="ID/slug do produto (opcional)" />
+                </label>
+                <label class="escopos__field">
+                  <span>Ambiente</span>
+                  <input type="text" formControlName="ambienteId" placeholder="ID/slug do ambiente (opcional)" />
+                </label>
+                <label class="escopos__field">
+                  <span>Tipo de ambiente</span>
+                  <select formControlName="tipoAmbiente">
+                    <option value="">Qualquer</option>
+                    @for (t of TIPOS_AMBIENTE; track t) {
+                      <option [value]="t">{{ t }}</option>
+                    }
+                  </select>
+                </label>
+                <label class="escopos__field escopos__field--check">
+                  <input type="checkbox" formControlName="somenteLeitura" />
+                  <span>Somente leitura</span>
+                </label>
+                <label class="escopos__field escopos__field--check">
+                  <input type="checkbox" formControlName="ativo" />
+                  <span>Ativo</span>
+                </label>
+              </div>
+              <p class="escopos__hint">
+                Deixe os campos vazios para um escopo abrangente; preencha os que devem restringir o acesso.
+              </p>
+              <div class="escopos__form-actions">
+                <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
+                <ui-button type="submit" [loading]="saving()">Salvar escopo</ui-button>
+              </div>
+            </form>
+          </ui-card>
+        }
+
+        <ui-card padding="lg">
+          @if (escoposVisiveis().length === 0) {
+            <p class="escopos__empty">Nenhum escopo configurado.</p>
+          } @else {
+            <ul class="escopos__items">
+              @for (v of escoposVisiveis(); track v.escopo.id) {
+                <li class="escopos__item">
+                  <div class="escopos__item-info">
+                    <div class="escopos__item-row">
+                      <ui-badge [tone]="v.origem === 'direto' ? 'info' : 'accent'" [dot]="true">
+                        {{ v.origem === 'direto' ? 'Direto' : 'Herdado' }}
+                      </ui-badge>
+                      @if (v.origem === 'herdado') {
+                        <span class="escopos__item-source">via grupo {{ v.origemDescricao }}</span>
+                      }
+                      <ui-badge [tone]="v.escopo.ativo ? 'success' : 'neutral'" [dot]="true">
+                        {{ v.escopo.ativo ? 'Ativo' : 'Inativo' }}
+                      </ui-badge>
+                      @if (v.escopo.somenteLeitura) {
+                        <ui-badge tone="warn" [dot]="true">Somente leitura</ui-badge>
+                      }
+                    </div>
+                    <p class="escopos__item-desc">{{ descricaoEscopo(v.escopo) }}</p>
+                  </div>
+                  @if (v.origem === 'direto') {
+                    <div class="escopos__item-actions">
+                      <ui-button
+                        *appPermissao="'ESCOPO:EDITAR'"
+                        variant="ghost"
+                        size="sm"
+                        icon="Pencil"
+                        (clicked)="abrirForm(v.escopo)"
+                        >Editar</ui-button
+                      >
+                      <ui-button
+                        *appPermissao="'ESCOPO:EDITAR'"
+                        variant="ghost"
+                        size="sm"
+                        [icon]="v.escopo.ativo ? 'CircleOff' : 'CircleCheck'"
+                        (clicked)="toggleAtivo(v.escopo)"
+                        >{{ v.escopo.ativo ? 'Inativar' : 'Ativar' }}</ui-button
+                      >
+                      <ui-button
+                        *appPermissao="'ESCOPO:EXCLUIR'"
+                        variant="ghost"
+                        size="sm"
+                        icon="Trash2"
+                        (clicked)="remover(v.escopo)"
+                        >Remover</ui-button
+                      >
+                    </div>
+                  } @else {
+                    <span class="escopos__item-locked">Editar no grupo de origem</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </ui-card>
+      }
+    </section>
+  </div>
+}

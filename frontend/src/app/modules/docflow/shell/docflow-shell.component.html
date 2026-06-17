@@ -1,0 +1,27 @@
+<div class="df-shell">
+  <aside class="df-shell__side" aria-label="Doc Flow">
+    <div class="df-shell__brand">
+      <span class="df-shell__brand-icon"><lucide-icon name="BookOpen" /></span>
+      <div class="df-shell__brand-text">
+        <span class="df-shell__brand-name">Doc Flow</span>
+        <span class="df-shell__brand-sub">Manual do usuário</span>
+      </div>
+    </div>
+    <nav class="df-shell__nav">
+      @for (item of navItems(); track item.route.join('/')) {
+        <a
+          class="df-shell__nav-link"
+          [routerLink]="item.route"
+          routerLinkActive="df-shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        >
+          <lucide-icon [name]="item.icon" class="df-shell__nav-icon" />
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+  <main class="df-shell__main">
+    <router-outlet />
+  </main>
+</div>

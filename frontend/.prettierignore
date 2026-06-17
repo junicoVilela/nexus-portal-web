@@ -1,0 +1,6 @@
+dist/
+coverage/
+.angular/
+node_modules/
+*.snap
+package-lock.json

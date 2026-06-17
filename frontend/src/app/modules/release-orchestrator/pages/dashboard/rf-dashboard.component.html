@@ -1,0 +1,110 @@
+<div class="rf-dash">
+  <ui-page-header title="Dashboard" subtitle="Visão geral das releases e atividades recentes" icon="LayoutDashboard">
+    <div actions class="u-flex-row-gap-8">
+      <ui-button variant="ghost" icon="HelpCircle" [routerLink]="['/release-orchestrator/guia']">Como usar</ui-button>
+      <ui-button variant="secondary" icon="List" [routerLink]="['/release-orchestrator/releases']">Ver todas</ui-button>
+      <ui-button icon="PlayCircle" [routerLink]="['/release-orchestrator/builder']">Registrar release</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
+  }
+
+  <div class="rf-dash__kpi-grid">
+    @for (ind of indicadores(); track ind.label) {
+      <ui-kpi-card [label]="ind.label" [valor]="ind.valor" [icon]="ind.icon" [tone]="ind.cor" />
+    }
+  </div>
+
+  <div class="rf-dash__grid">
+    <ui-card padding="none">
+      <div class="rf-dash__card-head">
+        <h2 class="rf-dash__card-title">
+          <lucide-icon name="Tag" [size]="15" />
+          Releases recentes
+        </h2>
+        <ui-button variant="ghost" size="sm" icon="ChevronRight" [routerLink]="['/release-orchestrator/releases']"
+          >Ver todas</ui-button
+        >
+      </div>
+
+      @if (loading()) {
+        <div class="rf-dash__skeleton" aria-busy="true" aria-label="Carregando releases">
+          <ui-skeleton width="100%" height="48px" />
+          <ui-skeleton width="100%" height="48px" />
+          <ui-skeleton width="100%" height="48px" />
+        </div>
+      } @else if (releasesRecentes().length === 0) {
+        <ui-empty-state
+          icon="Tag"
+          illustration="inbox"
+          title="Nenhuma release cadastrada"
+          description="Comece pelo Builder para montar a primeira release rapidamente."
+        >
+          <ui-button icon="PlayCircle" [routerLink]="['/release-orchestrator/builder']">Criar primeira release</ui-button>
+        </ui-empty-state>
+      } @else {
+        <div class="rf-dash__table-wrap">
+          <table class="rf-dash__table">
+            <thead>
+              <tr>
+                <th class="rf-dash__th">Produto</th>
+                <th class="rf-dash__th">Versão</th>
+                <th class="rf-dash__th">Título</th>
+                <th class="rf-dash__th">Status</th>
+                <th class="rf-dash__th">Tipo</th>
+                <th class="rf-dash__th">Data</th>
+                <th class="rf-dash__th"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rel of releasesRecentes(); track rel.id) {
+                <tr class="rf-dash__row" [routerLink]="['/release-orchestrator/releases', rel.id]">
+                  <td class="rf-dash__td">
+                    <div
+                      class="rf-dash__prod-badge"
+                      [style.background]="rel.produtoCor + '18'"
+                      [style.color]="rel.produtoCor"
+                    >
+                      {{ rel.produtoSigla }}
+                    </div>
+                  </td>
+                  <td class="rf-dash__td rf-dash__td--mono">{{ rel.versao }}</td>
+                  <td class="rf-dash__td rf-dash__td--titulo">{{ rel.titulo }}</td>
+                  <td class="rf-dash__td">
+                    <ui-badge [tone]="getStatusTone(rel.status)">{{ statusLabels[rel.status] }}</ui-badge>
+                  </td>
+                  <td class="rf-dash__td">
+                    <span class="rf-dash__tipo">{{ tipoLabels[rel.tipo] }}</span>
+                  </td>
+                  <td class="rf-dash__td rf-dash__td--muted">
+                    {{ rel.dataPublicacao || rel.dataPrevista || rel.createdAt | date: 'dd/MM/yy' }}
+                  </td>
+                  <td class="rf-dash__td rf-dash__td--actions">
+                    <lucide-icon name="ChevronRight" [size]="14" class="rf-dash__row-arrow" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </ui-card>
+
+    <ui-card padding="none">
+      <div class="rf-dash__card-head">
+        <h2 class="rf-dash__card-title">
+          <lucide-icon name="Clock" [size]="15" />
+          Últimas atividades
+        </h2>
+      </div>
+      <div class="rf-dash__empty">
+        <p>As atividades aparecerão aqui conforme você criar releases e alterar status.</p>
+        <ui-button variant="ghost" size="sm" icon="BookOpen" [routerLink]="['/release-orchestrator/guia']"
+          >Ver guia de uso</ui-button
+        >
+      </div>
+    </ui-card>
+  </div>
+</div>

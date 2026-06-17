@@ -1,0 +1,64 @@
+/* Primitive tokens — raw values. Consumed only by semantic layers. */
+:root {
+  /* Indigo scale */
+  --indigo-50: #eef0ff;
+  --indigo-100: #dfe3ff;
+  --indigo-200: #c7cfff;
+  --indigo-300: #a4b0ff;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+
+  /* Cyan scale (dark mode accent secondary) */
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+
+  /* Violet (gradient signature) */
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+
+  /* Neutrals (slate-ish) */
+  --neutral-0: #ffffff;
+  --neutral-50: #f7f8fa;
+  --neutral-100: #f1f3f7;
+  --neutral-200: #e5e8ee;
+  --neutral-300: #c7ccd8;
+  --neutral-400: #94a3b8;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #0b1220;
+
+  /* Dark base */
+  --dark-base: #060818;
+  --dark-bg: #0b0e1f;
+  --dark-surface: #1a1f3a;
+
+  /* Semantic colors (raw) */
+  --green-300: #6ee7b7;
+  --green-500: #10b981;
+  --green-700: #047857;
+  --amber-300: #fcd34d;
+  --amber-500: #f59e0b;
+  --amber-700: #b45309;
+  --red-300: #fca5a5;
+  --red-500: #ef4444;
+  --red-700: #b91c1c;
+  --blue-500: #3b82f6;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-14: 56px;
+}

@@ -1,0 +1,100 @@
+<ui-list-page
+  title="Módulos"
+  subtitle="Detalhe os blocos funcionais de cada projeto e mantenha a navegação do manual previsível."
+  icon="Layers"
+  [isEmpty]="!!projetoId && totalModulos() === 0"
+  emptyTitle="Nenhum módulo encontrado"
+  emptyDescription="Nenhum módulo corresponde ao filtro informado."
+  emptyIllustration="search"
+  emptyIcon="Layers"
+>
+  <div actions>
+    <ui-button icon="Plus" (clicked)="novo()">Novo módulo</ui-button>
+  </div>
+
+  <div filters class="modulos__filters">
+    <select class="modulos__select" [value]="projetoId" (change)="selecionarProjeto($event)">
+      <option value="">Selecione um projeto</option>
+      @for (projeto of projetos(); track projeto.id) {
+        <option [value]="projeto.id">{{ projeto.nome }}</option>
+      }
+    </select>
+    <input
+      class="modulos__search"
+      [value]="filtroNome"
+      (input)="atualizarFiltro($event)"
+      placeholder="Filtrar por nome ou slug..."
+      [disabled]="!projetoId"
+    />
+    @if (projetoId) {
+      <span class="modulos__count">{{ totalModulos() }} {{ totalModulos() === 1 ? 'módulo' : 'módulos' }}</span>
+    }
+  </div>
+
+  @if (!projetoId) {
+    <div class="modulos__hint">Selecione um projeto para exibir os módulos.</div>
+  } @else {
+    <table class="modulos__table">
+      <thead>
+        <tr>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('projeto.nome')">
+            Projeto <span>{{ indicacaoOrdenacao('projeto.nome') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('ordem')">
+            Ordem <span>{{ indicacaoOrdenacao('ordem') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('nome')">
+            Nome <span>{{ indicacaoOrdenacao('nome') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('slug')">
+            Slug <span>{{ indicacaoOrdenacao('slug') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('ativo')">
+            Status <span>{{ indicacaoOrdenacao('ativo') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('createdAt')">
+            Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
+          </th>
+          <th class="modulos__th modulos__th--sort" (click)="ordenar('updatedAt')">
+            Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
+          </th>
+          <th class="modulos__th"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (modulo of modulos(); track modulo.id) {
+          <tr class="modulos__row">
+            <td class="modulos__td">{{ modulo.projetoNome }}</td>
+            <td class="modulos__td modulos__td--center">{{ modulo.ordem }}</td>
+            <td class="modulos__td">
+              <strong>{{ modulo.nome }}</strong>
+            </td>
+            <td class="modulos__td modulos__td--mono">{{ modulo.slug }}</td>
+            <td class="modulos__td">
+              <ui-badge [tone]="modulo.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                modulo.ativo ? 'Ativo' : 'Inativo'
+              }}</ui-badge>
+            </td>
+            <td class="modulos__td"><app-audit-stamp [user]="modulo.createdBy" [date]="modulo.createdAt" /></td>
+            <td class="modulos__td">
+              <app-audit-stamp
+                [user]="modulo.updatedBy || modulo.createdBy"
+                [date]="modulo.updatedAt || modulo.createdAt"
+              />
+            </td>
+            <td class="modulos__td modulos__td--actions">
+              <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(modulo)">Editar</ui-button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <app-table-pagination
+      [totalItems]="totalModulos()"
+      [page]="modulosPage()"
+      [pageSize]="modulosPageSize()"
+      (pageChange)="alterarPagina($event)"
+      (pageSizeChange)="alterarTamanhoPagina($event)"
+    />
+  }
+</ui-list-page>

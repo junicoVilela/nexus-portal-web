@@ -1,0 +1,106 @@
+.df-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 32px;
+}
+.df-form__msg {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font: 500 13px var(--font-body);
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+}
+.df-form__msg--err {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.pub-det__status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.pub-det__status-label {
+  font: 600 13px/1 var(--font-body);
+  color: var(--text);
+}
+.pub-det__meta {
+  font: 400 12.5px/1 var(--font-body);
+  color: var(--text-muted);
+  margin: 0 0 0;
+}
+.pub-det__obs {
+  margin-top: 12px;
+}
+.pub-det__section-title {
+  font: 700 14px/1.2 var(--font-display);
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.pub-det__change-type {
+  font: 600 12px/1 var(--font-body);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 14px 0 6px;
+}
+.pub-det__change-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 400 13.5px/1.5 var(--font-body);
+  color: var(--text);
+}
+.pub-det__warn-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 400 13px/1.5 var(--font-body);
+  color: var(--text-muted);
+}
+.pub-det__empty {
+  font: 400 13.5px var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+.pub-det__details {
+  margin-top: 14px;
+  font: 400 12.5px var(--font-body);
+  color: var(--text-muted);
+}
+.pub-det__details summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.pub-det__pre {
+  overflow: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+.pub-det__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .df-form {
+    padding: 18px;
+  }
+}

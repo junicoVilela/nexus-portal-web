@@ -1,0 +1,118 @@
+<ui-list-page
+  title="Auditoria de segurança"
+  subtitle="Rastro de alterações sensíveis no módulo de segurança. Imutável."
+  icon="ShieldCheck"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhum evento de auditoria"
+  emptyDescription="Eventos aparecem aqui após ações sensíveis (cadastros, alterações de permissões, etc.)."
+  emptyIllustration="inbox"
+  emptyIcon="ShieldCheck"
+>
+  <div filters class="auditoria__filters">
+    <input
+      class="auditoria__search"
+      [value]="busca"
+      (input)="aplicarBusca($event)"
+      placeholder="Buscar por ação ou mensagem..."
+    />
+    <select class="auditoria__select" [value]="filtroUsuario" (change)="alterarUsuario($any($event.target).value)">
+      <option value="">Todos os usuários</option>
+      @for (u of usuarios(); track u.id) {
+        <option [value]="u.id">{{ u.nome }}</option>
+      }
+    </select>
+    <select class="auditoria__select" [value]="filtroAcao" (change)="alterarAcao($any($event.target).value)">
+      <option value="">Todas as ações</option>
+      @for (a of acoes(); track a) {
+        <option [value]="a">{{ a }}</option>
+      }
+    </select>
+    <select class="auditoria__select" [value]="filtroResultado" (change)="alterarResultado($any($event.target).value)">
+      <option value="">Todos os resultados</option>
+      <option value="SUCESSO">Sucesso</option>
+      <option value="FALHA">Falha</option>
+    </select>
+    <label class="auditoria__date-field">
+      <span>De</span>
+      <input type="date" [value]="dataInicio" (change)="alterarInicio($any($event.target).value)" />
+    </label>
+    <label class="auditoria__date-field">
+      <span>Até</span>
+      <input type="date" [value]="dataFim" (change)="alterarFim($any($event.target).value)" />
+    </label>
+    <span class="auditoria__count">{{ total() }} eventos</span>
+  </div>
+
+  <table class="auditoria__table">
+    <thead>
+      <tr>
+        <th class="auditoria__th"></th>
+        <th class="auditoria__th">Data/hora</th>
+        <th class="auditoria__th">Usuário</th>
+        <th class="auditoria__th">Ação</th>
+        <th class="auditoria__th">Recurso</th>
+        <th class="auditoria__th">Resultado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of registros(); track r.id) {
+        <tr class="auditoria__row" [class.auditoria__row--falha]="r.resultado === 'FALHA'">
+          <td class="auditoria__td auditoria__td--toggle">
+            <button
+              type="button"
+              class="auditoria__toggle"
+              (click)="toggleExpandir(r.id)"
+              [attr.aria-expanded]="estaExpandido(r.id)"
+            >
+              {{ estaExpandido(r.id) ? '−' : '+' }}
+            </button>
+          </td>
+          <td class="auditoria__td">{{ r.criadoEm | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td class="auditoria__td">{{ nomeUsuario(r) }}</td>
+          <td class="auditoria__td">
+            <code class="auditoria__acao">{{ r.acao }}</code>
+          </td>
+          <td class="auditoria__td">
+            <span class="auditoria__recurso">{{ r.recursoTipo ?? '—' }}</span>
+            @if (r.recursoId) {
+              <small class="auditoria__recurso-id">{{ r.recursoId }}</small>
+            }
+          </td>
+          <td class="auditoria__td">
+            <ui-badge [tone]="r.resultado === 'SUCESSO' ? 'success' : 'danger'" [dot]="true">
+              {{ r.resultado }}
+            </ui-badge>
+          </td>
+        </tr>
+        @if (estaExpandido(r.id)) {
+          <tr class="auditoria__details-row">
+            <td class="auditoria__details" colspan="6">
+              @if (r.mensagem) {
+                <p class="auditoria__details-msg">{{ r.mensagem }}</p>
+              }
+              <div class="auditoria__details-grid">
+                <section>
+                  <h4>Dados anteriores</h4>
+                  <pre>{{ formatarJson(r.dadosAnteriores) }}</pre>
+                </section>
+                <section>
+                  <h4>Dados novos</h4>
+                  <pre>{{ formatarJson(r.dadosNovos) }}</pre>
+                </section>
+              </div>
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>

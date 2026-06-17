@@ -1,0 +1,9 @@
+<button
+  type="button"
+  [attr.aria-label]="ariaLabel()"
+  [disabled]="disabled()"
+  [class]="'ui-icon-btn ui-icon-btn--' + tone() + ' ui-icon-btn--' + size()"
+  (click)="onClick()"
+>
+  <lucide-icon [name]="icon()" />
+</button>

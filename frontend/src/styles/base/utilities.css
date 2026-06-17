@@ -1,0 +1,40 @@
+/* Utilitárias muito específicas usadas em vários lugares — evita inline styles. */
+.u-flex-grow-2 {
+  flex: 2;
+}
+.u-flex-grow-1 {
+  flex: 1;
+}
+.u-uppercase {
+  text-transform: uppercase;
+}
+.u-hidden {
+  display: none !important;
+}
+.u-mt-16 {
+  margin-top: 16px;
+}
+.u-mt-20 {
+  margin-top: 20px;
+}
+.u-mt-22 {
+  margin-top: 22px;
+}
+.u-flex-row-gap-8 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Padding padrão para form-pages sem shell wrapper.
+ * `<ui-list-page>` aplica este padding internamente; para pages que renderizam
+ * `<ui-page-header>` + `<form>` direto, aplica esta classe no host. */
+.ui-form-page {
+  display: block;
+  padding: 28px 32px;
+}
+@media (max-width: 768px) {
+  .ui-form-page {
+    padding: 18px;
+  }
+}

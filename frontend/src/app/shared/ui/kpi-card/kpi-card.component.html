@@ -1,0 +1,14 @@
+<div class="ui-kpi ui-kpi--{{ tone() }}">
+  @if (icon()) {
+    <div class="ui-kpi__icon" aria-hidden="true">
+      <lucide-icon [name]="icon()!" [size]="20" />
+    </div>
+  }
+  <div class="ui-kpi__body">
+    <div class="ui-kpi__valor">{{ valor() }}</div>
+    <div class="ui-kpi__label">{{ label() }}</div>
+    @if (description()) {
+      <div class="ui-kpi__desc">{{ description() }}</div>
+    }
+  </div>
+</div>

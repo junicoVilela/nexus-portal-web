@@ -1,0 +1,88 @@
+<ui-page-header
+  title="Política de senha"
+  subtitle="Regras mínimas aplicadas em cadastros, troca e reset de senha."
+  icon="KeyRound"
+/>
+
+@if (loading()) {
+  <div class="politica__loading">Carregando...</div>
+} @else {
+  <form class="politica" [formGroup]="form" (ngSubmit)="salvar()">
+    <ui-card padding="lg">
+      <h3 class="politica__section-title">Composição da senha</h3>
+      <div class="politica__grid">
+        <label class="politica__field">
+          <span>Tamanho mínimo</span>
+          <input type="number" min="4" max="64" formControlName="tamanhoMinimo" />
+          <small>Entre 4 e 64 caracteres.</small>
+        </label>
+
+        <label class="politica__field politica__field--check">
+          <input type="checkbox" formControlName="exigirMaiuscula" />
+          <span>Exigir letra maiúscula (A-Z)</span>
+        </label>
+        <label class="politica__field politica__field--check">
+          <input type="checkbox" formControlName="exigirMinuscula" />
+          <span>Exigir letra minúscula (a-z)</span>
+        </label>
+        <label class="politica__field politica__field--check">
+          <input type="checkbox" formControlName="exigirNumero" />
+          <span>Exigir número (0-9)</span>
+        </label>
+        <label class="politica__field politica__field--check">
+          <input type="checkbox" formControlName="exigirEspecial" />
+          <span>Exigir caractere especial (!@#$...)</span>
+        </label>
+      </div>
+    </ui-card>
+
+    <ui-card padding="lg">
+      <h3 class="politica__section-title">Vigência e histórico</h3>
+      <div class="politica__grid">
+        <label class="politica__field">
+          <span>Expira em (dias)</span>
+          <input type="number" min="0" max="3650" placeholder="vazio = não expira" formControlName="expiraSenhaDias" />
+          <small>Deixe em branco para não exigir troca periódica.</small>
+        </label>
+        <label class="politica__field">
+          <span>Histórico (senhas não reutilizáveis)</span>
+          <input type="number" min="0" max="20" formControlName="quantidadeHistorico" />
+          <small>Quantas senhas anteriores não podem ser reutilizadas.</small>
+        </label>
+        <label class="politica__field">
+          <span>Máximo de tentativas inválidas</span>
+          <input type="number" min="0" max="50" formControlName="maxTentativasInvalidas" />
+          <small>Após esse limite o usuário fica bloqueado.</small>
+        </label>
+      </div>
+    </ui-card>
+
+    <ui-card padding="lg">
+      <h3 class="politica__section-title">Testar senha</h3>
+      <p class="politica__hint">Veja se a senha atenderia à política antes de salvar.</p>
+      <input
+        class="politica__test"
+        type="text"
+        autocomplete="off"
+        [value]="senhaTeste"
+        (input)="testar($event)"
+        placeholder="Digite uma senha para testar..."
+      />
+      @if (senhaTeste) {
+        @if (violacoesTeste().length === 0) {
+          <p class="politica__ok">✓ Senha válida segundo a política configurada.</p>
+        } @else {
+          <ul class="politica__violacoes">
+            @for (v of violacoesTeste(); track v) {
+              <li>{{ v }}</li>
+            }
+          </ul>
+        }
+      }
+    </ui-card>
+
+    <div class="politica__actions">
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid"> Salvar política </ui-button>
+    </div>
+  </form>
+}

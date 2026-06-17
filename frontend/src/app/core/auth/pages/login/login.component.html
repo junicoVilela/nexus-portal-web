@@ -1,0 +1,51 @@
+<div class="login">
+  <aside class="login__aside">
+    <div class="login__aside-bg" aria-hidden="true"></div>
+    <a class="login__aside-brand" href="/">
+      <span class="login__brand-mark">S</span>
+      <span class="login__brand-name">Softon Portal</span>
+    </a>
+    <div class="login__aside-content">
+      <h1>O dia da equipe começa aqui.</h1>
+      <p>Documentação, releases e administração em um só lugar — desenhado para a velocidade do dia a dia.</p>
+      <ul class="login__features">
+        <li><lucide-icon name="Check" /> Doc Flow com manuais por cliente</li>
+        <li><lucide-icon name="Check" /> Release Orchestrator integrado ao changelog</li>
+        <li><lucide-icon name="Check" /> Acesso unificado por SSO interno</li>
+      </ul>
+    </div>
+    <div class="login__aside-footer">© Softon · {{ year }}</div>
+  </aside>
+
+  <section class="login__form-area">
+    <div class="login__form-box">
+      <h2>Entrar</h2>
+      <p class="login__sub">Use suas credenciais corporativas.</p>
+
+      @if (serverError()) {
+        <div class="login__server-error" role="alert">{{ serverError() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <ui-input
+          label="Usuário"
+          type="text"
+          placeholder="seu.usuario"
+          autocomplete="username"
+          leadingIcon="User"
+          [error]="loginError()"
+          formControlName="login"
+        />
+        <ui-input
+          label="Senha"
+          type="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [error]="senhaError()"
+          formControlName="senha"
+        />
+        <ui-button type="submit" [loading]="loading()" [fullWidth]="true">Entrar</ui-button>
+      </form>
+    </div>
+  </section>
+</div>

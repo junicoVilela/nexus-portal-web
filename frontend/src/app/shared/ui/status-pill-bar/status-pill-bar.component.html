@@ -1,0 +1,30 @@
+<div class="ui-spb" role="tablist" aria-label="Filtrar por status">
+  @for (item of items(); track item.value) {
+    <button
+      type="button"
+      class="ui-spb__pill"
+      [class.ui-spb__pill--active]="value() === item.value"
+      (click)="selecionar.emit(item.value)"
+      role="tab"
+      [attr.aria-selected]="value() === item.value"
+    >
+      {{ item.label }}
+      @if (item.count !== undefined) {
+        <span>{{ item.count }}</span>
+      }
+    </button>
+  }
+  <button
+    type="button"
+    class="ui-spb__pill"
+    [class.ui-spb__pill--active]="value() === ''"
+    (click)="selecionar.emit('')"
+    role="tab"
+    [attr.aria-selected]="value() === ''"
+  >
+    {{ todosLabel() }}
+    @if (todosCount() !== null) {
+      <span>{{ todosCount() }}</span>
+    }
+  </button>
+</div>

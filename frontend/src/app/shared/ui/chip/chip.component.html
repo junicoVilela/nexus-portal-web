@@ -1,0 +1,8 @@
+<span [class]="'ui-chip ui-chip--' + tone()">
+  <span class="ui-chip__label"><ng-content /></span>
+  @if (removable()) {
+    <button type="button" class="ui-chip__remove" aria-label="Remover" (click)="removed.emit()">
+      <lucide-icon name="X" />
+    </button>
+  }
+</span>

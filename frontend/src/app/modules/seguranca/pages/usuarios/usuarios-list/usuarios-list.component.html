@@ -1,0 +1,109 @@
+<ui-list-page
+  title="Usuários"
+  subtitle="Gerencie identidades, status e vínculos com grupos de acesso."
+  icon="Users"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhum usuário encontrado"
+  emptyDescription="Cadastre o primeiro usuário ou ajuste os filtros."
+  emptyIllustration="inbox"
+  emptyIcon="Users"
+>
+  <div actions>
+    <ui-button *appPermissao="'USUARIO:CRIAR'" icon="Plus" (clicked)="novo()">Novo usuário</ui-button>
+  </div>
+
+  <div filters class="usuarios__filters">
+    <input
+      class="usuarios__search"
+      [value]="busca"
+      (input)="aplicarBusca($event)"
+      placeholder="Buscar por nome, login ou e-mail..."
+    />
+    <select class="usuarios__select" [value]="filtroAtivo" (change)="alterarAtivo($any($event.target).value)">
+      <option value="">Todos os status</option>
+      <option value="true">Ativos</option>
+      <option value="false">Inativos</option>
+    </select>
+    <select class="usuarios__select" [value]="filtroBloqueado" (change)="alterarBloqueado($any($event.target).value)">
+      <option value="">Bloqueio: todos</option>
+      <option value="false">Não bloqueados</option>
+      <option value="true">Bloqueados</option>
+    </select>
+    <span class="usuarios__count">{{ total() }} usuários</span>
+  </div>
+
+  <table class="usuarios__table">
+    <thead>
+      <tr>
+        <th class="usuarios__th">Usuário</th>
+        <th class="usuarios__th">Grupos</th>
+        <th class="usuarios__th">Status</th>
+        <th class="usuarios__th">Bloqueio</th>
+        <th class="usuarios__th usuarios__th--right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of usuarios(); track u.id) {
+        <tr class="usuarios__row">
+          <td class="usuarios__td">
+            <strong>{{ u.nome }}</strong>
+            <small class="usuarios__sub">{{ u.login }} · {{ u.email }}</small>
+          </td>
+          <td class="usuarios__td">
+            <span class="usuarios__grupos">{{ nomesGrupos(u) }}</span>
+          </td>
+          <td class="usuarios__td">
+            <ui-badge [tone]="u.ativo ? 'success' : 'neutral'" [dot]="true">{{
+              u.ativo ? 'Ativo' : 'Inativo'
+            }}</ui-badge>
+          </td>
+          <td class="usuarios__td">
+            @if (u.bloqueado) {
+              <ui-badge tone="danger" [dot]="true">Bloqueado</ui-badge>
+            } @else {
+              <span class="usuarios__muted">—</span>
+            }
+          </td>
+          <td class="usuarios__td usuarios__td--actions">
+            <ui-button *appPermissao="'USUARIO:EDITAR'" variant="ghost" size="sm" icon="Pencil" (clicked)="editar(u)"
+              >Editar</ui-button
+            >
+            <ui-button
+              *appPermissao="'USUARIO:EDITAR'"
+              variant="ghost"
+              size="sm"
+              [icon]="u.ativo ? 'CircleOff' : 'CircleCheck'"
+              (clicked)="toggleAtivo(u)"
+              >{{ u.ativo ? 'Inativar' : 'Ativar' }}</ui-button
+            >
+            <ui-button
+              *appPermissao="'USUARIO:BLOQUEAR'"
+              variant="ghost"
+              size="sm"
+              [icon]="u.bloqueado ? 'LockOpen' : 'Lock'"
+              (clicked)="toggleBloqueio(u)"
+              >{{ u.bloqueado ? 'Desbloquear' : 'Bloquear' }}</ui-button
+            >
+            <ui-button
+              *appPermissao="'USUARIO:RESETAR_SENHA'"
+              variant="ghost"
+              size="sm"
+              icon="KeyRound"
+              (clicked)="resetarSenha(u)"
+              >Resetar senha</ui-button
+            >
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarPageSize($event)"
+  />
+</ui-list-page>
