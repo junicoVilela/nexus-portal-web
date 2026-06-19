@@ -1,15 +1,36 @@
-{
-  "/api/doc-flow/**": {
+[
+  {
+    "context": ["/api/doc-flow/public"],
     "target": "http://localhost:8080",
     "secure": false,
     "changeOrigin": true,
-    "pathRewrite": {
-      "^/api/doc-flow": "/api/v1"
-    }
+    "pathRewrite": { "^/api/doc-flow": "/api/v1" }
   },
-  "/api/v1/**": {
+  {
+    "context": ["/api/doc-flow/preview-tokens"],
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/doc-flow/preview-tokens": "/api/v1/preview-tokens" }
+  },
+  {
+    "context": ["/api/doc-flow/preview"],
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/doc-flow/preview": "/api/v1/preview" }
+  },
+  {
+    "context": ["/api/doc-flow"],
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/doc-flow": "/api/v1/docflow" }
+  },
+  {
+    "context": ["/api/v1"],
     "target": "http://localhost:8080",
     "secure": false,
     "changeOrigin": true
   }
-}
+]
