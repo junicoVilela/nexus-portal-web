@@ -2,6 +2,7 @@ export const environment = {
   production: false,
   version: '1.0.0',
   apiUrl: '/api/doc-flow',
+  authApiUrl: '/api/v1/auth',
   releaseOrchestratorApiUrl: '/api/v1/release-orchestrator',
   /**
    * Latência simulada (ms) dos services mockados em `modules/seguranca`.

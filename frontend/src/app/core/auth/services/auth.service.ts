@@ -39,7 +39,11 @@ export class AuthService {
 
   async login(loginOuEmail: string, senha: string): Promise<void> {
     const res = await firstValueFrom(this.authApi.login(loginOuEmail, senha));
-    localStorage.setItem(REFRESH_KEY, res.refreshToken);
+    if (res.refreshToken) {
+      localStorage.setItem(REFRESH_KEY, res.refreshToken);
+    } else {
+      localStorage.removeItem(REFRESH_KEY);
+    }
     this.applySession(res.token, res.usuario.login);
     await this.carregarMe();
     await this.router.navigateByUrl('/');
