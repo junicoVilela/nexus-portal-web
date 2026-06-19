@@ -22,11 +22,13 @@ Este índice mapeia as telas do **orchestrator de entregas a clientes** (Fase 1)
 | Clientes — lista | `02-clientes-lista.md` | `/orchestrator/clientes` | 📋 |
 | Clientes — cadastro | `03-clientes-cadastro.md` | `/orchestrator/clientes/novo`, `/:id/editar` | 📋 |
 | Cliente — visão geral | `04-cliente-visao-geral.md` | `/orchestrator/clientes/:id` | 📋 |
-| Domínios e funcionalidades | `05-cliente-dominios-funcionalidades.md` | `/orchestrator/clientes/:id/funcionalidades` | 📋 |
+| Resumo funcional (todos os clientes) | `05-cliente-dominios-funcionalidades.md` §8 | `/orchestrator/clientes/resumo-funcionalidades` | 📋 |
+| Domínios e funcionalidades (matriz) | `05-cliente-dominios-funcionalidades.md` | `/orchestrator/clientes/:id/funcionalidades` | 📋 |
 | Produtos contratados | `06-cliente-produtos-contratados.md` | `/orchestrator/clientes/:id/produtos` | 📋 |
 | Configurações de entrega | `07-cliente-configuracoes-entrega.md` | `/orchestrator/clientes/:id/entrega` | 📋 |
 | Produtos — cadastro (GitHub/Jenkins) | `09-produtos-cadastro.md` | `/orchestrator/produtos/:id/editar` | 📋 (produtos básicos em `08-produtos.md`) |
 | Módulos por produto | `10-produtos-modulos-artefatos.md` | `/orchestrator/produtos/:id/modulos` | 📋 |
+| Catálogo domínios/funcionalidades | `11-produtos-catalogo-funcional.md` | `/orchestrator/produtos/:id/catalogo-funcional` | 📋 |
 | Release — aba PDF/artefatos | `14-release-orchestrator-detalhe.md` | `/releases/:id` (aba) | 📋 PDF sem backend |
 | Próximas entregas — agenda | `16-proximas-entregas-agenda.md` | `/orchestrator/entregas/agenda` | 📋 |
 | Próximas entregas — cadastro | `17-proximas-entregas-cadastro.md` | `/orchestrator/entregas/agenda/nova` | 📋 |
