@@ -28,7 +28,7 @@ export class ConfiguracoesComponent implements OnInit {
 
   private verificarLogoEmpresa(): void {
     this.configuracaoService.logoEmpresaExiste().subscribe(existe => {
-      this.logoEmpresaUrl.set(existe ? this.configuracaoService.logoEmpresaUrl : '');
+      this.logoEmpresaUrl.set(existe ? this.configuracaoService.logoEmpresaUrl() : '');
     });
   }
 
@@ -39,7 +39,7 @@ export class ConfiguracoesComponent implements OnInit {
     this.uploadingLogo.set(true);
     this.configuracaoService.uploadLogoEmpresa(file).subscribe({
       next: () => {
-        this.logoEmpresaUrl.set(this.configuracaoService.logoEmpresaUrl);
+        this.logoEmpresaUrl.set(this.configuracaoService.logoEmpresaUrl());
         this.uploadingLogo.set(false);
         this.toast.success('Logo da empresa atualizado com sucesso.');
       },
