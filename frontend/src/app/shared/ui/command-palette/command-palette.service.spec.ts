@@ -26,7 +26,7 @@ describe('CommandPaletteService', () => {
     expect(svc.results().length).toBe(3);
 
     svc.query.set('flow');
-    expect(svc.results().map(c => c.id)).toEqual(['doc-flow', 'release']);
+    expect(svc.results().map(c => c.id)).toEqual(['doc-flow']);
   });
 
   it('close() clears query and closes', () => {

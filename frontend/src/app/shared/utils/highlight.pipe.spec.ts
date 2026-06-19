@@ -24,8 +24,8 @@ describe('HighlightPipe', () => {
     expect(asHtml(pipe.transform('Olá mundo', 'mundo'))).toContain('<mark>mundo</mark>');
   });
 
-  it('é case-insensitive', () => {
-    expect(asHtml(pipe.transform('Release Orchestrator', 'orchestrator'))).toContain('<mark>orchestrator</mark>');
+  it('é case-insensitive e preserva o casing original do texto', () => {
+    expect(asHtml(pipe.transform('Release Orchestrator', 'orchestrator'))).toContain('<mark>Orchestrator</mark>');
   });
 
   it('escapa HTML do texto base', () => {
