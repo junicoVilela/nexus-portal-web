@@ -41,21 +41,41 @@
               }
             </div>
 
-            @if (aceitaUpload(g.modulo.tipo) && !imutavel()) {
-              <label class="art-mod__upload">
+            <div class="art-mod__head-actions">
+              <div class="art-mod__versao">
+                <label class="art-mod__versao-label">Versão</label>
                 <input
-                  type="file"
-                  hidden
-                  [accept]="extensoesAceitas(g.modulo.tipo)"
-                  (change)="onFileSelected($event, g)"
-                  [disabled]="g.uploadingFile"
+                  class="art-mod__versao-input"
+                  type="text"
+                  placeholder="ex: 1.5.0"
+                  maxlength="80"
+                  [ngModel]="g.versaoEditando"
+                  (ngModelChange)="g.versaoEditando = $event"
+                  (blur)="salvarVersao(g)"
+                  (keydown.enter)="salvarVersao(g)"
+                  [disabled]="g.versaoSaving || imutavel()"
                 />
-                <span class="art-mod__upload-btn">
-                  <lucide-icon name="Upload" [size]="14" />
-                  {{ g.uploadingFile ? 'Enviando…' : 'Upload' }}
-                </span>
-              </label>
-            }
+                @if (g.versaoSaving) {
+                  <lucide-icon name="Loader" [size]="12" class="art-mod__versao-spin" />
+                }
+              </div>
+
+              @if (aceitaUpload(g.modulo.tipo) && !imutavel()) {
+                <label class="art-mod__upload">
+                  <input
+                    type="file"
+                    hidden
+                    [accept]="extensoesAceitas(g.modulo.tipo)"
+                    (change)="onFileSelected($event, g)"
+                    [disabled]="g.uploadingFile"
+                  />
+                  <span class="art-mod__upload-btn">
+                    <lucide-icon name="Upload" [size]="14" />
+                    {{ g.uploadingFile ? 'Enviando…' : 'Upload' }}
+                  </span>
+                </label>
+              }
+            </div>
           </div>
 
           @if (!aceitaUpload(g.modulo.tipo)) {

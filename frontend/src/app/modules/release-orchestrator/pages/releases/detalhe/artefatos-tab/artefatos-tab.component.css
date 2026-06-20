@@ -54,6 +54,51 @@
   font-size: 12px;
 }
 
+.art-mod__head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.art-mod__versao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.art-mod__versao-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.art-mod__versao-input {
+  width: 110px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.art-mod__versao-input:disabled {
+  opacity: 0.6;
+}
+
+.art-mod__versao-spin {
+  animation: spin 1s linear infinite;
+  color: var(--text-secondary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .art-mod__upload {
   cursor: pointer;
 }

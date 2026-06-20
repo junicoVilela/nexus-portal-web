@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { forkJoin, of } from 'rxjs';
 
@@ -22,10 +23,14 @@ import {
 } from '../../../../models/modulo-produto.model';
 import { ArtefatoReleaseModuloService } from '../../../../services/artefato-release-modulo.service';
 import { ModuloProdutoService } from '../../../../services/modulo-produto.service';
+import { ReleaseModuloVersaoService } from '../../../../services/release-modulo-versao.service';
 
 interface ModuloComArtefatos {
   modulo: ModuloProduto;
   artefatos: ArtefatoReleaseModulo[];
+  versaoAtual: string;
+  versaoEditando: string;
+  versaoSaving: boolean;
   uploadingFile: boolean;
   uploadError: string | null;
 }
@@ -35,6 +40,7 @@ interface ModuloComArtefatos {
   standalone: true,
   imports: [
     DatePipe,
+    FormsModule,
     LucideAngularModule,
     ButtonComponent,
     BadgeComponent,
@@ -53,6 +59,7 @@ export class ArtefatosTabComponent implements OnChanges {
 
   private readonly moduloService = inject(ModuloProdutoService);
   private readonly artefatoService = inject(ArtefatoReleaseModuloService);
+  private readonly versaoService = inject(ReleaseModuloVersaoService);
 
   protected readonly loading = signal(true);
   protected readonly erro = signal<string | null>(null);
@@ -74,9 +81,13 @@ export class ArtefatosTabComponent implements OnChanges {
     this.loading.set(true);
     this.erro.set(null);
 
-    this.moduloService.listar(this.produtoId()).subscribe({
-      next: modulos => {
+    forkJoin({
+      modulos: this.moduloService.listar(this.produtoId()),
+      versoes: this.versaoService.listar(this.releaseId()),
+    }).subscribe({
+      next: ({ modulos, versoes }) => {
         const ativos = modulos.filter(m => m.ativo);
+        const versaoPorModulo = new Map(versoes.map(v => [v.moduloProdutoId, v.versao]));
         if (ativos.length === 0) {
           this.grupos.set([]);
           this.loading.set(false);
@@ -89,12 +100,18 @@ export class ArtefatosTabComponent implements OnChanges {
         );
         forkJoin(calls).subscribe({
           next: listas => {
-            const grupos: ModuloComArtefatos[] = ativos.map((m, i) => ({
-              modulo: m,
-              artefatos: listas[i],
-              uploadingFile: false,
-              uploadError: null,
-            }));
+            const grupos: ModuloComArtefatos[] = ativos.map((m, i) => {
+              const versaoAtual = versaoPorModulo.get(m.id) ?? '';
+              return {
+                modulo: m,
+                artefatos: listas[i],
+                versaoAtual,
+                versaoEditando: versaoAtual,
+                versaoSaving: false,
+                uploadingFile: false,
+                uploadError: null,
+              };
+            });
             this.grupos.set(grupos);
             this.loading.set(false);
           },
@@ -102,6 +119,38 @@ export class ArtefatosTabComponent implements OnChanges {
         });
       },
       error: err => this.tratarErro(err),
+    });
+  }
+
+  protected salvarVersao(grupo: ModuloComArtefatos): void {
+    const nova = (grupo.versaoEditando ?? '').trim();
+    if (nova === grupo.versaoAtual) return;
+
+    if (!nova) {
+      if (!grupo.versaoAtual) {
+        // nada a remover
+        return;
+      }
+      this.atualizarGrupo(grupo, { versaoSaving: true });
+      this.versaoService.remover(this.releaseId(), grupo.modulo.id).subscribe({
+        next: () => this.atualizarGrupo(grupo, {
+          versaoAtual: '', versaoEditando: '', versaoSaving: false,
+        }),
+        error: () => this.atualizarGrupo(grupo, {
+          versaoSaving: false, versaoEditando: grupo.versaoAtual,
+        }),
+      });
+      return;
+    }
+
+    this.atualizarGrupo(grupo, { versaoSaving: true });
+    this.versaoService.salvar(this.releaseId(), grupo.modulo.id, nova).subscribe({
+      next: v => this.atualizarGrupo(grupo, {
+        versaoAtual: v.versao, versaoEditando: v.versao, versaoSaving: false,
+      }),
+      error: () => this.atualizarGrupo(grupo, {
+        versaoSaving: false, versaoEditando: grupo.versaoAtual,
+      }),
     });
   }
 
