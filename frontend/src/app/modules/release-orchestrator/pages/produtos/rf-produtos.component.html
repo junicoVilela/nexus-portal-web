@@ -62,6 +62,14 @@
               {{ p.totalReleases ?? 0 }} releases
             </div>
             <div class="rf-prod__actions">
+              <a
+                class="rf-prod__action-link"
+                [routerLink]="['/release-orchestrator/produtos', p.id, 'modulos']"
+                title="Gerenciar módulos"
+              >
+                <lucide-icon name="Boxes" [size]="14" />
+                Módulos
+              </a>
               <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(p)">Editar</ui-button>
               <ui-button variant="ghost" size="sm" [icon]="p.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(p)">
                 {{ p.ativo ? 'Inativar' : 'Ativar' }}

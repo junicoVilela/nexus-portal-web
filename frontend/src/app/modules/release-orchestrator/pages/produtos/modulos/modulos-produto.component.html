@@ -1,0 +1,196 @@
+<div class="mod-prod">
+  <ui-page-header
+    [title]="produto() ? 'Módulos — ' + produto()!.sigla : 'Módulos'"
+    [subtitle]="produto()?.nome || 'Catálogo de módulos por produto'"
+    icon="Boxes"
+  >
+    <div actions>
+      <a
+        class="mod-prod__back"
+        [routerLink]="['/release-orchestrator/produtos']"
+        aria-label="Voltar para produtos"
+      >
+        <lucide-icon name="ArrowLeft" [size]="14" /> Produtos
+      </a>
+      <ui-button icon="Plus" (clicked)="abrirNovo()" [disabled]="loading()">Novo módulo</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar(produtoId())"
+    />
+  }
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando módulos">
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+    </div>
+  } @else if (modulos().length === 0) {
+    <ui-empty-state
+      icon="Boxes"
+      illustration="document"
+      title="Produto sem módulos"
+      description="Cadastre o primeiro módulo para definir o que pode ser empacotado."
+    >
+      <ui-button icon="Plus" (clicked)="abrirNovo()">Cadastrar módulo</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="mod-prod__table-wrap">
+      <table class="mod-prod__table">
+        <thead>
+          <tr>
+            <th class="mod-prod__col-ordem">Ord</th>
+            <th>Status</th>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th class="mod-prod__col-center">Δ</th>
+            <th class="mod-prod__col-center">Obrig.</th>
+            <th class="mod-prod__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of modulos(); track m.id) {
+            <tr [class.mod-prod__row--inativo]="!m.ativo">
+              <td>{{ m.ordem }}</td>
+              <td>
+                <ui-badge [tone]="m.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                  m.ativo ? 'Ativo' : 'Inativo'
+                }}</ui-badge>
+              </td>
+              <td><code class="mod-prod__codigo">{{ m.codigo }}</code></td>
+              <td>{{ m.nome }}</td>
+              <td>
+                <span
+                  class="mod-prod__tipo-badge"
+                  [style.background]="corTipo(m.tipo) + '18'"
+                  [style.color]="corTipo(m.tipo)"
+                  >{{ rotuloTipo(m.tipo) }}</span
+                >
+              </td>
+              <td class="mod-prod__col-center">{{ m.geraDelta ? '✓' : '—' }}</td>
+              <td class="mod-prod__col-center">{{ m.obrigatorio ? '✓' : '—' }}</td>
+              <td class="mod-prod__col-actions">
+                <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(m)">Editar</ui-button>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  [icon]="m.ativo ? 'EyeOff' : 'Eye'"
+                  (clicked)="toggleAtivo(m)"
+                >{{ m.ativo ? 'Inativar' : 'Ativar' }}</ui-button>
+                <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluir(m)" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <div class="rf-overlay" (click)="fecharForm()">
+    <div class="rf-modal" (click)="$event.stopPropagation()">
+      <div class="rf-modal__header">
+        <h2 class="rf-modal__title">{{ editando() ? 'Editar módulo' : 'Novo módulo' }}</h2>
+        <button type="button" class="rf-modal__close" aria-label="Fechar modal" (click)="fecharForm()">
+          <lucide-icon name="X" [size]="16" />
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="rf-modal__body">
+        <div class="rf-modal__row">
+          <div class="rf-modal__field u-flex-grow-2">
+            <label class="rf-modal__label">Nome <span class="rf-modal__req">*</span></label>
+            <input
+              class="rf-modal__input"
+              formControlName="nome"
+              placeholder="Ex: Portal Web"
+              [class.rf-modal__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="rf-modal__err">Nome é obrigatório (até 200 caracteres)</span>
+            }
+          </div>
+          <div class="rf-modal__field u-flex-grow-1">
+            <label class="rf-modal__label">
+              Código <span class="rf-modal__req">*</span>
+              @if (editando()) {
+                <span class="mod-prod__imutavel" title="Imutável após criação">🔒</span>
+              }
+            </label>
+            <input
+              class="rf-modal__input"
+              formControlName="codigo"
+              placeholder="ex: dtec-portal"
+              [class.rf-modal__input--err]="fieldError('codigo')"
+            />
+            @if (fieldError('codigo')) {
+              <span class="rf-modal__err">Use apenas a-z, 0-9 e hífen</span>
+            }
+          </div>
+        </div>
+
+        <div class="rf-modal__row">
+          <div class="rf-modal__field u-flex-grow-1">
+            <label class="rf-modal__label">
+              Tipo <span class="rf-modal__req">*</span>
+              @if (editando()) {
+                <span class="mod-prod__imutavel" title="Imutável após criação">🔒</span>
+              }
+            </label>
+            <select class="rf-modal__input" formControlName="tipo">
+              @for (t of tipos; track t.valor) {
+                <option [value]="t.valor">{{ t.rotulo }}</option>
+              }
+            </select>
+            @if (extensoesAceitas().length > 0) {
+              <span class="mod-prod__hint">
+                Aceita: <code>{{ extensoesAceitas().join(', ') }}</code>
+              </span>
+            } @else {
+              <span class="mod-prod__hint">Sem upload de artefato (FUNCIONALIDADES/REGRAS)</span>
+            }
+          </div>
+          <div class="rf-modal__field u-flex-grow-1">
+            <label class="rf-modal__label">Ordem</label>
+            <input class="rf-modal__input" type="number" formControlName="ordem" min="0" />
+          </div>
+        </div>
+
+        <div class="rf-modal__row">
+          <label class="rf-modal__check">
+            <input type="checkbox" formControlName="geraDelta" />
+            <span>Gera delta entre versões</span>
+          </label>
+          <label class="rf-modal__check">
+            <input type="checkbox" formControlName="obrigatorio" />
+            <span>Obrigatório no pacote</span>
+          </label>
+        </div>
+
+        <div class="rf-modal__field">
+          <label class="rf-modal__label">Configuração específica (JSON)</label>
+          <textarea
+            class="rf-modal__input mod-prod__config"
+            formControlName="configEspecifica"
+            placeholder='{"destinoPacote": "web/portal/"}'
+            rows="4"
+          ></textarea>
+          <span class="mod-prod__hint">Opcional. Validado pelo backend conforme o tipo.</span>
+        </div>
+
+        <div class="rf-modal__footer">
+          <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
+          <ui-button type="submit" [loading]="salvando()">Salvar</ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

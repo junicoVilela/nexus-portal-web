@@ -120,6 +120,24 @@
   padding-top: 12px;
   border-top: 1px solid var(--border);
 }
+.rf-prod__action-link {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  transition: background 0.15s;
+}
+.rf-prod__action-link:hover {
+  background: var(--bg-card);
+}
 
 .rf-prod__cor-picker {
   display: flex;

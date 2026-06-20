@@ -10,6 +10,7 @@ import { ReleaseFormComponent } from './pages/releases/form/release-form.compone
 import { ReleaseDetalheComponent } from './pages/releases/detalhe/release-detalhe.component';
 import { ReleaseRevisaoComponent } from './pages/releases/revisao/release-revisao.component';
 import { RfProdutosComponent } from './pages/produtos/rf-produtos.component';
+import { ModulosProdutoComponent } from './pages/produtos/modulos/modulos-produto.component';
 import { RfTemplatesComponent } from './pages/templates/rf-templates.component';
 import { RfGuiaComponent } from './pages/guia/rf-guia.component';
 
@@ -30,6 +31,7 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
         resolve: { release: releaseResolver },
       },
       { path: 'produtos', component: RfProdutosComponent },
+      { path: 'produtos/:id/modulos', component: ModulosProdutoComponent },
       { path: 'templates', component: RfTemplatesComponent },
       { path: 'guia', component: RfGuiaComponent },
     ],

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 
 import { Produto } from '../../models/produto.model';
 import { ProdutoService } from '../../services/produto.service';
+import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import {
   PageHeaderComponent,
@@ -35,6 +36,7 @@ const PRESET_CORES = [
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     LucideAngularModule,
     PageHeaderComponent,
     ButtonComponent,
