@@ -53,7 +53,11 @@
         @if (release()!.status === 'APROVADA') {
           <ui-button icon="CheckCircle" (clicked)="irParaRevisao()">Publicar</ui-button>
         }
-        <ui-button variant="secondary" icon="FileText" (clicked)="gerarPdf()">PDF</ui-button>
+        <div class="rf-det__pdf-group">
+          <ui-button variant="secondary" icon="FileText" size="sm" (clicked)="gerarPdf('CLIENTE')">PDF Cliente</ui-button>
+          <ui-button variant="secondary" size="sm" (clicked)="gerarPdf('SUPORTE')">Suporte</ui-button>
+          <ui-button variant="secondary" size="sm" (clicked)="gerarPdf('INTERNO')">Interno</ui-button>
+        </div>
       </div>
     </div>
 

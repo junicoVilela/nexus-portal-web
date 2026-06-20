@@ -272,11 +272,11 @@ export class ReleaseDetalheComponent implements OnInit {
     });
   }
 
-  protected gerarPdf(): void {
+  protected gerarPdf(tipo: 'CLIENTE' | 'SUPORTE' | 'INTERNO' = 'INTERNO'): void {
     const rel = this.release();
     if (!rel) return;
-    const nome = `${rel.produtoSigla}-${rel.versao}.pdf`;
-    this.pdfService.download(this.releaseId, 'INTERNO', nome);
+    const nome = `${rel.produtoSigla}-${rel.versao}-${tipo.toLowerCase()}.pdf`;
+    this.pdfService.download(this.releaseId, tipo, nome);
   }
 
   protected irParaRevisao(): void {

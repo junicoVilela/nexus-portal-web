@@ -78,6 +78,16 @@
   flex-shrink: 0;
   flex-wrap: wrap;
 }
+.rf-det__pdf-group {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.rf-det__pdf-group > * + * {
+  border-left: 1px solid var(--border);
+}
 
 .rf-det__info-strip {
   display: flex;
