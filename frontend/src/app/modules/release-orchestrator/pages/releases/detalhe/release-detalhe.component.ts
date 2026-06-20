@@ -40,6 +40,7 @@ import {
 import { classificarErro } from '@shared/utils/error-classifier';
 import { ReleaseStatusBadgeComponent } from '../../../components/release-status-badge';
 import { HistoricoTimelineComponent } from '../../../components/historico-timeline';
+import { ArtefatosTabComponent } from './artefatos-tab/artefatos-tab.component';
 
 @Component({
   selector: 'app-release-detalhe',
@@ -59,6 +60,7 @@ import { HistoricoTimelineComponent } from '../../../components/historico-timeli
     TabsComponent,
     ReleaseStatusBadgeComponent,
     HistoricoTimelineComponent,
+    ArtefatosTabComponent,
   ],
   templateUrl: './release-detalhe.component.html',
   styleUrl: './release-detalhe.component.css',
@@ -77,9 +79,10 @@ export class ReleaseDetalheComponent implements OnInit {
   protected readonly editItemId = signal<string | null>(null);
   protected itemForm!: FormGroup;
 
-  protected readonly activeTab = signal<'itens' | 'historico'>('itens');
-  protected readonly tabsConfig = computed<TabItem<'itens' | 'historico'>[]>(() => [
+  protected readonly activeTab = signal<'itens' | 'artefatos' | 'historico'>('itens');
+  protected readonly tabsConfig = computed<TabItem<'itens' | 'artefatos' | 'historico'>[]>(() => [
     { id: 'itens', label: 'Itens', icon: 'List', count: this.itens().length },
+    { id: 'artefatos', label: 'Artefatos', icon: 'Boxes' },
     { id: 'historico', label: 'Histórico', icon: 'Clock' },
   ]);
 
@@ -115,7 +118,7 @@ export class ReleaseDetalheComponent implements OnInit {
       .filter(g => g.itens.length > 0);
   });
 
-  private releaseId!: string;
+  protected releaseId!: string;
 
   constructor(
     private readonly route: ActivatedRoute,

@@ -1,0 +1,108 @@
+<div class="art-tab">
+  @if (imutavel()) {
+    <div class="art-tab__lock">
+      <lucide-icon name="Lock" [size]="14" />
+      <span>Release {{ releaseStatus() }} — artefatos imutáveis.</span>
+    </div>
+  }
+
+  @if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    />
+  }
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando artefatos">
+      <ui-skeleton width="100%" height="120px" />
+      <ui-skeleton width="100%" height="120px" />
+    </div>
+  } @else if (grupos().length === 0) {
+    <ui-empty-state
+      icon="Boxes"
+      illustration="document"
+      title="Produto sem módulos"
+      description="Cadastre módulos no produto antes de subir artefatos para a release."
+    />
+  } @else {
+    <div class="art-tab__list">
+      @for (g of grupos(); track g.modulo.id) {
+        <div class="art-mod">
+          <div class="art-mod__head">
+            <div class="art-mod__title">
+              <code class="art-mod__codigo">{{ g.modulo.codigo }}</code>
+              <strong>{{ g.modulo.nome }}</strong>
+              <ui-badge tone="info">{{ g.modulo.tipo }}</ui-badge>
+              @if (g.modulo.obrigatorio) {
+                <ui-badge tone="warn" [dot]="true">Obrigatório</ui-badge>
+              }
+            </div>
+
+            @if (aceitaUpload(g.modulo.tipo) && !imutavel()) {
+              <label class="art-mod__upload">
+                <input
+                  type="file"
+                  hidden
+                  [accept]="extensoesAceitas(g.modulo.tipo)"
+                  (change)="onFileSelected($event, g)"
+                  [disabled]="g.uploadingFile"
+                />
+                <span class="art-mod__upload-btn">
+                  <lucide-icon name="Upload" [size]="14" />
+                  {{ g.uploadingFile ? 'Enviando…' : 'Upload' }}
+                </span>
+              </label>
+            }
+          </div>
+
+          @if (!aceitaUpload(g.modulo.tipo)) {
+            <p class="art-mod__hint">
+              {{ g.modulo.tipo }} não recebe artefato — conteúdo gerado a partir da config do cliente.
+            </p>
+          } @else if (g.uploadError) {
+            <p class="art-mod__error">{{ g.uploadError }}</p>
+          }
+
+          @if (g.artefatos.length === 0 && aceitaUpload(g.modulo.tipo)) {
+            <p class="art-mod__empty">Nenhum artefato enviado ainda.</p>
+          } @else if (g.artefatos.length > 0) {
+            <table class="art-mod__table">
+              <thead>
+                <tr>
+                  <th>Arquivo</th>
+                  <th>SHA-256</th>
+                  <th>Tamanho</th>
+                  <th>Enviado por</th>
+                  <th>Em</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of g.artefatos; track a.id) {
+                  <tr>
+                    <td class="art-mod__cell-nome">{{ a.nomeArquivo }}</td>
+                    <td><code class="art-mod__sha" [title]="a.sha256">{{ sha256Curto(a.sha256) }}</code></td>
+                    <td>{{ formatBytes(a.tamanhoBytes) }}</td>
+                    <td>{{ a.uploadedBy || '—' }}</td>
+                    <td>{{ a.uploadedAt ? (a.uploadedAt | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+                    <td class="art-mod__cell-actions">
+                      <ui-button variant="secondary" size="sm" icon="Download" (clicked)="baixar(g, a)">
+                        Baixar
+                      </ui-button>
+                      @if (!imutavel()) {
+                        <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluir(g, a)" />
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

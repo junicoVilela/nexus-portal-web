@@ -173,6 +173,16 @@
       </div>
     }
 
+    @if (activeTab() === 'artefatos') {
+      <div class="rf-det__tab-content">
+        <app-artefatos-tab
+          [releaseId]="releaseId"
+          [produtoId]="release()!.produtoId"
+          [releaseStatus]="release()!.status"
+        />
+      </div>
+    }
+
     @if (activeTab() === 'historico') {
       <div class="rf-det__tab-content">
         @if (historico().length === 0) {
