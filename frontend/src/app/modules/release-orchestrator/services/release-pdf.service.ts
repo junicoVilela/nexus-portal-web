@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
 
-export type TipoPdf = 'CLIENTE' | 'INTERNO';
+export type TipoPdf = 'CLIENTE' | 'SUPORTE' | 'INTERNO';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasePdfService {
