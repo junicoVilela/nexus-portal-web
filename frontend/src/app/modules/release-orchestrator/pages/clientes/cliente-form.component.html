@@ -1,0 +1,229 @@
+<div class="cli-form">
+  <ui-page-header
+    [title]="editando() ? 'Editar cliente' : 'Novo cliente'"
+    subtitle="Dados operacionais usados em entregas e pacotes"
+    icon="Users"
+  >
+    <div actions>
+      <a class="cli-form__back" [routerLink]="['/release-orchestrator/clientes']">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (carregando()) {
+    <p class="cli-form__loading">Carregando cliente…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="cli-form__body">
+      <!-- Seção: Dados gerais -->
+      <section class="cli-form__section">
+        <h2 class="cli-form__section-title">
+          <lucide-icon name="FileText" [size]="16" /> Dados gerais
+        </h2>
+        <div class="cli-form__row">
+          <div class="cli-form__field cli-form__field--grow-2">
+            <label class="cli-form__label">Nome <span class="cli-form__req">*</span></label>
+            <input
+              class="cli-form__input"
+              formControlName="nome"
+              placeholder="Ex: ACME LTDA"
+              [class.cli-form__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="cli-form__err">Nome é obrigatório (até 200 caracteres)</span>
+            }
+          </div>
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">Sigla <span class="cli-form__req">*</span></label>
+            <input
+              class="cli-form__input cli-form__input--upper"
+              formControlName="sigla"
+              placeholder="Ex: ACME"
+              maxlength="20"
+              [class.cli-form__input--err]="fieldError('sigla')"
+            />
+            @if (fieldError('sigla')) {
+              <span class="cli-form__err">Sigla é obrigatória</span>
+            }
+          </div>
+        </div>
+
+        <div class="cli-form__row">
+          <div class="cli-form__field cli-form__field--grow-2">
+            <label class="cli-form__label">Razão social</label>
+            <input
+              class="cli-form__input"
+              formControlName="razaoSocial"
+              placeholder="Ex: ACME Comércio LTDA"
+            />
+          </div>
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">CNPJ</label>
+            <input
+              class="cli-form__input"
+              formControlName="cnpj"
+              placeholder="14 dígitos sem máscara"
+              maxlength="14"
+              (input)="onCnpjInput($event)"
+              [class.cli-form__input--err]="fieldError('cnpj')"
+            />
+            @if (fieldError('cnpj')) {
+              <span class="cli-form__err">CNPJ deve ter 14 dígitos</span>
+            }
+          </div>
+        </div>
+
+        <label class="cli-form__check">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Cliente ativo</span>
+        </label>
+      </section>
+
+      <!-- Seção: Ambiente -->
+      <section class="cli-form__section">
+        <h2 class="cli-form__section-title">
+          <lucide-icon name="Server" [size]="16" /> Ambiente
+        </h2>
+        <div class="cli-form__row">
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">Ambiente padrão <span class="cli-form__req">*</span></label>
+            <select class="cli-form__input" formControlName="ambientePadrao">
+              @for (a of ambientes; track a) {
+                <option [value]="a">{{ ambienteLabels[a] }}</option>
+              }
+            </select>
+          </div>
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">Tipo de banco</label>
+            <select class="cli-form__input" formControlName="tipoBanco">
+              <option [ngValue]="null">— Não informado —</option>
+              @for (t of tiposBanco; track t) {
+                <option [value]="t">{{ bancoLabels[t] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="cli-form__row">
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">Codificação</label>
+            <input class="cli-form__input" formControlName="codificacao" placeholder="UTF-8" />
+          </div>
+          <div class="cli-form__field cli-form__field--grow-1">
+            <label class="cli-form__label">Fuso horário</label>
+            <input
+              class="cli-form__input"
+              formControlName="fusoHorario"
+              placeholder="America/Sao_Paulo"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção: Contatos -->
+      <section class="cli-form__section">
+        <div class="cli-form__section-head">
+          <h2 class="cli-form__section-title">
+            <lucide-icon name="Users" [size]="16" /> Contatos
+          </h2>
+          <ui-button
+            type="button"
+            variant="secondary"
+            size="sm"
+            icon="Plus"
+            (clicked)="adicionarContato()"
+          >Adicionar contato</ui-button>
+        </div>
+
+        @if (contatosArray.length === 0) {
+          <p class="cli-form__hint">Nenhum contato cadastrado.</p>
+        } @else {
+          <div formArrayName="contatos" class="cli-form__contatos">
+            @for (group of contatosArray.controls; track $index; let i = $index) {
+              <div [formGroupName]="i" class="cli-form__contato">
+                <div class="cli-form__contato-head">
+                  <ui-badge tone="info">Contato {{ i + 1 }}</ui-badge>
+                  <ui-button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    icon="Trash2"
+                    (clicked)="removerContato(i)"
+                  />
+                </div>
+                <div class="cli-form__row">
+                  <div class="cli-form__field cli-form__field--grow-2">
+                    <label class="cli-form__label">Nome <span class="cli-form__req">*</span></label>
+                    <input
+                      class="cli-form__input"
+                      formControlName="nome"
+                      placeholder="Ex: Ana Silva"
+                      [class.cli-form__input--err]="contatoFieldError(i, 'nome')"
+                    />
+                  </div>
+                  <div class="cli-form__field cli-form__field--grow-1">
+                    <label class="cli-form__label">Papel <span class="cli-form__req">*</span></label>
+                    <select class="cli-form__input" formControlName="papel">
+                      @for (p of papeis; track p) {
+                        <option [value]="p">{{ papelLabels[p] }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="cli-form__row">
+                  <div class="cli-form__field cli-form__field--grow-2">
+                    <label class="cli-form__label">E-mail <span class="cli-form__req">*</span></label>
+                    <input
+                      class="cli-form__input"
+                      type="email"
+                      formControlName="email"
+                      placeholder="contato@cliente.com"
+                      [class.cli-form__input--err]="contatoFieldError(i, 'email')"
+                    />
+                    @if (contatoFieldError(i, 'email')) {
+                      <span class="cli-form__err">E-mail inválido</span>
+                    }
+                  </div>
+                  <div class="cli-form__field cli-form__field--grow-1">
+                    <label class="cli-form__label">Telefone</label>
+                    <input
+                      class="cli-form__input"
+                      formControlName="telefone"
+                      placeholder="(11) 99999-9999"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Seção: Observações -->
+      <section class="cli-form__section">
+        <h2 class="cli-form__section-title">
+          <lucide-icon name="MessageSquare" [size]="16" /> Observações
+        </h2>
+        <div class="cli-form__field">
+          <textarea
+            class="cli-form__input cli-form__textarea"
+            formControlName="observacoes"
+            rows="3"
+            placeholder="Notas internas sobre este cliente."
+          ></textarea>
+        </div>
+      </section>
+
+      <div class="cli-form__footer">
+        <ui-button
+          variant="ghost"
+          type="button"
+          [routerLink]="['/release-orchestrator/clientes']"
+        >Cancelar</ui-button>
+        <ui-button type="submit" [loading]="salvando()">
+          {{ editando() ? 'Salvar alterações' : 'Cadastrar cliente' }}
+        </ui-button>
+      </div>
+    </form>
+  }
+</div>
