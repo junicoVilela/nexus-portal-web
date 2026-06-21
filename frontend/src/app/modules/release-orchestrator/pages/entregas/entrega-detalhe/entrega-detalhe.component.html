@@ -1,0 +1,306 @@
+@if (loading()) {
+  <div class="ent-det ent-det--loading" aria-busy="true">
+    <ui-skeleton width="30%" height="28px" />
+    <ui-skeleton width="60%" height="18px" />
+    <ui-skeleton width="100%" height="100px" />
+    <ui-skeleton width="100%" height="240px" />
+  </div>
+} @else if (erro()) {
+  <div class="ent-det ent-det--errored">
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    >
+      <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/entregas']"
+        >Voltar para entregas</ui-button
+      >
+    </ui-error-state>
+  </div>
+} @else if (entrega(); as e) {
+  <div class="ent-det">
+    <!-- Cabeçalho -->
+    <div class="ent-det__header">
+      <div class="ent-det__ident">
+        <a class="ent-det__back" [routerLink]="['/release-orchestrator/entregas']">
+          <lucide-icon name="ArrowLeft" [size]="14" /> Entregas
+        </a>
+        <div class="ent-det__title-row">
+          <span class="ent-det__sigla">{{ e.clienteSigla }}</span>
+          <span class="ent-det__sep">/</span>
+          <span class="ent-det__sigla">{{ e.produtoSigla }}</span>
+          <h1 class="ent-det__title">{{ e.releaseVersao }}</h1>
+          <ui-badge [tone]="statusTones[e.status]" [dot]="true">
+            {{ statusLabels[e.status] }}
+          </ui-badge>
+          @if (emPolling()) {
+            <span class="ent-det__polling">
+              <lucide-icon name="Loader" [size]="12" /> acompanhando…
+            </span>
+          }
+        </div>
+        <p class="ent-det__sub">
+          {{ e.clienteNome }} <span class="ent-det__dot">·</span> {{ e.produtoNome }}
+          <span class="ent-det__dot">·</span> {{ ambienteLabels[e.ambiente] }}
+        </p>
+      </div>
+      <div class="ent-det__actions">
+        @if (e.status === 'RASCUNHO') {
+          <ui-button
+            icon="Play"
+            [loading]="iniciandoGeracao()"
+            (clicked)="iniciarGeracao()"
+          >Iniciar geração</ui-button>
+        }
+        @if (e.status === 'FALHA') {
+          <ui-button
+            icon="RotateCw"
+            [loading]="iniciandoGeracao()"
+            (clicked)="iniciarGeracao()"
+          >Reprocessar</ui-button>
+        }
+        @if (e.status === 'RASCUNHO' || e.status === 'EM_GERACAO') {
+          <ui-button
+            variant="secondary"
+            icon="X"
+            [loading]="cancelando()"
+            (clicked)="cancelar()"
+          >Cancelar</ui-button>
+        }
+        @if (e.status === 'CONCLUIDA') {
+          <ui-button
+            variant="secondary"
+            icon="FileText"
+            [loading]="baixandoDoc()"
+            (clicked)="baixarDocumento()"
+          >Documento (PDF)</ui-button>
+          <ui-button
+            icon="RefreshCw"
+            [loading]="reentregando()"
+            (clicked)="reentregar()"
+          >Reentregar</ui-button>
+        }
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="ent-det__kpis">
+      <ui-kpi-card
+        label="Módulos"
+        [valor]="modulosSelecionados() + '/' + modulos().length"
+        icon="Boxes"
+        tone="blue"
+        description="selecionados"
+      />
+      <ui-kpi-card
+        label="Artefatos"
+        [valor]="artefatos().length"
+        icon="Layers"
+        tone="purple"
+      />
+      <ui-kpi-card
+        label="Tamanho"
+        [valor]="formatarTamanho(resumoDelta()?.totalTamanhoBytes ?? e.tamanhoBytes)"
+        icon="HardDrive"
+        tone="neutral"
+      />
+      <ui-kpi-card
+        label="Iniciada em"
+        [valor]="(e.dataInicioGeracao | date: 'dd/MM HH:mm') ?? '—'"
+        icon="Clock"
+        tone="neutral"
+        [description]="e.dataConclusao ? ('Concluída ' + (e.dataConclusao | date: 'dd/MM HH:mm')) : null"
+      />
+    </div>
+
+    @if (e.status === 'FALHA' && e.falhaMotivo) {
+      <ui-card padding="md">
+        <div class="ent-det__falha">
+          <lucide-icon name="AlertCircle" [size]="16" />
+          <div>
+            <strong>Falha na geração</strong>
+            <p>{{ e.falhaMotivo }}</p>
+          </div>
+        </div>
+      </ui-card>
+    }
+
+    <!-- Tabs -->
+    <ui-tabs
+      [items]="tabsConfig()"
+      [active]="activeTab()"
+      (activeChange)="mudarAba($event)"
+    />
+
+    @switch (activeTab()) {
+      @case ('geral') {
+        <div class="ent-det__panes">
+          <ui-card padding="md">
+            <h3 class="ent-det__pane-title">
+              <lucide-icon name="FileText" [size]="14" /> Identificação
+            </h3>
+            <dl class="ent-det__dl">
+              <dt>Cliente</dt>
+              <dd>
+                <a [routerLink]="['/release-orchestrator/clientes', e.clienteId]">
+                  <code>{{ e.clienteSigla }}</code> {{ e.clienteNome }}
+                </a>
+              </dd>
+              <dt>Produto</dt><dd><code>{{ e.produtoSigla }}</code> {{ e.produtoNome }}</dd>
+              <dt>Release</dt>
+              <dd>
+                <a [routerLink]="['/release-orchestrator/releases', e.releaseId]">
+                  {{ e.releaseVersao }}
+                </a>
+              </dd>
+              <dt>Ambiente</dt><dd>{{ ambienteLabels[e.ambiente] }}</dd>
+              @if (e.entregaOriginalId) {
+                <dt>Reentrega de</dt>
+                <dd>
+                  <a [routerLink]="['/release-orchestrator/entregas', e.entregaOriginalId]">
+                    Entrega original
+                  </a>
+                </dd>
+              }
+              @if (e.proximaEntregaId) {
+                <dt>Origem</dt>
+                <dd>
+                  <a [routerLink]="['/release-orchestrator/proximas-entregas', e.proximaEntregaId, 'editar']">
+                    Próxima entrega planejada
+                  </a>
+                </dd>
+              }
+            </dl>
+          </ui-card>
+
+          <ui-card padding="md">
+            <h3 class="ent-det__pane-title">
+              <lucide-icon name="Package" [size]="14" /> Pacote
+            </h3>
+            <dl class="ent-det__dl">
+              <dt>Tamanho</dt><dd>{{ formatarTamanho(e.tamanhoBytes) }}</dd>
+              <dt>SHA-256</dt>
+              <dd>
+                @if (e.arquivoPacoteSha256) {
+                  <code class="ent-det__hash">{{ e.arquivoPacoteSha256 }}</code>
+                } @else {
+                  —
+                }
+              </dd>
+              <dt>Arquivo</dt>
+              <dd>
+                @if (e.arquivoPacoteCaminho) {
+                  <code>{{ e.arquivoPacoteCaminho }}</code>
+                } @else {
+                  —
+                }
+              </dd>
+              <dt>Iniciada em</dt>
+              <dd>{{ e.dataInicioGeracao ? (e.dataInicioGeracao | date: 'dd/MM/yyyy HH:mm:ss') : '—' }}</dd>
+              <dt>Concluída em</dt>
+              <dd>{{ e.dataConclusao ? (e.dataConclusao | date: 'dd/MM/yyyy HH:mm:ss') : '—' }}</dd>
+            </dl>
+          </ui-card>
+
+          @if (e.observacoes) {
+            <ui-card padding="md">
+              <h3 class="ent-det__pane-title">
+                <lucide-icon name="MessageSquare" [size]="14" /> Observações
+              </h3>
+              <p class="ent-det__obs">{{ e.observacoes }}</p>
+            </ui-card>
+          }
+        </div>
+      }
+      @case ('modulos') {
+        @if (modulos().length === 0) {
+          <ui-empty-state
+            icon="Boxes"
+            title="Nenhum módulo configurado"
+            description="Inicialize a seleção a partir do contrato + release para começar."
+          />
+        } @else {
+          <ui-card padding="none">
+            <table class="ent-det__table">
+              <thead>
+                <tr>
+                  <th>Módulo</th>
+                  <th>Tipo</th>
+                  <th>De</th>
+                  <th>Para</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (m of modulosOrdenados(); track m.id) {
+                  <tr [class.ent-det__row--inativo]="!m.selecionado">
+                    <td>
+                      <strong>{{ m.moduloCodigo }}</strong> — {{ m.moduloNome }}
+                    </td>
+                    <td>
+                      <ui-badge [tone]="tipoModuloTones[m.moduloTipo]">
+                        {{ tipoModuloLabels[m.moduloTipo] }}
+                      </ui-badge>
+                    </td>
+                    <td>{{ m.versaoFrom || '—' }}</td>
+                    <td>{{ m.versaoTo || '—' }}</td>
+                    <td>
+                      @if (!m.selecionado) {
+                        <ui-badge tone="neutral">Não incluso</ui-badge>
+                      } @else if (m.foraContrato) {
+                        <ui-badge tone="warn">Fora do contrato</ui-badge>
+                      } @else if (m.mudancaDetectada) {
+                        <ui-badge tone="info">Mudou</ui-badge>
+                      } @else {
+                        <ui-badge tone="neutral">Sem mudança</ui-badge>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </ui-card>
+        }
+      }
+      @case ('delta') {
+        @if (artefatos().length === 0) {
+          <ui-empty-state
+            icon="Layers"
+            title="Sem artefatos no delta"
+            description="Os artefatos aparecem aqui após a geração ou após calcular o delta manualmente."
+          />
+        } @else {
+          <ui-card padding="none">
+            <table class="ent-det__table">
+              <thead>
+                <tr>
+                  <th>Arquivo</th>
+                  <th>Módulo</th>
+                  <th>Tipo</th>
+                  <th>Tamanho</th>
+                  <th>SHA-256</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (a of artefatos(); track a.id) {
+                  <tr>
+                    <td><code>{{ a.nomeArquivo }}</code></td>
+                    <td>{{ a.moduloCodigo }} · {{ a.moduloNome }}</td>
+                    <td>
+                      <ui-badge [tone]="tipoModuloTones[a.moduloTipo]">
+                        {{ tipoModuloLabels[a.moduloTipo] }}
+                      </ui-badge>
+                    </td>
+                    <td>{{ formatarTamanho(a.tamanhoBytes) }}</td>
+                    <td><code class="ent-det__hash-short">{{ a.sha256.slice(0, 12) }}…</code></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </ui-card>
+        }
+      }
+    }
+  </div>
+}

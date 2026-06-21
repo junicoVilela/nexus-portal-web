@@ -84,7 +84,12 @@
         <tbody>
           @for (e of entregas(); track e.id) {
             <tr>
-              <td>{{ e.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <a
+                  class="ent-list__link"
+                  [routerLink]="['/release-orchestrator/entregas', e.id]"
+                >{{ e.createdAt | date: 'dd/MM/yyyy HH:mm' }}</a>
+              </td>
               <td>
                 <a
                   class="ent-list__link"

@@ -1,0 +1,242 @@
+.ent-det {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.ent-det--loading,
+.ent-det--errored {
+  gap: 12px;
+}
+
+.ent-det__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ent-det__ident {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ent-det__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.ent-det__back:hover {
+  color: var(--text-primary);
+}
+
+.ent-det__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ent-det__sigla {
+  background: var(--bg-subtle);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ent-det__sep {
+  color: var(--text-secondary);
+}
+
+.ent-det__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Courier New', monospace;
+}
+
+.ent-det__polling {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ent-det__polling lucide-icon {
+  animation: ent-det-spin 1s linear infinite;
+}
+
+@keyframes ent-det-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ent-det__sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ent-det__dot {
+  opacity: 0.6;
+  margin: 0 4px;
+}
+
+.ent-det__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ent-det__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.ent-det__falha {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--danger-text, #b91c1c);
+}
+
+.ent-det__falha strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.ent-det__falha p {
+  margin: 0;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+}
+
+.ent-det__panes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.ent-det__pane-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ent-det__dl {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 6px 12px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.ent-det__dl dt {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ent-det__dl dd {
+  margin: 0;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ent-det__dl dd a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.ent-det__dl dd a:hover {
+  text-decoration: underline;
+}
+
+.ent-det__dl code,
+.ent-det__table code {
+  background: var(--bg-subtle);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.ent-det__hash {
+  word-break: break-all;
+  font-size: 10px;
+}
+
+.ent-det__hash-short {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ent-det__obs {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.ent-det__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ent-det__table thead th {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.ent-det__table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.ent-det__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ent-det__row--inativo td {
+  opacity: 0.55;
+}
+
+@media (max-width: 768px) {
+  .ent-det {
+    padding: 14px;
+  }
+  .ent-det__dl {
+    grid-template-columns: 1fr;
+  }
+}
