@@ -1,0 +1,154 @@
+<div class="ent-list">
+  <ui-page-header
+    title="Entregas"
+    subtitle="Histórico de pacotes gerados, em geração e cancelados"
+    icon="Package"
+  />
+
+  <div class="ent-list__filter">
+    <select
+      class="ent-list__select"
+      [(ngModel)]="filtros.clienteId"
+      (change)="onFiltroChange()"
+      aria-label="Cliente"
+    >
+      <option value="">Todos os clientes</option>
+      @for (c of clientes(); track c.id) {
+        <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
+      }
+    </select>
+
+    <select
+      class="ent-list__select"
+      [(ngModel)]="filtros.produtoId"
+      (change)="onFiltroChange()"
+      aria-label="Produto"
+    >
+      <option value="">Todos os produtos</option>
+      @for (p of produtos(); track p.id) {
+        <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+      }
+    </select>
+
+    <select
+      class="ent-list__select"
+      [(ngModel)]="filtros.status"
+      (change)="onFiltroChange()"
+      aria-label="Status"
+    >
+      <option value="">Todos os status</option>
+      @for (s of statusKeys; track s) {
+        <option [value]="s">{{ statusLabels[s] }}</option>
+      }
+    </select>
+
+    <button type="button" class="ent-list__clear" (click)="limparFiltros()">
+      <lucide-icon name="X" [size]="14" /> Limpar
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando entregas">
+      <ui-skeleton width="100%" height="40px" />
+      <ui-skeleton width="100%" height="40px" />
+      <ui-skeleton width="100%" height="40px" />
+    </div>
+  } @else if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    />
+  } @else if (entregas().length === 0) {
+    <ui-empty-state
+      icon="PackageOpen"
+      title="Nenhuma entrega encontrada"
+      description="Quando entregas forem geradas pelo assistente, elas aparecem aqui."
+    />
+  } @else {
+    <div class="ent-list__table-wrap">
+      <table class="ent-list__table">
+        <thead>
+          <tr>
+            <th>Criada em</th>
+            <th>Cliente</th>
+            <th>Produto · Release</th>
+            <th>Ambiente</th>
+            <th>Status</th>
+            <th>Concluída em</th>
+            <th>Tamanho</th>
+            <th class="ent-list__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of entregas(); track e.id) {
+            <tr>
+              <td>{{ e.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <a
+                  class="ent-list__link"
+                  [routerLink]="['/release-orchestrator/clientes', e.clienteId]"
+                >
+                  <code>{{ e.clienteSigla }}</code> {{ e.clienteNome }}
+                </a>
+              </td>
+              <td>
+                <code>{{ e.produtoSigla }}</code> · {{ e.releaseVersao }}
+                @if (e.entregaOriginalId) {
+                  <span class="ent-list__reentrega" title="Reentrega">
+                    <lucide-icon name="RefreshCw" [size]="11" />
+                  </span>
+                }
+              </td>
+              <td>{{ ambienteLabels[e.ambiente] }}</td>
+              <td>
+                <ui-badge [tone]="statusTones[e.status]">
+                  {{ statusLabels[e.status] }}
+                </ui-badge>
+                @if (e.status === 'FALHA' && e.falhaMotivo) {
+                  <div class="ent-list__falha" [title]="e.falhaMotivo">{{ e.falhaMotivo }}</div>
+                }
+              </td>
+              <td>{{ e.dataConclusao ? (e.dataConclusao | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+              <td>{{ formatarTamanho(e.tamanhoBytes) }}</td>
+              <td class="ent-list__col-actions">
+                @if (e.status === 'CONCLUIDA') {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    icon="RefreshCw"
+                    [loading]="reentregandoId() === e.id"
+                    (clicked)="reentregar(e)"
+                  >Reentregar</ui-button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="ent-list__pagination">
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronLeft"
+          [disabled]="page() <= 1"
+          (clicked)="irParaPagina(page() - 1)"
+        />
+        <span class="ent-list__paginfo">
+          Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total
+        </span>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [disabled]="page() >= totalPaginas()"
+          (clicked)="irParaPagina(page() + 1)"
+        />
+      </div>
+    }
+  }
+</div>
