@@ -6,7 +6,9 @@ import { environment } from '@env/environment';
 import {
   AtualizarClienteProdutoForm,
   ClienteProduto,
+  ClienteProdutoModulo,
   ContratarProdutoForm,
+  SalvarClienteProdutoModuloForm,
 } from '../models/cliente-produto.model';
 
 @Injectable({ providedIn: 'root' })
@@ -35,5 +37,33 @@ export class ClienteProdutoService {
 
   rescindir(clienteId: string, id: string): Observable<void> {
     return this.http.delete<void>(`${this.base(clienteId)}/${id}`);
+  }
+
+  listarModulos(clienteId: string, clienteProdutoId: string): Observable<ClienteProdutoModulo[]> {
+    return this.http.get<ClienteProdutoModulo[]>(
+      `${this.base(clienteId)}/${clienteProdutoId}/modulos`,
+    );
+  }
+
+  salvarModulo(
+    clienteId: string,
+    clienteProdutoId: string,
+    moduloProdutoId: string,
+    form: SalvarClienteProdutoModuloForm,
+  ): Observable<ClienteProdutoModulo> {
+    return this.http.put<ClienteProdutoModulo>(
+      `${this.base(clienteId)}/${clienteProdutoId}/modulos/${moduloProdutoId}`,
+      form,
+    );
+  }
+
+  removerModulo(
+    clienteId: string,
+    clienteProdutoId: string,
+    moduloProdutoId: string,
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.base(clienteId)}/${clienteProdutoId}/modulos/${moduloProdutoId}`,
+    );
   }
 }

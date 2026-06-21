@@ -44,8 +44,17 @@ import { ConfigEntregaService } from '../../../services/config-entrega.service';
 import { ProximaEntregaService } from '../../../services/proxima-entrega.service';
 import { ClienteProdutoService } from '../../../services/cliente-produto.service';
 import { ProdutoService } from '../../../services/produto.service';
-import { ClienteProduto } from '../../../models/cliente-produto.model';
+import {
+  ClienteProduto,
+  ClienteProdutoModulo,
+} from '../../../models/cliente-produto.model';
 import { Produto } from '../../../models/produto.model';
+import { ModuloProduto } from '../../../models/modulo-produto.model';
+import { ModuloProdutoService } from '../../../services/modulo-produto.service';
+import {
+  TIPO_MODULO_LABELS,
+  TIPO_MODULO_TONES,
+} from '../../../models/entrega-modulo.model';
 
 type Aba = 'geral' | 'contatos' | 'config-entrega' | 'produtos' | 'proximas-entregas';
 
@@ -79,6 +88,7 @@ export class ClienteDetalheComponent implements OnInit {
   private readonly proximaService = inject(ProximaEntregaService);
   private readonly clienteProdutoService = inject(ClienteProdutoService);
   private readonly produtoService = inject(ProdutoService);
+  private readonly moduloProdutoService = inject(ModuloProdutoService);
   private readonly toast = inject(ToastService);
 
   protected readonly loading = signal(true);
@@ -96,6 +106,16 @@ export class ClienteDetalheComponent implements OnInit {
   protected readonly alterandoProdutoId = signal<string | null>(null);
   protected novoProdutoId = '';
   protected novoAmbiente: AmbientePadrao = 'PROD';
+
+  /** clienteProdutoId expandido na tabela → mostra módulos. */
+  protected readonly expandidoId = signal<string | null>(null);
+  protected readonly carregandoModulos = signal(false);
+  protected readonly modulosExpandido = signal<ClienteProdutoModulo[]>([]);
+  protected readonly catalogoModulosExpandido = signal<ModuloProduto[]>([]);
+  protected readonly alterandoModuloId = signal<string | null>(null);
+
+  protected readonly tipoModuloLabels = TIPO_MODULO_LABELS;
+  protected readonly tipoModuloTones = TIPO_MODULO_TONES;
 
   protected readonly activeTab = signal<Aba>('geral');
 
@@ -130,6 +150,24 @@ export class ClienteDetalheComponent implements OnInit {
   protected readonly produtosDisponiveis = computed(() => {
     const contratados = new Set(this.produtosContratados().map(cp => cp.produtoId));
     return this.catalogoProdutos().filter(p => !contratados.has(p.id));
+  });
+
+  /**
+   * Junta catálogo de módulos do produto com CPMs já configurados. Cada item
+   * tem o módulo do catálogo + (opcional) o CPM com versão/ativo.
+   */
+  protected readonly modulosCombinados = computed(() => {
+    const cpms = new Map(this.modulosExpandido().map(c => [c.moduloProdutoId, c]));
+    return this.catalogoModulosExpandido().map(m => ({
+      modulo: m,
+      cpm: cpms.get(m.id) ?? null,
+    }));
+  });
+
+  protected readonly resumoModulos = computed(() => {
+    const cpms = this.modulosExpandido();
+    const ativos = cpms.filter(c => c.ativo).length;
+    return { ativos, total: cpms.length };
   });
 
   protected readonly proximaEntregaPendente = computed(() => {
@@ -235,6 +273,107 @@ export class ClienteDetalheComponent implements OnInit {
           this.toast.error('Não foi possível alterar o status do produto.');
         },
       });
+  }
+
+  protected expandirProduto(cp: ClienteProduto): void {
+    if (this.expandidoId() === cp.id) {
+      this.expandidoId.set(null);
+      return;
+    }
+    this.expandidoId.set(cp.id);
+    this.carregandoModulos.set(true);
+    this.modulosExpandido.set([]);
+    this.catalogoModulosExpandido.set([]);
+    forkJoin({
+      catalogo: this.moduloProdutoService.listar(cp.produtoId).pipe(catchError(() => of([] as ModuloProduto[]))),
+      modulos: this.clienteProdutoService
+        .listarModulos(this.clienteId, cp.id)
+        .pipe(catchError(() => of([] as ClienteProdutoModulo[]))),
+    })
+      .pipe(finalize(() => this.carregandoModulos.set(false)))
+      .subscribe(({ catalogo, modulos }) => {
+        this.catalogoModulosExpandido.set(catalogo);
+        this.modulosExpandido.set(modulos);
+      });
+  }
+
+  protected ativarModulo(cp: ClienteProduto, moduloProdutoId: string): void {
+    this.alterandoModuloId.set(moduloProdutoId);
+    this.clienteProdutoService
+      .salvarModulo(this.clienteId, cp.id, moduloProdutoId, { ativo: true })
+      .subscribe({
+        next: novo => {
+          this.modulosExpandido.update(list => {
+            const i = list.findIndex(x => x.moduloProdutoId === moduloProdutoId);
+            return i >= 0 ? list.map(x => (x.id === novo.id ? novo : x)) : [...list, novo];
+          });
+          this.alterandoModuloId.set(null);
+        },
+        error: () => {
+          this.alterandoModuloId.set(null);
+          this.toast.error('Não foi possível contratar o módulo.');
+        },
+      });
+  }
+
+  protected toggleModuloAtivo(cp: ClienteProduto, cpm: ClienteProdutoModulo): void {
+    this.alterandoModuloId.set(cpm.moduloProdutoId);
+    this.clienteProdutoService
+      .salvarModulo(this.clienteId, cp.id, cpm.moduloProdutoId, {
+        versaoAtual: cpm.versaoAtual ?? null,
+        ativo: !cpm.ativo,
+      })
+      .subscribe({
+        next: upd => {
+          this.modulosExpandido.update(list => list.map(x => (x.id === upd.id ? upd : x)));
+          this.alterandoModuloId.set(null);
+        },
+        error: () => {
+          this.alterandoModuloId.set(null);
+          this.toast.error('Não foi possível alterar o módulo.');
+        },
+      });
+  }
+
+  protected editarVersaoModulo(cp: ClienteProduto, cpm: ClienteProdutoModulo): void {
+    const novaVersao = prompt(
+      `Versão instalada do módulo ${cpm.moduloCodigo}?\n(Deixe vazio para limpar.)`,
+      cpm.versaoAtual ?? '',
+    );
+    if (novaVersao === null) return;
+    const versao = novaVersao.trim() || null;
+    this.alterandoModuloId.set(cpm.moduloProdutoId);
+    this.clienteProdutoService
+      .salvarModulo(this.clienteId, cp.id, cpm.moduloProdutoId, {
+        versaoAtual: versao,
+        ativo: cpm.ativo,
+      })
+      .subscribe({
+        next: upd => {
+          this.modulosExpandido.update(list => list.map(x => (x.id === upd.id ? upd : x)));
+          this.alterandoModuloId.set(null);
+          this.toast.success('Versão atualizada.');
+        },
+        error: () => {
+          this.alterandoModuloId.set(null);
+          this.toast.error('Não foi possível atualizar a versão.');
+        },
+      });
+  }
+
+  protected removerModuloContratado(cp: ClienteProduto, cpm: ClienteProdutoModulo): void {
+    if (!confirm(`Remover ${cpm.moduloCodigo} do contrato? Histórico de entregas é preservado.`)) return;
+    this.alterandoModuloId.set(cpm.moduloProdutoId);
+    this.clienteProdutoService.removerModulo(this.clienteId, cp.id, cpm.moduloProdutoId).subscribe({
+      next: () => {
+        this.modulosExpandido.update(list => list.filter(x => x.id !== cpm.id));
+        this.alterandoModuloId.set(null);
+      },
+      error: () => {
+        this.alterandoModuloId.set(null);
+        this.toast.error('Não foi possível remover o módulo.');
+      },
+    });
   }
 
   protected rescindirProduto(cp: ClienteProduto): void {

@@ -217,6 +217,7 @@
             <table class="cli-det__table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Produto</th>
                   <th>Ambiente</th>
                   <th>Status</th>
@@ -227,6 +228,19 @@
               <tbody>
                 @for (cp of produtosContratados(); track cp.id) {
                   <tr [class.cli-det__row--inativo]="!cp.ativo">
+                    <td>
+                      <button
+                        type="button"
+                        class="cli-det__expand-btn"
+                        (click)="expandirProduto(cp)"
+                        [attr.aria-expanded]="expandidoId() === cp.id"
+                      >
+                        <lucide-icon
+                          [name]="expandidoId() === cp.id ? 'ChevronDown' : 'ChevronRight'"
+                          [size]="14"
+                        />
+                      </button>
+                    </td>
                     <td>
                       <strong>{{ cp.produtoSigla }}</strong> — {{ cp.produtoNome }}
                     </td>
@@ -254,6 +268,105 @@
                       />
                     </td>
                   </tr>
+                  @if (expandidoId() === cp.id) {
+                    <tr class="cli-det__expanded">
+                      <td colspan="6">
+                        @if (carregandoModulos()) {
+                          <p class="cli-det__hint">Carregando módulos…</p>
+                        } @else if (catalogoModulosExpandido().length === 0) {
+                          <p class="cli-det__hint">
+                            Produto sem módulos no catálogo. Cadastre módulos em
+                            <code>/produtos/{{ cp.produtoId }}/modulos</code>.
+                          </p>
+                        } @else {
+                          <div class="cli-det__resumo-modulos">
+                            <lucide-icon name="Boxes" [size]="14" />
+                            <span>
+                              {{ resumoModulos().ativos }} de {{ resumoModulos().total }}
+                              módulos contratados
+                            </span>
+                          </div>
+                          <table class="cli-det__sub-table">
+                            <thead>
+                              <tr>
+                                <th>Módulo</th>
+                                <th>Tipo</th>
+                                <th>Versão atual</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (item of modulosCombinados(); track item.modulo.id) {
+                                <tr [class.cli-det__row--inativo]="!item.cpm?.ativo">
+                                  <td>
+                                    <strong>{{ item.modulo.codigo }}</strong>
+                                    @if (item.modulo.nome !== item.modulo.codigo) {
+                                      — {{ item.modulo.nome }}
+                                    }
+                                  </td>
+                                  <td>
+                                    <ui-badge [tone]="tipoModuloTones[item.modulo.tipo]">
+                                      {{ tipoModuloLabels[item.modulo.tipo] }}
+                                    </ui-badge>
+                                  </td>
+                                  <td>
+                                    @if (item.cpm?.versaoAtual) {
+                                      <code>{{ item.cpm!.versaoAtual }}</code>
+                                    } @else {
+                                      <span class="cli-det__hint">—</span>
+                                    }
+                                  </td>
+                                  <td>
+                                    @if (item.cpm) {
+                                      <ui-badge [tone]="item.cpm.ativo ? 'success' : 'neutral'">
+                                        {{ item.cpm.ativo ? 'Contratado' : 'Inativo' }}
+                                      </ui-badge>
+                                    } @else {
+                                      <ui-badge tone="neutral">Não contratado</ui-badge>
+                                    }
+                                  </td>
+                                  <td>
+                                    @if (!item.cpm) {
+                                      <ui-button
+                                        variant="secondary"
+                                        size="sm"
+                                        icon="Plus"
+                                        [loading]="alterandoModuloId() === item.modulo.id"
+                                        (clicked)="ativarModulo(cp, item.modulo.id)"
+                                      >Contratar</ui-button>
+                                    } @else {
+                                      <ui-button
+                                        variant="ghost"
+                                        size="sm"
+                                        icon="Tag"
+                                        [disabled]="alterandoModuloId() === item.modulo.id"
+                                        (clicked)="editarVersaoModulo(cp, item.cpm)"
+                                      >Versão</ui-button>
+                                      <ui-button
+                                        variant="ghost"
+                                        size="sm"
+                                        [icon]="item.cpm.ativo ? 'Pause' : 'Play'"
+                                        [disabled]="alterandoModuloId() === item.modulo.id"
+                                        (clicked)="toggleModuloAtivo(cp, item.cpm)"
+                                      />
+                                      <ui-button
+                                        variant="ghost"
+                                        size="sm"
+                                        icon="Trash2"
+                                        [disabled]="alterandoModuloId() === item.modulo.id"
+                                        (clicked)="removerModuloContratado(cp, item.cpm)"
+                                      />
+                                    }
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        }
+                      </td>
+                    </tr>
+                  }
                 }
               </tbody>
             </table>

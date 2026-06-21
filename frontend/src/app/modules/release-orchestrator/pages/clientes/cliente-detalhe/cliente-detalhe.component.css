@@ -248,6 +248,78 @@
   font-style: italic;
 }
 
+.cli-det__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.cli-det__expand-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.cli-det__expanded td {
+  background: var(--bg-subtle);
+  padding: 12px 16px;
+}
+
+.cli-det__resumo-modulos {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.cli-det__sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: var(--bg-card);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.cli-det__sub-table thead th {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.cli-det__sub-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cli-det__sub-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cli-det__sub-table code {
+  background: var(--bg-subtle);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .cli-det {
     padding: 14px;

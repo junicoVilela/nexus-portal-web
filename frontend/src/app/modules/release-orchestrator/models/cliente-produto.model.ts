@@ -1,4 +1,5 @@
 import { AmbientePadrao } from './cliente.model';
+import { TipoModulo } from './entrega-modulo.model';
 
 export interface ClienteProduto {
   id: string;
@@ -19,5 +20,22 @@ export interface ContratarProdutoForm {
 
 export interface AtualizarClienteProdutoForm {
   ambiente: AmbientePadrao;
+  ativo?: boolean;
+}
+
+export interface ClienteProdutoModulo {
+  id: string;
+  clienteProdutoId: string;
+  moduloProdutoId: string;
+  moduloCodigo: string;
+  moduloNome: string;
+  moduloTipo: TipoModulo;
+  versaoAtual?: string;
+  ativo: boolean;
+  updatedAt?: string;
+}
+
+export interface SalvarClienteProdutoModuloForm {
+  versaoAtual?: string | null;
   ativo?: boolean;
 }
