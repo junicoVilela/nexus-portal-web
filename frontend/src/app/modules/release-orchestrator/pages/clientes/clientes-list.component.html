@@ -1,0 +1,151 @@
+<div class="cli-list">
+  <ui-page-header
+    title="Clientes"
+    subtitle="Clientes operacionais que recebem entregas"
+    icon="Users"
+  >
+    <div actions>
+      <ui-button
+        icon="Plus"
+        [routerLink]="['/release-orchestrator/clientes/novo']"
+      >Novo cliente</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    />
+  }
+
+  <div class="cli-list__filter">
+    <input
+      class="cli-list__search"
+      type="text"
+      placeholder="Buscar por nome ou sigla…"
+      [(ngModel)]="filtros.q"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onBuscaInput()"
+    />
+    <select
+      class="cli-list__status"
+      [(ngModel)]="filtros.ativo"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onStatusChange()"
+    >
+      <option value="todos">Todos</option>
+      <option value="ativos">Apenas ativos</option>
+      <option value="inativos">Apenas inativos</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando clientes">
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+    </div>
+  } @else if (clientes().length === 0) {
+    <ui-empty-state
+      icon="Users"
+      illustration="document"
+      title="Nenhum cliente encontrado"
+      description="Cadastre o primeiro cliente operacional para começar a planejar entregas."
+    >
+      <ui-button
+        icon="Plus"
+        [routerLink]="['/release-orchestrator/clientes/novo']"
+      >Cadastrar cliente</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="cli-list__table-wrap">
+      <table class="cli-list__table">
+        <thead>
+          <tr>
+            <th>Sigla</th>
+            <th>Nome</th>
+            <th>CNPJ</th>
+            <th>Ambiente</th>
+            <th>Status</th>
+            <th class="cli-list__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of clientes(); track c.id) {
+            <tr [class.cli-list__row--inativo]="!c.ativo">
+              <td>
+                <code class="cli-list__sigla">{{ c.sigla }}</code>
+              </td>
+              <td>
+                <a
+                  class="cli-list__nome-link"
+                  [routerLink]="['/release-orchestrator/clientes', c.id]"
+                >{{ c.nome }}</a>
+                @if (c.razaoSocial) {
+                  <div class="cli-list__razao">{{ c.razaoSocial }}</div>
+                }
+              </td>
+              <td>{{ formatarCnpj(c.cnpj) }}</td>
+              <td>
+                <span class="cli-list__ambiente">{{ ambienteLabels[c.ambientePadrao] }}</span>
+              </td>
+              <td>
+                <ui-badge [tone]="c.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                  c.ativo ? 'Ativo' : 'Inativo'
+                }}</ui-badge>
+              </td>
+              <td class="cli-list__col-actions">
+                <ui-button
+                  variant="secondary"
+                  size="sm"
+                  icon="Pencil"
+                  [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
+                >Editar</ui-button>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  [icon]="c.ativo ? 'EyeOff' : 'Eye'"
+                  (clicked)="toggleAtivo(c)"
+                >{{ c.ativo ? 'Inativar' : 'Ativar' }}</ui-button>
+                @if (excluindoId() === c.id) {
+                  <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(c)" />
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+                } @else {
+                  <ui-button
+                    variant="danger"
+                    size="sm"
+                    icon="Trash2"
+                    (clicked)="excluindoId.set(c.id)"
+                  />
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="cli-list__pagination">
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronLeft"
+          [disabled]="page() === 1"
+          (clicked)="irParaPagina(page() - 1)"
+        />
+        <span class="cli-list__paginfo">Página {{ page() }} de {{ totalPaginas() }}</span>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [disabled]="page() === totalPaginas()"
+          (clicked)="irParaPagina(page() + 1)"
+        />
+      </div>
+    }
+  }
+</div>

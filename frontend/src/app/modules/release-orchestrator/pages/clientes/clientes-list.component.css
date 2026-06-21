@@ -1,0 +1,135 @@
+.cli-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.cli-list__filter {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cli-list__search {
+  flex: 1;
+  min-width: 240px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.cli-list__status {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.cli-list__table-wrap {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.cli-list__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.cli-list__table thead th {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.cli-list__table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.cli-list__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cli-list__row--inativo td {
+  opacity: 0.55;
+}
+
+.cli-list__sigla {
+  background: var(--bg-subtle);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cli-list__nome-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cli-list__nome-link:hover {
+  text-decoration: underline;
+}
+
+.cli-list__razao {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.cli-list__ambiente {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-subtle);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.cli-list__col-actions {
+  text-align: right;
+  white-space: nowrap;
+  min-width: 280px;
+}
+
+.cli-list__col-actions > * + * {
+  margin-left: 4px;
+}
+
+.cli-list__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.cli-list__paginfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .cli-list {
+    padding: 14px;
+  }
+  .cli-list__col-actions {
+    min-width: auto;
+  }
+}
