@@ -3,7 +3,14 @@
     title="Entregas"
     subtitle="Histórico de pacotes gerados, em geração e cancelados"
     icon="Package"
-  />
+  >
+    <div actions>
+      <ui-button
+        icon="Plus"
+        [routerLink]="['/release-orchestrator/entregas/nova']"
+      >Nova entrega</ui-button>
+    </div>
+  </ui-page-header>
 
   <div class="ent-list__filter">
     <select

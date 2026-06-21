@@ -18,6 +18,7 @@ import { ProximasEntregasListComponent } from './pages/proximas-entregas/proxima
 import { ProximaEntregaFormComponent } from './pages/proximas-entregas/proxima-entrega-form.component';
 import { EntregasListComponent } from './pages/entregas/entregas-list.component';
 import { EntregaDetalheComponent } from './pages/entregas/entrega-detalhe/entrega-detalhe.component';
+import { EntregaWizardComponent } from './pages/entregas/entrega-wizard/entrega-wizard.component';
 import { RfTemplatesComponent } from './pages/templates/rf-templates.component';
 import { RfGuiaComponent } from './pages/guia/rf-guia.component';
 
@@ -63,6 +64,7 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
         canDeactivate: [canDeactivateGuard],
       },
       { path: 'entregas', component: EntregasListComponent },
+      { path: 'entregas/nova', component: EntregaWizardComponent },
       { path: 'entregas/:id', component: EntregaDetalheComponent },
       { path: 'templates', component: RfTemplatesComponent },
       { path: 'guia', component: RfGuiaComponent },

@@ -145,7 +145,15 @@
                 </ui-badge>
               </td>
               <td class="pe-list__col-actions">
-                @if (proximoStatus(pe); as prox) {
+                @if (pe.status === 'AGENDADA' || pe.status === 'REPLANEJADA' || pe.status === 'ATRASADA') {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    icon="Rocket"
+                    [routerLink]="['/release-orchestrator/entregas/nova']"
+                    [queryParams]="{ proximaEntregaId: pe.id }"
+                  >Gerar</ui-button>
+                } @else if (proximoStatus(pe); as prox) {
                   <ui-button
                     variant="secondary"
                     size="sm"

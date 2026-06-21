@@ -1,0 +1,342 @@
+<div class="wiz">
+  <ui-page-header
+    title="Nova entrega"
+    subtitle="Assistente em 5 passos: cliente → produto → release → módulos → revisão"
+    icon="Rocket"
+  >
+    <div actions>
+      <a class="wiz__back" [routerLink]="['/release-orchestrator/entregas']">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar para entregas
+      </a>
+    </div>
+  </ui-page-header>
+
+  <div class="wiz__body">
+    <!-- Sidebar de passos -->
+    <aside class="wiz__steps">
+      @for (p of passos; track p.id) {
+        <button
+          type="button"
+          class="wiz__step"
+          [class.wiz__step--active]="passo() === p.id"
+          [class.wiz__step--done]="passo() > p.id"
+          [disabled]="p.id > passo()"
+          (click)="irParaPasso(p.id)"
+        >
+          <span class="wiz__step-num">
+            @if (passo() > p.id) {
+              <lucide-icon name="Check" [size]="14" />
+            } @else {
+              {{ p.id }}
+            }
+          </span>
+          <span class="wiz__step-label">{{ p.label }}</span>
+        </button>
+      }
+    </aside>
+
+    <!-- Conteúdo do passo -->
+    <main class="wiz__content">
+      @if (carregandoRefs()) {
+        <ui-skeleton width="60%" height="20px" />
+        <ui-skeleton width="100%" height="200px" />
+      } @else {
+        @switch (passo()) {
+          @case (1) {
+            <ui-card padding="md">
+              <h2 class="wiz__title">Passo 1 de 5 · Selecione o cliente</h2>
+              <p class="wiz__hint">Apenas clientes ativos aparecem aqui.</p>
+              <div class="wiz__field">
+                <label class="wiz__label">Cliente <span class="wiz__req">*</span></label>
+                <select
+                  class="wiz__input"
+                  [(ngModel)]="dados.clienteId"
+                  (change)="onClienteChange()"
+                >
+                  <option value="">— Selecione —</option>
+                  @for (c of clientes(); track c.id) {
+                    <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
+                  }
+                </select>
+              </div>
+
+              @if (clienteSelecionado(); as c) {
+                <div class="wiz__preview">
+                  <h3 class="wiz__preview-title">
+                    <lucide-icon name="Info" [size]="14" /> Cliente selecionado
+                  </h3>
+                  <dl class="wiz__dl">
+                    <dt>Sigla</dt><dd><code>{{ c.sigla }}</code></dd>
+                    <dt>Nome</dt><dd>{{ c.nome }}</dd>
+                    <dt>Ambiente padrão</dt><dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
+                  </dl>
+                  @if (proximasDoCliente().length > 0) {
+                    <p class="wiz__hint">
+                      Este cliente tem {{ proximasDoCliente().length }} entrega(s) agendada(s).
+                      Considere começar pela agenda para pré-preencher os campos.
+                    </p>
+                  }
+                </div>
+              }
+            </ui-card>
+          }
+          @case (2) {
+            <ui-card padding="md">
+              <h2 class="wiz__title">Passo 2 de 5 · Produto e ambiente</h2>
+              <div class="wiz__row">
+                <div class="wiz__field wiz__field--grow-2">
+                  <label class="wiz__label">Produto <span class="wiz__req">*</span></label>
+                  <select
+                    class="wiz__input"
+                    [(ngModel)]="dados.produtoId"
+                    (change)="onProdutoChange()"
+                  >
+                    <option value="">— Selecione —</option>
+                    @for (p of produtos(); track p.id) {
+                      <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="wiz__field wiz__field--grow-1">
+                  <label class="wiz__label">Ambiente <span class="wiz__req">*</span></label>
+                  <select class="wiz__input" [(ngModel)]="dados.ambiente">
+                    @for (a of ambientes; track a) {
+                      <option [value]="a">{{ ambienteLabels[a] }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              @if (produtoSelecionado(); as prod) {
+                <div class="wiz__preview">
+                  <h3 class="wiz__preview-title">
+                    <lucide-icon name="Box" [size]="14" /> Produto selecionado
+                  </h3>
+                  <dl class="wiz__dl">
+                    <dt>Sigla</dt><dd><code>{{ prod.sigla }}</code></dd>
+                    <dt>Nome</dt><dd>{{ prod.nome }}</dd>
+                  </dl>
+                </div>
+              }
+            </ui-card>
+          }
+          @case (3) {
+            <ui-card padding="md">
+              <h2 class="wiz__title">Passo 3 de 5 · Release</h2>
+              <p class="wiz__hint">Apenas releases APROVADA ou PUBLICADA do produto.</p>
+
+              @if (releases().length === 0) {
+                <ui-empty-state
+                  icon="Tag"
+                  title="Nenhuma release disponível"
+                  description="O produto selecionado ainda não tem release aprovada ou publicada."
+                />
+              } @else {
+                <div class="wiz__radios">
+                  @for (r of releases(); track r.id) {
+                    <label
+                      class="wiz__radio"
+                      [class.wiz__radio--selected]="dados.releaseId === r.id"
+                    >
+                      <input
+                        type="radio"
+                        name="release"
+                        [value]="r.id"
+                        [(ngModel)]="dados.releaseId"
+                      />
+                      <div class="wiz__radio-content">
+                        <div class="wiz__radio-head">
+                          <code class="wiz__radio-versao">{{ r.versao }}</code>
+                          <ui-badge tone="info">{{ r.status }}</ui-badge>
+                        </div>
+                        <p class="wiz__radio-titulo">{{ r.titulo }}</p>
+                      </div>
+                    </label>
+                  }
+                </div>
+              }
+
+              @if (proximasDoCliente().length > 0) {
+                <div class="wiz__field">
+                  <label class="wiz__label">Vincular próxima entrega (opcional)</label>
+                  <select class="wiz__input" [(ngModel)]="dados.proximaEntregaId">
+                    <option [ngValue]="null">— Sem vínculo —</option>
+                    @for (pe of proximasDoCliente(); track pe.id) {
+                      <option [value]="pe.id">
+                        {{ pe.produtoSigla }} {{ pe.releaseVersao || '' }}
+                        ({{ pe.dataPrevista }})
+                      </option>
+                    }
+                  </select>
+                </div>
+              }
+
+              <div class="wiz__field">
+                <label class="wiz__label">Observações</label>
+                <textarea
+                  class="wiz__input wiz__textarea"
+                  rows="3"
+                  [(ngModel)]="dados.observacoes"
+                  placeholder="Ex: janela acordada com cliente, dependências externas…"
+                ></textarea>
+              </div>
+            </ui-card>
+          }
+          @case (4) {
+            <ui-card padding="md">
+              <h2 class="wiz__title">Passo 4 de 5 · Módulos do pacote</h2>
+              <p class="wiz__hint">
+                Marque/desmarque módulos opcionais. Módulos fora do contrato aparecem destacados.
+              </p>
+
+              @if (salvando()) {
+                <ui-skeleton width="100%" height="200px" />
+              } @else if (modulos().length === 0) {
+                <ui-empty-state
+                  icon="Boxes"
+                  title="Nenhum módulo configurado"
+                  description="Não há módulos contratados com release publicada."
+                />
+              } @else {
+                <table class="wiz__table">
+                  <thead>
+                    <tr>
+                      <th>Incluir</th>
+                      <th>Módulo</th>
+                      <th>Tipo</th>
+                      <th>De</th>
+                      <th>Para</th>
+                      <th>Marcadores</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (m of modulos(); track m.id) {
+                      <tr [class.wiz__row--off]="!m.selecionado">
+                        <td>
+                          <input
+                            type="checkbox"
+                            [checked]="m.selecionado"
+                            [disabled]="alterandoModuloId() === m.moduloProdutoId"
+                            (change)="toggleSelecao(m)"
+                          />
+                        </td>
+                        <td><strong>{{ m.moduloCodigo }}</strong> — {{ m.moduloNome }}</td>
+                        <td>
+                          <ui-badge [tone]="tipoModuloTones[m.moduloTipo]">
+                            {{ tipoModuloLabels[m.moduloTipo] }}
+                          </ui-badge>
+                        </td>
+                        <td>{{ m.versaoFrom || '—' }}</td>
+                        <td>{{ m.versaoTo || '—' }}</td>
+                        <td>
+                          @if (m.foraContrato) {
+                            <ui-badge tone="warn">Fora do contrato</ui-badge>
+                          }
+                          @if (m.mudancaDetectada) {
+                            <ui-badge tone="info">Mudou</ui-badge>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </ui-card>
+          }
+          @case (5) {
+            <ui-card padding="md">
+              <h2 class="wiz__title">Passo 5 de 5 · Revisão</h2>
+              <p class="wiz__hint">Confira os dados antes de gerar o pacote.</p>
+
+              <div class="wiz__review">
+                <ui-card padding="md">
+                  <h3 class="wiz__preview-title">
+                    <lucide-icon name="Info" [size]="14" /> Identificação
+                  </h3>
+                  <dl class="wiz__dl">
+                    <dt>Cliente</dt>
+                    <dd>
+                      @if (clienteSelecionado(); as c) {
+                        <code>{{ c.sigla }}</code> {{ c.nome }}
+                      }
+                    </dd>
+                    <dt>Produto</dt>
+                    <dd>
+                      @if (produtoSelecionado(); as p) {
+                        <code>{{ p.sigla }}</code> {{ p.nome }}
+                      }
+                    </dd>
+                    <dt>Release</dt>
+                    <dd>
+                      @if (releaseSelecionada(); as r) {
+                        {{ r.versao }} — {{ r.titulo }}
+                      }
+                    </dd>
+                    <dt>Ambiente</dt><dd>{{ ambienteLabels[dados.ambiente] }}</dd>
+                    @if (dados.observacoes) {
+                      <dt>Observações</dt><dd>{{ dados.observacoes }}</dd>
+                    }
+                  </dl>
+                </ui-card>
+
+                <ui-card padding="md">
+                  <h3 class="wiz__preview-title">
+                    <lucide-icon name="Layers" [size]="14" /> Resumo do pacote
+                  </h3>
+                  @if (calculandoDelta()) {
+                    <ui-skeleton width="100%" height="80px" />
+                  } @else if (resumoDelta(); as d) {
+                    <dl class="wiz__dl">
+                      <dt>Módulos</dt>
+                      <dd>{{ modulosSelecionados() }} de {{ modulos().length }}</dd>
+                      <dt>Artefatos</dt><dd>{{ d.totalArtefatos }}</dd>
+                      <dt>Tamanho estimado</dt><dd>{{ formatarTamanho(d.totalTamanhoBytes) }}</dd>
+                    </dl>
+                  } @else {
+                    <p class="wiz__hint">Delta ainda não calculado.</p>
+                  }
+                </ui-card>
+              </div>
+            </ui-card>
+          }
+        }
+
+        <!-- Rodapé com navegação -->
+        <div class="wiz__footer">
+          <ui-button
+            variant="ghost"
+            type="button"
+            [disabled]="passo() === 1 || salvando()"
+            (clicked)="voltar()"
+            icon="ArrowLeft"
+          >Voltar</ui-button>
+
+          <div class="wiz__footer-right">
+            @if (passo() < 5) {
+              <ui-button
+                type="button"
+                [disabled]="!podeAvancar()"
+                [loading]="salvando()"
+                (clicked)="avancar()"
+                icon="ArrowRight"
+              >{{ passo() === 3 ? 'Criar rascunho' : 'Avançar' }}</ui-button>
+            } @else {
+              <ui-button
+                variant="secondary"
+                type="button"
+                icon="Save"
+                (clicked)="salvarRascunho()"
+              >Salvar rascunho</ui-button>
+              <ui-button
+                type="button"
+                icon="Play"
+                [loading]="gerando()"
+                (clicked)="gerarPacote()"
+              >Gerar pacote</ui-button>
+            }
+          </div>
+        </div>
+      }
+    </main>
+  </div>
+</div>
