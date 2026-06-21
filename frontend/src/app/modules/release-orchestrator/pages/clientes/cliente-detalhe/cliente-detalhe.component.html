@@ -176,6 +176,90 @@
           </div>
         }
       }
+      @case ('produtos') {
+        <ui-card padding="md">
+          <h3 class="cli-det__pane-title">
+            <lucide-icon name="Plus" [size]="14" /> Contratar novo produto
+          </h3>
+          @if (produtosDisponiveis().length === 0) {
+            <p class="cli-det__hint">Todos os produtos do catálogo já estão contratados.</p>
+          } @else {
+            <div class="cli-det__contratar">
+              <select class="cli-det__input" [(ngModel)]="novoProdutoId">
+                <option value="">— Selecione um produto —</option>
+                @for (p of produtosDisponiveis(); track p.id) {
+                  <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+                }
+              </select>
+              <select class="cli-det__input" [(ngModel)]="novoAmbiente">
+                @for (a of ambientes; track a) {
+                  <option [value]="a">{{ ambienteLabels[a] }}</option>
+                }
+              </select>
+              <ui-button
+                icon="Plus"
+                [disabled]="!novoProdutoId"
+                [loading]="contratandoProduto()"
+                (clicked)="contratarProduto()"
+              >Contratar</ui-button>
+            </div>
+          }
+        </ui-card>
+
+        @if (produtosContratados().length === 0) {
+          <ui-empty-state
+            icon="Box"
+            title="Nenhum produto contratado"
+            description="Contrate o primeiro produto acima para começar a planejar entregas para este cliente."
+          />
+        } @else {
+          <ui-card padding="none">
+            <table class="cli-det__table">
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Ambiente</th>
+                  <th>Status</th>
+                  <th>Contratado em</th>
+                  <th class="cli-det__col-actions">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (cp of produtosContratados(); track cp.id) {
+                  <tr [class.cli-det__row--inativo]="!cp.ativo">
+                    <td>
+                      <strong>{{ cp.produtoSigla }}</strong> — {{ cp.produtoNome }}
+                    </td>
+                    <td>{{ ambienteLabels[cp.ambiente] }}</td>
+                    <td>
+                      <ui-badge [tone]="cp.ativo ? 'success' : 'neutral'" [dot]="true">
+                        {{ cp.ativo ? 'Ativo' : 'Pausado' }}
+                      </ui-badge>
+                    </td>
+                    <td>{{ cp.createdAt ? (cp.createdAt | date: 'dd/MM/yyyy') : '—' }}</td>
+                    <td class="cli-det__col-actions">
+                      <ui-button
+                        variant="secondary"
+                        size="sm"
+                        [icon]="cp.ativo ? 'Pause' : 'Play'"
+                        [loading]="alterandoProdutoId() === cp.id"
+                        (clicked)="toggleProdutoAtivo(cp)"
+                      >{{ cp.ativo ? 'Pausar' : 'Reativar' }}</ui-button>
+                      <ui-button
+                        variant="ghost"
+                        size="sm"
+                        icon="Trash2"
+                        [disabled]="alterandoProdutoId() === cp.id"
+                        (clicked)="rescindirProduto(cp)"
+                      />
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </ui-card>
+        }
+      }
       @case ('config-entrega') {
         @if (config(); as cfg) {
           <ui-card padding="md">
