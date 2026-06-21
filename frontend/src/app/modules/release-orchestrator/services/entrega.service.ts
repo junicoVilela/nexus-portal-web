@@ -55,4 +55,8 @@ export class EntregaService {
   iniciarGeracao(id: string): Observable<Entrega> {
     return this.http.post<Entrega>(`${this.base}/${id}/geracao/iniciar`, {});
   }
+
+  baixarPacote(id: string): Observable<Blob> {
+    return this.http.get(`${this.base}/${id}/pacote/download`, { responseType: 'blob' });
+  }
 }

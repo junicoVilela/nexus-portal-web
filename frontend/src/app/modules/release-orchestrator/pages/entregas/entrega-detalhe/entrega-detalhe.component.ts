@@ -80,6 +80,7 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
   protected readonly cancelando = signal(false);
   protected readonly reentregando = signal(false);
   protected readonly baixandoDoc = signal(false);
+  protected readonly baixandoZip = signal(false);
   protected readonly emPolling = signal(false);
 
   protected readonly ambienteLabels = AMBIENTE_LABELS;
@@ -231,6 +232,29 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
       error: () => {
         this.reentregando.set(false);
         this.toast.error('Não foi possível criar a reentrega.');
+      },
+    });
+  }
+
+  protected baixarPacote(): void {
+    this.baixandoZip.set(true);
+    this.service.baixarPacote(this.entregaId).subscribe({
+      next: blob => {
+        const e = this.entrega();
+        const nome = e
+          ? `pacote-${e.clienteSigla.toLowerCase()}-${e.produtoSigla.toLowerCase()}-${e.releaseVersao}.zip`
+          : 'pacote.zip';
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nome;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.baixandoZip.set(false);
+      },
+      error: () => {
+        this.baixandoZip.set(false);
+        this.toast.error('Não foi possível baixar o pacote.');
       },
     });
   }

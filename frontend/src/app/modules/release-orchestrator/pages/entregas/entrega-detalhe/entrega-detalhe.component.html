@@ -70,12 +70,18 @@
         }
         @if (e.status === 'CONCLUIDA') {
           <ui-button
+            icon="Download"
+            [loading]="baixandoZip()"
+            (clicked)="baixarPacote()"
+          >Baixar pacote</ui-button>
+          <ui-button
             variant="secondary"
             icon="FileText"
             [loading]="baixandoDoc()"
             (clicked)="baixarDocumento()"
           >Documento (PDF)</ui-button>
           <ui-button
+            variant="secondary"
             icon="RefreshCw"
             [loading]="reentregando()"
             (clicked)="reentregar()"
