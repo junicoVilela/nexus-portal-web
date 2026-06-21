@@ -1,0 +1,132 @@
+.pe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.pe-form__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.pe-form__back:hover {
+  color: var(--text-primary);
+}
+
+.pe-form__loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 32px;
+}
+
+.pe-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pe-form__section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.pe-form__section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+.pe-form__row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pe-form__row:last-child {
+  margin-bottom: 0;
+}
+
+.pe-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  margin-bottom: 12px;
+}
+
+.pe-form__field:last-child {
+  margin-bottom: 0;
+}
+
+.pe-form__field--grow-1 {
+  flex: 1;
+}
+
+.pe-form__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pe-form__req {
+  color: var(--danger-text, #b91c1c);
+}
+
+.pe-form__input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.pe-form__input:focus {
+  outline: 2px solid var(--primary, #2563eb);
+  outline-offset: -1px;
+}
+
+.pe-form__input--err {
+  border-color: var(--danger-text, #b91c1c);
+}
+
+.pe-form__textarea {
+  resize: vertical;
+}
+
+.pe-form__err {
+  font-size: 11px;
+  color: var(--danger-text, #b91c1c);
+}
+
+.pe-form__hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.pe-form__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+@media (max-width: 768px) {
+  .pe-form {
+    padding: 14px;
+  }
+}

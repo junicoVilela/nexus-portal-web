@@ -34,6 +34,8 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
       permissao: 'RELEASE:CRIAR',
     },
     { label: 'Releases', icon: 'Tag', route: ['/release-orchestrator', 'releases'], permissao: 'RELEASE:LER' },
+    { label: 'Próximas entregas', icon: 'CalendarClock', route: ['/release-orchestrator', 'proximas-entregas'] },
+    { label: 'Clientes', icon: 'Users', route: ['/release-orchestrator', 'clientes'] },
     { label: 'Produtos', icon: 'Box', route: ['/release-orchestrator', 'produtos'], permissao: 'PRODUTO:LER' },
     {
       label: 'Templates',
@@ -69,6 +71,18 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
         label: 'Release Orchestrator — Releases',
         group: 'Release Orchestrator',
         route: '/release-orchestrator/releases',
+      },
+      {
+        id: 'rf:proximas-entregas',
+        label: 'Release Orchestrator — Próximas entregas',
+        group: 'Release Orchestrator',
+        route: '/release-orchestrator/proximas-entregas',
+      },
+      {
+        id: 'rf:clientes',
+        label: 'Release Orchestrator — Clientes',
+        group: 'Release Orchestrator',
+        route: '/release-orchestrator/clientes',
       },
       {
         id: 'rf:produtos',

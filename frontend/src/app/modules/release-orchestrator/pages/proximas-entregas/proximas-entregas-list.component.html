@@ -1,0 +1,200 @@
+<div class="pe-list">
+  <ui-page-header
+    title="Próximas entregas"
+    subtitle="Agenda das entregas planejadas, por cliente e produto"
+    icon="CalendarClock"
+  >
+    <div actions>
+      <ui-button
+        icon="Plus"
+        [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
+      >Planejar entrega</ui-button>
+    </div>
+  </ui-page-header>
+
+  <div class="pe-list__filter">
+    <select
+      class="pe-list__select"
+      [(ngModel)]="filtros.clienteId"
+      (change)="onFiltroChange()"
+      aria-label="Cliente"
+    >
+      <option value="">Todos os clientes</option>
+      @for (c of clientes(); track c.id) {
+        <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
+      }
+    </select>
+
+    <select
+      class="pe-list__select"
+      [(ngModel)]="filtros.produtoId"
+      (change)="onFiltroChange()"
+      aria-label="Produto"
+    >
+      <option value="">Todos os produtos</option>
+      @for (p of produtos(); track p.id) {
+        <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+      }
+    </select>
+
+    <select
+      class="pe-list__select"
+      [(ngModel)]="filtros.status"
+      (change)="onFiltroChange()"
+      aria-label="Status"
+    >
+      <option value="">Todos os status</option>
+      @for (s of statusKeys; track s) {
+        <option [value]="s">{{ statusLabels[s] }}</option>
+      }
+    </select>
+
+    <input
+      type="date"
+      class="pe-list__select"
+      [(ngModel)]="filtros.dataDe"
+      (change)="onFiltroChange()"
+      aria-label="Data início"
+    />
+    <input
+      type="date"
+      class="pe-list__select"
+      [(ngModel)]="filtros.dataAte"
+      (change)="onFiltroChange()"
+      aria-label="Data fim"
+    />
+
+    <button
+      type="button"
+      class="pe-list__clear"
+      (click)="limparFiltros()"
+    >
+      <lucide-icon name="X" [size]="14" /> Limpar
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando entregas">
+      <ui-skeleton width="100%" height="40px" />
+      <ui-skeleton width="100%" height="40px" />
+      <ui-skeleton width="100%" height="40px" />
+    </div>
+  } @else if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    />
+  } @else if (entregas().length === 0) {
+    <ui-empty-state
+      icon="CalendarPlus"
+      title="Nenhuma entrega planejada"
+      description="Crie a primeira entrega no botão acima ou ajuste os filtros."
+    >
+      <ui-button
+        icon="Plus"
+        [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
+      >Planejar entrega</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="pe-list__table-wrap">
+      <table class="pe-list__table">
+        <thead>
+          <tr>
+            <th>Data prevista</th>
+            <th>Cliente</th>
+            <th>Produto</th>
+            <th>Release</th>
+            <th>Ambiente</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+            <th class="pe-list__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pe of entregas(); track pe.id) {
+            <tr [class.pe-list__row--atrasada]="estaAtrasada(pe)">
+              <td>
+                <strong>{{ pe.dataPrevista | date: 'dd/MM/yyyy' }}</strong>
+                @if (estaAtrasada(pe)) {
+                  <ui-badge tone="danger">Atrasada</ui-badge>
+                }
+              </td>
+              <td>
+                <a
+                  class="pe-list__link"
+                  [routerLink]="['/release-orchestrator/clientes', pe.clienteId]"
+                >
+                  <code>{{ pe.clienteSigla }}</code> {{ pe.clienteNome }}
+                </a>
+              </td>
+              <td>
+                <code>{{ pe.produtoSigla }}</code> {{ pe.produtoNome }}
+              </td>
+              <td>{{ pe.releaseVersao || '—' }}</td>
+              <td>{{ ambienteLabels[pe.ambiente] }}</td>
+              <td>
+                <ui-badge [tone]="prioridadeTones[pe.prioridade]">
+                  {{ prioridadeLabels[pe.prioridade] }}
+                </ui-badge>
+              </td>
+              <td>
+                <ui-badge [tone]="statusTones[pe.status]">
+                  {{ statusLabels[pe.status] }}
+                </ui-badge>
+              </td>
+              <td class="pe-list__col-actions">
+                @if (proximoStatus(pe); as prox) {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    icon="ArrowRight"
+                    [loading]="alterandoStatusId() === pe.id"
+                    (clicked)="avancarStatus(pe)"
+                  >{{ statusLabels[prox] }}</ui-button>
+                }
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  icon="Pencil"
+                  [routerLink]="['/release-orchestrator/proximas-entregas', pe.id, 'editar']"
+                />
+                @if (transicoes[pe.status].includes('CANCELADA')) {
+                  <ui-button
+                    variant="ghost"
+                    size="sm"
+                    icon="X"
+                    (clicked)="cancelar(pe)"
+                  />
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="pe-list__pagination">
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronLeft"
+          [disabled]="page() <= 1"
+          (clicked)="irParaPagina(page() - 1)"
+        />
+        <span class="pe-list__paginfo">
+          Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total
+        </span>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [disabled]="page() >= totalPaginas()"
+          (clicked)="irParaPagina(page() + 1)"
+        />
+      </div>
+    }
+  }
+</div>

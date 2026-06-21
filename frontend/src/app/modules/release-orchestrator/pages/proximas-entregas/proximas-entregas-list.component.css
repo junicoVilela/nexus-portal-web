@@ -1,0 +1,130 @@
+.pe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.pe-list__filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pe-list__select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  min-width: 150px;
+}
+
+.pe-list__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pe-list__clear:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.pe-list__table-wrap {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.pe-list__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pe-list__table thead th {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.pe-list__table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.pe-list__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pe-list__row--atrasada td:first-child {
+  border-left: 3px solid var(--danger-text, #b91c1c);
+}
+
+.pe-list__table td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pe-list__table code {
+  background: var(--bg-subtle);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pe-list__link {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.pe-list__link:hover {
+  text-decoration: underline;
+}
+
+.pe-list__col-actions {
+  text-align: right;
+  white-space: nowrap;
+  min-width: 280px;
+}
+
+.pe-list__col-actions > * + * {
+  margin-left: 4px;
+}
+
+.pe-list__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.pe-list__paginfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .pe-list {
+    padding: 14px;
+  }
+}

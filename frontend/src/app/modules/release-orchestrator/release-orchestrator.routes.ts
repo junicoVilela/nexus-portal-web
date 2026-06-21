@@ -14,6 +14,8 @@ import { ModulosProdutoComponent } from './pages/produtos/modulos/modulos-produt
 import { ClientesListComponent } from './pages/clientes/clientes-list.component';
 import { ClienteFormComponent } from './pages/clientes/cliente-form.component';
 import { ClienteDetalheComponent } from './pages/clientes/cliente-detalhe/cliente-detalhe.component';
+import { ProximasEntregasListComponent } from './pages/proximas-entregas/proximas-entregas-list.component';
+import { ProximaEntregaFormComponent } from './pages/proximas-entregas/proxima-entrega-form.component';
 import { RfTemplatesComponent } from './pages/templates/rf-templates.component';
 import { RfGuiaComponent } from './pages/guia/rf-guia.component';
 
@@ -47,6 +49,17 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
         canDeactivate: [canDeactivateGuard],
       },
       { path: 'clientes/:id', component: ClienteDetalheComponent },
+      { path: 'proximas-entregas', component: ProximasEntregasListComponent },
+      {
+        path: 'proximas-entregas/nova',
+        component: ProximaEntregaFormComponent,
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'proximas-entregas/:id/editar',
+        component: ProximaEntregaFormComponent,
+        canDeactivate: [canDeactivateGuard],
+      },
       { path: 'templates', component: RfTemplatesComponent },
       { path: 'guia', component: RfGuiaComponent },
     ],

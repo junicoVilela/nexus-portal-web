@@ -1,0 +1,134 @@
+<div class="pe-form">
+  <ui-page-header
+    [title]="editando() ? 'Editar próxima entrega' : 'Planejar próxima entrega'"
+    subtitle="Vincule cliente, produto e release para alimentar a agenda"
+    icon="CalendarClock"
+  >
+    <div actions>
+      <a class="pe-form__back" [routerLink]="['/release-orchestrator/proximas-entregas']">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (carregando()) {
+    <p class="pe-form__loading">Carregando entrega…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="pe-form__body">
+      <!-- Vínculos -->
+      <section class="pe-form__section">
+        <h2 class="pe-form__section-title">
+          <lucide-icon name="Link" [size]="16" /> Vínculos
+        </h2>
+
+        <div class="pe-form__field">
+          <label class="pe-form__label">Cliente <span class="pe-form__req">*</span></label>
+          <select
+            class="pe-form__input"
+            formControlName="clienteId"
+            [class.pe-form__input--err]="fieldError('clienteId')"
+          >
+            <option value="">— Selecione —</option>
+            @for (c of clientes(); track c.id) {
+              <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
+            }
+          </select>
+          @if (fieldError('clienteId')) {
+            <span class="pe-form__err">Cliente é obrigatório</span>
+          }
+        </div>
+
+        <div class="pe-form__row">
+          <div class="pe-form__field pe-form__field--grow-1">
+            <label class="pe-form__label">Produto <span class="pe-form__req">*</span></label>
+            <select
+              class="pe-form__input"
+              formControlName="produtoId"
+              [class.pe-form__input--err]="fieldError('produtoId')"
+            >
+              <option value="">— Selecione —</option>
+              @for (p of produtos(); track p.id) {
+                <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="pe-form__field pe-form__field--grow-1">
+            <label class="pe-form__label">Ambiente <span class="pe-form__req">*</span></label>
+            <select class="pe-form__input" formControlName="ambiente">
+              @for (a of ambientes; track a) {
+                <option [value]="a">{{ ambienteLabels[a] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="pe-form__field">
+          <label class="pe-form__label">Release vinculada</label>
+          <select class="pe-form__input" formControlName="releaseId">
+            <option [ngValue]="null">— Sem release definida —</option>
+            @for (r of releases(); track r.id) {
+              <option [value]="r.id">{{ r.versao }} — {{ r.titulo }} ({{ r.status }})</option>
+            }
+          </select>
+          @if (form.get('produtoId')?.value && releases().length === 0) {
+            <span class="pe-form__hint">Nenhuma release cadastrada para este produto ainda.</span>
+          }
+        </div>
+      </section>
+
+      <!-- Agenda -->
+      <section class="pe-form__section">
+        <h2 class="pe-form__section-title">
+          <lucide-icon name="Calendar" [size]="16" /> Agenda
+        </h2>
+
+        <div class="pe-form__row">
+          <div class="pe-form__field pe-form__field--grow-1">
+            <label class="pe-form__label">Data prevista <span class="pe-form__req">*</span></label>
+            <input
+              type="date"
+              class="pe-form__input"
+              formControlName="dataPrevista"
+              [class.pe-form__input--err]="fieldError('dataPrevista')"
+            />
+            @if (fieldError('dataPrevista')) {
+              <span class="pe-form__err">Data é obrigatória</span>
+            }
+          </div>
+          <div class="pe-form__field pe-form__field--grow-1">
+            <label class="pe-form__label">Prioridade <span class="pe-form__req">*</span></label>
+            <select class="pe-form__input" formControlName="prioridade">
+              @for (p of prioridades; track p) {
+                <option [value]="p">{{ prioridadeLabels[p] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Observações -->
+      <section class="pe-form__section">
+        <h2 class="pe-form__section-title">
+          <lucide-icon name="MessageSquare" [size]="16" /> Observações
+        </h2>
+        <textarea
+          class="pe-form__input pe-form__textarea"
+          formControlName="observacoes"
+          rows="3"
+          placeholder="Ex: janela acordada com o cliente, dependências externas…"
+        ></textarea>
+      </section>
+
+      <div class="pe-form__footer">
+        <ui-button
+          variant="ghost"
+          type="button"
+          [routerLink]="['/release-orchestrator/proximas-entregas']"
+        >Cancelar</ui-button>
+        <ui-button type="submit" [loading]="salvando()">
+          {{ editando() ? 'Salvar alterações' : 'Planejar entrega' }}
+        </ui-button>
+      </div>
+    </form>
+  }
+</div>
