@@ -135,6 +135,35 @@ export class EntregaWizardComponent implements OnInit {
     () => this.modulos().filter(m => m.selecionado).length,
   );
 
+  /**
+   * Versão atualmente instalada no cliente — a mais frequente entre
+   * `versaoFrom` dos módulos selecionados. Se houver divergência entre
+   * módulos, retorna a mais comum (silencioso, mas exibido como "range
+   * aproximado" no resumo).
+   */
+  protected readonly versaoInstalada = computed(() => {
+    const versoes = this.modulos()
+      .filter(m => m.selecionado && m.versaoFrom)
+      .map(m => m.versaoFrom as string);
+    if (versoes.length === 0) return null;
+    const contagem = new Map<string, number>();
+    versoes.forEach(v => contagem.set(v, (contagem.get(v) ?? 0) + 1));
+    let topo: { versao: string; n: number } | null = null;
+    contagem.forEach((n, versao) => {
+      if (!topo || n > topo.n) topo = { versao, n };
+    });
+    return topo as { versao: string; n: number } | null;
+  });
+
+  protected readonly versoesDivergentes = computed(() => {
+    const versoes = new Set(
+      this.modulos()
+        .filter(m => m.selecionado && m.versaoFrom)
+        .map(m => m.versaoFrom as string),
+    );
+    return versoes.size > 1;
+  });
+
   protected readonly podeAvancar = computed(() => {
     switch (this.passo()) {
       case 1:

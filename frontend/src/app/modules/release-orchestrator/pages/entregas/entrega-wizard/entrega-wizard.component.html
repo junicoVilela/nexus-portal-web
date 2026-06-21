@@ -272,6 +272,21 @@
                         {{ r.versao }} — {{ r.titulo }}
                       }
                     </dd>
+                    @if (versaoInstalada(); as vi) {
+                      <dt>Range automático</dt>
+                      <dd>
+                        <code>{{ vi.versao }}</code>
+                        <lucide-icon name="ArrowRight" [size]="12" />
+                        @if (releaseSelecionada(); as r) {
+                          <code>{{ r.versao }}</code>
+                        }
+                        @if (versoesDivergentes()) {
+                          <span class="wiz__hint" style="margin-left: 8px;">
+                            ⚠️ módulos têm versões divergentes — usando a mais comum
+                          </span>
+                        }
+                      </dd>
+                    }
                     <dt>Ambiente</dt><dd>{{ ambienteLabels[dados.ambiente] }}</dd>
                     @if (dados.observacoes) {
                       <dt>Observações</dt><dd>{{ dados.observacoes }}</dd>
