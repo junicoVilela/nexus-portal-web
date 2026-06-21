@@ -17,6 +17,139 @@
     }
   </div>
 
+  <h2 class="rf-dash__section-title">
+    <lucide-icon name="Package" [size]="15" /> Entregas
+  </h2>
+  <div class="rf-dash__kpi-grid">
+    @for (ind of kpisEntregas(); track ind.label) {
+      <ui-kpi-card [label]="ind.label" [valor]="ind.valor" [icon]="ind.icon" [tone]="ind.cor" />
+    }
+  </div>
+
+  <div class="rf-dash__grid">
+    <ui-card padding="none">
+      <div class="rf-dash__card-head">
+        <h2 class="rf-dash__card-title">
+          <lucide-icon name="CalendarClock" [size]="15" /> Próximas entregas
+        </h2>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [routerLink]="['/release-orchestrator/proximas-entregas']"
+        >Ver agenda</ui-button>
+      </div>
+      @if (loading()) {
+        <div class="rf-dash__skeleton" aria-busy="true">
+          <ui-skeleton width="100%" height="40px" />
+          <ui-skeleton width="100%" height="40px" />
+        </div>
+      } @else if (proximasEntregas().length === 0) {
+        <ui-empty-state
+          icon="CalendarPlus"
+          title="Nenhuma entrega planejada"
+          description="Use a agenda para planejar as próximas entregas."
+        >
+          <ui-button
+            icon="Plus"
+            [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
+          >Planejar entrega</ui-button>
+        </ui-empty-state>
+      } @else {
+        <div class="rf-dash__table-wrap">
+          <table class="rf-dash__table">
+            <thead>
+              <tr>
+                <th class="rf-dash__th">Data</th>
+                <th class="rf-dash__th">Cliente</th>
+                <th class="rf-dash__th">Produto · Release</th>
+                <th class="rf-dash__th">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pe of proximasEntregas(); track pe.id) {
+                <tr
+                  class="rf-dash__row"
+                  [class.rf-dash__row--atrasada]="estaAtrasada(pe)"
+                  [routerLink]="['/release-orchestrator/proximas-entregas', pe.id, 'editar']"
+                >
+                  <td class="rf-dash__td">{{ pe.dataPrevista | date: 'dd/MM/yy' }}</td>
+                  <td class="rf-dash__td"><code>{{ pe.clienteSigla }}</code></td>
+                  <td class="rf-dash__td">
+                    <code>{{ pe.produtoSigla }}</code> · {{ pe.releaseVersao || '—' }}
+                  </td>
+                  <td class="rf-dash__td">
+                    <ui-badge [tone]="statusPeTones[pe.status]">
+                      {{ statusPeLabels[pe.status] }}
+                    </ui-badge>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </ui-card>
+
+    <ui-card padding="none">
+      <div class="rf-dash__card-head">
+        <h2 class="rf-dash__card-title">
+          <lucide-icon name="Package" [size]="15" /> Entregas recentes
+        </h2>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [routerLink]="['/release-orchestrator/entregas']"
+        >Ver tudo</ui-button>
+      </div>
+      @if (loading()) {
+        <div class="rf-dash__skeleton" aria-busy="true">
+          <ui-skeleton width="100%" height="40px" />
+          <ui-skeleton width="100%" height="40px" />
+        </div>
+      } @else if (entregasRecentes().length === 0) {
+        <ui-empty-state
+          icon="PackageOpen"
+          title="Sem entregas ainda"
+          description="Crie uma entrega pelo assistente para começar."
+        >
+          <ui-button icon="Plus" [routerLink]="['/release-orchestrator/entregas/nova']"
+            >Nova entrega</ui-button>
+        </ui-empty-state>
+      } @else {
+        <div class="rf-dash__table-wrap">
+          <table class="rf-dash__table">
+            <thead>
+              <tr>
+                <th class="rf-dash__th">Quando</th>
+                <th class="rf-dash__th">Cliente</th>
+                <th class="rf-dash__th">Produto · Release</th>
+                <th class="rf-dash__th">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of entregasRecentes(); track e.id) {
+                <tr class="rf-dash__row" [routerLink]="['/release-orchestrator/entregas', e.id]">
+                  <td class="rf-dash__td">{{ e.createdAt | date: 'dd/MM HH:mm' }}</td>
+                  <td class="rf-dash__td"><code>{{ e.clienteSigla }}</code></td>
+                  <td class="rf-dash__td">
+                    <code>{{ e.produtoSigla }}</code> · {{ e.releaseVersao }}
+                  </td>
+                  <td class="rf-dash__td">
+                    <ui-badge [tone]="statusEntregaTones[e.status]">
+                      {{ statusEntregaLabels[e.status] }}
+                    </ui-badge>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </ui-card>
+  </div>
+
   <div class="rf-dash__grid">
     <ui-card padding="none">
       <div class="rf-dash__card-head">
