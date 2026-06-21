@@ -13,6 +13,7 @@ import { RfProdutosComponent } from './pages/produtos/rf-produtos.component';
 import { ModulosProdutoComponent } from './pages/produtos/modulos/modulos-produto.component';
 import { ClientesListComponent } from './pages/clientes/clientes-list.component';
 import { ClienteFormComponent } from './pages/clientes/cliente-form.component';
+import { ClienteDetalheComponent } from './pages/clientes/cliente-detalhe/cliente-detalhe.component';
 import { RfTemplatesComponent } from './pages/templates/rf-templates.component';
 import { RfGuiaComponent } from './pages/guia/rf-guia.component';
 
@@ -45,6 +46,7 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
         component: ClienteFormComponent,
         canDeactivate: [canDeactivateGuard],
       },
+      { path: 'clientes/:id', component: ClienteDetalheComponent },
       { path: 'templates', component: RfTemplatesComponent },
       { path: 'guia', component: RfGuiaComponent },
     ],

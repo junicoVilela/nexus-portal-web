@@ -1,0 +1,260 @@
+@if (loading()) {
+  <div class="cli-det cli-det--loading" aria-busy="true">
+    <ui-skeleton width="30%" height="28px" />
+    <ui-skeleton width="60%" height="18px" />
+    <ui-skeleton width="100%" height="100px" />
+    <ui-skeleton width="100%" height="240px" />
+  </div>
+} @else if (erro()) {
+  <div class="cli-det cli-det--errored">
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    >
+      <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/clientes']"
+        >Voltar para clientes</ui-button
+      >
+    </ui-error-state>
+  </div>
+} @else if (cliente(); as c) {
+  <div class="cli-det">
+    <!-- Cabeçalho -->
+    <div class="cli-det__header">
+      <div class="cli-det__ident">
+        <a class="cli-det__back" [routerLink]="['/release-orchestrator/clientes']">
+          <lucide-icon name="ArrowLeft" [size]="14" /> Clientes
+        </a>
+        <div class="cli-det__title-row">
+          <span class="cli-det__sigla">{{ c.sigla }}</span>
+          <h1 class="cli-det__title">{{ c.nome }}</h1>
+          <ui-badge [tone]="c.ativo ? 'success' : 'neutral'" [dot]="true">
+            {{ c.ativo ? 'Ativo' : 'Pausado' }}
+          </ui-badge>
+        </div>
+        @if (c.razaoSocial || c.cnpj) {
+          <p class="cli-det__sub">
+            @if (c.razaoSocial) {
+              <span>{{ c.razaoSocial }}</span>
+            }
+            @if (c.cnpj) {
+              <span class="cli-det__dot">·</span>
+              <span>CNPJ {{ cnpjFormatado() }}</span>
+            }
+          </p>
+        }
+      </div>
+      <div class="cli-det__actions">
+        <ui-button
+          variant="secondary"
+          icon="Pencil"
+          [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
+        >Editar</ui-button>
+        <ui-button
+          [variant]="c.ativo ? 'secondary' : 'primary'"
+          [icon]="c.ativo ? 'Pause' : 'Play'"
+          [loading]="alternandoStatus()"
+          (clicked)="alternarStatus()"
+        >{{ c.ativo ? 'Pausar' : 'Reativar' }}</ui-button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="cli-det__kpis">
+      <ui-kpi-card
+        label="Contatos"
+        [valor]="contatos().length"
+        icon="Users"
+        tone="blue"
+      />
+      <ui-kpi-card
+        label="Próximas entregas"
+        [valor]="proximasEntregas().length"
+        icon="CalendarClock"
+        tone="blue"
+      />
+      @if (proximaEntregaPendente(); as prox) {
+        <ui-kpi-card
+          label="Próxima entrega"
+          [valor]="prox.produtoSigla + ' ' + (prox.releaseVersao ?? '')"
+          icon="Rocket"
+          [tone]="prox.status === 'ATRASADA' ? 'amber' : 'green'"
+          [description]="(prox.dataPrevista | date: 'dd/MM/yyyy') + ' · ' + statusPeLabels[prox.status]"
+        />
+      } @else {
+        <ui-kpi-card
+          label="Próxima entrega"
+          valor="—"
+          icon="Rocket"
+          tone="neutral"
+          description="Sem entregas planejadas"
+        />
+      }
+    </div>
+
+    <!-- Tabs -->
+    <ui-tabs
+      [items]="tabsConfig()"
+      [active]="activeTab()"
+      (activeChange)="mudarAba($event)"
+    />
+
+    <!-- Conteúdo de aba -->
+    @switch (activeTab()) {
+      @case ('geral') {
+        <div class="cli-det__panes">
+          <ui-card padding="md">
+            <h3 class="cli-det__pane-title">
+              <lucide-icon name="FileText" [size]="14" /> Dados gerais
+            </h3>
+            <dl class="cli-det__dl">
+              <dt>Sigla</dt><dd><code>{{ c.sigla }}</code></dd>
+              <dt>Nome</dt><dd>{{ c.nome }}</dd>
+              <dt>Razão social</dt><dd>{{ c.razaoSocial || '—' }}</dd>
+              <dt>CNPJ</dt><dd>{{ cnpjFormatado() || '—' }}</dd>
+              <dt>Cadastrado em</dt><dd>{{ c.createdAt ? (c.createdAt | date: 'dd/MM/yyyy') : '—' }}</dd>
+            </dl>
+          </ui-card>
+
+          <ui-card padding="md">
+            <h3 class="cli-det__pane-title">
+              <lucide-icon name="Server" [size]="14" /> Ambiente
+            </h3>
+            <dl class="cli-det__dl">
+              <dt>Ambiente padrão</dt><dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
+              <dt>Tipo de banco</dt><dd>{{ c.tipoBanco ? bancoLabels[c.tipoBanco] : '—' }}</dd>
+              <dt>Codificação</dt><dd>{{ c.codificacao || '—' }}</dd>
+              <dt>Fuso horário</dt><dd>{{ c.fusoHorario || '—' }}</dd>
+            </dl>
+          </ui-card>
+
+          @if (c.observacoes) {
+            <ui-card padding="md">
+              <h3 class="cli-det__pane-title">
+                <lucide-icon name="MessageSquare" [size]="14" /> Observações
+              </h3>
+              <p class="cli-det__obs">{{ c.observacoes }}</p>
+            </ui-card>
+          }
+        </div>
+      }
+      @case ('contatos') {
+        @if (contatos().length === 0) {
+          <ui-empty-state
+            icon="UserPlus"
+            title="Nenhum contato cadastrado"
+            description="Edite o cliente para adicionar contatos técnicos, comerciais ou operacionais."
+          >
+            <ui-button
+              icon="Pencil"
+              [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
+            >Editar cliente</ui-button>
+          </ui-empty-state>
+        } @else {
+          <div class="cli-det__contatos">
+            @for (contato of contatos(); track contato.id) {
+              <ui-card padding="md">
+                <div class="cli-det__contato">
+                  <div class="cli-det__contato-head">
+                    <strong>{{ contato.nome }}</strong>
+                    <ui-badge tone="info">{{ papelLabels[contato.papel] }}</ui-badge>
+                  </div>
+                  <div class="cli-det__contato-line">
+                    <lucide-icon name="Mail" [size]="13" />
+                    <a [href]="'mailto:' + contato.email">{{ contato.email }}</a>
+                  </div>
+                  @if (contato.telefone) {
+                    <div class="cli-det__contato-line">
+                      <lucide-icon name="Phone" [size]="13" />
+                      <span>{{ contato.telefone }}</span>
+                    </div>
+                  }
+                </div>
+              </ui-card>
+            }
+          </div>
+        }
+      }
+      @case ('config-entrega') {
+        @if (config(); as cfg) {
+          <ui-card padding="md">
+            <h3 class="cli-det__pane-title">
+              <lucide-icon name="Settings" [size]="14" /> Configuração de entrega
+            </h3>
+            <dl class="cli-det__dl">
+              <dt>Tipo de destino</dt><dd>{{ destinoLabels[cfg.tipoDestino] }}</dd>
+              <dt>Caminho base</dt>
+              <dd>
+                @if (cfg.caminhoBase) {
+                  <code>{{ cfg.caminhoBase }}</code>
+                } @else {
+                  —
+                }
+              </dd>
+              <dt>Aprovação obrigatória</dt>
+              <dd>{{ cfg.exigirAprovacao ? 'Sim' : 'Não' }}</dd>
+              <dt>E-mails de notificação</dt>
+              <dd>{{ cfg.emailsNotificacao || '—' }}</dd>
+            </dl>
+          </ui-card>
+        } @else {
+          <ui-empty-state
+            icon="Settings"
+            title="Sem configuração de entrega"
+            description="Defina destino, aprovação e e-mails para liberar geração de pacotes."
+          />
+        }
+      }
+      @case ('proximas-entregas') {
+        @if (proximasEntregas().length === 0) {
+          <ui-empty-state
+            icon="CalendarPlus"
+            title="Nenhuma entrega planejada"
+            description="Cadastre próximas entregas na agenda para acompanhar o pipeline deste cliente."
+          >
+            <ui-button
+              icon="Plus"
+              [routerLink]="['/release-orchestrator/proximas-entregas']"
+            >Ir para agenda</ui-button>
+          </ui-empty-state>
+        } @else {
+          <ui-card padding="none">
+            <table class="cli-det__table">
+              <thead>
+                <tr>
+                  <th>Produto</th>
+                  <th>Release</th>
+                  <th>Data prevista</th>
+                  <th>Ambiente</th>
+                  <th>Prioridade</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (pe of proximasEntregas(); track pe.id) {
+                  <tr>
+                    <td><code>{{ pe.produtoSigla }}</code> · {{ pe.produtoNome }}</td>
+                    <td>{{ pe.releaseVersao || '—' }}</td>
+                    <td>{{ pe.dataPrevista | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ ambienteLabels[pe.ambiente] }}</td>
+                    <td>
+                      <ui-badge [tone]="prioridadeTones[pe.prioridade]">
+                        {{ prioridadeLabels[pe.prioridade] }}
+                      </ui-badge>
+                    </td>
+                    <td>
+                      <ui-badge [tone]="statusPeTones[pe.status]">
+                        {{ statusPeLabels[pe.status] }}
+                      </ui-badge>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </ui-card>
+        }
+      }
+    }
+  </div>
+}
