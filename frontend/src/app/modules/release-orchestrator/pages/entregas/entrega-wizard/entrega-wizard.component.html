@@ -187,6 +187,8 @@
               <h2 class="wiz__title">Passo 4 de 5 · Módulos do pacote</h2>
               <p class="wiz__hint">
                 Marque/desmarque módulos opcionais. Módulos fora do contrato aparecem destacados.
+                Use <strong>Calcular preview</strong> para ver quantos arquivos cada módulo
+                vai entregar.
               </p>
 
               @if (salvando()) {
@@ -198,6 +200,24 @@
                   description="Não há módulos contratados com release publicada."
                 />
               } @else {
+                <div class="wiz__preview-actions">
+                  <ui-button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    icon="Calculator"
+                    [loading]="calculandoDelta()"
+                    (clicked)="calcularDelta()"
+                  >{{ resumoDelta() ? 'Recalcular preview' : 'Calcular preview' }}</ui-button>
+                  @if (resumoDelta(); as r) {
+                    <span class="wiz__preview-summary">
+                      <lucide-icon name="Layers" [size]="13" />
+                      Total: <strong>{{ r.totalArtefatos }}</strong> arquivo(s),
+                      <strong>{{ formatarTamanho(r.totalTamanhoBytes) }}</strong>
+                    </span>
+                  }
+                </div>
+
                 <table class="wiz__table">
                   <thead>
                     <tr>
@@ -206,6 +226,7 @@
                       <th>Tipo</th>
                       <th>De</th>
                       <th>Para</th>
+                      <th>Delta</th>
                       <th>Marcadores</th>
                     </tr>
                   </thead>
@@ -228,6 +249,20 @@
                         </td>
                         <td>{{ m.versaoFrom || '—' }}</td>
                         <td>{{ m.versaoTo || '—' }}</td>
+                        <td>
+                          @if (!m.selecionado) {
+                            <span class="wiz__hint">—</span>
+                          } @else if (resumoPorModulo().get(m.moduloProdutoId); as r) {
+                            <code class="wiz__delta-count">
+                              +{{ r.artefatos }}
+                            </code>
+                            <span class="wiz__hint" style="margin-left: 6px;">
+                              {{ formatarTamanho(r.tamanhoBytes) }}
+                            </span>
+                          } @else {
+                            <span class="wiz__hint">—</span>
+                          }
+                        </td>
                         <td>
                           @if (m.foraContrato) {
                             <ui-badge tone="warn">Fora do contrato</ui-badge>

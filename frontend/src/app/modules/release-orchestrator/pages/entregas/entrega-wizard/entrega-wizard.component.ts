@@ -164,6 +164,20 @@ export class EntregaWizardComponent implements OnInit {
     return versoes.size > 1;
   });
 
+  /** Lookup do resumo do delta por moduloProdutoId, usado no passo 4. */
+  protected readonly resumoPorModulo = computed(() => {
+    const map = new Map<string, { artefatos: number; tamanhoBytes: number }>();
+    const resumo = this.resumoDelta();
+    if (!resumo) return map;
+    for (const m of resumo.modulos) {
+      map.set(m.moduloProdutoId, {
+        artefatos: m.quantidadeArtefatos,
+        tamanhoBytes: m.tamanhoBytes,
+      });
+    }
+    return map;
+  });
+
   protected readonly podeAvancar = computed(() => {
     switch (this.passo()) {
       case 1:
@@ -327,6 +341,8 @@ export class EntregaWizardComponent implements OnInit {
     this.moduloService.alterarSelecao(id, m.moduloProdutoId, !m.selecionado).subscribe({
       next: upd => {
         this.modulos.update(list => list.map(x => (x.id === upd.id ? upd : x)));
+        // Preview vira stale após mudar seleção — força recalcular.
+        this.resumoDelta.set(null);
         this.alterandoModuloId.set(null);
       },
       error: () => {
@@ -336,7 +352,11 @@ export class EntregaWizardComponent implements OnInit {
     });
   }
 
-  private calcularDelta(): void {
+  /**
+   * Disparado pelo botão "Calcular preview" no passo 4 e automaticamente
+   * ao avançar para o passo 5. Idempotente — pode ser chamado várias vezes.
+   */
+  protected calcularDelta(): void {
     const id = this.entregaId();
     if (!id) return;
     this.calculandoDelta.set(true);
