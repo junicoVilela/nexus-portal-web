@@ -6,7 +6,12 @@ import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { TIMINGS } from '@core/config/timings';
-import { Produto, ProdutoForm } from '../models/produto.model';
+import {
+  Produto,
+  ProdutoForm,
+  TestarGithubForm,
+  TestarGithubResult,
+} from '../models/produto.model';
 
 const CACHE_TTL_MS = TIMINGS.serviceCacheTtlMs;
 
@@ -63,6 +68,10 @@ export class ProdutoService {
     const fd = new FormData();
     fd.append('logo', file);
     return this.http.post<{ logoUrl: string }>(`${this.base}/${id}/logo`, fd);
+  }
+
+  testarGithub(id: string, form: TestarGithubForm = {}): Observable<TestarGithubResult> {
+    return this.http.post<TestarGithubResult>(`${this.base}/${id}/testar-github`, form);
   }
 
   invalidarCache(): void {

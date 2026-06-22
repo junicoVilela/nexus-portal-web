@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Produto } from '../../models/produto.model';
+import { Produto, TestarGithubResult } from '../../models/produto.model';
 import { ProdutoService } from '../../services/produto.service';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -34,6 +35,7 @@ const PRESET_CORES = [
   selector: 'app-rf-produtos',
   standalone: true,
   imports: [
+    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
@@ -93,6 +95,11 @@ export class RfProdutosComponent implements OnInit {
       cor: ['#2563eb', Validators.required],
       responsavelId: [''],
       ativo: [true],
+      repositorioGithub: ['', Validators.maxLength(200)],
+      branchPadrao: ['main', Validators.maxLength(80)],
+      padraoTag: ['^v\\d+\\.\\d+\\.\\d+$', Validators.maxLength(200)],
+      /** Vazio em edição preserva o token atual. */
+      githubToken: ['', Validators.maxLength(500)],
     });
   }
 
@@ -115,14 +122,59 @@ export class RfProdutosComponent implements OnInit {
 
   protected abrirNovo(): void {
     this.editId.set(null);
-    this.form.reset({ cor: '#2563eb', ativo: true });
+    this.form.reset({
+      cor: '#2563eb',
+      ativo: true,
+      branchPadrao: 'main',
+      padraoTag: '^v\\d+\\.\\d+\\.\\d+$',
+    });
+    this.resultadoTeste.set(null);
     this.showForm.set(true);
   }
 
   protected editar(p: Produto): void {
     this.editId.set(p.id);
-    this.form.patchValue(p);
+    this.form.patchValue({
+      ...p,
+      githubToken: '',
+    });
+    this.resultadoTeste.set(null);
     this.showForm.set(true);
+  }
+
+  protected readonly testandoGithub = signal(false);
+  protected readonly resultadoTeste = signal<TestarGithubResult | null>(null);
+
+  protected testarGithub(): void {
+    const id = this.editId();
+    if (!id) {
+      this.resultadoTeste.set({
+        sucesso: false,
+        erro: 'Salve o produto antes de testar a integração GitHub.',
+      });
+      return;
+    }
+    this.testandoGithub.set(true);
+    this.resultadoTeste.set(null);
+    const f = this.form.value;
+    this.produtoService
+      .testarGithub(id, {
+        repositorioGithub: f.repositorioGithub || undefined,
+        githubToken: f.githubToken || undefined,
+      })
+      .subscribe({
+        next: r => {
+          this.resultadoTeste.set(r);
+          this.testandoGithub.set(false);
+        },
+        error: () => {
+          this.resultadoTeste.set({
+            sucesso: false,
+            erro: 'Falha ao chamar o servidor.',
+          });
+          this.testandoGithub.set(false);
+        },
+      });
   }
 
   protected fecharForm(): void {
@@ -135,7 +187,15 @@ export class RfProdutosComponent implements OnInit {
       return;
     }
     this.salvando.set(true);
-    const data = this.form.value;
+    const data = { ...this.form.value };
+    // PUT com token vazio = preservar token atual no backend
+    if (!data.githubToken) delete data.githubToken;
+    if (!data.repositorioGithub) {
+      delete data.repositorioGithub;
+      delete data.branchPadrao;
+      delete data.padraoTag;
+      delete data.githubToken;
+    }
     const id = this.editId();
     const op = id ? this.produtoService.atualizar(id, data) : this.produtoService.criar(data);
     op.subscribe({

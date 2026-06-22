@@ -150,6 +150,97 @@
           <span>Produto ativo</span>
         </label>
 
+        <!-- ===== Integração GitHub (Fase 2) ===== -->
+        <fieldset class="rf-modal__section">
+          <legend class="rf-modal__section-title">
+            <lucide-icon name="Github" [size]="14" /> Integração GitHub (opcional)
+          </legend>
+          <p class="rf-modal__hint">
+            Configure repositório e token para que a geração de entrega busque
+            assets diretamente da release no GitHub em vez do upload manual.
+          </p>
+
+          <div class="rf-modal__row">
+            <div class="rf-modal__field rf-modal__field--grow-2">
+              <label class="rf-modal__label">Repositório</label>
+              <input
+                class="rf-modal__input"
+                formControlName="repositorioGithub"
+                placeholder="softon/dtec-ld ou URL completa"
+              />
+            </div>
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">Branch padrão</label>
+              <input class="rf-modal__input" formControlName="branchPadrao" placeholder="main" />
+            </div>
+          </div>
+
+          <div class="rf-modal__row">
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">Padrão de tag (regex)</label>
+              <input
+                class="rf-modal__input"
+                formControlName="padraoTag"
+                placeholder="^v\d+\.\d+\.\d+$"
+              />
+            </div>
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">Token (PAT)</label>
+              <input
+                class="rf-modal__input"
+                type="password"
+                formControlName="githubToken"
+                [placeholder]="editId() ? '••••••••••• (preserva o atual)' : 'ghp_...'"
+              />
+            </div>
+          </div>
+
+          <div class="rf-modal__github-actions">
+            <ui-button
+              type="button"
+              variant="secondary"
+              icon="Plug"
+              [loading]="testandoGithub()"
+              [disabled]="!editId()"
+              (clicked)="testarGithub()"
+            >Testar conexão</ui-button>
+            @if (!editId()) {
+              <span class="rf-modal__hint">Salve o produto primeiro pra testar.</span>
+            }
+          </div>
+
+          @if (resultadoTeste(); as r) {
+            @if (r.sucesso) {
+              <div class="rf-modal__result rf-modal__result--ok">
+                <strong>
+                  <lucide-icon name="CheckCircle" [size]="14" />
+                  Conexão OK — {{ r.repositorio }}
+                </strong>
+                @if ((r.releasesRecentes?.length ?? 0) > 0) {
+                  <ul class="rf-modal__releases">
+                    @for (rel of r.releasesRecentes!; track rel.tagName) {
+                      <li>
+                        <code>{{ rel.tagName }}</code>
+                        @if (rel.publishedAt) {
+                          <span>{{ rel.publishedAt | date: 'dd/MM/yyyy' }}</span>
+                        }
+                        <span>· {{ rel.totalAssets }} asset(s)</span>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="rf-modal__hint">Repositório acessível, mas sem releases ainda.</p>
+                }
+              </div>
+            } @else {
+              <div class="rf-modal__result rf-modal__result--err">
+                <lucide-icon name="AlertCircle" [size]="14" />
+                {{ r.erro }}
+              </div>
+            }
+          }
+        </fieldset>
+
         <div class="rf-modal__footer">
           <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
           <ui-button type="submit" [loading]="salvando()">Salvar</ui-button>

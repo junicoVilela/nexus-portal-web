@@ -320,6 +320,91 @@
   border-top: 1px solid var(--border);
 }
 
+.rf-modal__field--grow-1 {
+  flex: 1;
+}
+
+.rf-modal__field--grow-2 {
+  flex: 2;
+}
+
+.rf-modal__section {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card, var(--bg));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rf-modal__section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  font: 600 12.5px/1 var(--font-body);
+  color: var(--text);
+}
+
+.rf-modal__hint {
+  font: 400 12px/1.4 var(--font-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.rf-modal__github-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rf-modal__result {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font: 400 12.5px/1.5 var(--font-body);
+}
+
+.rf-modal__result--ok {
+  background: var(--success-soft, color-mix(in srgb, var(--success) 12%, transparent));
+  color: var(--success, #16a34a);
+  border: 1px solid var(--success, #16a34a);
+}
+
+.rf-modal__result--ok strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-modal__result--err {
+  background: color-mix(in srgb, var(--danger, #dc2626) 12%, transparent);
+  color: var(--danger, #dc2626);
+  border: 1px solid var(--danger, #dc2626);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-modal__releases {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.rf-modal__releases code {
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.05));
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
 @media (max-width: 768px) {
   .rf-prod {
     padding: 18px;
