@@ -1,0 +1,159 @@
+<div class="delta">
+  <ui-page-header
+    title="Range e delta"
+    [subtitle]="entrega() ? 'Entrega ' + entrega()!.clienteSigla + ' · ' + entrega()!.produtoSigla + ' ' + entrega()!.releaseVersao : 'Carregando…'"
+    icon="Layers"
+  >
+    <div actions>
+      <a class="delta__back" [routerLink]="['/release-orchestrator/entregas', entregaId]">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar para entrega
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (loading()) {
+    <ui-skeleton width="60%" height="20px" />
+    <ui-skeleton width="100%" height="220px" />
+  } @else if (erro()) {
+    <ui-error-state
+      [variant]="erroVariant()"
+      [description]="erro()"
+      retryLabel="Recarregar"
+      (retry)="carregar()"
+    />
+  } @else if (entrega(); as e) {
+    @if (!podeEditar()) {
+      <ui-card padding="md">
+        <p class="delta__hint">
+          Entrega em <strong>{{ statusLabels[e.status] }}</strong> — o delta só pode ser
+          recalculado em RASCUNHO ou FALHA. Esta tela é somente leitura.
+        </p>
+      </ui-card>
+    }
+
+    <div class="delta__kpis">
+      <ui-kpi-card label="Módulos" [valor]="modulosSelecionados()" icon="Boxes" tone="blue" />
+      <ui-kpi-card
+        label="Arquivos"
+        [valor]="resumo()?.totalArtefatos ?? 0"
+        icon="Files"
+        tone="purple"
+      />
+      <ui-kpi-card
+        label="Tamanho estimado"
+        [valor]="formatarTamanho(resumo()?.totalTamanhoBytes)"
+        icon="HardDrive"
+        tone="neutral"
+      />
+    </div>
+
+    @if (linhas().length === 0) {
+      <ui-empty-state
+        icon="Layers"
+        title="Sem módulos selecionados"
+        description="Volte para o detalhe da entrega e selecione módulos no wizard."
+      />
+    } @else {
+      <div class="delta__modulos">
+        @for (linha of linhas(); track linha.em.id) {
+          <ui-card padding="md">
+            <div class="delta__mod-head">
+              <div>
+                <strong>{{ linha.em.moduloCodigo }}</strong>
+                @if (linha.em.moduloNome !== linha.em.moduloCodigo) {
+                  · {{ linha.em.moduloNome }}
+                }
+                <ui-badge [tone]="tipoTones[linha.em.moduloTipo]">
+                  {{ tipoLabels[linha.em.moduloTipo] }}
+                </ui-badge>
+              </div>
+              <span class="delta__hint">{{ linha.artefatos.length }} arquivo(s)</span>
+            </div>
+
+            <div class="delta__row">
+              <div class="delta__field">
+                <label class="delta__label">FROM_TAG (versão atual instalada)</label>
+                <input
+                  class="delta__input"
+                  [ngModel]="linha.fromEdit"
+                  (ngModelChange)="onFromEdit(linha, $event)"
+                  [disabled]="!podeEditar()"
+                  placeholder="v1.4.0"
+                />
+                @if (linha.fromOriginal && linha.fromEdit !== linha.fromOriginal) {
+                  <button
+                    type="button"
+                    class="delta__restore-btn"
+                    (click)="restaurarOriginal(linha)"
+                  >
+                    Restaurar default ({{ linha.fromOriginal }})
+                  </button>
+                }
+              </div>
+              <div class="delta__field">
+                <label class="delta__label">TO_TAG</label>
+                <input
+                  class="delta__input"
+                  [value]="linha.em.versaoTo || ''"
+                  disabled
+                  placeholder="—"
+                />
+                <span class="delta__hint">Vem da release</span>
+              </div>
+            </div>
+
+            @if (linha.fromEdit !== (linha.fromOriginal || '')) {
+              <div class="delta__field">
+                <label class="delta__label">
+                  Justificativa <span class="delta__req">*</span>
+                </label>
+                <textarea
+                  class="delta__input delta__textarea"
+                  rows="2"
+                  [ngModel]="linha.justificativa"
+                  (ngModelChange)="onJustificativaEdit(linha, $event)"
+                  [disabled]="!podeEditar()"
+                  placeholder="Ex: cliente recebeu hotfix manual v1.4.2"
+                ></textarea>
+              </div>
+            }
+
+            @if (linha.artefatos.length > 0) {
+              <details class="delta__preview">
+                <summary>Pré-visualização ({{ linha.artefatos.length }} arquivos)</summary>
+                <ul class="delta__arquivos">
+                  @for (a of linha.artefatos; track a.id) {
+                    <li>
+                      <code>{{ a.nomeArquivo }}</code>
+                      <span class="delta__hint">{{ formatarTamanho(a.tamanhoBytes) }}</span>
+                    </li>
+                  }
+                </ul>
+              </details>
+            } @else {
+              <p class="delta__hint">Nenhum artefato no delta ainda. Recalcule para popular.</p>
+            }
+          </ui-card>
+        }
+      </div>
+
+      <div class="delta__footer">
+        <ui-button
+          variant="ghost"
+          type="button"
+          icon="ArrowLeft"
+          (clicked)="confirmar()"
+        >Voltar para entrega</ui-button>
+        @if (podeEditar()) {
+          <ui-button
+            type="button"
+            icon="RefreshCw"
+            [loading]="recalculando()"
+            [disabled]="!temAlteracoes()"
+            (clicked)="recalcular()"
+          >Recalcular delta</ui-button>
+        }
+      </div>
+    }
+  }
+</div>

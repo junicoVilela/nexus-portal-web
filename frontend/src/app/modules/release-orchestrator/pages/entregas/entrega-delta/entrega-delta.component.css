@@ -1,0 +1,163 @@
+.delta {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.delta__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.delta__back:hover {
+  color: var(--text-primary);
+}
+
+.delta__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.delta__modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.delta__mod-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.delta__mod-head ui-badge {
+  margin-left: 6px;
+}
+
+.delta__row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.delta__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 10px;
+}
+
+.delta__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.delta__req {
+  color: var(--danger-text, #b91c1c);
+}
+
+.delta__input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.delta__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delta__textarea {
+  resize: vertical;
+}
+
+.delta__restore-btn {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--primary, #2563eb);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.delta__restore-btn:hover {
+  text-decoration: underline;
+}
+
+.delta__hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.delta__preview {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.delta__preview summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.delta__preview summary:hover {
+  color: var(--text-primary);
+}
+
+.delta__arquivos {
+  list-style: none;
+  padding: 8px 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.delta__arquivos li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--bg-subtle);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.delta__arquivos code {
+  background: transparent;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.delta__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+@media (max-width: 768px) {
+  .delta {
+    padding: 14px;
+  }
+}

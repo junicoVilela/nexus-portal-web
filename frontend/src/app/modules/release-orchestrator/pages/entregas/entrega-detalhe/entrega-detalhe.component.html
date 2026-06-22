@@ -46,6 +46,13 @@
         </p>
       </div>
       <div class="ent-det__actions">
+        @if (e.status === 'RASCUNHO' || e.status === 'FALHA') {
+          <ui-button
+            variant="secondary"
+            icon="Layers"
+            [routerLink]="['/release-orchestrator/entregas', e.id, 'delta']"
+          >Ajustar delta</ui-button>
+        }
         @if (e.status === 'RASCUNHO') {
           <ui-button
             icon="Play"

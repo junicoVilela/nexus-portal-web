@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
 import {
+  CalcularDeltaForm,
   DeltaResumo,
   EntregaModulo,
   EntregaModuloArtefato,
@@ -44,8 +45,8 @@ export class EntregaModuloService {
     return this.http.get<DeltaResumo>(`${this.base(entregaId)}/delta/resumo`);
   }
 
-  calcularDelta(entregaId: string): Observable<DeltaResumo> {
-    return this.http.post<DeltaResumo>(`${this.base(entregaId)}/delta/calcular`, {});
+  calcularDelta(entregaId: string, form: CalcularDeltaForm = {}): Observable<DeltaResumo> {
+    return this.http.post<DeltaResumo>(`${this.base(entregaId)}/delta/calcular`, form);
   }
 
   baixarDocumento(entregaId: string): Observable<Blob> {

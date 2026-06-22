@@ -70,3 +70,11 @@ export const TIPO_MODULO_TONES: Record<TipoModulo, 'neutral' | 'success' | 'info
   FUNCIONALIDADES: 'neutral',
   REGRAS: 'neutral',
 };
+
+export interface CalcularDeltaForm {
+  modulos?: {
+    moduloProdutoId: string;
+    fromTag?: string;
+    justificativa?: string;
+  }[];
+}
