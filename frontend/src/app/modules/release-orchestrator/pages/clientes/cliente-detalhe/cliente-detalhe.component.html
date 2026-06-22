@@ -373,6 +373,92 @@
           </ui-card>
         }
       }
+      @case ('funcionalidades') {
+        @if (produtosContratados().length === 0) {
+          <ui-empty-state
+            icon="ListChecks"
+            title="Cliente sem produtos contratados"
+            description="Contrate ao menos um produto na aba Produtos para habilitar funcionalidades."
+          />
+        } @else if (carregandoFuncionalidades()) {
+          <ui-card padding="md">
+            <p class="cli-det__hint">Carregando matriz de funcionalidades…</p>
+          </ui-card>
+        } @else if (funcionalidadesPorProduto().length === 0) {
+          <div class="cli-det__matrix-empty">
+            <ui-empty-state
+              icon="ListChecks"
+              title="Sem matriz disponível"
+              description="Catálogo de funcionalidades vazio nos produtos contratados."
+            >
+              <ui-button icon="RefreshCw" (clicked)="carregarFuncionalidades()"
+                >Tentar de novo</ui-button>
+            </ui-empty-state>
+          </div>
+        } @else {
+          <div class="cli-det__matrix">
+            @for (matriz of funcionalidadesPorProduto(); track matriz.produto.id; let pIdx = $index) {
+              <ui-card padding="md">
+                <div class="cli-det__matrix-head">
+                  <h3 class="cli-det__pane-title">
+                    <lucide-icon name="Box" [size]="14" />
+                    {{ matriz.produto.produtoSigla }} — {{ matriz.produto.produtoNome }}
+                  </h3>
+                  <ui-badge tone="info">
+                    {{ matriz.habilitadasCount }} de {{ matriz.totalCount }} habilitadas
+                  </ui-badge>
+                </div>
+
+                @if (matriz.dominios.length === 0) {
+                  <p class="cli-det__hint">Produto sem domínios cadastrados no catálogo.</p>
+                } @else {
+                  @for (dominio of matriz.dominios; track dominio.dominio.id; let dIdx = $index) {
+                    <div class="cli-det__dominio">
+                      <h4 class="cli-det__dominio-title">
+                        <code>{{ dominio.dominio.codigo }}</code>
+                        {{ dominio.dominio.nome }}
+                        <span class="cli-det__hint">
+                          {{ dominio.funcionalidades.length }} funcionalidades
+                        </span>
+                      </h4>
+                      @if (dominio.funcionalidades.length === 0) {
+                        <p class="cli-det__hint">Domínio sem funcionalidades.</p>
+                      } @else {
+                        <ul class="cli-det__funcs">
+                          @for (item of dominio.funcionalidades; track item.func.id; let fIdx = $index) {
+                            <li>
+                              <label class="cli-det__func">
+                                <input
+                                  type="checkbox"
+                                  [checked]="item.habilitada"
+                                  [disabled]="alterandoFuncId() === item.func.id"
+                                  (change)="toggleFuncionalidade(pIdx, dIdx, fIdx)"
+                                />
+                                <div class="cli-det__func-info">
+                                  <strong>
+                                    {{ item.func.codigo }}
+                                    @if (item.func.critica) {
+                                      <ui-badge tone="warn">Crítica</ui-badge>
+                                    }
+                                  </strong>
+                                  <span>{{ item.func.nome }}</span>
+                                  @if (item.func.descricao) {
+                                    <p class="cli-det__func-desc">{{ item.func.descricao }}</p>
+                                  }
+                                </div>
+                              </label>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </div>
+                  }
+                }
+              </ui-card>
+            }
+          </div>
+        }
+      }
       @case ('config-entrega') {
         @if (config(); as cfg) {
           <ui-card padding="md">

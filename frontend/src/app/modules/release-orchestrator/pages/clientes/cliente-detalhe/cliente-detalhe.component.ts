@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { forkJoin, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 
 import {
   BadgeComponent,
@@ -44,6 +44,12 @@ import { ConfigEntregaService } from '../../../services/config-entrega.service';
 import { ProximaEntregaService } from '../../../services/proxima-entrega.service';
 import { ClienteProdutoService } from '../../../services/cliente-produto.service';
 import { ProdutoService } from '../../../services/produto.service';
+import { FuncionalidadeService } from '../../../services/funcionalidade.service';
+import {
+  ClienteFuncionalidade,
+  DominioProduto,
+  FuncionalidadeProduto,
+} from '../../../models/funcionalidade.model';
 import {
   ClienteProduto,
   ClienteProdutoModulo,
@@ -56,7 +62,19 @@ import {
   TIPO_MODULO_TONES,
 } from '../../../models/entrega-modulo.model';
 
-type Aba = 'geral' | 'contatos' | 'config-entrega' | 'produtos' | 'proximas-entregas';
+type Aba = 'geral' | 'contatos' | 'config-entrega' | 'produtos' | 'funcionalidades' | 'proximas-entregas';
+
+interface DominioMatriz {
+  dominio: DominioProduto;
+  funcionalidades: { func: FuncionalidadeProduto; habilitada: boolean }[];
+}
+
+interface ProdutoMatriz {
+  produto: ClienteProduto;
+  dominios: DominioMatriz[];
+  habilitadasCount: number;
+  totalCount: number;
+}
 
 @Component({
   selector: 'app-cliente-detalhe',
@@ -89,6 +107,7 @@ export class ClienteDetalheComponent implements OnInit {
   private readonly clienteProdutoService = inject(ClienteProdutoService);
   private readonly produtoService = inject(ProdutoService);
   private readonly moduloProdutoService = inject(ModuloProdutoService);
+  private readonly funcionalidadeService = inject(FuncionalidadeService);
   private readonly toast = inject(ToastService);
 
   protected readonly loading = signal(true);
@@ -117,6 +136,10 @@ export class ClienteDetalheComponent implements OnInit {
   protected readonly tipoModuloLabels = TIPO_MODULO_LABELS;
   protected readonly tipoModuloTones = TIPO_MODULO_TONES;
 
+  protected readonly funcionalidadesPorProduto = signal<ProdutoMatriz[]>([]);
+  protected readonly carregandoFuncionalidades = signal(false);
+  protected readonly alterandoFuncId = signal<string | null>(null);
+
   protected readonly activeTab = signal<Aba>('geral');
 
   protected readonly ambienteLabels = AMBIENTE_LABELS;
@@ -138,6 +161,7 @@ export class ClienteDetalheComponent implements OnInit {
       icon: 'Box',
       count: this.produtosContratados().length,
     },
+    { id: 'funcionalidades', label: 'Funcionalidades', icon: 'ListChecks' },
     { id: 'config-entrega', label: 'Config. entrega', icon: 'Settings' },
     {
       id: 'proximas-entregas',
@@ -233,6 +257,113 @@ export class ClienteDetalheComponent implements OnInit {
       queryParams: { tab: aba },
       queryParamsHandling: 'merge',
     });
+    if (aba === 'funcionalidades' && this.funcionalidadesPorProduto().length === 0) {
+      this.carregarFuncionalidades();
+    }
+  }
+
+  protected carregarFuncionalidades(): void {
+    const produtos = this.produtosContratados().filter(p => p.ativo);
+    if (produtos.length === 0) {
+      this.funcionalidadesPorProduto.set([]);
+      return;
+    }
+    this.carregandoFuncionalidades.set(true);
+    const fontes = produtos.map(produto =>
+      forkJoin({
+        dominios: this.funcionalidadeService.listarDominios(produto.produtoId)
+          .pipe(catchError(() => of([] as DominioProduto[]))),
+        vinculos: this.funcionalidadeService
+          .listarClienteFuncionalidades(this.clienteId, produto.produtoId)
+          .pipe(catchError(() => of([] as ClienteFuncionalidade[]))),
+      }).pipe(
+        switchMap(({ dominios, vinculos }) => {
+          if (dominios.length === 0) {
+            return of({ produto, dominios: [] as DominioMatriz[], vinculos });
+          }
+          const fontesFunc = dominios.map(d =>
+            this.funcionalidadeService
+              .listarFuncionalidades(produto.produtoId, d.id)
+              .pipe(catchError(() => of([] as FuncionalidadeProduto[]))),
+          );
+          return forkJoin(fontesFunc).pipe(
+            switchMap(listaPorDominio => {
+              const habilitadasMap = new Map<string, boolean>();
+              vinculos.forEach(v => habilitadasMap.set(v.funcionalidadeProdutoId, v.habilitada));
+              const dominiosMatriz: DominioMatriz[] = dominios
+                .filter(d => d.ativo)
+                .map((d, i) => ({
+                  dominio: d,
+                  funcionalidades: listaPorDominio[i]
+                    .filter(f => f.ativo)
+                    .map(func => ({
+                      func,
+                      habilitada: habilitadasMap.get(func.id) ?? false,
+                    })),
+                }));
+              return of({ produto, dominios: dominiosMatriz, vinculos });
+            }),
+          );
+        }),
+      ),
+    );
+    forkJoin(fontes)
+      .pipe(finalize(() => this.carregandoFuncionalidades.set(false)))
+      .subscribe(resultados => {
+        const matrizes: ProdutoMatriz[] = resultados.map(r => {
+          const total = r.dominios.reduce(
+            (acc, d) => acc + d.funcionalidades.length,
+            0,
+          );
+          const habilitadas = r.dominios.reduce(
+            (acc, d) => acc + d.funcionalidades.filter(f => f.habilitada).length,
+            0,
+          );
+          return {
+            produto: r.produto,
+            dominios: r.dominios,
+            habilitadasCount: habilitadas,
+            totalCount: total,
+          };
+        });
+        this.funcionalidadesPorProduto.set(matrizes);
+      });
+  }
+
+  protected toggleFuncionalidade(
+    produtoIdx: number,
+    dominioIdx: number,
+    funcIdx: number,
+  ): void {
+    const matrizes = this.funcionalidadesPorProduto();
+    const item = matrizes[produtoIdx].dominios[dominioIdx].funcionalidades[funcIdx];
+    const novoEstado = !item.habilitada;
+    this.alterandoFuncId.set(item.func.id);
+    this.funcionalidadeService
+      .salvar(this.clienteId, item.func.id, { habilitada: novoEstado, origem: 'MANUAL' })
+      .subscribe({
+        next: () => {
+          this.funcionalidadesPorProduto.update(list => {
+            const copy = [...list];
+            const produto = { ...copy[produtoIdx] };
+            const dominios = [...produto.dominios];
+            const dominio = { ...dominios[dominioIdx] };
+            const funcs = [...dominio.funcionalidades];
+            funcs[funcIdx] = { ...funcs[funcIdx], habilitada: novoEstado };
+            dominio.funcionalidades = funcs;
+            dominios[dominioIdx] = dominio;
+            produto.dominios = dominios;
+            produto.habilitadasCount += novoEstado ? 1 : -1;
+            copy[produtoIdx] = produto;
+            return copy;
+          });
+          this.alterandoFuncId.set(null);
+        },
+        error: () => {
+          this.alterandoFuncId.set(null);
+          this.toast.error('Não foi possível alterar a funcionalidade.');
+        },
+      });
   }
 
   protected contratarProduto(): void {
