@@ -460,11 +460,134 @@
         }
       }
       @case ('config-entrega') {
-        @if (config(); as cfg) {
+        @if (editandoConfig()) {
           <ui-card padding="md">
             <h3 class="cli-det__pane-title">
-              <lucide-icon name="Settings" [size]="14" /> Configuração de entrega
+              <lucide-icon name="Settings" [size]="14" /> Editando configuração
             </h3>
+            <div class="cli-det__form-grid">
+              <div class="cli-det__form-field">
+                <label class="cli-det__label">Tipo de destino</label>
+                <select class="cli-det__input" [(ngModel)]="configForm.tipoDestino">
+                  @for (t of destinosDisponiveis; track t) {
+                    <option [value]="t">{{ destinoLabels[t] }}</option>
+                  }
+                </select>
+              </div>
+              <div class="cli-det__form-field cli-det__form-field--grow">
+                <label class="cli-det__label">
+                  Caminho base
+                  @if (configForm.tipoDestino === 'PASTA') {
+                    <span class="cli-det__hint">(absoluto no servidor portal)</span>
+                  } @else {
+                    <span class="cli-det__hint">(pasta no servidor remoto)</span>
+                  }
+                </label>
+                <input
+                  class="cli-det__input"
+                  [(ngModel)]="configForm.caminhoBase"
+                  placeholder="/var/lib/softon/entregas/acme"
+                />
+              </div>
+            </div>
+
+            @if (configForm.tipoDestino === 'FTP' || configForm.tipoDestino === 'SFTP') {
+              <div class="cli-det__form-grid">
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Host</label>
+                  <input class="cli-det__input" [(ngModel)]="configForm.host" placeholder="ftp.acme.com" />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Porta</label>
+                  <input
+                    class="cli-det__input"
+                    type="number"
+                    [(ngModel)]="configForm.porta"
+                    [placeholder]="configForm.tipoDestino === 'FTP' ? '21' : '22'"
+                  />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Usuário</label>
+                  <input class="cli-det__input" [(ngModel)]="configForm.usuario" placeholder="acme-deploy" />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">
+                    Senha
+                    @if (config()?.senhaConfigurada) {
+                      <span class="cli-det__hint">(em branco preserva a atual)</span>
+                    }
+                  </label>
+                  <input
+                    class="cli-det__input"
+                    type="password"
+                    [(ngModel)]="configForm.senha"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <div class="cli-det__form-row">
+                @if (configForm.tipoDestino === 'FTP') {
+                  <label class="cli-det__check">
+                    <input type="checkbox" [(ngModel)]="configForm.modoPassivo" />
+                    <span>Modo passivo (PASV)</span>
+                  </label>
+                }
+                @if (configForm.tipoDestino === 'SFTP') {
+                  <label class="cli-det__check">
+                    <input type="checkbox" [(ngModel)]="configForm.strictHostCheck" />
+                    <span>Validar fingerprint do servidor</span>
+                  </label>
+                }
+              </div>
+            }
+
+            <div class="cli-det__form-grid">
+              <div class="cli-det__form-field cli-det__form-field--grow">
+                <label class="cli-det__label">E-mails de notificação</label>
+                <input
+                  class="cli-det__input"
+                  [(ngModel)]="configForm.emailsNotificacao"
+                  placeholder="ops@cliente.com, dev@cliente.com"
+                />
+              </div>
+              <div class="cli-det__form-field">
+                <label class="cli-det__check" style="margin-top: 22px;">
+                  <input type="checkbox" [(ngModel)]="configForm.exigirAprovacao" />
+                  <span>Exigir aprovação</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="cli-det__form-actions">
+              <ui-button variant="ghost" type="button" (clicked)="cancelarEdicaoConfig()"
+                >Cancelar</ui-button>
+              <ui-button
+                type="button"
+                icon="Save"
+                [loading]="salvandoConfig()"
+                (clicked)="salvarConfig()"
+              >Salvar</ui-button>
+            </div>
+          </ui-card>
+        } @else if (config(); as cfg) {
+          <ui-card padding="md">
+            <div class="cli-det__matrix-head">
+              <h3 class="cli-det__pane-title">
+                <lucide-icon name="Settings" [size]="14" /> Configuração de entrega
+              </h3>
+              <div class="cli-det__col-actions">
+                <ui-button
+                  variant="secondary"
+                  size="sm"
+                  icon="Plug"
+                  [loading]="testandoConfig()"
+                  (clicked)="testarConfigEntrega()"
+                >Testar conexão</ui-button>
+                <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="abrirEdicaoConfig()"
+                  >Editar</ui-button>
+              </div>
+            </div>
             <dl class="cli-det__dl">
               <dt>Tipo de destino</dt><dd>{{ destinoLabels[cfg.tipoDestino] }}</dd>
               <dt>Caminho base</dt>
@@ -475,18 +598,46 @@
                   —
                 }
               </dd>
+              @if (cfg.tipoDestino === 'FTP' || cfg.tipoDestino === 'SFTP') {
+                <dt>Host</dt>
+                <dd>
+                  {{ cfg.host || '—' }}@if (cfg.porta) {<span>:{{ cfg.porta }}</span>}
+                </dd>
+                <dt>Usuário</dt><dd>{{ cfg.usuario || '—' }}</dd>
+                <dt>Senha</dt>
+                <dd>
+                  @if (cfg.senhaConfigurada) {
+                    <ui-badge tone="success">Configurada</ui-badge>
+                  } @else {
+                    <ui-badge tone="warn">Não configurada</ui-badge>
+                  }
+                </dd>
+              }
               <dt>Aprovação obrigatória</dt>
               <dd>{{ cfg.exigirAprovacao ? 'Sim' : 'Não' }}</dd>
               <dt>E-mails de notificação</dt>
               <dd>{{ cfg.emailsNotificacao || '—' }}</dd>
             </dl>
+
+            @if (resultadoTesteConfig(); as msg) {
+              <div class="cli-det__test-ok">
+                <lucide-icon name="CheckCircle" [size]="14" /> {{ msg }}
+              </div>
+            }
+            @if (erroTesteConfig(); as msg) {
+              <div class="cli-det__test-err">
+                <lucide-icon name="AlertCircle" [size]="14" /> {{ msg }}
+              </div>
+            }
           </ui-card>
         } @else {
           <ui-empty-state
             icon="Settings"
             title="Sem configuração de entrega"
             description="Defina destino, aprovação e e-mails para liberar geração de pacotes."
-          />
+          >
+            <ui-button icon="Plus" (clicked)="abrirEdicaoConfig()">Cadastrar</ui-button>
+          </ui-empty-state>
         }
       }
       @case ('proximas-entregas') {

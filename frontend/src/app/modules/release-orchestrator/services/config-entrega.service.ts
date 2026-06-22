@@ -21,4 +21,9 @@ export class ConfigEntregaService {
   salvar(clienteId: string, form: ConfigEntregaForm): Observable<ConfigEntrega> {
     return this.http.put<ConfigEntrega>(this.url(clienteId), form);
   }
+
+  /** Testa a conexão com o destino salvo. Retorna mensagem amigável. */
+  testar(clienteId: string): Observable<string> {
+    return this.http.post(`${this.url(clienteId)}/testar`, {}, { responseType: 'text' });
+  }
 }

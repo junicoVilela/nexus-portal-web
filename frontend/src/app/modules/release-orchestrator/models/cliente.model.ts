@@ -60,6 +60,13 @@ export interface ConfigEntrega {
   caminhoBase?: string;
   exigirAprovacao: boolean;
   emailsNotificacao?: string;
+  host?: string;
+  porta?: number;
+  usuario?: string;
+  /** True quando há senha cifrada no banco; o valor nunca é devolvido. */
+  senhaConfigurada?: boolean;
+  modoPassivo?: boolean;
+  strictHostCheck?: boolean;
   updatedAt?: string;
 }
 
@@ -68,6 +75,13 @@ export interface ConfigEntregaForm {
   caminhoBase?: string;
   exigirAprovacao?: boolean;
   emailsNotificacao?: string;
+  host?: string;
+  porta?: number;
+  usuario?: string;
+  /** Em branco no PUT preserva a senha atual cifrada no backend. */
+  senha?: string;
+  modoPassivo?: boolean;
+  strictHostCheck?: boolean;
 }
 
 export const AMBIENTE_LABELS: Record<AmbientePadrao, string> = {

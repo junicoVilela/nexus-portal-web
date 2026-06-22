@@ -140,6 +140,42 @@ export class ClienteDetalheComponent implements OnInit {
   protected readonly carregandoFuncionalidades = signal(false);
   protected readonly alterandoFuncId = signal<string | null>(null);
 
+  // Config entrega — modo edição inline
+  protected readonly editandoConfig = signal(false);
+  protected readonly salvandoConfig = signal(false);
+  protected readonly testandoConfig = signal(false);
+  protected readonly resultadoTesteConfig = signal<string | null>(null);
+  protected readonly erroTesteConfig = signal<string | null>(null);
+  protected configForm: {
+    tipoDestino: 'PASTA' | 'FTP' | 'SFTP' | 'BUCKET';
+    caminhoBase: string;
+    exigirAprovacao: boolean;
+    emailsNotificacao: string;
+    host: string;
+    porta: number | null;
+    usuario: string;
+    senha: string;
+    modoPassivo: boolean;
+    strictHostCheck: boolean;
+  } = this.configFormVazio();
+
+  private configFormVazio() {
+    return {
+      tipoDestino: 'PASTA' as const,
+      caminhoBase: '',
+      exigirAprovacao: false,
+      emailsNotificacao: '',
+      host: '',
+      porta: null as number | null,
+      usuario: '',
+      senha: '',
+      modoPassivo: true,
+      strictHostCheck: true,
+    };
+  }
+
+  protected destinosDisponiveis: Array<'PASTA' | 'FTP' | 'SFTP'> = ['PASTA', 'FTP', 'SFTP'];
+
   protected readonly activeTab = signal<Aba>('geral');
 
   protected readonly ambienteLabels = AMBIENTE_LABELS;
@@ -364,6 +400,84 @@ export class ClienteDetalheComponent implements OnInit {
           this.toast.error('Não foi possível alterar a funcionalidade.');
         },
       });
+  }
+
+  protected abrirEdicaoConfig(): void {
+    const atual = this.config();
+    if (atual) {
+      this.configForm = {
+        tipoDestino: atual.tipoDestino,
+        caminhoBase: atual.caminhoBase ?? '',
+        exigirAprovacao: atual.exigirAprovacao,
+        emailsNotificacao: atual.emailsNotificacao ?? '',
+        host: atual.host ?? '',
+        porta: atual.porta ?? null,
+        usuario: atual.usuario ?? '',
+        senha: '',
+        modoPassivo: atual.modoPassivo ?? true,
+        strictHostCheck: atual.strictHostCheck ?? true,
+      };
+    } else {
+      this.configForm = this.configFormVazio();
+    }
+    this.resultadoTesteConfig.set(null);
+    this.erroTesteConfig.set(null);
+    this.editandoConfig.set(true);
+  }
+
+  protected cancelarEdicaoConfig(): void {
+    this.editandoConfig.set(false);
+    this.resultadoTesteConfig.set(null);
+    this.erroTesteConfig.set(null);
+  }
+
+  protected salvarConfig(): void {
+    this.salvandoConfig.set(true);
+    const f = this.configForm;
+    const payload: any = {
+      tipoDestino: f.tipoDestino,
+      caminhoBase: f.caminhoBase || undefined,
+      exigirAprovacao: f.exigirAprovacao,
+      emailsNotificacao: f.emailsNotificacao || undefined,
+    };
+    if (f.tipoDestino === 'FTP' || f.tipoDestino === 'SFTP') {
+      payload.host = f.host || undefined;
+      payload.porta = f.porta ?? undefined;
+      payload.usuario = f.usuario || undefined;
+      if (f.senha) payload.senha = f.senha;
+      payload.modoPassivo = f.modoPassivo;
+      payload.strictHostCheck = f.strictHostCheck;
+    }
+    this.configService.salvar(this.clienteId, payload).subscribe({
+      next: cfg => {
+        this.config.set(cfg);
+        this.salvandoConfig.set(false);
+        this.editandoConfig.set(false);
+        this.toast.success('Configuração de entrega salva.');
+      },
+      error: err => {
+        this.salvandoConfig.set(false);
+        const msg = err?.error?.message ?? err?.error ?? 'Erro ao salvar configuração.';
+        this.toast.error(typeof msg === 'string' ? msg : 'Erro ao salvar configuração.');
+      },
+    });
+  }
+
+  protected testarConfigEntrega(): void {
+    this.testandoConfig.set(true);
+    this.resultadoTesteConfig.set(null);
+    this.erroTesteConfig.set(null);
+    this.configService.testar(this.clienteId).subscribe({
+      next: mensagem => {
+        this.resultadoTesteConfig.set(mensagem);
+        this.testandoConfig.set(false);
+      },
+      error: err => {
+        this.testandoConfig.set(false);
+        const msg = err?.error?.message ?? err?.error ?? 'Falha no teste de conexão.';
+        this.erroTesteConfig.set(typeof msg === 'string' ? msg : 'Falha no teste de conexão.');
+      },
+    });
   }
 
   protected contratarProduto(): void {
