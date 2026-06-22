@@ -11,6 +11,8 @@ import {
   ProdutoForm,
   TestarGithubForm,
   TestarGithubResult,
+  TestarJenkinsForm,
+  TestarJenkinsResult,
 } from '../models/produto.model';
 
 const CACHE_TTL_MS = TIMINGS.serviceCacheTtlMs;
@@ -72,6 +74,10 @@ export class ProdutoService {
 
   testarGithub(id: string, form: TestarGithubForm = {}): Observable<TestarGithubResult> {
     return this.http.post<TestarGithubResult>(`${this.base}/${id}/testar-github`, form);
+  }
+
+  testarJenkins(id: string, form: TestarJenkinsForm = {}): Observable<TestarJenkinsResult> {
+    return this.http.post<TestarJenkinsResult>(`${this.base}/${id}/testar-jenkins`, form);
   }
 
   invalidarCache(): void {

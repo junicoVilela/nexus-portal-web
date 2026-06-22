@@ -241,6 +241,105 @@
           }
         </fieldset>
 
+        <!-- ===== Integração Jenkins (Fase 2) ===== -->
+        <fieldset class="rf-modal__section">
+          <legend class="rf-modal__section-title">
+            <lucide-icon name="Wrench" [size]="14" /> Integração Jenkins (opcional)
+          </legend>
+          <p class="rf-modal__hint">
+            Visibilidade do build. O portal só consulta o último build — quem
+            dispara é o webhook do GitHub na tag (modo BUILD_ON_TAG).
+          </p>
+
+          <div class="rf-modal__row">
+            <div class="rf-modal__field rf-modal__field--grow-2">
+              <label class="rf-modal__label">URL do Jenkins</label>
+              <input
+                class="rf-modal__input"
+                formControlName="jenkinsUrl"
+                placeholder="https://jenkins.softon.local"
+              />
+            </div>
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">Trigger</label>
+              <select class="rf-modal__input" formControlName="jenkinsTriggerMode">
+                <option value="BUILD_ON_TAG">Build em tag</option>
+                <option value="MANUAL">Manual</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rf-modal__row">
+            <div class="rf-modal__field rf-modal__field--grow-2">
+              <label class="rf-modal__label">Nome do job</label>
+              <input
+                class="rf-modal__input"
+                formControlName="jenkinsJob"
+                placeholder="dtec-ld-build"
+              />
+            </div>
+          </div>
+
+          <div class="rf-modal__row">
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">Usuário</label>
+              <input class="rf-modal__input" formControlName="jenkinsUser" placeholder="ci-bot" />
+            </div>
+            <div class="rf-modal__field rf-modal__field--grow-1">
+              <label class="rf-modal__label">API token</label>
+              <input
+                class="rf-modal__input"
+                type="password"
+                formControlName="jenkinsToken"
+                [placeholder]="editId() ? '••••••••••• (preserva o atual)' : 'token...'"
+              />
+            </div>
+          </div>
+
+          <div class="rf-modal__github-actions">
+            <ui-button
+              type="button"
+              variant="secondary"
+              icon="Plug"
+              [loading]="testandoJenkins()"
+              [disabled]="!editId()"
+              (clicked)="testarJenkins()"
+            >Testar conexão</ui-button>
+            @if (!editId()) {
+              <span class="rf-modal__hint">Salve o produto primeiro pra testar.</span>
+            }
+          </div>
+
+          @if (resultadoTesteJenkins(); as r) {
+            @if (r.sucesso) {
+              <div class="rf-modal__result rf-modal__result--ok">
+                <strong>
+                  <lucide-icon name="CheckCircle" [size]="14" />
+                  Conexão OK — {{ r.jenkinsJob }}
+                </strong>
+                @if (r.ultimoBuild; as b) {
+                  <p class="rf-modal__hint" style="margin-top: 6px;">
+                    Último build: <strong>#{{ b.number }}</strong>
+                    @if (b.building) {
+                      <em> (em execução…)</em>
+                    } @else if (b.result) {
+                      — <strong>{{ b.result }}</strong>
+                    }
+                    · <a [href]="b.url" target="_blank" rel="noopener">Abrir no Jenkins</a>
+                  </p>
+                } @else {
+                  <p class="rf-modal__hint">Job acessível, mas sem builds ainda.</p>
+                }
+              </div>
+            } @else {
+              <div class="rf-modal__result rf-modal__result--err">
+                <lucide-icon name="AlertCircle" [size]="14" />
+                {{ r.erro }}
+              </div>
+            }
+          }
+        </fieldset>
+
         <div class="rf-modal__footer">
           <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>
           <ui-button type="submit" [loading]="salvando()">Salvar</ui-button>

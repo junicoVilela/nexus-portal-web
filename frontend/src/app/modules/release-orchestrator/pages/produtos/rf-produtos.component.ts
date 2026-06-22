@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@a
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Produto, TestarGithubResult } from '../../models/produto.model';
+import { Produto, TestarGithubResult, TestarJenkinsResult } from '../../models/produto.model';
 import { ProdutoService } from '../../services/produto.service';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -100,6 +100,12 @@ export class RfProdutosComponent implements OnInit {
       padraoTag: ['^v\\d+\\.\\d+\\.\\d+$', Validators.maxLength(200)],
       /** Vazio em edição preserva o token atual. */
       githubToken: ['', Validators.maxLength(500)],
+      jenkinsUrl: ['', Validators.maxLength(300)],
+      jenkinsJob: ['', Validators.maxLength(200)],
+      jenkinsUser: ['', Validators.maxLength(120)],
+      /** Vazio em edição preserva o token atual. */
+      jenkinsToken: ['', Validators.maxLength(500)],
+      jenkinsTriggerMode: ['BUILD_ON_TAG'],
     });
   }
 
@@ -127,8 +133,10 @@ export class RfProdutosComponent implements OnInit {
       ativo: true,
       branchPadrao: 'main',
       padraoTag: '^v\\d+\\.\\d+\\.\\d+$',
+      jenkinsTriggerMode: 'BUILD_ON_TAG',
     });
     this.resultadoTeste.set(null);
+    this.resultadoTesteJenkins.set(null);
     this.showForm.set(true);
   }
 
@@ -137,13 +145,51 @@ export class RfProdutosComponent implements OnInit {
     this.form.patchValue({
       ...p,
       githubToken: '',
+      jenkinsToken: '',
     });
     this.resultadoTeste.set(null);
+    this.resultadoTesteJenkins.set(null);
     this.showForm.set(true);
   }
 
   protected readonly testandoGithub = signal(false);
   protected readonly resultadoTeste = signal<TestarGithubResult | null>(null);
+  protected readonly testandoJenkins = signal(false);
+  protected readonly resultadoTesteJenkins = signal<TestarJenkinsResult | null>(null);
+
+  protected testarJenkins(): void {
+    const id = this.editId();
+    if (!id) {
+      this.resultadoTesteJenkins.set({
+        sucesso: false,
+        erro: 'Salve o produto antes de testar a integração Jenkins.',
+      });
+      return;
+    }
+    this.testandoJenkins.set(true);
+    this.resultadoTesteJenkins.set(null);
+    const f = this.form.value;
+    this.produtoService
+      .testarJenkins(id, {
+        jenkinsUrl: f.jenkinsUrl || undefined,
+        jenkinsJob: f.jenkinsJob || undefined,
+        jenkinsUser: f.jenkinsUser || undefined,
+        jenkinsToken: f.jenkinsToken || undefined,
+      })
+      .subscribe({
+        next: r => {
+          this.resultadoTesteJenkins.set(r);
+          this.testandoJenkins.set(false);
+        },
+        error: () => {
+          this.resultadoTesteJenkins.set({
+            sucesso: false,
+            erro: 'Falha ao chamar o servidor.',
+          });
+          this.testandoJenkins.set(false);
+        },
+      });
+  }
 
   protected testarGithub(): void {
     const id = this.editId();
@@ -195,6 +241,14 @@ export class RfProdutosComponent implements OnInit {
       delete data.branchPadrao;
       delete data.padraoTag;
       delete data.githubToken;
+    }
+    if (!data.jenkinsToken) delete data.jenkinsToken;
+    if (!data.jenkinsUrl) {
+      delete data.jenkinsUrl;
+      delete data.jenkinsJob;
+      delete data.jenkinsUser;
+      delete data.jenkinsToken;
+      delete data.jenkinsTriggerMode;
     }
     const id = this.editId();
     const op = id ? this.produtoService.atualizar(id, data) : this.produtoService.criar(data);

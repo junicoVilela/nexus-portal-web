@@ -13,6 +13,11 @@ export interface Produto {
   branchPadrao?: string;
   padraoTag?: string;
   githubTokenConfigurado?: boolean;
+  jenkinsUrl?: string;
+  jenkinsJob?: string;
+  jenkinsUser?: string;
+  jenkinsTriggerMode?: string;
+  jenkinsTokenConfigurado?: boolean;
   totalReleases?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -30,6 +35,12 @@ export interface ProdutoForm {
   padraoTag?: string;
   /** Envie em branco/null em PUT para preservar o token atual. */
   githubToken?: string;
+  jenkinsUrl?: string;
+  jenkinsJob?: string;
+  jenkinsUser?: string;
+  /** Envie em branco/null em PUT para preservar o token atual. */
+  jenkinsToken?: string;
+  jenkinsTriggerMode?: string;
 }
 
 export interface TestarGithubForm {
@@ -47,4 +58,26 @@ export interface TestarGithubResult {
     publishedAt?: string;
     totalAssets: number;
   }[];
+}
+
+export interface TestarJenkinsForm {
+  jenkinsUrl?: string;
+  jenkinsJob?: string;
+  jenkinsUser?: string;
+  jenkinsToken?: string;
+}
+
+export interface TestarJenkinsResult {
+  sucesso: boolean;
+  jenkinsUrl?: string;
+  jenkinsJob?: string;
+  erro?: string;
+  ultimoBuild?: {
+    number: number;
+    result?: string;
+    building: boolean;
+    timestamp: number;
+    durationMs: number;
+    url: string;
+  };
 }
