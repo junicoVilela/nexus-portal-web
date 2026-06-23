@@ -67,6 +67,11 @@ export interface ConfigEntrega {
   senhaConfigurada?: boolean;
   modoPassivo?: boolean;
   strictHostCheck?: boolean;
+  /** Destino BUCKET (S3/MinIO). */
+  bucket?: string;
+  endpoint?: string;
+  regiao?: string;
+  pathStyleAccess?: boolean;
   updatedAt?: string;
 }
 
@@ -77,11 +82,17 @@ export interface ConfigEntregaForm {
   emailsNotificacao?: string;
   host?: string;
   porta?: number;
+  /** FTP/SFTP: usuário. BUCKET: access key. */
   usuario?: string;
   /** Em branco no PUT preserva a senha atual cifrada no backend. */
   senha?: string;
   modoPassivo?: boolean;
   strictHostCheck?: boolean;
+  /** Destino BUCKET (S3/MinIO). */
+  bucket?: string;
+  endpoint?: string;
+  regiao?: string;
+  pathStyleAccess?: boolean;
 }
 
 export const AMBIENTE_LABELS: Record<AmbientePadrao, string> = {
@@ -107,7 +118,7 @@ export const PAPEL_CONTATO_LABELS: Record<PapelContato, string> = {
 
 export const TIPO_DESTINO_LABELS: Record<TipoDestinoEntrega, string> = {
   PASTA: 'Pasta local',
-  FTP: 'FTP (pós-MVP)',
-  SFTP: 'SFTP (pós-MVP)',
-  BUCKET: 'Bucket (pós-MVP)',
+  FTP: 'FTP',
+  SFTP: 'SFTP',
+  BUCKET: 'Bucket (S3/MinIO)',
 };

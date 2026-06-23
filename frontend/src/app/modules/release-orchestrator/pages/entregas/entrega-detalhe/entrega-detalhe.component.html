@@ -139,6 +139,52 @@
       </ui-card>
     }
 
+    @if (e.statusPublicacao && e.statusPublicacao !== 'NAO_APLICAVEL') {
+      <ui-card padding="md">
+        <div class="ent-det__pub">
+          <div class="ent-det__pub-row">
+            <strong>Publicação remota</strong>
+            <ui-badge [tone]="statusPubTones[e.statusPublicacao]">
+              {{ statusPubLabels[e.statusPublicacao] }}
+            </ui-badge>
+            @if (e.tentativasPublicacao !== undefined && e.tentativasPublicacao > 0) {
+              <span class="ent-det__pub-meta">
+                {{ e.tentativasPublicacao }} tentativa(s)
+              </span>
+            }
+            @if (e.statusPublicacao === 'PENDENTE' && e.proximaTentativaEm) {
+              <span class="ent-det__pub-meta">
+                · próxima em {{ e.proximaTentativaEm | date: 'dd/MM HH:mm' }}
+              </span>
+            }
+            @if (e.statusPublicacao === 'OK' && e.dataPublicacao) {
+              <span class="ent-det__pub-meta">
+                · publicado em {{ e.dataPublicacao | date: 'dd/MM HH:mm' }}
+              </span>
+            }
+          </div>
+          @if (e.destinoPublicacao) {
+            <code class="ent-det__pub-dest">{{ e.destinoPublicacao }}</code>
+          }
+          @if (e.ultimaFalhaPublicacao) {
+            <p class="ent-det__pub-erro">
+              <lucide-icon name="AlertCircle" [size]="12" />
+              {{ e.ultimaFalhaPublicacao }}
+            </p>
+          }
+          @if (e.statusPublicacao === 'FALHA' || e.statusPublicacao === 'PENDENTE') {
+            <ui-button
+              variant="secondary"
+              size="sm"
+              icon="RefreshCw"
+              [loading]="reagendandoPub()"
+              (clicked)="reagendarPublicacao()"
+            >Tentar agora</ui-button>
+          }
+        </div>
+      </ui-card>
+    }
+
     <!-- Tabs -->
     <ui-tabs
       [items]="tabsConfig()"

@@ -157,6 +157,10 @@ export class ClienteDetalheComponent implements OnInit {
     senha: string;
     modoPassivo: boolean;
     strictHostCheck: boolean;
+    bucket: string;
+    endpoint: string;
+    regiao: string;
+    pathStyleAccess: boolean;
   } = this.configFormVazio();
 
   private configFormVazio() {
@@ -171,10 +175,15 @@ export class ClienteDetalheComponent implements OnInit {
       senha: '',
       modoPassivo: true,
       strictHostCheck: true,
+      bucket: '',
+      endpoint: '',
+      regiao: '',
+      pathStyleAccess: false,
     };
   }
 
-  protected destinosDisponiveis: Array<'PASTA' | 'FTP' | 'SFTP'> = ['PASTA', 'FTP', 'SFTP'];
+  protected destinosDisponiveis: Array<'PASTA' | 'FTP' | 'SFTP' | 'BUCKET'> =
+    ['PASTA', 'FTP', 'SFTP', 'BUCKET'];
 
   protected readonly activeTab = signal<Aba>('geral');
 
@@ -416,6 +425,10 @@ export class ClienteDetalheComponent implements OnInit {
         senha: '',
         modoPassivo: atual.modoPassivo ?? true,
         strictHostCheck: atual.strictHostCheck ?? true,
+        bucket: atual.bucket ?? '',
+        endpoint: atual.endpoint ?? '',
+        regiao: atual.regiao ?? '',
+        pathStyleAccess: atual.pathStyleAccess ?? false,
       };
     } else {
       this.configForm = this.configFormVazio();
@@ -447,6 +460,13 @@ export class ClienteDetalheComponent implements OnInit {
       if (f.senha) payload.senha = f.senha;
       payload.modoPassivo = f.modoPassivo;
       payload.strictHostCheck = f.strictHostCheck;
+    } else if (f.tipoDestino === 'BUCKET') {
+      payload.bucket = f.bucket || undefined;
+      payload.endpoint = f.endpoint || undefined;
+      payload.regiao = f.regiao || undefined;
+      payload.pathStyleAccess = f.pathStyleAccess;
+      payload.usuario = f.usuario || undefined;  // access key
+      if (f.senha) payload.senha = f.senha;       // secret key
     }
     this.configService.salvar(this.clienteId, payload).subscribe({
       next: cfg => {

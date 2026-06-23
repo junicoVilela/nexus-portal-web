@@ -542,6 +542,66 @@
               </div>
             }
 
+            @if (configForm.tipoDestino === 'BUCKET') {
+              <div class="cli-det__form-grid">
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Bucket</label>
+                  <input
+                    class="cli-det__input"
+                    [(ngModel)]="configForm.bucket"
+                    placeholder="acme-releases"
+                  />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">
+                    Endpoint
+                    <span class="cli-det__hint">(MinIO/Backblaze; vazio = AWS S3)</span>
+                  </label>
+                  <input
+                    class="cli-det__input"
+                    [(ngModel)]="configForm.endpoint"
+                    placeholder="https://minio.acme.com:9000"
+                  />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Região</label>
+                  <input
+                    class="cli-det__input"
+                    [(ngModel)]="configForm.regiao"
+                    placeholder="us-east-1"
+                  />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">Access Key</label>
+                  <input
+                    class="cli-det__input"
+                    [(ngModel)]="configForm.usuario"
+                    placeholder="AKIA…"
+                  />
+                </div>
+                <div class="cli-det__form-field">
+                  <label class="cli-det__label">
+                    Secret Key
+                    @if (config()?.senhaConfigurada) {
+                      <span class="cli-det__hint">(em branco preserva a atual)</span>
+                    }
+                  </label>
+                  <input
+                    class="cli-det__input"
+                    type="password"
+                    [(ngModel)]="configForm.senha"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+              <div class="cli-det__form-row">
+                <label class="cli-det__check">
+                  <input type="checkbox" [(ngModel)]="configForm.pathStyleAccess" />
+                  <span>Path-style access (recomendado para MinIO)</span>
+                </label>
+              </div>
+            }
+
             <div class="cli-det__form-grid">
               <div class="cli-det__form-field cli-det__form-field--grow">
                 <label class="cli-det__label">E-mails de notificação</label>
@@ -612,6 +672,23 @@
                     <ui-badge tone="warn">Não configurada</ui-badge>
                   }
                 </dd>
+              }
+              @if (cfg.tipoDestino === 'BUCKET') {
+                <dt>Bucket</dt><dd><code>{{ cfg.bucket || '—' }}</code></dd>
+                <dt>Endpoint</dt>
+                <dd>{{ cfg.endpoint || 'AWS S3 (padrão)' }}</dd>
+                <dt>Região</dt><dd>{{ cfg.regiao || 'us-east-1' }}</dd>
+                <dt>Access Key</dt><dd>{{ cfg.usuario || '—' }}</dd>
+                <dt>Secret Key</dt>
+                <dd>
+                  @if (cfg.senhaConfigurada) {
+                    <ui-badge tone="success">Configurada</ui-badge>
+                  } @else {
+                    <ui-badge tone="warn">Não configurada</ui-badge>
+                  }
+                </dd>
+                <dt>Path-style</dt>
+                <dd>{{ cfg.pathStyleAccess ? 'Sim (MinIO)' : 'Não (AWS virtual-hosted)' }}</dd>
               }
               <dt>Aprovação obrigatória</dt>
               <dd>{{ cfg.exigirAprovacao ? 'Sim' : 'Não' }}</dd>

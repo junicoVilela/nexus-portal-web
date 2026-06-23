@@ -1,6 +1,7 @@
 import { AmbientePadrao } from './cliente.model';
 
 export type StatusEntrega = 'RASCUNHO' | 'EM_GERACAO' | 'CONCLUIDA' | 'FALHA' | 'CANCELADA';
+export type StatusPublicacao = 'NAO_APLICAVEL' | 'PENDENTE' | 'OK' | 'FALHA';
 
 export interface Entrega {
   id: string;
@@ -24,6 +25,13 @@ export interface Entrega {
   tamanhoBytes?: number;
   observacoes?: string;
   falhaMotivo?: string;
+  /** Publicação remota (F3 P2) — campos do retry job. */
+  statusPublicacao?: StatusPublicacao;
+  tentativasPublicacao?: number;
+  proximaTentativaEm?: string;
+  ultimaFalhaPublicacao?: string;
+  dataPublicacao?: string;
+  destinoPublicacao?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -70,6 +78,23 @@ export const TRANSICOES_ENTREGA: Record<StatusEntrega, StatusEntrega[]> = {
   FALHA: ['EM_GERACAO'],
   CONCLUIDA: [],
   CANCELADA: [],
+};
+
+export const STATUS_PUBLICACAO_LABELS: Record<StatusPublicacao, string> = {
+  NAO_APLICAVEL: 'Local (sem publicação)',
+  PENDENTE: 'Aguardando publicação',
+  OK: 'Publicada',
+  FALHA: 'Falhou',
+};
+
+export const STATUS_PUBLICACAO_TONES: Record<
+  StatusPublicacao,
+  'neutral' | 'success' | 'info' | 'warn' | 'danger'
+> = {
+  NAO_APLICAVEL: 'neutral',
+  PENDENTE: 'info',
+  OK: 'success',
+  FALHA: 'danger',
 };
 
 /** Formata tamanho em bytes para representação humana (KB/MB/GB). */

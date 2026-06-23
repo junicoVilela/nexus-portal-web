@@ -26,6 +26,8 @@ import {
   formatarTamanho,
   STATUS_ENTREGA_LABELS,
   STATUS_ENTREGA_TONES,
+  STATUS_PUBLICACAO_LABELS,
+  STATUS_PUBLICACAO_TONES,
 } from '../../../models/entrega.model';
 import {
   DeltaResumo,
@@ -86,6 +88,9 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
   protected readonly ambienteLabels = AMBIENTE_LABELS;
   protected readonly statusLabels = STATUS_ENTREGA_LABELS;
   protected readonly statusTones = STATUS_ENTREGA_TONES;
+  protected readonly statusPubLabels = STATUS_PUBLICACAO_LABELS;
+  protected readonly statusPubTones = STATUS_PUBLICACAO_TONES;
+  protected readonly reagendandoPub = signal(false);
   protected readonly tipoModuloLabels = TIPO_MODULO_LABELS;
   protected readonly tipoModuloTones = TIPO_MODULO_TONES;
   protected readonly formatarTamanho = formatarTamanho;
@@ -232,6 +237,22 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
       error: () => {
         this.reentregando.set(false);
         this.toast.error('Não foi possível criar a reentrega.');
+      },
+    });
+  }
+
+  protected reagendarPublicacao(): void {
+    this.reagendandoPub.set(true);
+    this.service.reagendarPublicacao(this.entregaId).subscribe({
+      next: e => {
+        this.entrega.set(e);
+        this.reagendandoPub.set(false);
+        this.toast.success('Publicação reagendada — o job tenta na próxima execução.');
+      },
+      error: err => {
+        this.reagendandoPub.set(false);
+        const msg = err?.error?.message ?? err?.error;
+        this.toast.error(typeof msg === 'string' ? msg : 'Não foi possível reagendar.');
       },
     });
   }
