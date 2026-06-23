@@ -29,6 +29,26 @@
             <code class="rf-det__versao">{{ release()!.versao }}</code>
             <app-release-status-badge [status]="release()!.status" />
             <span class="rf-det__tipo">{{ tipoLabels[release()!.tipo] }}</span>
+            @if (release()!.ultimoBuildStatus; as bs) {
+              <a
+                class="rf-det__build-badge"
+                [href]="release()!.ultimoBuildUrl"
+                target="_blank"
+                rel="noopener"
+                [title]="'Build #' + (release()!.ultimoBuildNumero ?? '?') + ' — abrir no Jenkins'"
+              >
+                <ui-badge [tone]="buildStatusTones[bs]">
+                  <lucide-icon
+                    [name]="bs === 'EM_ANDAMENTO' ? 'Loader' : bs === 'SUCCESS' ? 'CheckCircle' : 'AlertCircle'"
+                    [size]="11"
+                  />
+                  Build: {{ buildStatusLabels[bs] }}
+                  @if (release()!.ultimoBuildNumero) {
+                    <span> · #{{ release()!.ultimoBuildNumero }}</span>
+                  }
+                </ui-badge>
+              </a>
+            }
           </div>
           <h1 class="rf-det__titulo">{{ release()!.titulo }}</h1>
         </div>

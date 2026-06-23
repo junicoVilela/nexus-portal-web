@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import {
+  BUILD_STATUS_LABELS,
+  BUILD_STATUS_TONES,
   Release,
   RELEASE_STATUS_LABELS,
   RELEASE_TIPO_LABELS,
@@ -28,6 +30,7 @@ import { ReleasePdfService } from '../../../services/release-pdf.service';
 
 import { LucideAngularModule } from 'lucide-angular';
 import {
+  BadgeComponent,
   CardComponent,
   ButtonComponent,
   EmptyStateComponent,
@@ -52,6 +55,7 @@ import { ArtefatosTabComponent } from './artefatos-tab/artefatos-tab.component';
     RouterLink,
     LucideAngularModule,
     DragDropModule,
+    BadgeComponent,
     CardComponent,
     ButtonComponent,
     EmptyStateComponent,
@@ -88,6 +92,8 @@ export class ReleaseDetalheComponent implements OnInit {
 
   protected readonly statusLabels = RELEASE_STATUS_LABELS;
   protected readonly tipoLabels = RELEASE_TIPO_LABELS;
+  protected readonly buildStatusLabels = BUILD_STATUS_LABELS;
+  protected readonly buildStatusTones = BUILD_STATUS_TONES;
   protected readonly categoriaLabels = CATEGORIA_LABELS;
   protected readonly categoriaIcones = CATEGORIA_ICONES;
   protected readonly categoriaCores = CATEGORIA_CORES;

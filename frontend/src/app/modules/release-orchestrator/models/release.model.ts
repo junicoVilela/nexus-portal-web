@@ -8,6 +8,32 @@ export type ReleaseStatus =
 
 export type TipoRelease = 'MAJOR' | 'MINOR' | 'PATCH' | 'HOTFIX' | 'FEATURE';
 
+export type BuildStatus =
+  | 'EM_ANDAMENTO'
+  | 'SUCCESS'
+  | 'FAILED'
+  | 'UNSTABLE'
+  | 'ABORTED';
+
+export const BUILD_STATUS_LABELS: Record<BuildStatus, string> = {
+  EM_ANDAMENTO: 'Em andamento',
+  SUCCESS: 'Sucesso',
+  FAILED: 'Falhou',
+  UNSTABLE: 'Instável',
+  ABORTED: 'Abortado',
+};
+
+export const BUILD_STATUS_TONES: Record<
+  BuildStatus,
+  'info' | 'success' | 'danger' | 'warn' | 'neutral'
+> = {
+  EM_ANDAMENTO: 'info',
+  SUCCESS: 'success',
+  FAILED: 'danger',
+  UNSTABLE: 'warn',
+  ABORTED: 'neutral',
+};
+
 export interface Release {
   id: string;
   produtoId: string;
@@ -26,6 +52,10 @@ export interface Release {
   resumo?: string;
   observacoes?: string;
   totalItens?: number;
+  ultimoBuildStatus?: BuildStatus;
+  ultimoBuildNumero?: number;
+  ultimoBuildUrl?: string;
+  ultimoBuildAt?: string;
   createdAt: string;
   updatedAt?: string;
   createdBy?: string;
