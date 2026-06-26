@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  HostListener,
   OnInit,
   computed,
   inject,
@@ -16,7 +17,6 @@ import { AuthService } from '@core/auth/services/auth.service';
 import { ACCENT_PRESETS, AccentPreset, ThemeService } from '@core/theme/theme.service';
 import {
   AvatarComponent,
-  BadgeComponent,
   CommandPaletteComponent,
   CommandPaletteService,
   IconButtonComponent,
@@ -50,7 +50,6 @@ interface NavSection {
     LucideAngularModule,
     IconButtonComponent,
     AvatarComponent,
-    BadgeComponent,
     CommandPaletteComponent,
     NotificationCenterComponent,
     InstallPromptComponent,
@@ -69,6 +68,7 @@ export class AppShellComponent implements OnInit {
   private readonly swUpdate = inject(SwUpdate, { optional: true });
 
   protected readonly mobileOpen = signal(false);
+  protected readonly userMenuOpen = signal(false);
   protected readonly breadcrumb = signal<string>('Início');
 
   private readonly sectionsTodas: NavSection[] = [
@@ -120,6 +120,7 @@ export class AppShellComponent implements OnInit {
       )
       .subscribe(e => {
         this.mobileOpen.set(false);
+        this.userMenuOpen.set(false);
         this.breadcrumb.set(this.deriveBreadcrumb((e as NavigationEnd).urlAfterRedirects));
       });
 
@@ -144,7 +145,25 @@ export class AppShellComponent implements OnInit {
     this.palette.open();
   }
   protected logout(): void {
+    this.userMenuOpen.set(false);
     this.auth.logout();
+  }
+
+  protected toggleUserMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.userMenuOpen.update(v => !v);
+  }
+  protected closeUserMenu(): void {
+    this.userMenuOpen.set(false);
+  }
+
+  @HostListener('document:click')
+  protected onDocumentClick(): void {
+    if (this.userMenuOpen()) this.userMenuOpen.set(false);
+  }
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    if (this.userMenuOpen()) this.userMenuOpen.set(false);
   }
 
   private deriveBreadcrumb(url: string): string {

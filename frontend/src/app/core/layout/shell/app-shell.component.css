@@ -3,98 +3,98 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+  --rail-width: 64px;
 }
-.shell__sidebar {
-  width: 248px;
+
+.shell__rail {
+  width: var(--rail-width);
   flex-shrink: 0;
   background: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
+  align-items: center;
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
+  padding: 12px 0 10px;
+  z-index: 10;
 }
-[data-theme='dark'] .shell__sidebar {
+[data-theme='dark'] .shell__rail {
   backdrop-filter: blur(20px);
 }
 
 .shell__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 20px 18px 18px;
+  justify-content: center;
+  margin-bottom: 14px;
   text-decoration: none;
   color: inherit;
-  border-bottom: 1px solid var(--sidebar-border);
 }
 .shell__brand-mark {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--indigo-500), var(--indigo-700));
   color: #fff;
-  font: 800 14px/1 var(--font-display);
+  font: 800 15px/1 var(--font-display);
   letter-spacing: -0.04em;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 }
 [data-theme='dark'] .shell__brand-mark {
   background: linear-gradient(135deg, var(--indigo-400), var(--cyan-400));
   color: var(--dark-base);
 }
-.shell__brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.shell__brand-name {
-  font: 700 14px/1 var(--font-display);
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-.shell__brand-tag {
-  font: 600 9.5px/1 var(--font-body);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
 
 .shell__nav {
   flex: 1;
-  padding: 12px 10px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  overflow-y: auto;
+  overflow-x: visible;
+  scrollbar-width: none;
 }
-.shell__nav-group {
-  padding: 14px 12px 6px;
-  font: 700 10.5px/1 var(--font-body);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-subtle);
+.shell__nav::-webkit-scrollbar { display: none; }
+
+.shell__nav-divider {
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
 }
+
 .shell__nav-link {
   position: relative;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  font: 600 13px/1 var(--font-body);
+  justify-content: center;
+  border-radius: var(--radius);
   color: var(--sidebar-text);
   text-decoration: none;
-  transition: color var(--motion-default) var(--ease-out);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
   isolation: isolate;
+  transition: color var(--motion-default) var(--ease-out);
 }
 .shell__nav-link::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--sidebar-active-bg);
+  background: var(--surface-2);
   opacity: 0;
   transition: opacity var(--motion-default) var(--ease-out);
   pointer-events: none;
@@ -104,13 +104,17 @@
   color: var(--text);
 }
 .shell__nav-link:hover::before {
-  background: var(--surface-2);
   opacity: 1;
+}
+.shell__nav-link:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
 }
 .shell__nav-link--active {
   color: var(--sidebar-active-text);
 }
 .shell__nav-link--active::before {
+  background: var(--sidebar-active-bg);
   opacity: 1;
 }
 .shell__nav-link--active::after {
@@ -123,40 +127,159 @@
   background: var(--sidebar-active-bar);
   border-radius: 0 3px 3px 0;
 }
+
 .shell__nav-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 }
-.shell__nav-label {
-  flex: 1;
+
+.shell__nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font: 700 9.5px/16px var(--font-body);
+  text-align: center;
 }
 
-.shell__user {
-  padding: 12px;
-  margin: 10px;
-  border-radius: var(--radius);
+/* Tooltip flutuante (instantâneo, sem delay do title nativo) */
+.shell__tip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  padding: 5px 9px;
   background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: 600 12px/1 var(--font-body);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--motion-default) var(--ease-out),
+    transform var(--motion-default) var(--ease-out);
+  box-shadow: var(--shadow-md, 0 6px 16px rgba(0, 0, 0, 0.3));
+  z-index: 50;
+}
+[data-theme='dark'] .shell__tip {
+  backdrop-filter: blur(12px);
+  background: rgba(20, 24, 40, 0.92);
+}
+.shell__nav-link:hover .shell__tip,
+.shell__nav-link:focus-visible .shell__tip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.shell__rail-foot {
+  margin-top: auto;
+  padding-top: 8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Avatar trigger usa as mesmas regras visuais que .shell__nav-link */
+.shell__user-trigger ui-avatar {
+  pointer-events: none;
+}
+.shell__user-trigger--open::before {
+  background: var(--surface-2);
+  opacity: 1;
+}
+
+/* Popover do usuário */
+.shell__user-menu {
+  position: absolute;
+  left: calc(100% + 10px);
+  bottom: 0;
+  min-width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 6px;
+  box-shadow: var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
+  z-index: 60;
+  animation: shell-pop 120ms var(--ease-out);
+}
+[data-theme='dark'] .shell__user-menu {
+  background: rgba(20, 24, 40, 0.96);
+  backdrop-filter: blur(20px);
+}
+@keyframes shell-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.shell__user-menu-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--border);
+  padding: 10px;
 }
-.shell__user-info {
-  flex: 1;
+.shell__user-menu-info {
   min-width: 0;
 }
-.shell__user-name {
-  font: 600 12.5px/1.2 var(--font-body);
+.shell__user-menu-name {
+  font: 600 13px/1.2 var(--font-body);
   color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.shell__user-role {
+.shell__user-menu-role {
   font: 500 11px/1 var(--font-body);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
+}
+.shell__user-menu-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+.shell__user-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: 500 13px/1 var(--font-body);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--motion-default) var(--ease-out);
+}
+.shell__user-menu-item:hover {
+  background: var(--surface-2);
+}
+.shell__user-menu-item lucide-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--text-muted);
+}
+.shell__user-menu-item--danger {
+  color: var(--danger);
+}
+.shell__user-menu-item--danger lucide-icon {
+  color: var(--danger);
 }
 
 .shell__main {
@@ -247,10 +370,15 @@
   width: 32px;
   height: 32px;
   color: var(--text);
+  cursor: pointer;
+}
+
+.shell__backdrop {
+  display: none;
 }
 
 @media (max-width: 768px) {
-  .shell__sidebar {
+  .shell__rail {
     position: fixed;
     left: 0;
     top: 0;
@@ -259,7 +387,7 @@
     transform: translateX(-100%);
     transition: transform var(--motion-slow) var(--ease-out);
   }
-  .shell--mobile-open .shell__sidebar {
+  .shell--mobile-open .shell__rail {
     transform: translateX(0);
   }
   .shell__mobile-toggle {
@@ -271,4 +399,18 @@
     min-width: 0;
     flex: 1;
   }
+  .shell__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    animation: shell-fade 180ms var(--ease-out);
+  }
+  @keyframes shell-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  /* Em mobile o tooltip vira inútil (rail sai por cima) — esconder */
+  .shell__tip { display: none; }
 }

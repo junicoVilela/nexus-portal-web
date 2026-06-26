@@ -1,17 +1,13 @@
 <div class="shell" [class.shell--mobile-open]="mobileOpen()">
-  <aside class="shell__sidebar" aria-label="Navegação principal">
-    <a class="shell__brand" routerLink="/">
+  <aside class="shell__rail" aria-label="Navegação principal">
+    <a class="shell__brand" routerLink="/" i18n-aria-label="@@shell.home" aria-label="Início">
       <span class="shell__brand-mark">S</span>
-      <span class="shell__brand-text">
-        <span class="shell__brand-name">Softon Portal</span>
-        <span class="shell__brand-tag">Intranet</span>
-      </span>
     </a>
 
     <nav class="shell__nav">
-      @for (section of sections(); track section.label ?? '_root') {
-        @if (section.label) {
-          <div class="shell__nav-group">{{ section.label }}</div>
+      @for (section of sections(); track section.label ?? '_root'; let isFirst = $first) {
+        @if (!isFirst) {
+          <span class="shell__nav-divider" aria-hidden="true"></span>
         }
         @for (item of section.items; track item.route) {
           <a
@@ -19,24 +15,67 @@
             [routerLink]="item.route"
             routerLinkActive="shell__nav-link--active"
             [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            [attr.aria-label]="item.label"
+            [title]="item.label"
           >
             <lucide-icon [name]="item.icon" class="shell__nav-icon" />
-            <span class="shell__nav-label">{{ item.label }}</span>
+            <span class="shell__tip">{{ item.label }}</span>
             @if (item.meta) {
-              <ui-badge tone="accent">{{ item.meta }}</ui-badge>
+              <span class="shell__nav-badge" aria-hidden="true">{{ item.meta }}</span>
             }
           </a>
         }
       }
     </nav>
 
-    <div class="shell__user">
-      <ui-avatar [name]="auth.currentUser() || 'Usuário'" size="md" />
-      <div class="shell__user-info">
-        <div class="shell__user-name">{{ auth.currentUser() || 'Usuário' }}</div>
-        <div class="shell__user-role">Softon</div>
-      </div>
-      <ui-icon-button icon="LogOut" ariaLabel="Sair" tone="danger" (clicked)="logout()" />
+    <div class="shell__rail-foot">
+      <button
+        type="button"
+        class="shell__nav-link shell__user-trigger"
+        [class.shell__user-trigger--open]="userMenuOpen()"
+        (click)="toggleUserMenu($event)"
+        [attr.aria-expanded]="userMenuOpen()"
+        aria-haspopup="menu"
+        [attr.aria-label]="auth.currentUser() || 'Usuário'"
+      >
+        <ui-avatar [name]="auth.currentUser() || 'Usuário'" size="sm" />
+        <span class="shell__tip">{{ auth.currentUser() || 'Usuário' }}</span>
+      </button>
+
+      @if (userMenuOpen()) {
+        <div
+          class="shell__user-menu"
+          role="menu"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="shell__user-menu-header">
+            <ui-avatar [name]="auth.currentUser() || 'Usuário'" size="md" />
+            <div class="shell__user-menu-info">
+              <div class="shell__user-menu-name">{{ auth.currentUser() || 'Usuário' }}</div>
+              <div class="shell__user-menu-role">Softon</div>
+            </div>
+          </div>
+          <div class="shell__user-menu-sep"></div>
+          <button
+            type="button"
+            role="menuitem"
+            class="shell__user-menu-item"
+            (click)="toggleTheme(); closeUserMenu()"
+          >
+            <lucide-icon [name]="theme.theme() === 'dark' ? 'Sun' : 'Moon'" />
+            <span>{{ theme.theme() === 'dark' ? 'Tema claro' : 'Tema escuro' }}</span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="shell__user-menu-item shell__user-menu-item--danger"
+            (click)="logout()"
+          >
+            <lucide-icon name="LogOut" />
+            <span i18n="@@shell.logout">Sair</span>
+          </button>
+        </div>
+      }
     </div>
   </aside>
 
@@ -74,7 +113,6 @@
           tone="default"
           (clicked)="toggleTheme()"
         />
-        <ui-avatar [name]="auth.currentUser() || 'Usuário'" size="sm" />
       </div>
     </header>
 
@@ -82,6 +120,10 @@
       <router-outlet />
     </main>
   </div>
+
+  @if (mobileOpen()) {
+    <div class="shell__backdrop" (click)="toggleMobile()" aria-hidden="true"></div>
+  }
 
   <ui-command-palette />
 </div>
