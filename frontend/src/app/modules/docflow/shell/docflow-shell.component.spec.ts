@@ -34,7 +34,7 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
     fixture.detectChanges();
   }
 
-  it('admin (todas permissões) vê todos os 8 itens', async () => {
+  it('admin (todas permissões) vê todos os 7 itens', async () => {
     await configurar([
       'CLIENTE:LER',
       'PROJETO:LER',
@@ -44,7 +44,7 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
       'CONFIGURACAO:EDITAR',
     ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
-    expect(labels.length).toBe(8);
+    expect(labels.length).toBe(7);
     expect(labels).toContain('Configurações');
   });
 
@@ -55,9 +55,9 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
     expect(labels).toContain('Clientes');
   });
 
-  it('usuário sem nenhuma permissão vê só Dashboard e Busca global', async () => {
+  it('usuário sem nenhuma permissão vê só Dashboard', async () => {
     await configurar([]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
-    expect(labels).toEqual(['Dashboard', 'Busca global']);
+    expect(labels).toEqual(['Dashboard']);
   });
 });

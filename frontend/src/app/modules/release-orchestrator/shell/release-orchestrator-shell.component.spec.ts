@@ -34,11 +34,22 @@ describe('ReleaseOrchestratorShellComponent (filtro de permissão no menu)', () 
     fixture.detectChanges();
   }
 
-  it('admin vê todos os 6 itens', async () => {
-    await configurar(['RELEASE:CRIAR', 'RELEASE:LER', 'PRODUTO:LER', 'TEMPLATE:LER']);
+  it('admin vê todos os 9 itens', async () => {
+    await configurar([
+      'RELEASE:CRIAR',
+      'RELEASE:LER',
+      'PROXIMA_ENTREGA:LER',
+      'ENTREGA:LER',
+      'CLIENTE_RO:LER',
+      'PRODUTO:LER',
+      'TEMPLATE:LER',
+    ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
-    expect(labels.length).toBe(6);
+    expect(labels.length).toBe(9);
     expect(labels).toContain('Registrar');
+    expect(labels).toContain('Entregas');
+    expect(labels).toContain('Próximas entregas');
+    expect(labels).toContain('Clientes');
   });
 
   it('leitor sem RELEASE:CRIAR não vê Registrar', async () => {

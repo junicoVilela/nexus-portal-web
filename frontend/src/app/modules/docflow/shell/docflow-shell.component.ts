@@ -27,7 +27,6 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
 
   private readonly navItemsTodos: DocFlowNavItem[] = [
     { label: 'Dashboard', icon: 'BarChart2', route: ['/doc-flow'], exact: true },
-    { label: 'Busca global', icon: 'Search', route: ['/doc-flow', 'busca'] },
     { label: 'Clientes', icon: 'Building2', route: ['/doc-flow', 'clientes'], permissao: 'CLIENTE:LER' },
     { label: 'Projetos', icon: 'FolderOpen', route: ['/doc-flow', 'projetos'], permissao: 'PROJETO:LER' },
     { label: 'Módulos', icon: 'Layers', route: ['/doc-flow', 'modulos'], permissao: 'MODULO:LER' },
