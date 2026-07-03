@@ -1,3 +1,33 @@
+:host {
+  display: contents;
+}
+.df-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.df-form__field--4 {
+  grid-column: span 4;
+}
+.df-form__label {
+  font: 600 12.5px/1 var(--font-body);
+  color: var(--text);
+}
+.df-form__select {
+  padding: 8px 12px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13.5px var(--font-body);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+.df-form__select:focus {
+  border-color: var(--accent);
+}
 .pf-hint {
   display: block;
   margin-top: 4px;
