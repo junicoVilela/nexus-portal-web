@@ -42,31 +42,20 @@
       description="Total de publicações"
     />
 
-    <div class="df-dash__stat">
-      <div class="df-dash__stat-head">
-        <span class="df-dash__stat-label">Pendências</span>
-        <span class="df-dash__stat-icon" [class.df-dash__stat-icon--warn]="paginasPendentes().length > 0"
-          ><lucide-icon name="AlertTriangle"
-        /></span>
-      </div>
-      <div class="df-dash__stat-value" [class.df-dash__stat-value--warn]="paginasPendentes().length > 0">
-        {{ paginasPendentes().length }}
-      </div>
-      <div class="df-dash__stat-foot">Páginas aguardando revisão</div>
-    </div>
-
-    <div class="df-dash__stat">
-      <div class="df-dash__stat-head">
-        <span class="df-dash__stat-label">Erros</span>
-        <span class="df-dash__stat-icon" [class.df-dash__stat-icon--danger]="publicacoesComErro().length > 0"
-          ><lucide-icon name="XCircle"
-        /></span>
-      </div>
-      <div class="df-dash__stat-value" [class.df-dash__stat-value--danger]="publicacoesComErro().length > 0">
-        {{ publicacoesComErro().length }}
-      </div>
-      <div class="df-dash__stat-foot">Publicações com falha</div>
-    </div>
+    <ui-kpi-card
+      label="Pendências"
+      [valor]="paginasPendentes().length"
+      icon="AlertTriangle"
+      [tone]="paginasPendentes().length > 0 ? 'amber' : 'neutral'"
+      description="Páginas aguardando revisão"
+    />
+    <ui-kpi-card
+      label="Erros"
+      [valor]="publicacoesComErro().length"
+      icon="XCircle"
+      [tone]="publicacoesComErro().length > 0 ? 'red' : 'neutral'"
+      description="Publicações com falha"
+    />
   </div>
 
   <div class="df-dash__grid">

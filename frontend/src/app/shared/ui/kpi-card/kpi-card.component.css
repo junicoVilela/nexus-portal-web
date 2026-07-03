@@ -1,3 +1,7 @@
+:host {
+  display: block;
+  height: 100%;
+}
 .ui-kpi {
   display: flex;
   align-items: center;
@@ -7,6 +11,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
+  height: 100%;
+  box-sizing: border-box;
 }
 .ui-kpi__icon {
   width: 40px;
