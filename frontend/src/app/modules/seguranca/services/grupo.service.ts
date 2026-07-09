@@ -1,11 +1,10 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { GrupoAcesso, GrupoAcessoForm } from '../models/grupo-acesso.model';
-import { AuditoriaService } from './auditoria.service';
 import { MockStore } from './mock/mock-store.service';
-import { agora, novoId, paginar, pesquisar, simularErro, simularRequisicao } from './mock/in-memory-store';
-import { alterarStatusGenerico } from './internal/alterar-status.helper';
 
 export interface GrupoFilter {
   q?: string;
@@ -14,128 +13,117 @@ export interface GrupoFilter {
   size?: number;
 }
 
+/** Resposta bruta do backend /api/v1/rbac/grupos. */
+interface BackendGrupoResponse {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  ativo: boolean;
+  permissoes: string[];
+  totalUsuarios: number;
+  createdAt: string;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class GrupoService {
+  private readonly http = inject(HttpClient);
   private readonly store = inject(MockStore);
-  private readonly auditoria = inject(AuditoriaService);
-
-  private comTotalUsuarios(g: GrupoAcesso): GrupoAcesso {
-    const total = this.store.usuarios().filter(u => u.grupoIds?.includes(g.id)).length;
-    return { ...g, totalUsuarios: total };
-  }
+  private readonly base = `${environment.rbacApiUrl}/grupos`;
 
   listar(filter: GrupoFilter = {}): Observable<PageResult<GrupoAcesso>> {
-    const lista = pesquisar(this.store.grupos(), filter.q, ['nome', 'codigo']);
-    const filtrada = lista.filter(g => filter.ativo === undefined || g.ativo === filter.ativo);
-    const result = paginar(filtrada, { page: filter.page ?? 1, size: filter.size ?? 20 });
-    return simularRequisicao({
-      ...result,
-      items: result.items.map(g => this.comTotalUsuarios(g)),
-    });
+    let params = new HttpParams()
+      .set('page', String(filter.page ?? 1))
+      .set('size', String(filter.size ?? 20));
+    if (filter.q) params = params.set('nome', filter.q);
+    return this.http.get<PageResult<BackendGrupoResponse>>(this.base, { params }).pipe(
+      map(res => ({
+        ...res,
+        items: res.items
+          .map(g => this.mapear(g))
+          .filter(g => filter.ativo === undefined || g.ativo === filter.ativo),
+      })),
+    );
   }
 
+  /**
+   * Retorna todos os grupos ativos e inativos usando página grande — o
+   * backend não expõe endpoint "listar tudo" e as telas assumem alguns
+   * milhares no máximo.
+   */
   listarTodos(): Observable<GrupoAcesso[]> {
-    return simularRequisicao(this.store.grupos().map(g => this.comTotalUsuarios(g)));
+    return this.listar({ page: 1, size: 500 }).pipe(map(res => res.items));
   }
 
   buscarPorId(id: string): Observable<GrupoAcesso> {
-    const g = this.store.grupos().find(x => x.id === id);
-    return g ? simularRequisicao(this.comTotalUsuarios(g)) : simularErro('Grupo não encontrado', 404);
+    return this.http.get<BackendGrupoResponse>(`${this.base}/${id}`).pipe(map(g => this.mapear(g)));
   }
 
   criar(form: GrupoAcessoForm): Observable<GrupoAcesso> {
-    if (this.store.grupos().some(g => g.codigo === form.codigo)) {
-      return simularErro('Código já cadastrado', 409);
-    }
-    if (this.store.grupos().some(g => g.nome === form.nome)) {
-      return simularErro('Nome já cadastrado', 409);
-    }
-    const grupo: GrupoAcesso = {
-      id: novoId(),
-      nome: form.nome,
-      codigo: form.codigo,
-      descricao: form.descricao ?? null,
-      ativo: form.ativo,
-      criadoEm: agora(),
-      atualizadoEm: null,
-      permissaoIds: [],
-    };
-    this.store.grupos.update(list => [grupo, ...list]);
-    this.store.persist('grupos');
-    this.auditoria.registrar({
-      acao: 'GRUPO_ACESSO:CRIAR',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'GRUPO_ACESSO',
-      recursoTipo: 'grupo-acesso',
-      recursoId: grupo.id,
-      dadosNovos: { ...grupo },
-    });
-    return simularRequisicao(grupo);
+    return this.http
+      .post<BackendGrupoResponse>(this.base, {
+        nome: form.nome,
+        descricao: form.descricao ?? null,
+        ativo: form.ativo,
+      })
+      .pipe(map(g => this.mapear(g)));
   }
 
   atualizar(id: string, form: GrupoAcessoForm): Observable<GrupoAcesso> {
-    const atual = this.store.grupos().find(g => g.id === id);
-    if (!atual) return simularErro('Grupo não encontrado', 404);
-    const atualizado = {
-      ...atual,
-      nome: form.nome,
-      codigo: form.codigo,
-      descricao: form.descricao ?? null,
-      ativo: form.ativo,
-      atualizadoEm: agora(),
-    };
-    this.store.grupos.update(list => list.map(g => (g.id === id ? atualizado : g)));
-    this.store.persist('grupos');
-    this.auditoria.registrar({
-      acao: 'GRUPO_ACESSO:EDITAR',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'GRUPO_ACESSO',
-      recursoTipo: 'grupo-acesso',
-      recursoId: id,
-      dadosAnteriores: { ...atual },
-      dadosNovos: { ...atualizado },
-    });
-    return simularRequisicao(atualizado);
+    return this.http
+      .put<BackendGrupoResponse>(`${this.base}/${id}`, {
+        nome: form.nome,
+        descricao: form.descricao ?? null,
+        ativo: form.ativo,
+      })
+      .pipe(map(g => this.mapear(g)));
   }
 
   alterarStatus(id: string, ativo: boolean): Observable<GrupoAcesso> {
-    return alterarStatusGenerico<GrupoAcesso>(
-      this.store,
-      this.auditoria,
-      { entidadeKey: 'grupos', msgNaoEncontrado: 'Grupo não encontrado', funcionalidade: 'GRUPO_ACESSO', recursoTipo: 'grupo-acesso' },
-      id,
-      ativo,
-    );
+    return this.http
+      .patch<BackendGrupoResponse>(`${this.base}/${id}/status`, { ativo })
+      .pipe(map(g => this.mapear(g)));
   }
 
+  /**
+   * Recebe IDs de permissão (formato da UI), traduz para códigos via
+   * MockStore.permissoes (enquanto PermissaoService for mock) e envia ao
+   * backend. Ao migrar PermissaoService para HTTP real, o mapa
+   * id → código passa a vir de lá.
+   */
   vincularPermissoes(grupoId: string, permissaoIds: string[]): Observable<void> {
-    if (grupoId === this.store.ADMIN_GROUP_ID) {
-      // ADMIN sempre tem todas as permissões.
-      return simularRequisicao(undefined);
-    }
-    const atual = this.store.grupos().find(g => g.id === grupoId);
-    this.store.grupos.update(list =>
-      list.map(g => (g.id === grupoId ? { ...g, permissaoIds, atualizadoEm: agora() } : g)),
-    );
-    this.store.persist('grupos');
-    this.auditoria.registrar({
-      acao: 'GRUPO_ACESSO:VINCULAR_PERMISSAO',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'GRUPO_ACESSO',
-      recursoTipo: 'grupo-acesso',
-      recursoId: grupoId,
-      dadosAnteriores: { permissaoIds: atual?.permissaoIds ?? [] },
-      dadosNovos: { permissaoIds },
-    });
-    return simularRequisicao(undefined);
+    const codigos = this.store
+      .permissoes()
+      .filter(p => permissaoIds.includes(p.id))
+      .map(p => p.codigo);
+    return this.http.put<void>(`${this.base}/${grupoId}/permissoes`, { permissoes: codigos });
   }
 
   listarMembros(grupoId: string): Observable<string[]> {
-    return simularRequisicao(
-      this.store
-        .usuarios()
-        .filter(u => u.grupoIds?.includes(grupoId))
-        .map(u => u.id),
-    );
+    return this.http.get<string[]>(`${this.base}/${grupoId}/usuarios`);
+  }
+
+  salvarMembros(grupoId: string, usuarioIds: string[]): Observable<void> {
+    return this.http.put<void>(`${this.base}/${grupoId}/usuarios`, { usuarioIds });
+  }
+
+  private mapear(src: BackendGrupoResponse): GrupoAcesso {
+    return {
+      id: src.id,
+      nome: src.nome,
+      codigo: src.codigo,
+      descricao: src.descricao,
+      ativo: src.ativo,
+      criadoEm: src.createdAt,
+      atualizadoEm: src.updatedAt,
+      permissaoIds: this.store
+        .permissoes()
+        .filter(p => src.permissoes.includes(p.codigo))
+        .map(p => p.id),
+      totalUsuarios: src.totalUsuarios,
+    };
   }
 }

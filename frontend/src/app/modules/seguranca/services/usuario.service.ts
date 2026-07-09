@@ -1,12 +1,12 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
+import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { Usuario, UsuarioForm } from '../models/usuario.model';
-import { AuditoriaService } from './auditoria.service';
-import { PoliticaSenhaService } from './politica-senha.service';
 import { MockStore } from './mock/mock-store.service';
-import { agora, novoId, paginar, pesquisar, simularErro, simularRequisicao } from './mock/in-memory-store';
-import { alterarStatusGenerico } from './internal/alterar-status.helper';
+import { agora, simularErro, simularRequisicao } from './mock/in-memory-store';
+import { AuditoriaService } from './auditoria.service';
 
 export interface UsuarioFilter {
   q?: string;
@@ -16,111 +16,87 @@ export interface UsuarioFilter {
   size?: number;
 }
 
+/** Resposta bruta do backend /api/v1/rbac/usuarios. */
+interface BackendUsuarioResponse {
+  id: string;
+  username: string;
+  nome: string | null;
+  email: string | null;
+  ativo: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
+  private readonly http = inject(HttpClient);
   private readonly store = inject(MockStore);
   private readonly auditoria = inject(AuditoriaService);
-  private readonly politica = inject(PoliticaSenhaService);
+  private readonly base = `${environment.rbacApiUrl}/usuarios`;
 
   listar(filter: UsuarioFilter = {}): Observable<PageResult<Usuario>> {
-    const lista = pesquisar(this.store.usuarios(), filter.q, ['nome', 'email', 'login']);
-    const filtrada = lista.filter(u => {
-      if (filter.ativo !== undefined && u.ativo !== filter.ativo) return false;
-      if (filter.bloqueado !== undefined && u.bloqueado !== filter.bloqueado) return false;
-      return true;
-    });
-    return simularRequisicao(paginar(filtrada, { page: filter.page ?? 1, size: filter.size ?? 20 }));
-  }
-
-  buscarPorId(id: string): Observable<Usuario> {
-    const u = this.store.usuarios().find(x => x.id === id);
-    return u ? simularRequisicao(u) : simularErro('Usuário não encontrado', 404);
-  }
-
-  criar(form: UsuarioForm): Observable<Usuario> {
-    if (this.store.usuarios().some(u => u.login === form.login)) {
-      return simularErro('Login já cadastrado', 409);
-    }
-    if (this.store.usuarios().some(u => u.email === form.email)) {
-      return simularErro('E-mail já cadastrado', 409);
-    }
-    if (form.senha) {
-      const validacao = this.politica.validar(form.senha);
-      if (!validacao.valido) {
-        return simularErro(`Senha não atende à política: ${validacao.violacoes.join(' ')}`, 400);
-      }
-    }
-    const usuario: Usuario = {
-      id: novoId(),
-      nome: form.nome,
-      email: form.email,
-      login: form.login,
-      ativo: form.ativo,
-      bloqueado: false,
-      tentativasInvalidas: 0,
-      trocarSenhaProximoLogin: false,
-      ultimoLogin: null,
-      criadoEm: agora(),
-      atualizadoEm: null,
-      grupoIds: form.grupoIds,
-    };
-    this.store.usuarios.update(list => [usuario, ...list]);
-    this.store.persist('usuarios');
-    if (form.senha) {
-      this.store.senhas.update(s => ({ ...s, [usuario.id]: form.senha! }));
-      this.store.persist('senhas');
-      this.politica.registrarNoHistorico(usuario.id, form.senha);
-    }
-    // Auditoria síncrona junto com a mutação do store (finding #2):
-    // tap só dispararia se houver subscribe, deixando store mutado + auditoria
-    // ausente caso o caller esquecesse o subscribe.
-    this.auditoria.registrar({
-      acao: 'USUARIO:CRIAR',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'USUARIO',
-      recursoTipo: 'usuario',
-      recursoId: usuario.id,
-      dadosNovos: { ...usuario },
-    });
-    return simularRequisicao(usuario);
-  }
-
-  atualizar(id: string, form: UsuarioForm): Observable<Usuario> {
-    const atual = this.store.usuarios().find(u => u.id === id);
-    if (!atual) return simularErro('Usuário não encontrado', 404);
-    const atualizado: Usuario = {
-      ...atual,
-      nome: form.nome,
-      email: form.email,
-      login: form.login,
-      ativo: form.ativo,
-      grupoIds: form.grupoIds,
-      atualizadoEm: agora(),
-    };
-    this.store.usuarios.update(list => list.map(u => (u.id === id ? atualizado : u)));
-    this.store.persist('usuarios');
-    this.auditoria.registrar({
-      acao: 'USUARIO:EDITAR',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'USUARIO',
-      recursoTipo: 'usuario',
-      recursoId: id,
-      dadosAnteriores: { ...atual },
-      dadosNovos: { ...atualizado },
-    });
-    return simularRequisicao(atualizado);
-  }
-
-  alterarStatus(id: string, ativo: boolean): Observable<Usuario> {
-    return alterarStatusGenerico<Usuario>(
-      this.store,
-      this.auditoria,
-      { entidadeKey: 'usuarios', msgNaoEncontrado: 'Usuário não encontrado', funcionalidade: 'USUARIO', recursoTipo: 'usuario' },
-      id,
-      ativo,
+    let params = new HttpParams()
+      .set('page', String(filter.page ?? 1))
+      .set('size', String(filter.size ?? 20));
+    return this.http.get<PageResult<BackendUsuarioResponse>>(this.base, { params }).pipe(
+      map(res => ({
+        ...res,
+        items: this.aplicarFiltrosClient(res.items.map(u => this.mapear(u)), filter),
+      })),
     );
   }
 
+  buscarPorId(id: string): Observable<Usuario> {
+    return this.http.get<BackendUsuarioResponse>(`${this.base}/${id}`).pipe(map(u => this.mapear(u)));
+  }
+
+  criar(form: UsuarioForm): Observable<Usuario> {
+    if (!form.senha) {
+      return simularErro('Senha obrigatória ao criar usuário.', 400);
+    }
+    return this.http
+      .post<BackendUsuarioResponse>(this.base, {
+        username: form.login,
+        password: form.senha,
+        nome: form.nome,
+        email: form.email,
+      })
+      .pipe(map(u => this.mapear(u)));
+  }
+
+  atualizar(id: string, form: UsuarioForm): Observable<Usuario> {
+    return this.http
+      .put<BackendUsuarioResponse>(`${this.base}/${id}`, {
+        nome: form.nome,
+        email: form.email,
+        ativo: form.ativo,
+      })
+      .pipe(map(u => this.mapear(u)));
+  }
+
+  alterarStatus(id: string, ativo: boolean): Observable<Usuario> {
+    // Backend não tem PATCH dedicado; reaproveita o PUT com o payload atual.
+    return this.buscarPorId(id).pipe(
+      switchMap(atual => this.http
+        .put<BackendUsuarioResponse>(`${this.base}/${id}`, {
+          nome: atual.nome,
+          email: atual.email,
+          ativo,
+        })
+        .pipe(map(u => this.mapear(u)))),
+    );
+  }
+
+  resetarSenha(id: string, novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/${id}/alterar-senha`, { novaSenha });
+  }
+
+  /**
+   * Bloqueio de usuário ainda não existe no backend. Mantido em MockStore
+   * até o endpoint dedicado ser criado.
+   */
   bloquear(id: string, bloqueado: boolean): Observable<Usuario> {
     const atual = this.store.usuarios().find(u => u.id === id);
     if (!atual) return simularErro('Usuário não encontrado', 404);
@@ -144,49 +120,54 @@ export class UsuarioService {
     return simularRequisicao(atualizado);
   }
 
-  resetarSenha(id: string, novaSenha: string): Observable<void> {
-    const atual = this.store.usuarios().find(u => u.id === id);
-    if (!atual) return simularErro('Usuário não encontrado', 404);
-    const validacao = this.politica.validar(novaSenha);
-    if (!validacao.valido) {
-      return simularErro(`Senha não atende à política: ${validacao.violacoes.join(' ')}`, 400);
-    }
-    if (this.politica.reutilizada(id, novaSenha)) {
-      return simularErro('Senha já usada recentemente. Escolha outra.', 400);
-    }
-    this.store.senhas.update(s => ({ ...s, [id]: novaSenha }));
-    this.store.persist('senhas');
-    this.politica.registrarNoHistorico(id, novaSenha);
-    this.store.usuarios.update(list =>
-      list.map(u => (u.id === id ? { ...u, trocarSenhaProximoLogin: true, atualizadoEm: agora() } : u)),
-    );
-    this.store.persist('usuarios');
-    this.auditoria.registrar({
-      acao: 'USUARIO:RESETAR_SENHA',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'USUARIO',
-      recursoTipo: 'usuario',
-      recursoId: id,
-      mensagem: 'Senha resetada por administrador. Usuário deverá trocá-la no próximo login.',
-    });
-    return simularRequisicao(undefined);
-  }
-
+  /**
+   * Vincular usuário a grupos: hoje o backend expõe pelo lado do grupo
+   * (`PUT /rbac/grupos/{id}/usuarios`). Mantido em MockStore até um
+   * endpoint dedicado ao usuário existir.
+   */
   vincularGrupos(id: string, grupoIds: string[]): Observable<Usuario> {
     const atual = this.store.usuarios().find(u => u.id === id);
     if (!atual) return simularErro('Usuário não encontrado', 404);
     const atualizado = { ...atual, grupoIds, atualizadoEm: agora() };
     this.store.usuarios.update(list => list.map(u => (u.id === id ? atualizado : u)));
     this.store.persist('usuarios');
-    this.auditoria.registrar({
-      acao: 'USUARIO:VINCULAR_GRUPOS',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'USUARIO',
-      recursoTipo: 'usuario',
-      recursoId: id,
-      dadosAnteriores: { grupoIds: atual.grupoIds ?? [] },
-      dadosNovos: { grupoIds },
-    });
     return simularRequisicao(atualizado);
+  }
+
+  private aplicarFiltrosClient(lista: Usuario[], filter: UsuarioFilter): Usuario[] {
+    let out = lista;
+    if (filter.q) {
+      const q = filter.q.toLowerCase();
+      out = out.filter(u =>
+        u.nome.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.login.toLowerCase().includes(q),
+      );
+    }
+    if (filter.ativo !== undefined) out = out.filter(u => u.ativo === filter.ativo);
+    if (filter.bloqueado !== undefined) out = out.filter(u => u.bloqueado === filter.bloqueado);
+    return out;
+  }
+
+  /**
+   * Adapta UsuarioResponse do backend para o modelo rico do frontend.
+   * Campos ausentes no backend recebem defaults; bloqueio e grupos ainda
+   * são gerenciados via MockStore em rotas dedicadas.
+   */
+  private mapear(src: BackendUsuarioResponse): Usuario {
+    return {
+      id: src.id,
+      nome: src.nome ?? src.username,
+      email: src.email ?? '',
+      login: src.username,
+      ativo: src.ativo,
+      bloqueado: false,
+      tentativasInvalidas: 0,
+      trocarSenhaProximoLogin: false,
+      ultimoLogin: null,
+      criadoEm: src.createdAt,
+      atualizadoEm: src.updatedAt,
+      grupoIds: [],
+    };
   }
 }
