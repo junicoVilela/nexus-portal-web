@@ -1,51 +1,78 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '@env/environment';
 import { EscopoService } from './escopo.service';
-import { MockStore } from './mock/mock-store.service';
 
-describe('EscopoService', () => {
+describe('EscopoService (HTTP)', () => {
   let service: EscopoService;
-  let store: MockStore;
+  let http: HttpTestingController;
+  const base = `${environment.rbacApiUrl}/escopos`;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    store = TestBed.inject(MockStore);
-    store.reset();
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(EscopoService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('criar() exige usuarioId ou grupoAcessoId', async () => {
-    await expectAsync(firstValueFrom(service.criar({ somenteLeitura: false, ativo: true }))).toBeRejected();
+  afterEach(() => http.verify());
+
+  const backend = (over: Record<string, unknown> = {}) => ({
+    id: 'e1',
+    usuarioId: null,
+    grupoAcessoId: null,
+    clienteId: null,
+    ambienteId: null,
+    produtoId: null,
+    tipoAmbiente: null,
+    somenteLeitura: false,
+    ativo: true,
+    criadoEm: '2026-01-01T00:00:00Z',
+    atualizadoEm: null,
+    ...over,
   });
 
-  it('criar() + listarPorUsuario() devolve o escopo do usuário', async () => {
-    const userId = store.ADMIN_USER_ID;
-    await firstValueFrom(
-      service.criar({ usuarioId: userId, clienteId: 'cli-x', somenteLeitura: false, ativo: true }),
-    );
-    const r = await firstValueFrom(service.listarPorUsuario(userId));
-    expect(r.some(e => e.clienteId === 'cli-x')).toBe(true);
+  it('listarPorUsuario() bate no /escopos com filtro usuarioId', async () => {
+    const promise = firstValueFrom(service.listarPorUsuario('u1'));
+    const req = http.expectOne(r => r.url === base);
+    expect(req.request.params.get('usuarioId')).toBe('u1');
+    req.flush([backend({ usuarioId: 'u1', clienteId: 'cli-x' })]);
+    const r = await promise;
+    expect(r[0].clienteId).toBe('cli-x');
   });
 
-  it('atualizar() altera flags', async () => {
-    const e = await firstValueFrom(
-      service.criar({
-        grupoAcessoId: store.ADMIN_GROUP_ID,
-        produtoId: 'prod-1',
-        somenteLeitura: false,
-        ativo: true,
-      }),
-    );
-    const atu = await firstValueFrom(service.atualizar(e.id, { somenteLeitura: true, ativo: false }));
-    expect(atu.somenteLeitura).toBe(true);
-    expect(atu.ativo).toBe(false);
+  it('criar() envia payload com nulls explícitos', async () => {
+    const promise = firstValueFrom(service.criar({
+      usuarioId: 'u1', clienteId: 'cli-x', somenteLeitura: false, ativo: true,
+    }));
+    const req = http.expectOne(base);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.usuarioId).toBe('u1');
+    expect(req.request.body.clienteId).toBe('cli-x');
+    expect(req.request.body.grupoAcessoId).toBeNull();
+    req.flush(backend({ usuarioId: 'u1', clienteId: 'cli-x' }));
+    const e = await promise;
+    expect(e.usuarioId).toBe('u1');
   });
 
-  it('remover() exclui o escopo', async () => {
-    const e = await firstValueFrom(
-      service.criar({ usuarioId: store.ADMIN_USER_ID, somenteLeitura: false, ativo: true }),
-    );
-    await firstValueFrom(service.remover(e.id));
-    expect(store.escopos().some(x => x.id === e.id)).toBe(false);
+  it('alterarStatus() faz PATCH /status', async () => {
+    const promise = firstValueFrom(service.alterarStatus('e1', false));
+    const req = http.expectOne(r => r.url === `${base}/e1/status`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.params.get('ativo')).toBe('false');
+    req.flush(backend({ ativo: false }));
+    const e = await promise;
+    expect(e.ativo).toBe(false);
+  });
+
+  it('remover() faz DELETE', async () => {
+    const promise = firstValueFrom(service.remover('e1'));
+    const req = http.expectOne(`${base}/e1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+    await promise;
   });
 });
