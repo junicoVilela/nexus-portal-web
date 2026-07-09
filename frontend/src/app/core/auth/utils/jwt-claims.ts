@@ -10,7 +10,6 @@ export interface JwtClaims {
   sub?: string;
   sid?: string;
   exp?: number;
-  roles?: string[];
 }
 
 export function lerClaims(token: string | null | undefined): JwtClaims | null {
@@ -35,12 +34,6 @@ export function lerSub(token: string | null | undefined): string | null {
 export function lerSid(token: string | null | undefined): string | null {
   const claims = lerClaims(token);
   return typeof claims?.sid === 'string' && claims.sid ? claims.sid : null;
-}
-
-export function lerRoles(token: string | null | undefined): string[] {
-  const claims = lerClaims(token);
-  if (!Array.isArray(claims?.roles)) return [];
-  return claims.roles.filter((r): r is string => typeof r === 'string');
 }
 
 export function tokenValido(token: string | null | undefined): boolean {

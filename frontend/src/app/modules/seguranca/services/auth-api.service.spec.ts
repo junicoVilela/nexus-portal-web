@@ -44,7 +44,6 @@ describe('AuthApiService', () => {
       username: 'admin',
       nome: 'Administrador',
       email: 'admin@softon.dev',
-      roles: ['ADMIN', 'EDITOR'],
       grupos: [{ id: 'g1', codigo: 'ADMIN', nome: 'Administradores' }],
       permissoes: ['CLIENTE:LER', 'CONFIGURACAO:EDITAR'],
     });

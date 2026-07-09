@@ -10,7 +10,6 @@ export interface BackendMeResponse {
   username: string;
   nome: string | null;
   email: string | null;
-  roles: string[];
   grupos: { id: string; codigo: string; nome: string }[];
   permissoes: string[];
 }
