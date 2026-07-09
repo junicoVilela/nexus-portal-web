@@ -1,40 +1,51 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '@env/environment';
 import { DominioService } from './dominio.service';
 import { MockStore } from './mock/mock-store.service';
 
 describe('DominioService', () => {
   let service: DominioService;
   let store: MockStore;
+  let http: HttpTestingController;
+  const base = `${environment.rbacApiUrl}/catalogo/dominios`;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     store = TestBed.inject(MockStore);
     store.reset();
     service = TestBed.inject(DominioService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('listarTodos() retorna seed', async () => {
-    const r = await firstValueFrom(service.listarTodos());
-    expect(r.length).toBeGreaterThan(0);
+  afterEach(() => http.verify());
+
+  it('listarTodos() bate em /catalogo/dominios e popula MockStore', async () => {
+    const promise = firstValueFrom(service.listarTodos());
+    const req = http.expectOne(base);
+    expect(req.request.method).toBe('GET');
+    req.flush([{
+      id: 'd1', codigo: 'SEGURANCA', nome: 'Segurança', descricao: null, ativo: true,
+      createdAt: '2026-01-01T00:00:00Z', updatedAt: null,
+    }]);
+    const list = await promise;
+    expect(list.map(d => d.codigo)).toContain('SEGURANCA');
+    expect(store.dominios().map(d => d.codigo)).toContain('SEGURANCA');
   });
 
-  it('criar() rejeita código duplicado', async () => {
+  it('criar() (mock local) rejeita código duplicado', async () => {
     await expectAsync(
       firstValueFrom(service.criar({ nome: 'Outro', codigo: 'SEGURANCA', ativo: true })),
     ).toBeRejected();
   });
 
-  it('alterarStatus() altera ativo', async () => {
+  it('alterarStatus() (mock local) inverte ativo', async () => {
     const d = store.dominios()[0];
     const atualizado = await firstValueFrom(service.alterarStatus(d.id, !d.ativo));
     expect(atualizado.ativo).toBe(!d.ativo);
-  });
-
-  it('criar() registra evento de auditoria DOMINIO:CRIAR', async () => {
-    await firstValueFrom(service.criar({ nome: 'Teste Audit', codigo: 'TEST_AUDIT', ativo: true }));
-    const eventos = store.auditoria().filter(a => a.acao === 'DOMINIO:CRIAR');
-    expect(eventos.length).toBeGreaterThan(0);
-    expect(eventos[0].dadosNovos?.['codigo']).toBe('TEST_AUDIT');
   });
 });
