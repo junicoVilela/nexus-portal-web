@@ -1,48 +1,61 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
+import { environment } from '@env/environment';
 import { PoliticaSenha, PoliticaSenhaForm, ResultadoValidacaoSenha } from '../models/politica-senha.model';
-import { AuditoriaService } from './auditoria.service';
 import { MockStore } from './mock/mock-store.service';
-import { agora, simularRequisicao } from './mock/in-memory-store';
 
 const REGEX_MAIUSCULA = /[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/;
 const REGEX_MINUSCULA = /[a-záàâãéêíóôõúç]/;
 const REGEX_NUMERO = /\d/;
 const REGEX_ESPECIAL = /[!@#$%^&*(),.?":{}|<>[\]\\/_\-+=`~';]/;
 
+interface BackendPoliticaSenhaResponse {
+  id: string;
+  tamanhoMinimo: number;
+  exigirMaiuscula: boolean;
+  exigirMinuscula: boolean;
+  exigirNumero: boolean;
+  exigirEspecial: boolean;
+  expiraSenhaDias: number | null;
+  quantidadeHistorico: number;
+  maxTentativasInvalidas: number;
+  ativo: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PoliticaSenhaService {
+  private readonly http = inject(HttpClient);
   private readonly store = inject(MockStore);
-  private readonly auditoria = inject(AuditoriaService);
+  private readonly base = `${environment.rbacApiUrl}/politica-senha`;
 
   atual(): Observable<PoliticaSenha> {
-    return simularRequisicao(this.store.politicaSenha());
+    return this.http.get<BackendPoliticaSenhaResponse>(this.base).pipe(
+      map(p => this.mapear(p)),
+      // Popula MockStore como cache para atualSync() (usado por validators
+      // de form síncronos que não podem esperar HTTP).
+      tap(p => {
+        this.store.politicaSenha.set(p);
+        this.store.persist('politicaSenha');
+      }),
+    );
   }
 
-  /** Acesso síncrono à política atual (útil para validators de form). */
+  /** Acesso síncrono à última política conhecida (do MockStore/cache). */
   atualSync(): PoliticaSenha {
     return this.store.politicaSenha();
   }
 
   atualizar(form: PoliticaSenhaForm): Observable<PoliticaSenha> {
-    const anterior = this.store.politicaSenha();
-    const atualizada: PoliticaSenha = {
-      ...anterior,
-      ...form,
-      atualizadoEm: agora(),
-    };
-    this.store.politicaSenha.set(atualizada);
-    this.store.persist('politicaSenha');
-    this.auditoria.registrar({
-      acao: 'POLITICA_SENHA:EDITAR',
-      dominio: 'SEGURANCA',
-      funcionalidade: 'POLITICA_SENHA',
-      recursoTipo: 'politica-senha',
-      recursoId: atualizada.id,
-      dadosAnteriores: { ...anterior },
-      dadosNovos: { ...atualizada },
-    });
-    return simularRequisicao(atualizada);
+    return this.http.put<BackendPoliticaSenhaResponse>(this.base, form).pipe(
+      map(p => this.mapear(p)),
+      tap(p => {
+        this.store.politicaSenha.set(p);
+        this.store.persist('politicaSenha');
+      }),
+    );
   }
 
   /** Valida uma senha contra a política. Síncrono — útil para form validators. */
@@ -66,28 +79,40 @@ export class PoliticaSenhaService {
     return { valido: violacoes.length === 0, violacoes };
   }
 
-  /** Verifica se a nova senha viola o histórico configurado. */
-  reutilizada(usuarioId: string, novaSenha: string): boolean {
-    const politica = this.atualSync();
-    const historico = this.store.historicoSenhas()[usuarioId] ?? [];
-    return historico.slice(0, politica.quantidadeHistorico).includes(novaSenha);
+  /**
+   * Reutilização é enforced no backend (alterarSenha). O frontend não tem
+   * como saber sem POST — retorna false localmente pra manter compat com
+   * chamadas de UI.
+   */
+  reutilizada(_usuarioId: string, _novaSenha: string): boolean {
+    return false;
   }
 
-  /** Contagem do histórico de senhas de um usuário (sem expor os hashes). */
+  /** No-op: registro de histórico agora é responsabilidade do backend. */
+  registrarNoHistorico(_usuarioId: string, _senha: string): void {
+    // no-op
+  }
+
   contagemHistorico(usuarioId: string): { atual: number; limite: number } {
     const politica = this.atualSync();
     const atual = this.store.historicoSenhas()[usuarioId]?.length ?? 0;
     return { atual: Math.min(atual, politica.quantidadeHistorico), limite: politica.quantidadeHistorico };
   }
 
-  /** Registra a senha no histórico do usuário (chamado pelos services ao trocar senha). */
-  registrarNoHistorico(usuarioId: string, senha: string): void {
-    const politica = this.atualSync();
-    this.store.historicoSenhas.update(h => {
-      const atual = h[usuarioId] ?? [];
-      const proxima = [senha, ...atual].slice(0, Math.max(politica.quantidadeHistorico, 1));
-      return { ...h, [usuarioId]: proxima };
-    });
-    this.store.persist('historicoSenhas');
+  private mapear(src: BackendPoliticaSenhaResponse): PoliticaSenha {
+    return {
+      id: src.id,
+      tamanhoMinimo: src.tamanhoMinimo,
+      exigirMaiuscula: src.exigirMaiuscula,
+      exigirMinuscula: src.exigirMinuscula,
+      exigirNumero: src.exigirNumero,
+      exigirEspecial: src.exigirEspecial,
+      expiraSenhaDias: src.expiraSenhaDias,
+      quantidadeHistorico: src.quantidadeHistorico,
+      maxTentativasInvalidas: src.maxTentativasInvalidas,
+      ativo: src.ativo,
+      criadoEm: src.createdAt,
+      atualizadoEm: src.updatedAt,
+    };
   }
 }
