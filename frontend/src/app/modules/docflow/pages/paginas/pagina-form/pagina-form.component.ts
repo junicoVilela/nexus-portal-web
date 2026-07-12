@@ -1,4 +1,5 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,7 +29,6 @@ import { compactQueryParams, parseSortDirection, SortDirection } from '@shared/u
 import {
   PageHeaderComponent,
   ButtonComponent,
-  BadgeComponent,
   ConfirmService,
   SkeletonComponent,
   ToastService,
@@ -50,9 +50,10 @@ import { PaginaMetaFieldsComponent } from '@modules/docflow/components/pagina-me
   imports: [
     ReactiveFormsModule,
     DatePipe,
+    DecimalPipe,
+    LucideAngularModule,
     PageHeaderComponent,
     ButtonComponent,
-    BadgeComponent,
     SkeletonComponent,
     PaginaRichEditorComponent,
     PaginaRevisoesComponent,
@@ -443,6 +444,19 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
   get totalLinhasConteudo(): number {
     const conteudo = this.form.controls.conteudoHtml.value;
     return conteudo ? conteudo.split('\n').length : 0;
+  }
+
+  get editorModoLabel(): string {
+    switch (this.editorModo()) {
+      case 'rico':
+        return 'rico';
+      case 'codigo':
+        return 'código';
+      case 'preview':
+        return 'prévia';
+      case 'split':
+        return 'dividido';
+    }
   }
 
   alterarPaginaRevisoes(page: number): void {

@@ -57,13 +57,40 @@
 
       <div class="pf-editor">
         <div class="pf-editor-head">
-          <div>
-            <h3 class="pf-editor-title">Conteúdo HTML</h3>
-            <p class="pf-editor-sub">Edite o markup, insira blocos recorrentes e valide o resultado antes de salvar.</p>
+          <div class="pf-editor-headline">
+            <span class="pf-editor-badge" aria-hidden="true">
+              <lucide-icon name="Code" class="pf-editor-badge-icon" />
+            </span>
+            <div class="pf-editor-headline-text">
+              <span class="pf-editor-eyebrow">
+                <span class="pf-editor-dot"></span>
+                Editor · modo {{ editorModoLabel }}
+              </span>
+              <h3 class="pf-editor-title">Conteúdo HTML</h3>
+              <p class="pf-editor-sub">
+                Edite o markup, insira blocos recorrentes e valide o resultado antes de salvar.
+              </p>
+            </div>
           </div>
           <div class="pf-editor-stats">
-            <ui-badge tone="neutral">{{ totalCaracteresConteudo }} chars</ui-badge>
-            <ui-badge tone="neutral">{{ totalLinhasConteudo }} linhas</ui-badge>
+            <div class="pf-stat">
+              <span class="pf-stat-icon" aria-hidden="true">
+                <lucide-icon name="Zap" />
+              </span>
+              <div class="pf-stat-body">
+                <span class="pf-stat-value">{{ totalCaracteresConteudo | number: '1.0-0' }}</span>
+                <span class="pf-stat-label">caracteres</span>
+              </div>
+            </div>
+            <div class="pf-stat">
+              <span class="pf-stat-icon" aria-hidden="true">
+                <lucide-icon name="List" />
+              </span>
+              <div class="pf-stat-body">
+                <span class="pf-stat-value">{{ totalLinhasConteudo }}</span>
+                <span class="pf-stat-label">linhas</span>
+              </div>
+            </div>
           </div>
         </div>
         <app-pagina-editor-toolbar
