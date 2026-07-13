@@ -3,73 +3,144 @@ import { Routes } from '@angular/router';
 import { canDeactivateGuard } from '@shared/guards';
 import { ReleaseOrchestratorShellComponent } from './shell/release-orchestrator-shell.component';
 import { releaseResolver } from './resolvers/release.resolver';
-import { RfDashboardComponent } from './pages/dashboard/rf-dashboard.component';
-import { ReleaseBuilderComponent } from './pages/builder/release-builder.component';
-import { ReleasesListComponent } from './pages/releases/list/releases-list.component';
-import { ReleaseFormComponent } from './pages/releases/form/release-form.component';
-import { ReleaseDetalheComponent } from './pages/releases/detalhe/release-detalhe.component';
-import { ReleaseRevisaoComponent } from './pages/releases/revisao/release-revisao.component';
-import { RfProdutosComponent } from './pages/produtos/rf-produtos.component';
-import { ModulosProdutoComponent } from './pages/produtos/modulos/modulos-produto.component';
-import { ClientesListComponent } from './pages/clientes/clientes-list.component';
-import { ClienteFormComponent } from './pages/clientes/cliente-form.component';
-import { ClienteDetalheComponent } from './pages/clientes/cliente-detalhe/cliente-detalhe.component';
-import { ProximasEntregasListComponent } from './pages/proximas-entregas/proximas-entregas-list.component';
-import { ProximaEntregaFormComponent } from './pages/proximas-entregas/proxima-entrega-form.component';
-import { EntregasListComponent } from './pages/entregas/entregas-list.component';
-import { EntregaDetalheComponent } from './pages/entregas/entrega-detalhe/entrega-detalhe.component';
-import { EntregaWizardComponent } from './pages/entregas/entrega-wizard/entrega-wizard.component';
-import { EntregaDeltaComponent } from './pages/entregas/entrega-delta/entrega-delta.component';
-import { RfTemplatesComponent } from './pages/templates/rf-templates.component';
-import { RfGuiaComponent } from './pages/guia/rf-guia.component';
 
 export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
   {
     path: '',
     component: ReleaseOrchestratorShellComponent,
     children: [
-      { path: '', component: RfDashboardComponent },
-      { path: 'builder', component: ReleaseBuilderComponent },
-      { path: 'releases', component: ReleasesListComponent },
-      { path: 'releases/nova', component: ReleaseFormComponent, canDeactivate: [canDeactivateGuard] },
-      { path: 'releases/:id/editar', component: ReleaseFormComponent, canDeactivate: [canDeactivateGuard] },
-      { path: 'releases/:id', component: ReleaseDetalheComponent, resolve: { release: releaseResolver } },
       {
-        path: 'releases/:id/revisao',
-        component: ReleaseRevisaoComponent,
+        path: '',
+        loadComponent: () =>
+          import('./pages/dashboard/rf-dashboard.component').then(m => m.RfDashboardComponent),
+      },
+      {
+        path: 'builder',
+        loadComponent: () =>
+          import('./pages/builder/release-builder.component').then(m => m.ReleaseBuilderComponent),
+      },
+      {
+        path: 'releases',
+        loadComponent: () =>
+          import('./pages/releases/list/releases-list.component').then(m => m.ReleasesListComponent),
+      },
+      {
+        path: 'releases/nova',
+        loadComponent: () =>
+          import('./pages/releases/form/release-form.component').then(m => m.ReleaseFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'releases/:id/editar',
+        loadComponent: () =>
+          import('./pages/releases/form/release-form.component').then(m => m.ReleaseFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'releases/:id',
+        loadComponent: () =>
+          import('./pages/releases/detalhe/release-detalhe.component').then(m => m.ReleaseDetalheComponent),
         resolve: { release: releaseResolver },
       },
-      { path: 'produtos', component: RfProdutosComponent },
-      { path: 'produtos/:id/modulos', component: ModulosProdutoComponent },
-      { path: 'clientes', component: ClientesListComponent },
+      {
+        path: 'releases/:id/revisao',
+        loadComponent: () =>
+          import('./pages/releases/revisao/release-revisao.component').then(m => m.ReleaseRevisaoComponent),
+        resolve: { release: releaseResolver },
+      },
+      {
+        path: 'produtos',
+        loadComponent: () =>
+          import('./pages/produtos/rf-produtos.component').then(m => m.RfProdutosComponent),
+      },
+      {
+        path: 'produtos/:id/modulos',
+        loadComponent: () =>
+          import('./pages/produtos/modulos/modulos-produto.component').then(m => m.ModulosProdutoComponent),
+      },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./pages/clientes/clientes-list.component').then(m => m.ClientesListComponent),
+      },
       {
         path: 'clientes/novo',
-        component: ClienteFormComponent,
+        loadComponent: () =>
+          import('./pages/clientes/cliente-form.component').then(m => m.ClienteFormComponent),
         canDeactivate: [canDeactivateGuard],
       },
       {
         path: 'clientes/:id/editar',
-        component: ClienteFormComponent,
+        loadComponent: () =>
+          import('./pages/clientes/cliente-form.component').then(m => m.ClienteFormComponent),
         canDeactivate: [canDeactivateGuard],
       },
-      { path: 'clientes/:id', component: ClienteDetalheComponent },
-      { path: 'proximas-entregas', component: ProximasEntregasListComponent },
+      {
+        path: 'clientes/:id',
+        loadComponent: () =>
+          import('./pages/clientes/cliente-detalhe/cliente-detalhe.component').then(
+            m => m.ClienteDetalheComponent,
+          ),
+      },
+      {
+        path: 'proximas-entregas',
+        loadComponent: () =>
+          import('./pages/proximas-entregas/proximas-entregas-list.component').then(
+            m => m.ProximasEntregasListComponent,
+          ),
+      },
       {
         path: 'proximas-entregas/nova',
-        component: ProximaEntregaFormComponent,
+        loadComponent: () =>
+          import('./pages/proximas-entregas/proxima-entrega-form.component').then(
+            m => m.ProximaEntregaFormComponent,
+          ),
         canDeactivate: [canDeactivateGuard],
       },
       {
         path: 'proximas-entregas/:id/editar',
-        component: ProximaEntregaFormComponent,
+        loadComponent: () =>
+          import('./pages/proximas-entregas/proxima-entrega-form.component').then(
+            m => m.ProximaEntregaFormComponent,
+          ),
         canDeactivate: [canDeactivateGuard],
       },
-      { path: 'entregas', component: EntregasListComponent },
-      { path: 'entregas/nova', component: EntregaWizardComponent },
-      { path: 'entregas/:id/delta', component: EntregaDeltaComponent },
-      { path: 'entregas/:id', component: EntregaDetalheComponent },
-      { path: 'templates', component: RfTemplatesComponent },
-      { path: 'guia', component: RfGuiaComponent },
+      {
+        path: 'entregas',
+        loadComponent: () =>
+          import('./pages/entregas/entregas-list.component').then(m => m.EntregasListComponent),
+      },
+      {
+        path: 'entregas/nova',
+        loadComponent: () =>
+          import('./pages/entregas/entrega-wizard/entrega-wizard.component').then(
+            m => m.EntregaWizardComponent,
+          ),
+      },
+      {
+        path: 'entregas/:id/delta',
+        loadComponent: () =>
+          import('./pages/entregas/entrega-delta/entrega-delta.component').then(
+            m => m.EntregaDeltaComponent,
+          ),
+      },
+      {
+        path: 'entregas/:id',
+        loadComponent: () =>
+          import('./pages/entregas/entrega-detalhe/entrega-detalhe.component').then(
+            m => m.EntregaDetalheComponent,
+          ),
+      },
+      {
+        path: 'templates',
+        loadComponent: () =>
+          import('./pages/templates/rf-templates.component').then(m => m.RfTemplatesComponent),
+      },
+      {
+        path: 'guia',
+        loadComponent: () =>
+          import('./pages/guia/rf-guia.component').then(m => m.RfGuiaComponent),
+      },
     ],
   },
 ];

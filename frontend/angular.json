@@ -50,12 +50,6 @@
                 },
                 {
                   "type": "bundle",
-                  "name": "release-orchestrator-routes",
-                  "maximumWarning": "300kB",
-                  "maximumError": "450kB"
-                },
-                {
-                  "type": "bundle",
                   "name": "administracao-routes",
                   "maximumWarning": "80kB",
                   "maximumError": "150kB"
