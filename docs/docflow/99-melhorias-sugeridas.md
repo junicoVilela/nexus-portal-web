@@ -25,8 +25,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### A.4 Polling/SSE para publicações `GERANDO`
 
-- **Status**: ✅ polling via `setInterval` em `publicacoes-list` (`TIMINGS.publicacoesPollIntervalMs`).
-- **Melhoria futura**: SSE ou WebSocket.
+- **Status**: ✅ SSE autenticado como canal principal e polling visibility-aware como contingência.
 
 ### A.5 Diff visual entre revisões
 
@@ -75,6 +74,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - Backend expõe `/v3/api-docs` e `/swagger-ui`; o snapshot versionado gera tipos, SDK e
   cliente Angular com `@hey-api/openapi-ts` via `npm run api:generate`.
 - `npm run api:check` detecta divergência depois da geração em CI.
+- O domínio de templates já usa o SDK gerado; a migração dos demais services é incremental.
 
 ### B.2 Role guard nas rotas sensíveis
 
@@ -109,8 +109,8 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### C.2 Virtual scroll em listas longas de páginas
 
-- **Stack**: `@angular/cdk/scrolling`.
-- **Esforço**: M.
+- **Decisão**: listas administrativas permanecem paginadas no servidor e, portanto, mantêm
+  o DOM limitado. Virtual scroll fica reservado a um futuro catálogo sem paginação.
 
 ### C.3 Cache leve em services de leitura
 
@@ -118,8 +118,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### C.4 Debounce em busca global
 
-- **Estado**: verificar se já existe.
-- **Esforço**: S.
+- **Status**: ✅ `debounceTime(TIMINGS.searchDebounceMs)` e `distinctUntilChanged`.
 
 ---
 
@@ -161,7 +160,8 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - **Status**: ✅ fluxo editorial entregue.
 - Cenário stateful: criar cliente → projeto → módulo → página → prévia/aplicação de modelo
   → enviar revisão → aprovar → publicar.
-- **Melhoria futura**: acrescentar geração e download do pacote com backend real em CI.
+- **Status backend real**: ✅ `PublicacaoDownloadIntegrationTest` sobe PostgreSQL com
+  Testcontainers, gera uma publicação e valida downloads ZIP e PDF na suíte Maven do CI.
 
 ### E.4 A11y tests automatizados
 
@@ -173,7 +173,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### F.1 ESLint + Prettier
 
-- **Esforço**: S.
+- **Status**: ✅ lint sem avisos e geração formatada verificados no CI.
 
 ### F.2 Storybook para `shared/ui`
 

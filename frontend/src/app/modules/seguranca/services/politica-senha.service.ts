@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, of, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PoliticaSenha, PoliticaSenhaForm, ResultadoValidacaoSenha } from '../models/politica-senha.model';
 import { MockStore } from './mock/mock-store.service';

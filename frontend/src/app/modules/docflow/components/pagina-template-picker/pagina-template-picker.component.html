@@ -10,6 +10,19 @@
     </button>
   </div>
 
+  @if (templateMaisUsado(); as destaque) {
+    <aside class="template-picker__insight" aria-label="Indicadores de uso dos modelos">
+      <lucide-icon name="BarChart2" aria-hidden="true" />
+      <span
+        ><strong>{{ totalAplicacoes() }}</strong> páginas criadas com modelos</span
+      >
+      <span class="template-picker__insight-divider" aria-hidden="true"></span>
+      <span
+        >Mais usado: <strong>{{ destaque.nome }}</strong> ({{ destaque.paginasOriginadas || 0 }})</span
+      >
+    </aside>
+  }
+
   <div class="template-picker__filters" aria-label="Filtrar modelos por origem">
     <button
       type="button"

@@ -26,6 +26,7 @@ import {
   AmbientePadrao,
   Cliente,
   ConfigEntrega,
+  ConfigEntregaForm,
   Contato,
   PAPEL_CONTATO_LABELS,
   TIPO_BANCO_LABELS,
@@ -50,17 +51,11 @@ import {
   DominioProduto,
   FuncionalidadeProduto,
 } from '../../../models/funcionalidade.model';
-import {
-  ClienteProduto,
-  ClienteProdutoModulo,
-} from '../../../models/cliente-produto.model';
+import { ClienteProduto, ClienteProdutoModulo } from '../../../models/cliente-produto.model';
 import { Produto } from '../../../models/produto.model';
 import { ModuloProduto } from '../../../models/modulo-produto.model';
 import { ModuloProdutoService } from '../../../services/modulo-produto.service';
-import {
-  TIPO_MODULO_LABELS,
-  TIPO_MODULO_TONES,
-} from '../../../models/entrega-modulo.model';
+import { TIPO_MODULO_LABELS, TIPO_MODULO_TONES } from '../../../models/entrega-modulo.model';
 
 type Aba = 'geral' | 'contatos' | 'config-entrega' | 'produtos' | 'funcionalidades' | 'proximas-entregas';
 
@@ -182,8 +177,7 @@ export class ClienteDetalheComponent implements OnInit {
     };
   }
 
-  protected destinosDisponiveis: Array<'PASTA' | 'FTP' | 'SFTP' | 'BUCKET'> =
-    ['PASTA', 'FTP', 'SFTP', 'BUCKET'];
+  protected destinosDisponiveis: ('PASTA' | 'FTP' | 'SFTP' | 'BUCKET')[] = ['PASTA', 'FTP', 'SFTP', 'BUCKET'];
 
   protected readonly activeTab = signal<Aba>('geral');
 
@@ -316,7 +310,8 @@ export class ClienteDetalheComponent implements OnInit {
     this.carregandoFuncionalidades.set(true);
     const fontes = produtos.map(produto =>
       forkJoin({
-        dominios: this.funcionalidadeService.listarDominios(produto.produtoId)
+        dominios: this.funcionalidadeService
+          .listarDominios(produto.produtoId)
           .pipe(catchError(() => of([] as DominioProduto[]))),
         vinculos: this.funcionalidadeService
           .listarClienteFuncionalidades(this.clienteId, produto.produtoId)
@@ -356,10 +351,7 @@ export class ClienteDetalheComponent implements OnInit {
       .pipe(finalize(() => this.carregandoFuncionalidades.set(false)))
       .subscribe(resultados => {
         const matrizes: ProdutoMatriz[] = resultados.map(r => {
-          const total = r.dominios.reduce(
-            (acc, d) => acc + d.funcionalidades.length,
-            0,
-          );
+          const total = r.dominios.reduce((acc, d) => acc + d.funcionalidades.length, 0);
           const habilitadas = r.dominios.reduce(
             (acc, d) => acc + d.funcionalidades.filter(f => f.habilitada).length,
             0,
@@ -375,11 +367,7 @@ export class ClienteDetalheComponent implements OnInit {
       });
   }
 
-  protected toggleFuncionalidade(
-    produtoIdx: number,
-    dominioIdx: number,
-    funcIdx: number,
-  ): void {
+  protected toggleFuncionalidade(produtoIdx: number, dominioIdx: number, funcIdx: number): void {
     const matrizes = this.funcionalidadesPorProduto();
     const item = matrizes[produtoIdx].dominios[dominioIdx].funcionalidades[funcIdx];
     const novoEstado = !item.habilitada;
@@ -447,7 +435,7 @@ export class ClienteDetalheComponent implements OnInit {
   protected salvarConfig(): void {
     this.salvandoConfig.set(true);
     const f = this.configForm;
-    const payload: any = {
+    const payload: ConfigEntregaForm = {
       tipoDestino: f.tipoDestino,
       caminhoBase: f.caminhoBase || undefined,
       exigirAprovacao: f.exigirAprovacao,
@@ -465,8 +453,8 @@ export class ClienteDetalheComponent implements OnInit {
       payload.endpoint = f.endpoint || undefined;
       payload.regiao = f.regiao || undefined;
       payload.pathStyleAccess = f.pathStyleAccess;
-      payload.usuario = f.usuario || undefined;  // access key
-      if (f.senha) payload.senha = f.senha;       // secret key
+      payload.usuario = f.usuario || undefined; // access key
+      if (f.senha) payload.senha = f.senha; // secret key
     }
     this.configService.salvar(this.clienteId, payload).subscribe({
       next: cfg => {
@@ -528,9 +516,7 @@ export class ClienteDetalheComponent implements OnInit {
       .atualizar(this.clienteId, cp.id, { ambiente: cp.ambiente, ativo: !cp.ativo })
       .subscribe({
         next: upd => {
-          this.produtosContratados.update(list =>
-            list.map(x => (x.id === upd.id ? upd : x)),
-          );
+          this.produtosContratados.update(list => list.map(x => (x.id === upd.id ? upd : x)));
           this.alterandoProdutoId.set(null);
         },
         error: () => {
@@ -550,7 +536,9 @@ export class ClienteDetalheComponent implements OnInit {
     this.modulosExpandido.set([]);
     this.catalogoModulosExpandido.set([]);
     forkJoin({
-      catalogo: this.moduloProdutoService.listar(cp.produtoId).pipe(catchError(() => of([] as ModuloProduto[]))),
+      catalogo: this.moduloProdutoService
+        .listar(cp.produtoId)
+        .pipe(catchError(() => of([] as ModuloProduto[]))),
       modulos: this.clienteProdutoService
         .listarModulos(this.clienteId, cp.id)
         .pipe(catchError(() => of([] as ClienteProdutoModulo[]))),

@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MockStore } from './mock/mock-store.service';
 import { PoliticaSenhaService } from './politica-senha.service';
@@ -8,14 +10,20 @@ describe('PoliticaSenhaService', () => {
   let service: PoliticaSenhaService;
   let usuarios: UsuarioService;
   let store: MockStore;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     store = TestBed.inject(MockStore);
     store.reset();
     service = TestBed.inject(PoliticaSenhaService);
     usuarios = TestBed.inject(UsuarioService);
+    http = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => http.verify());
 
   it('validar() reporta violação de tamanho mínimo', () => {
     const politica = service.atualSync();
@@ -42,39 +50,21 @@ describe('PoliticaSenhaService', () => {
     expect(r.valido).toBe(true);
   });
 
-  it('reset rejeita senha reutilizada (histórico)', async () => {
-    // Endurece a política para o teste.
-    await firstValueFrom(
-      service.atualizar({
-        tamanhoMinimo: 4,
-        exigirMaiuscula: false,
-        exigirMinuscula: false,
-        exigirNumero: false,
-        exigirEspecial: false,
-        expiraSenhaDias: null,
-        quantidadeHistorico: 3,
-        maxTentativasInvalidas: 5,
-      }),
-    );
-    const userId = store.ADMIN_USER_ID;
-    await firstValueFrom(usuarios.resetarSenha(userId, 'primeira'));
-    await firstValueFrom(usuarios.resetarSenha(userId, 'segunda'));
-    await expectAsync(firstValueFrom(usuarios.resetarSenha(userId, 'primeira'))).toBeRejected();
+  it('propaga rejeição do backend para senha reutilizada', async () => {
+    const promise = firstValueFrom(usuarios.resetarSenha(store.ADMIN_USER_ID, 'primeira'));
+    http
+      .expectOne(`/api/v1/rbac/usuarios/${store.ADMIN_USER_ID}/alterar-senha`)
+      .flush({ message: 'Senha já utilizada.' }, { status: 409, statusText: 'Conflict' });
+
+    await expectAsync(promise).toBeRejected();
   });
 
-  it('reset rejeita senha que viola a política', async () => {
-    await firstValueFrom(
-      service.atualizar({
-        tamanhoMinimo: 8,
-        exigirMaiuscula: true,
-        exigirMinuscula: true,
-        exigirNumero: true,
-        exigirEspecial: true,
-        expiraSenhaDias: null,
-        quantidadeHistorico: 3,
-        maxTentativasInvalidas: 5,
-      }),
-    );
-    await expectAsync(firstValueFrom(usuarios.resetarSenha(store.ADMIN_USER_ID, 'abc'))).toBeRejected();
+  it('propaga rejeição do backend para senha que viola a política', async () => {
+    const promise = firstValueFrom(usuarios.resetarSenha(store.ADMIN_USER_ID, 'abc'));
+    http
+      .expectOne(`/api/v1/rbac/usuarios/${store.ADMIN_USER_ID}/alterar-senha`)
+      .flush({ message: 'Senha fora da política.' }, { status: 400, statusText: 'Bad Request' });
+
+    await expectAsync(promise).toBeRejected();
   });
 });

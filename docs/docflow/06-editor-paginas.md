@@ -227,3 +227,14 @@ fallback para o título.
 - ~~Menu `/` para localizar e inserir blocos por teclado~~ — entregue.
 - ~~Prévia contextual antes de aplicar um modelo~~ — entregue.
 - ~~Fluxo E2E de criação até publicação~~ — entregue com Playwright e mock HTTP stateful.
+
+## 12. Evolução do catálogo e desempenho
+
+- O catálogo apresenta total de páginas originadas e destaca o modelo mais utilizado.
+- O histórico permite selecionar duas versões e compará-las visualmente lado a lado antes
+  de restaurar uma versão antiga.
+- As operações de template usam o cliente TypeScript gerado pelo contrato OpenAPI canônico
+  `/api/v1/docflow`; os demais services serão migrados domínio a domínio.
+- Cada tela do DocFlow é carregada por `loadComponent`, evitando o antigo chunk único das rotas.
+- Publicações em processamento são atualizadas por SSE autenticado; polling permanece como
+  contingência quando o stream estiver indisponível ou a aba recuperar conectividade.

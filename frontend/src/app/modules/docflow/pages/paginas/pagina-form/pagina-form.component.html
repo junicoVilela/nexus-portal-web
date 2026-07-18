@@ -130,18 +130,54 @@
                         originada(s)
                       </small>
                     </span>
-                    @if (
-                      podeEditarTemplate() &&
-                      templateHistorico()!.personalizado &&
-                      versao.numero !== templateHistorico()!.versaoAtual
-                    ) {
-                      <button type="button" (click)="restaurarVersaoTemplate(versao)">Restaurar</button>
-                    } @else if (versao.numero === templateHistorico()!.versaoAtual) {
-                      <em>Atual</em>
-                    }
+                    <span class="pf-template-history__actions">
+                      <button
+                        type="button"
+                        [class.is-selected]="
+                          versaoComparacaoA() === versao.numero || versaoComparacaoB() === versao.numero
+                        "
+                        (click)="selecionarVersaoComparacao(versao)"
+                      >
+                        {{
+                          versaoComparacaoA() === versao.numero
+                            ? 'Comparação A'
+                            : versaoComparacaoB() === versao.numero
+                              ? 'Comparação B'
+                              : 'Comparar'
+                        }}
+                      </button>
+                      @if (
+                        podeEditarTemplate() &&
+                        templateHistorico()!.personalizado &&
+                        versao.numero !== templateHistorico()!.versaoAtual
+                      ) {
+                        <button type="button" (click)="restaurarVersaoTemplate(versao)">Restaurar</button>
+                      } @else if (versao.numero === templateHistorico()!.versaoAtual) {
+                        <em>Atual</em>
+                      }
+                    </span>
                   </article>
                 }
               </div>
+              @if (versoesEmComparacao(); as comparacao) {
+                @if (comparacao.a || comparacao.b) {
+                  <div class="pf-template-history__comparison" aria-label="Comparação visual de versões">
+                    @for (item of [comparacao.a, comparacao.b]; track $index) {
+                      <article>
+                        <header>
+                          <strong>{{ $index === 0 ? 'Versão A' : 'Versão B' }}</strong>
+                          <span>{{ item ? 'v' + item.numero : 'Selecione uma versão' }}</span>
+                        </header>
+                        @if (item) {
+                          <div class="pf-template-history__preview" [innerHTML]="item.conteudoHtml"></div>
+                        } @else {
+                          <p>Use “Comparar” no histórico para preencher este lado.</p>
+                        }
+                      </article>
+                    }
+                  </div>
+                }
+              }
             }
           </section>
         }

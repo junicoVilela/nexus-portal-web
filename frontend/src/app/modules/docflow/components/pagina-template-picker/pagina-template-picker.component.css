@@ -66,6 +66,36 @@
   margin-bottom: 14px;
 }
 
+.template-picker__insight {
+  display: flex;
+  min-height: 38px;
+  margin: -4px 0 14px;
+  padding: 8px 12px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.template-picker__insight lucide-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+
+.template-picker__insight strong {
+  color: var(--text);
+}
+
+.template-picker__insight-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+}
+
 .template-picker__filter-spacer {
   flex: 1 1 auto;
 }

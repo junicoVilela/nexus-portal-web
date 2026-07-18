@@ -1,10 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PaginaService } from './pagina.service';
 import { Pagina, PaginaAnexo } from '../models/pagina.model';
 
 const BASE = '/api/doc-flow';
+const GENERATED_BASE = '/api/v1/docflow';
+const TEMPLATE = { id: 't1', codigo: 'FAQ', nome: 'FAQ', conteudoHtml: '<h2>FAQ</h2>', ordem: 1 };
 
 describe('PaginaService', () => {
   let service: PaginaService;
@@ -34,41 +36,52 @@ describe('PaginaService', () => {
     http.expectOne(`${BASE}/paginas/pg1`).flush({} as Pagina);
   });
 
-  it('templatesPagina() lista os modelos ativos', () => {
+  it('templatesPagina() lista os modelos ativos', fakeAsync(() => {
     service.templatesPagina().subscribe(templates => expect(templates.length).toBe(1));
-    const req = http.expectOne(`${BASE}/paginas/templates`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/templates`);
     expect(req.request.method).toBe('GET');
-    req.flush([{ id: 't1', codigo: 'FAQ', nome: 'FAQ', conteudoHtml: '<h2>FAQ</h2>', ordem: 1 }]);
-  });
+    req.flush([TEMPLATE]);
+    tick();
+  }));
 
-  it('templatesPagina() envia contexto e opção de arquivados', () => {
+  it('templatesPagina() envia contexto e opção de arquivados', fakeAsync(() => {
     service
       .templatesPagina({ projetoId: 'projeto-1', somenteContexto: true, incluirArquivados: true })
       .subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/paginas/templates`);
-    expect(req.request.params.get('projetoId')).toBe('projeto-1');
-    expect(req.request.params.get('somenteContexto')).toBe('true');
-    expect(req.request.params.get('incluirArquivados')).toBe('true');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas/templates?`));
+    expect(req.request.url).toContain('projetoId=projeto-1');
+    expect(req.request.url).toContain('somenteContexto=true');
+    expect(req.request.url).toContain('incluirArquivados=true');
     req.flush([]);
-  });
+    tick();
+  }));
 
-  it('reutiliza o catálogo em cache e invalida após mutação', () => {
+  it('reutiliza o catálogo em cache e invalida após mutação', fakeAsync(() => {
     service.templatesPagina({ projetoId: 'projeto-1' }).subscribe();
-    http.expectOne(r => r.url === `${BASE}/paginas/templates`).flush([]);
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas/templates?`)).flush([]);
+    tick();
 
     service.templatesPagina({ projetoId: 'projeto-1' }).subscribe();
-    http.expectNone(r => r.url === `${BASE}/paginas/templates`);
+    tick();
+    http.expectNone(r => r.url.startsWith(`${GENERATED_BASE}/paginas/templates?`));
 
     service
       .criarTemplatePagina({ nome: 'Novo', conteudoHtml: '<p>Novo</p>', projetoId: 'projeto-1' })
       .subscribe();
-    http.expectOne(`${BASE}/paginas/templates`).flush({});
+    tick();
+    http.expectOne(`${GENERATED_BASE}/paginas/templates`).flush(TEMPLATE);
+    tick();
 
     service.templatesPagina({ projetoId: 'projeto-1' }).subscribe();
-    http.expectOne(r => r.url === `${BASE}/paginas/templates`).flush([]);
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas/templates?`)).flush([]);
+    tick();
+  }));
 
-  it('cria e exclui modelos personalizados', () => {
+  it('cria e exclui modelos personalizados', fakeAsync(() => {
     service
       .criarTemplatePagina({
         nome: 'Cadastro padrão',
@@ -76,23 +89,29 @@ describe('PaginaService', () => {
         projetoId: 'projeto-1',
       })
       .subscribe();
-    const criar = http.expectOne(`${BASE}/paginas/templates`);
+    tick();
+    const criar = http.expectOne(`${GENERATED_BASE}/paginas/templates`);
     expect(criar.request.method).toBe('POST');
     expect(criar.request.body.projetoId).toBe('projeto-1');
-    criar.flush({});
+    criar.flush(TEMPLATE);
+    tick();
 
     service.excluirTemplatePagina('template-1').subscribe();
-    const excluir = http.expectOne(`${BASE}/paginas/templates/template-1`);
+    tick();
+    const excluir = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1`);
     expect(excluir.request.method).toBe('DELETE');
     excluir.flush(null);
-  });
+    tick();
+  }));
 
-  it('gerencia aplicação, edição, duplicação, ciclo de vida e versões dos modelos', () => {
+  it('gerencia aplicação, edição, duplicação, ciclo de vida e versões dos modelos', fakeAsync(() => {
     service.aplicarTemplatePagina('template-1', { projetoId: 'projeto-1', titulo: 'Cadastro' }).subscribe();
-    const aplicar = http.expectOne(`${BASE}/paginas/templates/template-1/aplicar`);
+    tick();
+    const aplicar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/aplicar`);
     expect(aplicar.request.method).toBe('POST');
     expect(aplicar.request.body.titulo).toBe('Cadastro');
-    aplicar.flush({});
+    aplicar.flush({ templateId: 'template-1', versao: 1, conteudoHtml: '<p>Cadastro</p>' });
+    tick();
 
     service
       .atualizarTemplatePagina('template-1', {
@@ -101,32 +120,44 @@ describe('PaginaService', () => {
         projetoId: 'projeto-1',
       })
       .subscribe();
-    const atualizar = http.expectOne(`${BASE}/paginas/templates/template-1`);
+    tick();
+    const atualizar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1`);
     expect(atualizar.request.method).toBe('PUT');
-    atualizar.flush({});
+    atualizar.flush(TEMPLATE);
+    tick();
 
     service.duplicarTemplatePagina('template-1', { nome: 'Cópia', projetoId: 'projeto-1' }).subscribe();
-    const duplicar = http.expectOne(`${BASE}/paginas/templates/template-1/duplicar`);
+    tick();
+    const duplicar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/duplicar`);
     expect(duplicar.request.method).toBe('POST');
-    duplicar.flush({});
+    duplicar.flush(TEMPLATE);
+    tick();
 
     service.arquivarTemplatePagina('template-1').subscribe();
-    const arquivar = http.expectOne(`${BASE}/paginas/templates/template-1/arquivar`);
+    tick();
+    const arquivar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/arquivar`);
     expect(arquivar.request.method).toBe('POST');
-    arquivar.flush({});
+    arquivar.flush(TEMPLATE);
+    tick();
     service.reativarTemplatePagina('template-1').subscribe();
-    const reativar = http.expectOne(`${BASE}/paginas/templates/template-1/reativar`);
+    tick();
+    const reativar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/reativar`);
     expect(reativar.request.method).toBe('POST');
-    reativar.flush({});
+    reativar.flush(TEMPLATE);
+    tick();
     service.versoesTemplatePagina('template-1').subscribe();
-    const versoes = http.expectOne(`${BASE}/paginas/templates/template-1/versoes`);
+    tick();
+    const versoes = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/versoes`);
     expect(versoes.request.method).toBe('GET');
     versoes.flush([]);
+    tick();
     service.restaurarVersaoTemplatePagina('template-1', 2).subscribe();
-    const restaurar = http.expectOne(`${BASE}/paginas/templates/template-1/versoes/2/restaurar`);
+    tick();
+    const restaurar = http.expectOne(`${GENERATED_BASE}/paginas/templates/template-1/versoes/2/restaurar`);
     expect(restaurar.request.method).toBe('POST');
-    restaurar.flush({});
-  });
+    restaurar.flush(TEMPLATE);
+    tick();
+  }));
 
   it('autosavePagina() atualiza o rascunho no endpoint dedicado', () => {
     service.autosavePagina('pg1', { titulo: 'Página', version: 2 }).subscribe();

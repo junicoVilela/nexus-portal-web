@@ -15,6 +15,48 @@ export class PublicacaoService {
 
   constructor(private readonly http: HttpClient) {}
 
+  eventosPublicacao(): Observable<{
+    id: string;
+    clienteId: string;
+    status: 'GERANDO' | 'SUCESSO' | 'ERRO';
+    versao: string;
+  }> {
+    return new Observable(observer => {
+      const controller = new AbortController();
+      const token = localStorage.getItem('doc-flow-jwt');
+      const authorization = token ? `Bearer ${token}` : null;
+      void fetch(`${this.base}/publicacoes/eventos`, {
+        signal: controller.signal,
+        headers: authorization ? { Authorization: authorization } : {},
+      })
+        .then(async response => {
+          if (!response.ok || !response.body) {
+            throw new Error(`Stream de publicações indisponível (${response.status}).`);
+          }
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          while (!controller.signal.aborted) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const eventos = buffer.split(/\r?\n\r?\n/);
+            buffer = eventos.pop() ?? '';
+            for (const evento of eventos) {
+              const tipo = evento.match(/^event:\s*(.+)$/m)?.[1];
+              const dados = evento.match(/^data:\s*(.+)$/m)?.[1];
+              if (tipo === 'publicacao' && dados) observer.next(JSON.parse(dados));
+            }
+          }
+          if (!controller.signal.aborted) observer.complete();
+        })
+        .catch(error => {
+          if (!controller.signal.aborted) observer.error(error);
+        });
+      return () => controller.abort();
+    });
+  }
+
   listarPublicacoes(
     params: { clienteId?: string; sort?: string; dir?: SortDirection; page?: number; size?: number } = {},
   ): Observable<PageResult<Publicacao>> {

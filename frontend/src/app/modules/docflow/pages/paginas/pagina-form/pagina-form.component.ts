@@ -142,6 +142,12 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
   protected readonly templateEmEdicao = signal<PaginaTemplate | null>(null);
   protected readonly templateHistorico = signal<PaginaTemplate | null>(null);
   protected readonly templateVersoes = signal<PaginaTemplateVersao[]>([]);
+  protected readonly versaoComparacaoA = signal<number | null>(null);
+  protected readonly versaoComparacaoB = signal<number | null>(null);
+  protected readonly versoesEmComparacao = computed(() => ({
+    a: this.templateVersoes().find(item => item.numero === this.versaoComparacaoA()),
+    b: this.templateVersoes().find(item => item.numero === this.versaoComparacaoB()),
+  }));
   protected readonly templatePreview = signal<{
     template: PaginaTemplate;
     aplicado: PaginaTemplateAplicada;
@@ -902,6 +908,8 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
     this.paginaService.versoesTemplatePagina(template.id).subscribe({
       next: versoes => {
         this.templateVersoes.set(versoes);
+        this.versaoComparacaoA.set(versoes[0]?.numero ?? null);
+        this.versaoComparacaoB.set(versoes[1]?.numero ?? null);
         this.carregandoVersoesTemplate.set(false);
       },
       error: error => {
@@ -909,6 +917,25 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
         this.toast.error(this.mensagemErro(error, 'Erro ao carregar versões do modelo.'));
       },
     });
+  }
+
+  selecionarVersaoComparacao(versao: PaginaTemplateVersao): void {
+    if (this.versaoComparacaoA() === versao.numero) {
+      this.versaoComparacaoA.set(null);
+      return;
+    }
+    if (this.versaoComparacaoB() === versao.numero) {
+      this.versaoComparacaoB.set(null);
+      return;
+    }
+    if (this.versaoComparacaoA() === null) {
+      this.versaoComparacaoA.set(versao.numero);
+    } else if (this.versaoComparacaoB() === null) {
+      this.versaoComparacaoB.set(versao.numero);
+    } else {
+      this.versaoComparacaoA.set(this.versaoComparacaoB());
+      this.versaoComparacaoB.set(versao.numero);
+    }
   }
 
   async restaurarVersaoTemplate(versao: PaginaTemplateVersao): Promise<void> {

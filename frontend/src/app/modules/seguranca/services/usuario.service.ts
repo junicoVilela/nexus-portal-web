@@ -37,13 +37,16 @@ export class UsuarioService {
   private readonly base = `${environment.rbacApiUrl}/usuarios`;
 
   listar(filter: UsuarioFilter = {}): Observable<PageResult<Usuario>> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('page', String(filter.page ?? 1))
       .set('size', String(filter.size ?? 20));
     return this.http.get<PageResult<BackendUsuarioResponse>>(this.base, { params }).pipe(
       map(res => ({
         ...res,
-        items: this.aplicarFiltrosClient(res.items.map(u => this.mapear(u)), filter),
+        items: this.aplicarFiltrosClient(
+          res.items.map(u => this.mapear(u)),
+          filter,
+        ),
       })),
     );
   }
@@ -79,13 +82,15 @@ export class UsuarioService {
   alterarStatus(id: string, ativo: boolean): Observable<Usuario> {
     // Backend não tem PATCH dedicado; reaproveita o PUT com o payload atual.
     return this.buscarPorId(id).pipe(
-      switchMap(atual => this.http
-        .put<BackendUsuarioResponse>(`${this.base}/${id}`, {
-          nome: atual.nome,
-          email: atual.email,
-          ativo,
-        })
-        .pipe(map(u => this.mapear(u)))),
+      switchMap(atual =>
+        this.http
+          .put<BackendUsuarioResponse>(`${this.base}/${id}`, {
+            nome: atual.nome,
+            email: atual.email,
+            ativo,
+          })
+          .pipe(map(u => this.mapear(u))),
+      ),
     );
   }
 
@@ -138,10 +143,11 @@ export class UsuarioService {
     let out = lista;
     if (filter.q) {
       const q = filter.q.toLowerCase();
-      out = out.filter(u =>
-        u.nome.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.login.toLowerCase().includes(q),
+      out = out.filter(
+        u =>
+          u.nome.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q) ||
+          u.login.toLowerCase().includes(q),
       );
     }
     if (filter.ativo !== undefined) out = out.filter(u => u.ativo === filter.ativo);

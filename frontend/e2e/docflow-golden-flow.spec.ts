@@ -197,8 +197,16 @@ async function instalarApiDocFlow(
       return responder(modulo, 201);
     }
 
-    if (path === '/api/doc-flow/paginas/templates' && method === 'GET') return responder([TEMPLATE]);
-    if (path === `/api/doc-flow/paginas/templates/${TEMPLATE.id}/aplicar` && method === 'POST') {
+    if (
+      (path === '/api/doc-flow/paginas/templates' || path === '/api/v1/docflow/paginas/templates') &&
+      method === 'GET'
+    )
+      return responder([TEMPLATE]);
+    if (
+      (path === `/api/doc-flow/paginas/templates/${TEMPLATE.id}/aplicar` ||
+        path === `/api/v1/docflow/paginas/templates/${TEMPLATE.id}/aplicar`) &&
+      method === 'POST'
+    ) {
       const body = await jsonDaRota(route);
       const projeto = estado.projetos.find(item => item.id === body['projetoId']);
       const modulo = estado.modulos.find(item => item.id === body['moduloId']);

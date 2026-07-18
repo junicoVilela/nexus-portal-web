@@ -115,9 +115,7 @@ export class AuditoriaService {
   listar(filter: AuditoriaFilter = {}): Observable<PageResult<Auditoria>> {
     const page = filter.page ?? 1;
     const size = filter.size ?? 20;
-    let params = new HttpParams()
-      .set('page', String(page))
-      .set('size', String(size));
+    const params = new HttpParams().set('page', String(page)).set('size', String(size));
     // Ordenação default (mais recentes primeiro) já é o comportamento do backend.
     return this.http.get<PageResult<BackendAuditoriaResponse>>(`${this.base}/auditoria`, { params }).pipe(
       map(res => this.combinarComLocal(res, filter)),
@@ -168,9 +166,7 @@ export class AuditoriaService {
     if (filter.resultado) out = out.filter(a => a.resultado === filter.resultado);
     if (filter.q) {
       const q = filter.q.toLowerCase();
-      out = out.filter(
-        a => a.acao.toLowerCase().includes(q) || (a.mensagem ?? '').toLowerCase().includes(q),
-      );
+      out = out.filter(a => a.acao.toLowerCase().includes(q) || (a.mensagem ?? '').toLowerCase().includes(q));
     }
     if (filter.inicio) {
       const inicio = new Date(filter.inicio + 'T00:00:00').getTime();

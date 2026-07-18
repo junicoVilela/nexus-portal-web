@@ -1,14 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { forkJoin, from, of, switchMap } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 import { CanDeactivateComponent } from '@shared/guards';
 import { BadgeComponent, ButtonComponent, PageHeaderComponent, ToastService } from '@shared/ui';
@@ -111,7 +105,7 @@ export class ClienteFormComponent implements OnInit, CanDeactivateComponent {
       this.fb.group({
         id: [c?.id ?? null],
         nome: [c?.nome ?? '', [Validators.required, Validators.maxLength(200)]],
-        papel: [c?.papel ?? 'TECNICO' as PapelContato, Validators.required],
+        papel: [c?.papel ?? ('TECNICO' as PapelContato), Validators.required],
         email: [c?.email ?? '', [Validators.required, Validators.email, Validators.maxLength(200)]],
         telefone: [c?.telefone ?? '', [Validators.maxLength(40)]],
       }),
@@ -190,20 +184,18 @@ export class ClienteFormComponent implements OnInit, CanDeactivateComponent {
       ? this.clienteService.atualizar(id, clienteForm)
       : this.clienteService.criar(clienteForm);
 
-    persistirCliente$
-      .pipe(switchMap(cliente => this.sincronizarContatos(cliente)))
-      .subscribe({
-        next: cliente => {
-          this.salvando.set(false);
-          this.toast.success(id ? 'Cliente atualizado.' : 'Cliente cadastrado.');
-          this.form.markAsPristine();
-          this.router.navigate(['/release-orchestrator/clientes', cliente.id]);
-        },
-        error: () => {
-          this.salvando.set(false);
-          this.toast.error('Erro ao salvar cliente. Verifique sigla e CNPJ únicos.');
-        },
-      });
+    persistirCliente$.pipe(switchMap(cliente => this.sincronizarContatos(cliente))).subscribe({
+      next: cliente => {
+        this.salvando.set(false);
+        this.toast.success(id ? 'Cliente atualizado.' : 'Cliente cadastrado.');
+        this.form.markAsPristine();
+        this.router.navigate(['/release-orchestrator/clientes', cliente.id]);
+      },
+      error: () => {
+        this.salvando.set(false);
+        this.toast.error('Erro ao salvar cliente. Verifique sigla e CNPJ únicos.');
+      },
+    });
   }
 
   /**
@@ -214,13 +206,13 @@ export class ClienteFormComponent implements OnInit, CanDeactivateComponent {
    * Retorna o cliente atualizado pra navegação.
    */
   private sincronizarContatos(cliente: Cliente) {
-    const formValues = this.contatosArray.getRawValue() as Array<{
+    const formValues = this.contatosArray.getRawValue() as {
       id: string | null;
       nome: string;
       papel: PapelContato;
       email: string;
       telefone: string;
-    }>;
+    }[];
     const originais = this.contatosOriginais();
     const idsAtuais = new Set(formValues.filter(c => c.id).map(c => c.id!));
     const removidos = originais.filter(o => !idsAtuais.has(o.id));

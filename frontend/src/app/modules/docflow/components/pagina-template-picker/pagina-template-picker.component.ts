@@ -43,6 +43,12 @@ export class PaginaTemplatePickerComponent {
   readonly arquivadosAlterado = output<boolean>();
   readonly fechado = output<void>();
   readonly filtro = signal<TemplateFiltro>('TODOS');
+  readonly totalAplicacoes = computed(() =>
+    this.templates().reduce((total, template) => total + (template.paginasOriginadas ?? 0), 0),
+  );
+  readonly templateMaisUsado = computed(
+    () => [...this.templates()].sort((a, b) => (b.paginasOriginadas ?? 0) - (a.paginasOriginadas ?? 0))[0],
+  );
   readonly templatesVisiveis = computed(() => {
     const filtro = this.filtro();
     if (filtro === 'SISTEMA') return this.templates().filter(template => !template.personalizado);

@@ -42,6 +42,11 @@ cliente Angular em `frontend/src/app/api/generated/` por `npm run api:generate`.
 `e2e/docflow-golden-flow.spec.ts` cobre criação estrutural, prévia, workflow editorial,
 permissões, axe/WCAG e layout mobile sem depender de backend real.
 
+As operações do catálogo de templates já consomem o SDK OpenAPI gerado. A listagem de
+publicações acompanha `GET /publicacoes/eventos` por SSE autenticado e cai para polling
+visibilidade-aware quando o stream não está disponível. O catálogo exibe indicadores de uso,
+e o histórico oferece comparação visual entre duas versões.
+
 ## Estrutura atual
 
 Implementado em `src/app/modules/docflow/` (renomeado de `manual-usuario` em 2026-06-09):
@@ -117,6 +122,7 @@ DELETE         /publicacoes/:id
 GET            /publicacoes/preview | /preview-html | /diagnostico
 POST           /publicacoes/:id/reprocessar
 GET            /publicacoes/:id/download | /download-pdf | /download-token | /changelog
+GET            /publicacoes/eventos (SSE)
 GET            /preview-tokens
 POST/DELETE    /preview-tokens
 GET            /paginas/resumo-por-status

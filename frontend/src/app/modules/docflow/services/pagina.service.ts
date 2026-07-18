@@ -1,11 +1,28 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { map, Observable, shareReplay, tap } from 'rxjs';
+import { Injectable, Injector } from '@angular/core';
+import { defer, map, Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
+import {
+  aplicarTemplate,
+  arquivarTemplate,
+  atualizarTemplate,
+  criarTemplate,
+  duplicarTemplate,
+  excluirTemplate,
+  reativarTemplate,
+  restaurarVersaoTemplate,
+  templates,
+  versoesTemplate,
+} from '../../../api/generated/sdk.gen';
+import type {
+  PaginaTemplateAplicacaoResponse,
+  PaginaTemplateResponse,
+  PaginaTemplateVersaoResponse,
+} from '../../../api/generated/types.gen';
 import {
   Pagina,
   PaginaAnexo,
@@ -28,7 +45,10 @@ export class PaginaService {
     { expiresAt: number; request: Observable<PaginaTemplate[]> }
   >();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly injector: Injector,
+  ) {}
 
   listarPaginas(
     filtros: {
@@ -84,11 +104,10 @@ export class PaginaService {
     const cache = this.templatesCache.get(chave);
     if (cache && cache.expiresAt > agora) return cache.request;
 
-    const request = this.http
-      .get<PaginaTemplate[]>(`${this.base}/paginas/templates`, {
-        params: buildQueryParams(filtros),
-      })
-      .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    const request = defer(() => templates({ query: filtros, injector: this.injector })).pipe(
+      map(resposta => resposta.data.map(item => this.mapearTemplate(item))),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
     this.templatesCache.set(chave, {
       expiresAt: agora + TIMINGS.serviceCacheTtlMs,
       request,
@@ -97,57 +116,139 @@ export class PaginaService {
   }
 
   criarTemplatePagina(payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
-    return this.http
-      .post<PaginaTemplate>(`${this.base}/paginas/templates`, payload)
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() => criarTemplate({ body: payload, injector: this.injector })).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   excluirTemplatePagina(id: string): Observable<void> {
-    return this.http
-      .delete<void>(`${this.base}/paginas/templates/${id}`)
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() => excluirTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+      map(() => undefined),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   atualizarTemplatePagina(id: string, payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
-    return this.http
-      .put<PaginaTemplate>(`${this.base}/paginas/templates/${id}`, payload)
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() =>
+      atualizarTemplate({
+        path: { templateId: id },
+        body: payload,
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   duplicarTemplatePagina(id: string, payload: PaginaTemplateDuplicacao): Observable<PaginaTemplate> {
-    return this.http
-      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/duplicar`, payload)
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() =>
+      duplicarTemplate({
+        path: { templateId: id },
+        body: payload,
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   aplicarTemplatePagina(id: string, payload: PaginaTemplateAplicacao): Observable<PaginaTemplateAplicada> {
-    return this.http.post<PaginaTemplateAplicada>(`${this.base}/paginas/templates/${id}/aplicar`, payload);
+    return defer(() =>
+      aplicarTemplate({
+        path: { templateId: id },
+        body: payload,
+        injector: this.injector,
+      }),
+    ).pipe(map(resposta => this.mapearAplicacaoTemplate(resposta.data)));
   }
 
   arquivarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return this.http
-      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/arquivar`, {})
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() => arquivarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   reativarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return this.http
-      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/reativar`, {})
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() => reativarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   versoesTemplatePagina(id: string): Observable<PaginaTemplateVersao[]> {
-    return this.http.get<PaginaTemplateVersao[]>(`${this.base}/paginas/templates/${id}/versoes`);
+    return defer(() => versoesTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+      map(resposta => resposta.data.map(item => this.mapearVersaoTemplate(item))),
+    );
   }
 
   restaurarVersaoTemplatePagina(id: string, numero: number): Observable<PaginaTemplate> {
-    return this.http
-      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/versoes/${numero}/restaurar`, {})
-      .pipe(tap(() => this.invalidarCacheTemplates()));
+    return defer(() =>
+      restaurarVersaoTemplate({
+        path: { templateId: id, numero },
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta => this.mapearTemplate(resposta.data)),
+      tap(() => this.invalidarCacheTemplates()),
+    );
   }
 
   private invalidarCacheTemplates(): void {
     this.templatesCache.clear();
+  }
+
+  private mapearTemplate(resposta: PaginaTemplateResponse): PaginaTemplate {
+    return {
+      id: this.campoObrigatorio(resposta.id, 'id'),
+      codigo: this.campoObrigatorio(resposta.codigo, 'codigo'),
+      nome: this.campoObrigatorio(resposta.nome, 'nome'),
+      descricao: resposta.descricao,
+      conteudoHtml: this.campoObrigatorio(resposta.conteudoHtml, 'conteudoHtml'),
+      ordem: resposta.ordem ?? 0,
+      ativo: resposta.ativo,
+      personalizado: resposta.personalizado,
+      versaoAtual: resposta.versaoAtual,
+      paginasOriginadas: resposta.paginasOriginadas,
+      projetoId: resposta.projetoId,
+      projetoNome: resposta.projetoNome,
+      clienteId: resposta.clienteId,
+      clienteNome: resposta.clienteNome,
+    };
+  }
+
+  private mapearAplicacaoTemplate(resposta: PaginaTemplateAplicacaoResponse): PaginaTemplateAplicada {
+    return {
+      templateId: this.campoObrigatorio(resposta.templateId, 'templateId'),
+      versao: resposta.versao ?? 1,
+      conteudoHtml: this.campoObrigatorio(resposta.conteudoHtml, 'conteudoHtml'),
+      variaveisResolvidas: resposta.variaveisResolvidas ?? {},
+      variaveisPendentes: resposta.variaveisPendentes ?? [],
+    };
+  }
+
+  private mapearVersaoTemplate(resposta: PaginaTemplateVersaoResponse): PaginaTemplateVersao {
+    return {
+      id: this.campoObrigatorio(resposta.id, 'id'),
+      numero: resposta.numero ?? 1,
+      nome: this.campoObrigatorio(resposta.nome, 'nome'),
+      descricao: resposta.descricao,
+      conteudoHtml: this.campoObrigatorio(resposta.conteudoHtml, 'conteudoHtml'),
+      ativo: resposta.ativo ?? true,
+      projetoId: resposta.projetoId,
+      clienteId: resposta.clienteId,
+      paginasOriginadas: resposta.paginasOriginadas ?? 0,
+      createdAt: this.campoObrigatorio(resposta.createdAt, 'createdAt'),
+      createdBy: resposta.createdBy,
+    };
+  }
+
+  private campoObrigatorio(valor: string | undefined, campo: string): string {
+    if (valor === undefined) throw new Error(`Contrato inválido de template: campo ${campo} ausente.`);
+    return valor;
   }
 
   salvarPagina(payload: Partial<Pagina>, id?: string): Observable<Pagina> {

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { TIMINGS } from '@core/config/timings';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
@@ -47,6 +47,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
   protected readonly loadingHistory = signal(false);
   protected readonly excluindoId = signal<string | null>(null);
   private refreshTimer?: number;
+  private eventosSubscription?: Subscription;
 
   constructor(
     private readonly publicacaoService: PublicacaoService,
@@ -70,13 +71,23 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
       this.publicacoesPageSize.set(parsePositiveInt(params.get('size'), persistidos?.pageSize ?? 10));
       this.carregar();
     });
-    this.refreshTimer = window.setInterval(() => {
-      if (this.publicacoes().some(item => item.status === 'GERANDO')) this.carregar();
-    }, TIMINGS.publicacoesPollIntervalMs);
+    this.eventosSubscription = this.publicacaoService.eventosPublicacao().subscribe({
+      next: () => this.carregar(),
+      error: () => this.ativarPollingReserva(),
+      complete: () => this.ativarPollingReserva(),
+    });
   }
 
   ngOnDestroy(): void {
     if (this.refreshTimer) window.clearInterval(this.refreshTimer);
+    this.eventosSubscription?.unsubscribe();
+  }
+
+  private ativarPollingReserva(): void {
+    if (this.refreshTimer) return;
+    this.refreshTimer = window.setInterval(() => {
+      if (!document.hidden && this.publicacoes().some(item => item.status === 'GERANDO')) this.carregar();
+    }, TIMINGS.publicacoesPollIntervalMs);
   }
 
   carregar(): void {

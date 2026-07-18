@@ -46,14 +46,14 @@ describe('ClienteService', () => {
   });
 
   it('criar() POSTa o body', () => {
-    service.criar({ nome: 'ACME', sigla: 'ACME', ambientePadrao: 'PROD' } as any).subscribe();
+    service.criar({ nome: 'ACME', sigla: 'ACME', ambientePadrao: 'PROD' }).subscribe();
     const req = http.expectOne(r => r.method === 'POST' && r.url === BASE);
     expect(req.request.body).toEqual({ nome: 'ACME', sigla: 'ACME', ambientePadrao: 'PROD' });
     req.flush({});
   });
 
   it('atualizar() faz PUT', () => {
-    service.atualizar('cli-1', { nome: 'X', sigla: 'X', ambientePadrao: 'HOM' } as any).subscribe();
+    service.atualizar('cli-1', { nome: 'X', sigla: 'X', ambientePadrao: 'HOM' }).subscribe();
     const req = http.expectOne(r => r.method === 'PUT' && r.url === `${BASE}/cli-1`);
     expect(req.request.body.ambientePadrao).toBe('HOM');
     req.flush({});

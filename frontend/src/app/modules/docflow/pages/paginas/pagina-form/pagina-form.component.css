@@ -355,6 +355,50 @@
   font-style: normal;
   font-weight: 700;
 }
+.pf-template-history__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.pf-template-history__actions button.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.pf-template-history__comparison {
+  display: grid;
+  padding: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.pf-template-history__comparison > article {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.pf-template-history__comparison > article > header {
+  display: flex;
+  padding: 9px 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.pf-template-history__preview {
+  max-height: 320px;
+  padding: 16px;
+  overflow: auto;
+  font-size: 12px;
+}
+.pf-template-history__comparison p {
+  padding: 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
 .pf-template-variables {
   display: flex;
   padding: 12px 14px;
@@ -812,6 +856,9 @@
   }
 }
 @media (max-width: 768px) {
+  .pf-template-history__comparison {
+    grid-template-columns: 1fr;
+  }
   .df-form {
     padding: 18px;
   }
