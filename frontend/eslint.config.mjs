@@ -40,5 +40,5 @@ export default tseslint.config({
     '@angular-eslint/template/eqeqeq': 'warn',
   },
 }, prettierConfig, {
-  ignores: ['dist/**', 'coverage/**', '.angular/**', 'node_modules/**'],
+  ignores: ['dist/**', 'coverage/**', '.angular/**', 'node_modules/**', 'src/app/api/generated/**'],
 }, storybook.configs["flat/recommended"]);

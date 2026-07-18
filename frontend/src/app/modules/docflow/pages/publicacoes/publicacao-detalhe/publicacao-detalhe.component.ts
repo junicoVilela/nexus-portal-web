@@ -12,24 +12,35 @@ import {
   ButtonComponent,
   CardComponent,
   BadgeComponent,
+  ConfirmService,
   ToastService,
 } from '@shared/ui';
+import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-publicacao-detalhe',
   standalone: true,
-  imports: [DatePipe, PageHeaderComponent, ButtonComponent, CardComponent, BadgeComponent],
+  imports: [
+    DatePipe,
+    PageHeaderComponent,
+    ButtonComponent,
+    CardComponent,
+    BadgeComponent,
+    PermissaoDirective,
+  ],
   templateUrl: './publicacao-detalhe.component.html',
   styleUrl: './publicacao-detalhe.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublicacaoDetalheComponent implements OnInit {
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   protected id = '';
   protected readonly publicacao = signal<Publicacao | undefined>(undefined);
   protected readonly changelog = signal<ChangelogItem[]>([]);
   protected readonly relatorioJson = signal<Record<string, unknown> | null>(null);
+  protected readonly excluindo = signal(false);
   readonly mudancaTipos = ['ADICIONADO', 'ATUALIZADO', 'REMOVIDO'] as const;
 
   protected readonly avisosValidacao = computed<string[]>(() => {
@@ -79,6 +90,31 @@ export class PublicacaoDetalheComponent implements OnInit {
           .catch(() => this.toast.error('Não foi possível copiar o link.'));
       },
       error: () => this.toast.error('Erro ao gerar link público.'),
+    });
+  }
+
+  async excluir(): Promise<void> {
+    const pub = this.publicacao();
+    if (!pub || pub.status === 'GERANDO' || this.excluindo()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Excluir publicação?',
+      message: `A publicação ${pub.versao} de ${pub.clienteNome}, seu histórico e o pacote ZIP serão excluídos permanentemente.`,
+      acceptLabel: 'Excluir publicação',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado) return;
+
+    this.excluindo.set(true);
+    this.publicacaoService.excluirPublicacao(this.id).subscribe({
+      next: () => {
+        this.toast.success('Publicação excluída.');
+        void this.router.navigate(docFlowRouterCommands(['publicacoes']));
+      },
+      error: () => {
+        this.excluindo.set(false);
+        this.toast.error('Erro ao excluir publicação.');
+      },
     });
   }
 

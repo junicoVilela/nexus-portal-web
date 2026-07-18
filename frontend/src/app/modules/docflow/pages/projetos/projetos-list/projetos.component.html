@@ -9,7 +9,7 @@
   emptyIcon="FolderOpen"
 >
   <div actions>
-    <ui-button icon="Plus" (clicked)="novo()">Novo projeto</ui-button>
+    <ui-button *appPermissao="'PROJETO:CRIAR'" icon="Plus" (clicked)="novo()">Novo projeto</ui-button>
   </div>
 
   <div filters class="projetos__filters">
@@ -65,7 +65,25 @@
             />
           </td>
           <td class="projetos__td projetos__td--actions">
-            <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(projeto)">Editar</ui-button>
+            <ui-button
+              *appPermissao="'PROJETO:EDITAR'"
+              variant="ghost"
+              size="sm"
+              icon="Pencil"
+              (clicked)="editar(projeto)"
+              >Editar</ui-button
+            >
+            <ui-button
+              *appPermissao="'PROJETO:EXCLUIR'"
+              variant="danger"
+              size="sm"
+              icon="Trash2"
+              [disabled]="!!excluindoId()"
+              [loading]="excluindoId() === projeto.id"
+              (clicked)="excluir(projeto)"
+              i18n="@@docflow.projetos.excluir"
+              >Excluir</ui-button
+            >
           </td>
         </tr>
       }

@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const executablePath = process.env['PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH'];
+
 /**
  * Configuração de smoke E2E.
  *
@@ -17,6 +19,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
     actionTimeout: 5_000,
+    serviceWorkers: 'block',
   },
   webServer: {
     command: 'npx ng serve --port 4200 --host 127.0.0.1',
@@ -24,5 +27,13 @@ export default defineConfig({
     reuseExistingServer: !process.env['CI'],
     timeout: 120_000,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: executablePath ? { executablePath } : undefined,
+      },
+    },
+  ],
 });

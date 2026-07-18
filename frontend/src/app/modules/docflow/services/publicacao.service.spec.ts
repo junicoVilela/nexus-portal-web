@@ -77,6 +77,13 @@ describe('PublicacaoService', () => {
     req.flush({} as Publicacao);
   });
 
+  it('excluirPublicacao() DELETEs /publicacoes/:id', () => {
+    service.excluirPublicacao('p1').subscribe();
+    const req = http.expectOne(`${BASE}/publicacoes/p1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+  });
+
   it('baixarPublicacao() uses responseType blob', () => {
     service.baixarPublicacao('p1').subscribe();
     const req = http.expectOne(`${BASE}/publicacoes/p1/download`);

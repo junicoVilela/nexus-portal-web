@@ -48,6 +48,10 @@ export class ProjetoService {
     return op.pipe(tap(() => this.invalidarCache()));
   }
 
+  excluirProjeto(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/projetos/${id}`).pipe(tap(() => this.invalidarCache()));
+  }
+
   invalidarCache(): void {
     this.projetosCache$ = undefined;
     this.projetosCacheAt = 0;

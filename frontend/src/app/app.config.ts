@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  ErrorHandler,
   importProvidersFrom,
   inject,
   provideAppInitializer,
@@ -94,6 +95,9 @@ import {
   Ticket,
   Columns2,
   Archive,
+  History,
+  RotateCcw,
+  Braces,
   Bookmark,
   // Security module icons (added after runtime audit)
   CircleCheck,
@@ -114,6 +118,9 @@ import { loadingInterceptor } from '@core/http/interceptors/loading.interceptor'
 import { AuthService } from '@core/auth/services/auth.service';
 import { ThemeService } from '@core/theme/theme.service';
 import { FocusOnNavigationService } from '@core/a11y/focus-on-navigation';
+import { GlobalErrorHandler } from '@core/errors/global-error-handler';
+import { client as generatedApiClient } from './api/generated/client.gen';
+import { provideHeyApiClient } from './api/generated/client/client.gen';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -125,6 +132,8 @@ export const appConfig: ApplicationConfig = {
       withViewTransitions({ skipInitialTransition: true }),
     ),
     provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor, errorInterceptor])),
+    provideHeyApiClient(generatedApiClient),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideAppInitializer(() => inject(ThemeService).init()),
     provideAppInitializer(() => inject(FocusOnNavigationService).init()),
     provideAppInitializer(() => inject(AuthService).carregarMe()),
@@ -207,6 +216,9 @@ export const appConfig: ApplicationConfig = {
         Ticket,
         Columns2,
         Archive,
+        History,
+        RotateCcw,
+        Braces,
         Bookmark,
         CircleCheck,
         CircleOff,

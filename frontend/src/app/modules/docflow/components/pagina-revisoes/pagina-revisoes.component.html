@@ -42,6 +42,9 @@
         <th class="pf-th pf-th--sort" (click)="sortChange.emit('status')">
           Status <span>{{ indicacao('status') }}</span>
         </th>
+        <th class="pf-th pf-th--sort" (click)="sortChange.emit('tipo')">
+          Evento <span>{{ indicacao('tipo') }}</span>
+        </th>
         <th class="pf-th pf-th--sort" (click)="sortChange.emit('createdAt')">
           Data <span>{{ indicacao('createdAt') }}</span>
         </th>
@@ -55,6 +58,12 @@
         <tr class="pf-row">
           <td class="pf-td">{{ revisao.numero }}</td>
           <td class="pf-td">{{ revisao.status }}</td>
+          <td class="pf-td pf-td--event">
+            <strong>{{ tipoLabel(revisao.tipo) }}</strong>
+            @if (revisao.descricao) {
+              <small>{{ revisao.descricao }}</small>
+            }
+          </td>
           <td class="pf-td">{{ revisao.createdAt | date: 'short' }}</td>
           <td class="pf-td">{{ nomeUsuario()(revisao.createdBy) }}</td>
         </tr>

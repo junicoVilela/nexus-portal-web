@@ -1,5 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
@@ -15,7 +17,8 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-modulos',
@@ -26,6 +29,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    PermissaoDirective,
   ],
   templateUrl: './modulos.component.html',
   styleUrl: './modulos.component.css',
@@ -33,6 +37,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
 })
 export class ModulosComponent implements OnInit {
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   protected readonly projetos = signal<Projeto[]>([]);
   protected readonly modulos = signal<Modulo[]>([]);
@@ -43,6 +48,7 @@ export class ModulosComponent implements OnInit {
   protected moduloDir: SortDirection = 'ASC';
   protected readonly modulosPage = signal(1);
   protected readonly modulosPageSize = signal(10);
+  protected readonly excluindoId = signal<string | null>(null);
 
   constructor(
     private readonly moduloService: ModuloService,
@@ -112,6 +118,35 @@ export class ModulosComponent implements OnInit {
     this.router.navigate(docFlowRouterCommands(['modulos', modulo.id, 'editar']));
   }
 
+  async excluir(modulo: Modulo): Promise<void> {
+    if (this.excluindoId()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Excluir módulo?',
+      message: `O módulo "${modulo.nome}" será excluído. Remova antes todas as páginas vinculadas a ele.`,
+      acceptLabel: 'Excluir módulo',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado) return;
+
+    this.excluindoId.set(modulo.id);
+    this.moduloService
+      .excluirModulo(modulo.id)
+      .pipe(finalize(() => this.excluindoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Módulo excluído.');
+          if (this.modulos().length === 1 && this.modulosPage() > 1) {
+            this.modulosPage.update(page => page - 1);
+            this.atualizarUrl();
+          } else {
+            this.carregar();
+          }
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao excluir módulo.')),
+      });
+  }
+
   novo(): void {
     this.router.navigate(docFlowRouterCommands(['modulos', 'novo']));
   }
@@ -154,6 +189,16 @@ export class ModulosComponent implements OnInit {
     this.modulosPageSize.set(size);
     this.modulosPage.set(1);
     this.atualizarUrl();
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) return fallback;
+    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
+    if (typeof error.error?.message === 'string') return error.error.message;
+    if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
+      return error.error.errors.join(' ');
+    }
+    return fallback;
   }
 
   private atualizarUrl(): void {

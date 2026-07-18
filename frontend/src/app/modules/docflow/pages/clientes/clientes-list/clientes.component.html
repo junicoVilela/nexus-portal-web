@@ -10,7 +10,7 @@
   emptyIcon="Building2"
 >
   <div actions>
-    <ui-button icon="Plus" (clicked)="novo()">Novo cliente</ui-button>
+    <ui-button *appPermissao="'CLIENTE:CRIAR'" icon="Plus" (clicked)="novo()">Novo cliente</ui-button>
   </div>
 
   <div filters class="clientes__filters">
@@ -68,13 +68,26 @@
             />
           </td>
           <td class="clientes__td clientes__td--actions">
-            <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(cliente)">Editar</ui-button>
+            <ng-container *appPermissao="'CLIENTE:EDITAR'">
+              <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(cliente)">Editar</ui-button>
+              <ui-button
+                variant="secondary"
+                size="sm"
+                [loading]="loadingVinculos() && clienteVinculos()?.id === cliente.id"
+                (clicked)="abrirVinculos(cliente)"
+                >Vínculos</ui-button
+              >
+            </ng-container>
             <ui-button
-              variant="secondary"
+              *appPermissao="'CLIENTE:EXCLUIR'"
+              variant="danger"
               size="sm"
-              [loading]="loadingVinculos() && clienteVinculos()?.id === cliente.id"
-              (clicked)="abrirVinculos(cliente)"
-              >Vínculos</ui-button
+              icon="Trash2"
+              [disabled]="!!excluindoId()"
+              [loading]="excluindoId() === cliente.id"
+              (clicked)="excluir(cliente)"
+              i18n="@@docflow.clientes.excluir"
+              >Excluir</ui-button
             >
           </td>
         </tr>

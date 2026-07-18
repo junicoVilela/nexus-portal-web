@@ -1,7 +1,7 @@
 <ng-container [formGroup]="form()">
   <div class="df-form__field df-form__field--4">
-    <label class="df-form__label">Projeto</label>
-    <select class="df-form__select" formControlName="projetoId" (change)="projetoChange.emit()">
+    <label class="df-form__label" for="pagina-projeto">Projeto *</label>
+    <select id="pagina-projeto" class="df-form__select" formControlName="projetoId" (change)="projetoChange.emit()">
       <option value="">Selecione</option>
       @for (projeto of projetos(); track projeto.id) {
         <option [value]="projeto.id">{{ projeto.nome }}</option>
@@ -10,8 +10,9 @@
     <small class="pf-hint">Escolha primeiro o projeto para restringir a seleção de módulos e página pai.</small>
   </div>
   <div class="df-form__field df-form__field--4">
-    <label class="df-form__label">Módulo</label>
+    <label class="df-form__label" for="pagina-modulo">Módulo *</label>
     <select
+      id="pagina-modulo"
       class="df-form__select"
       formControlName="moduloId"
       (change)="moduloChange.emit()"
@@ -31,8 +32,8 @@
     }}</small>
   </div>
   <div class="df-form__field df-form__field--4">
-    <label class="df-form__label">Página pai</label>
-    <select class="df-form__select" formControlName="parentId">
+    <label class="df-form__label" for="pagina-pai">Página pai</label>
+    <select id="pagina-pai" class="df-form__select" formControlName="parentId">
       <option value="">Página raiz</option>
       @for (pagina of parentOptions(); track pagina.id) {
         <option [value]="pagina.id">{{ paginaLabel()(pagina) }}</option>

@@ -14,7 +14,7 @@
         publicacoes().some(i => i.status === 'GERANDO') ? 'Gerando...' : 'Atualizando'
       }}</ui-badge>
     }
-    <ui-button icon="PlayCircle" (clicked)="nova()">Gerar pacote</ui-button>
+    <ui-button *appPermissao="'PUBLICACAO:CRIAR'" icon="PlayCircle" (clicked)="nova()">Gerar pacote</ui-button>
   </div>
 
   <div filters class="pubs__filters">
@@ -97,11 +97,23 @@
               >Link público</ui-button
             >
             <ui-button
+              *appPermissao="'PUBLICACAO:EDITAR'"
               variant="secondary"
               size="sm"
               [disabled]="item.status === 'GERANDO'"
               (clicked)="reprocessar(item)"
               >Reprocessar</ui-button
+            >
+            <ui-button
+              *appPermissao="'PUBLICACAO:EXCLUIR'"
+              variant="danger"
+              size="sm"
+              icon="Trash2"
+              [disabled]="item.status === 'GERANDO' || !!excluindoId()"
+              [loading]="excluindoId() === item.id"
+              (clicked)="excluir(item)"
+              i18n="@@docflow.publicacoes.excluir"
+              >Excluir</ui-button
             >
           </td>
         </tr>

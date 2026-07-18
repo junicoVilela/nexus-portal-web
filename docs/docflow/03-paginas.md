@@ -31,6 +31,7 @@ Inventário das telas. Para detalhes de componentes shared, ver `05-componentes-
 - `ListPageComponent` com filtros, paginação, ações de criação.
 - Gerenciamento de vínculos (projetos/módulos/páginas que o cliente enxerga).
 - Botão "copiar vínculos" — replica seleção de outro cliente.
+- Exclusão com confirmação; exige que as publicações do cliente sejam removidas antes.
 
 ### Form (`pages/clientes/cliente-form/`)
 **Rota**: `/doc-flow/clientes/novo` ou `/doc-flow/clientes/:id/editar`
@@ -43,6 +44,7 @@ Inventário das telas. Para detalhes de componentes shared, ver `05-componentes-
 ## 4. Projetos, Módulos
 
 Listas + forms padrão. `ListPageComponent` com paginação. Forms simples com `FormPageComponent`.
+As listas permitem excluir com confirmação, respeitando a ordem páginas → módulos → projetos.
 
 ---
 
@@ -56,7 +58,8 @@ Listas + forms padrão. `ListPageComponent` com paginação. Forms simples com `
 - Status pills no topo para filtrar rapidamente.
 - **Drag-and-drop** para mudar hierarquia (drop em outra linha = vira filha; drop na área "raiz" = sai da hierarquia).
 - **Botões mover para cima/baixo** (ícones `ArrowUp`/`ArrowDown`) — usa `reordenarPaginas` do service para reordenar entre irmãos do mesmo módulo/parent.
-- Ações por linha: editar, duplicar, enviar revisão, aprovar, publicar, arquivar.
+- Ações por linha: editar, duplicar, enviar revisão, aprovar, publicar, arquivar e excluir.
+- A exclusão remove revisões e anexos; subpáginas precisam ser excluídas primeiro.
 - Arquivar passa por `ConfirmService`.
 - Status renderizado via `<app-pagina-status-badge>`.
 
@@ -74,6 +77,7 @@ Ver `06-editor-paginas.md` para detalhes (editor HTML, atalhos, anexos, auto-sav
 
 - Histórico com status (`GERANDO` / `SUCESSO` / `ERRO`).
 - Polling automático enquanto houver publicações `GERANDO` (`TIMINGS.publicacoesPollIntervalMs`).
+- Exclusão com confirmação para publicações concluídas ou com erro.
 
 ### Form (`publicacao-form/`)
 **Rota**: `/doc-flow/publicacoes/novo`
@@ -85,7 +89,7 @@ Ver `06-editor-paginas.md` para detalhes (editor HTML, atalhos, anexos, auto-sav
 **Rota**: `/doc-flow/publicacoes/:id/detalhe`
 
 - Visão geral + changelog + downloads (ZIP/PDF/token).
-- Botão de reprocessar quando status permite.
+- Exclusão protegida por confirmação; publicações em geração não podem ser apagadas.
 - TODO: virar tabs (Visão Geral / Páginas incluídas / Changelog / Downloads) — ver `99`.
 
 ---

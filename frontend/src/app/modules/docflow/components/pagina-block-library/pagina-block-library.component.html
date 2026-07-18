@@ -1,0 +1,56 @@
+<section class="block-library" [class.block-library--open]="aberta()">
+  <button type="button" class="block-library__toggle" (click)="alternar()" [attr.aria-expanded]="aberta()">
+    <span class="block-library__toggle-icon" aria-hidden="true">＋</span>
+    <span
+      ><strong>Biblioteca de blocos</strong><small>Insira seções prontas sem substituir o conteúdo atual.</small></span
+    >
+    <span class="block-library__chevron" aria-hidden="true">⌄</span>
+  </button>
+
+  @if (aberta()) {
+    <div class="block-library__content" (keydown.escape)="fechar()">
+      <label class="block-library__search">
+        <span aria-hidden="true">⌕</span>
+        <input
+          #buscaInput
+          type="search"
+          placeholder="Buscar bloco por nome ou finalidade..."
+          [value]="busca()"
+          (input)="busca.set(buscaInput.value)"
+        />
+        <kbd>/</kbd>
+      </label>
+      <div class="block-library__filters" aria-label="Categorias de blocos">
+        @for (item of categorias; track item) {
+          <button
+            type="button"
+            [class.block-library__filter--active]="categoria() === item"
+            (click)="categoria.set(item)"
+          >
+            {{ item }}
+          </button>
+        }
+      </div>
+
+      <div class="block-library__grid">
+        @for (bloco of blocos(); track bloco.id) {
+          <button type="button" class="block-card" (click)="selecionar(bloco)">
+            <span class="block-card__preview block-card__preview--{{ bloco.visual }}" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </span>
+            <span class="block-card__copy"
+              ><strong>{{ bloco.nome }}</strong
+              ><small>{{ bloco.descricao }}</small></span
+            >
+            <span class="block-card__add" aria-hidden="true">＋</span>
+          </button>
+        } @empty {
+          <div class="block-library__empty">
+            <strong>Nenhum bloco encontrado</strong>
+            <span>Tente outro termo ou selecione a categoria “Todos”.</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

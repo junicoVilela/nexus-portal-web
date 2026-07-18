@@ -11,6 +11,7 @@ GET    /clientes                       → PageResult<Cliente>
 GET    /clientes/:id                   → Cliente
 POST   /clientes                       → Cliente
 PUT    /clientes/:id                   → Cliente
+DELETE /clientes/:id                   → exclui cliente sem publicações
 GET    /clientes/:id/vinculos          → { projetoIds, moduloIds, paginaIds }
 PUT    /clientes/:id/projetos          → atualiza vínculo de projetos
 PUT    /clientes/:id/modulos           → atualiza vínculo de módulos
@@ -40,6 +41,7 @@ GET    /projetos          → PageResult<Projeto>
 GET    /projetos/:id      → Projeto
 POST   /projetos          → cria
 PUT    /projetos/:id      → atualiza
+DELETE /projetos/:id      → exclui projeto sem módulos
 ```
 
 ### Model (`projeto.model.ts`)
@@ -55,6 +57,7 @@ GET    /modulos           → PageResult<Modulo>
 GET    /modulos/:id       → Modulo
 POST   /modulos           → cria
 PUT    /modulos/:id       → atualiza
+DELETE /modulos/:id       → exclui módulo sem páginas
 ```
 
 ### Model (`modulo.model.ts`)
@@ -70,6 +73,7 @@ GET    /paginas                            → PageResult<Pagina>
 GET    /paginas/:id                        → Pagina
 POST   /paginas                            → cria
 PUT    /paginas/:id                        → atualiza
+DELETE /paginas/:id                        → exclui página sem subpáginas
 POST   /paginas/:id/salvar-rascunho        → marca rascunho
 POST   /paginas/:id/publicar               → workflow
 POST   /paginas/:id/enviar-revisao         → workflow
@@ -104,6 +108,7 @@ GET    /publicacoes/preview-html          → text/html (preview renderizado)
 GET    /publicacoes/diagnostico           → diagnóstico de geração
 POST   /publicacoes                       → cria
 POST   /publicacoes/:id/reprocessar       → re-gera
+DELETE /publicacoes/:id                   → exclui registro, changelog e pacote ZIP
 GET    /publicacoes/:id/download          → ZIP (blob)
 GET    /publicacoes/:id/download-token    → { token, validadeSegundos, urlPath }
 GET    /publicacoes/:id/download-pdf      → PDF (blob)

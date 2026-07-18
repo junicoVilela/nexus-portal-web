@@ -65,6 +65,10 @@ export class PublicacaoService {
     return this.http.post<Publicacao>(`${this.base}/publicacoes/${publicacaoId}/reprocessar`, {});
   }
 
+  excluirPublicacao(publicacaoId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/publicacoes/${publicacaoId}`);
+  }
+
   baixarPublicacao(publicacaoId: string): Observable<Blob> {
     return this.http.get(`${this.base}/publicacoes/${publicacaoId}/download`, {
       responseType: 'blob',

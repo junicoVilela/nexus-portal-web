@@ -1,0 +1,171 @@
+<section class="template-picker" aria-labelledby="template-picker-title" [attr.aria-busy]="!!previewingId()">
+  <div class="template-picker__head">
+    <div>
+      <span class="template-picker__eyebrow">Início rápido</span>
+      <h2 id="template-picker-title">Como você quer começar?</h2>
+      <p>Escolha uma estrutura pronta ou comece com uma página em branco.</p>
+    </div>
+    <button type="button" class="template-picker__close" (click)="fechado.emit()" aria-label="Ocultar modelos">
+      <lucide-icon name="X" />
+    </button>
+  </div>
+
+  <div class="template-picker__filters" aria-label="Filtrar modelos por origem">
+    <button
+      type="button"
+      [class.is-active]="filtro() === 'TODOS'"
+      [attr.aria-pressed]="filtro() === 'TODOS'"
+      (click)="filtro.set('TODOS')"
+    >
+      Todos <span>{{ totalFiltro('TODOS') }}</span>
+    </button>
+    <button
+      type="button"
+      [class.is-active]="filtro() === 'SISTEMA'"
+      [attr.aria-pressed]="filtro() === 'SISTEMA'"
+      (click)="filtro.set('SISTEMA')"
+    >
+      Sistema <span>{{ totalFiltro('SISTEMA') }}</span>
+    </button>
+    <button
+      type="button"
+      [class.is-active]="filtro() === 'PROJETO'"
+      [attr.aria-pressed]="filtro() === 'PROJETO'"
+      (click)="filtro.set('PROJETO')"
+    >
+      Projetos <span>{{ totalFiltro('PROJETO') }}</span>
+    </button>
+    <button
+      type="button"
+      [class.is-active]="filtro() === 'CLIENTE'"
+      [attr.aria-pressed]="filtro() === 'CLIENTE'"
+      (click)="filtro.set('CLIENTE')"
+    >
+      Clientes <span>{{ totalFiltro('CLIENTE') }}</span>
+    </button>
+    @if (incluirArquivados()) {
+      <button
+        type="button"
+        [class.is-active]="filtro() === 'ARQUIVADOS'"
+        [attr.aria-pressed]="filtro() === 'ARQUIVADOS'"
+        (click)="filtro.set('ARQUIVADOS')"
+      >
+        Arquivados <span>{{ totalFiltro('ARQUIVADOS') }}</span>
+      </button>
+    }
+    <span class="template-picker__filter-spacer"></span>
+    <button type="button" class="template-picker__setting" (click)="contextoAlterado.emit(!somenteContexto())">
+      {{ somenteContexto() ? 'Mostrar catálogo completo' : 'Mostrar somente compatíveis' }}
+    </button>
+    <button type="button" class="template-picker__setting" (click)="arquivadosAlterado.emit(!incluirArquivados())">
+      {{ incluirArquivados() ? 'Ocultar arquivados' : 'Incluir arquivados' }}
+    </button>
+  </div>
+
+  <div class="template-picker__grid">
+    <article class="template-card" [class.template-card--selected]="selecionadoId() === null">
+      <button type="button" class="template-card__select" (click)="selecionado.emit(null)">
+        <span class="template-mini template-mini--blank" aria-hidden="true">
+          <span class="template-mini__blank-icon"><lucide-icon name="FileText" /></span>
+          <span class="template-mini__blank-line"></span>
+          <span class="template-mini__blank-line template-mini__blank-line--short"></span>
+        </span>
+        <span class="template-card__body">
+          <span class="template-card__scope">Novo conteúdo</span>
+          <span class="template-card__title"
+            ><span class="template-card__icon"><lucide-icon name="FileText" /></span
+            ><strong>Página em branco</strong></span
+          >
+          <span class="template-card__description">Comece sem conteúdo predefinido.</span>
+        </span>
+      </button>
+    </article>
+
+    @for (template of templatesVisiveis(); track template.id) {
+      <article
+        class="template-card"
+        [class.template-card--custom]="template.personalizado"
+        [class.template-card--archived]="template.ativo === false"
+        [class.template-card--selected]="selecionadoId() === template.id"
+      >
+        <button
+          type="button"
+          class="template-card__select"
+          [disabled]="template.ativo === false"
+          (click)="selecionado.emit(template)"
+        >
+          <span class="template-mini template-mini--{{ visualDoTemplate(template.codigo) }}" aria-hidden="true">
+            <span class="template-mini__heading"></span>
+            <span class="template-mini__objective"></span>
+            <span class="template-mini__screen"><i></i><i></i><i></i></span>
+            <span class="template-mini__flow"><i></i><i></i><i></i><i></i></span>
+            <span class="template-mini__table"><i></i><i></i><i></i><i></i></span>
+            <span class="template-mini__faq"><i></i><i></i><i></i></span>
+            <span class="template-mini__trouble"><i></i><i></i></span>
+            <span class="template-mini__home"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="template-mini__category"><i></i><i></i><i></i><i></i></span>
+            <span class="template-mini__onboarding"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="template-mini__report"><i></i><i></i><i></i></span>
+          </span>
+          <span class="template-card__body">
+            <span class="template-card__scope">
+              {{ template.ativo === false ? 'Arquivado' : escopoLabel(template) }}
+            </span>
+            <span class="template-card__title"
+              ><span class="template-card__icon"><lucide-icon name="LayoutTemplate" /></span
+              ><strong>{{ template.nome }}</strong></span
+            >
+            <span class="template-card__description">{{ template.descricao }}</span>
+            <span class="template-card__meta">
+              Versão {{ template.versaoAtual || 1 }} · {{ template.paginasOriginadas || 0 }} página(s)
+            </span>
+          </span>
+        </button>
+        <div class="template-card__actions">
+          <button
+            type="button"
+            (click)="previewSolicitada.emit(template)"
+            [disabled]="previewingId() === template.id"
+            [attr.aria-label]="'Visualizar modelo ' + template.nome + ' com os dados atuais'"
+            title="Pré-visualizar com dados atuais"
+          >
+            <lucide-icon name="Eye" /><span>{{ previewingId() === template.id ? 'Carregando…' : 'Prévia' }}</span>
+          </button>
+          @if (podeDuplicar()) {
+            <button type="button" (click)="duplicacaoSolicitada.emit(template)" title="Duplicar modelo">
+              <lucide-icon name="Copy" /><span>Duplicar</span>
+            </button>
+          }
+          <button type="button" (click)="historicoSolicitado.emit(template)" title="Ver versões">
+            <lucide-icon name="History" /><span>Versões</span>
+          </button>
+          @if (template.personalizado && podeEditar()) {
+            <button type="button" (click)="edicaoSolicitada.emit(template)" title="Editar modelo">
+              <lucide-icon name="Pencil" /><span>Editar</span>
+            </button>
+            @if (template.ativo === false) {
+              <button type="button" (click)="reativacaoSolicitada.emit(template)" title="Reativar modelo">
+                <lucide-icon name="RotateCcw" /><span>Reativar</span>
+              </button>
+            } @else {
+              <button type="button" (click)="arquivamentoSolicitado.emit(template)" title="Arquivar modelo">
+                <lucide-icon name="Archive" /><span>Arquivar</span>
+              </button>
+            }
+            @if (podeExcluir()) {
+              <button
+                type="button"
+                class="is-danger"
+                (click)="exclusaoSolicitada.emit(template)"
+                [attr.aria-label]="'Excluir modelo ' + template.nome"
+                title="Excluir modelo personalizado"
+              >
+                <lucide-icon name="Trash2" /><span>Excluir</span>
+              </button>
+            }
+          }
+        </div>
+      </article>
+    }
+  </div>
+</section>

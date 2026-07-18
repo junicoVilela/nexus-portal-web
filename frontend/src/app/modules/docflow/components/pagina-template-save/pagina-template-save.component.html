@@ -1,0 +1,100 @@
+<section class="template-save" aria-labelledby="template-save-title">
+  <header class="template-save__head">
+    <span>
+      <span class="template-save__eyebrow">{{ template() ? 'Gestão do modelo' : 'Modelo personalizado' }}</span>
+      <h3 id="template-save-title">
+        {{ template() ? 'Editar modelo personalizado' : 'Salvar a estrutura atual como modelo' }}
+      </h3>
+      <p>
+        {{
+          template()
+            ? 'Altere nome, escopo e, se desejar, substitua o conteúdo pela página aberta.'
+            : 'O conteúdo será copiado e poderá ser reutilizado sem vínculo com esta página.'
+        }}
+      </p>
+    </span>
+    <button type="button" class="template-save__close" (click)="cancelado.emit()" aria-label="Fechar">×</button>
+  </header>
+
+  <div class="template-save__form" [formGroup]="form">
+    <label class="template-save__field">
+      <span>Nome do modelo *</span>
+      <input formControlName="nome" maxlength="120" placeholder="Ex.: Cadastro padrão do financeiro" />
+      @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <small>Informe um nome com até 120 caracteres.</small>
+      }
+    </label>
+
+    <label class="template-save__field">
+      <span>Descrição</span>
+      <input formControlName="descricao" maxlength="300" placeholder="Quando este modelo deve ser usado?" />
+    </label>
+
+    <div class="template-save__scope">
+      <span>Disponível para *</span>
+      <span class="template-save__scope-options">
+        <label>
+          <input
+            type="radio"
+            name="template-scope"
+            value="PROJETO"
+            [checked]="form.controls.escopo.value === 'PROJETO'"
+            (change)="definirEscopo('PROJETO')"
+          />
+          Projeto
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="template-scope"
+            value="CLIENTE"
+            [checked]="form.controls.escopo.value === 'CLIENTE'"
+            (change)="definirEscopo('CLIENTE')"
+          />
+          Cliente
+        </label>
+      </span>
+    </div>
+
+    @if (form.controls.escopo.value === 'PROJETO') {
+      <label class="template-save__field">
+        <span>Projeto *</span>
+        <select formControlName="projetoId">
+          <option value="">Selecione o projeto</option>
+          @for (projeto of projetos(); track projeto.id) {
+            <option [value]="projeto.id">{{ projeto.nome }}</option>
+          }
+        </select>
+      </label>
+    } @else {
+      <label class="template-save__field">
+        <span>Cliente *</span>
+        <select formControlName="clienteId">
+          <option value="">Selecione o cliente</option>
+          @for (cliente of clientes(); track cliente.id) {
+            <option [value]="cliente.id">{{ cliente.nome }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    @if (template()) {
+      <label class="template-save__replace">
+        <input type="checkbox" formControlName="substituirConteudo" />
+        <span>
+          <strong>Atualizar também a estrutura</strong>
+          <small>Substitui o conteúdo do modelo pelo conteúdo da página aberta.</small>
+        </span>
+      </label>
+    }
+  </div>
+
+  <footer class="template-save__actions">
+    <button type="button" class="template-save__button template-save__button--ghost" (click)="cancelado.emit()">
+      Cancelar
+    </button>
+    <button type="button" class="template-save__button" [disabled]="saving()" (click)="salvar()">
+      {{ saving() ? 'Salvando…' : template() ? 'Salvar nova versão' : 'Salvar modelo' }}
+    </button>
+  </footer>
+</section>

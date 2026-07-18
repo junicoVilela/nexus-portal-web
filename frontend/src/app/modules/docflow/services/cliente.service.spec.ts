@@ -56,6 +56,13 @@ describe('ClienteService', () => {
     req.flush({} as Cliente);
   });
 
+  it('excluirCliente() DELETEs /clientes/:id', () => {
+    service.excluirCliente('c1').subscribe();
+    const req = http.expectOne(`${BASE}/clientes/c1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+  });
+
   it('vinculosCliente() hits /:id/vinculos', () => {
     service.vinculosCliente('c1').subscribe();
     http.expectOne(`${BASE}/clientes/c1/vinculos`).flush({ projetoIds: [], moduloIds: [], paginaIds: [] });

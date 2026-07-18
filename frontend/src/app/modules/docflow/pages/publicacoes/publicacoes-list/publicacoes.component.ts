@@ -16,7 +16,8 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-publicacoes',
@@ -27,6 +28,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    PermissaoDirective,
   ],
   templateUrl: './publicacoes.component.html',
   styleUrl: './publicacoes.component.css',
@@ -34,6 +36,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
 })
 export class PublicacoesComponent implements OnInit, OnDestroy {
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   protected readonly publicacoes = signal<Publicacao[]>([]);
   protected readonly totalPublicacoes = signal(0);
@@ -42,6 +45,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
   protected publicacaoSort = 'createdAt';
   protected publicacaoDir: SortDirection = 'DESC';
   protected readonly loadingHistory = signal(false);
+  protected readonly excluindoId = signal<string | null>(null);
   private refreshTimer?: number;
 
   constructor(
@@ -127,6 +131,35 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
       },
       error: error => this.toast.error(this.errorMessage(error, 'Erro ao reprocessar publicação.')),
     });
+  }
+
+  async excluir(item: Publicacao): Promise<void> {
+    if (item.status === 'GERANDO' || this.excluindoId()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Excluir publicação?',
+      message: `A publicação ${item.versao} de ${item.clienteNome}, seu histórico e o pacote ZIP serão excluídos permanentemente.`,
+      acceptLabel: 'Excluir publicação',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado) return;
+
+    this.excluindoId.set(item.id);
+    this.publicacaoService
+      .excluirPublicacao(item.id)
+      .pipe(finalize(() => this.excluindoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Publicação excluída.');
+          if (this.publicacoes().length === 1 && this.publicacoesPage() > 1) {
+            this.publicacoesPage.update(page => page - 1);
+            this.atualizarUrl();
+            return;
+          }
+          this.carregar();
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao excluir publicação.')),
+      });
   }
 
   abrirDetalhe(item: Publicacao): void {

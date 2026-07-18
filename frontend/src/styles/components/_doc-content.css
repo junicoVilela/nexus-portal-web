@@ -1,0 +1,1091 @@
+/*
+ * Linguagem visual do conteúdo editorial do DocFlow.
+ * O escopo explícito também alcança HTML dinâmico inserido por [innerHTML].
+ */
+.df-doc-content,
+.df-doc-editor .NgxEditor__Content {
+  color: var(--text);
+  font: 400 15px/1.7 var(--font-body);
+}
+
+.df-doc-content > :first-child,
+.df-doc-editor .NgxEditor__Content > :first-child {
+  margin-top: 0;
+}
+
+.df-doc-content > :last-child,
+.df-doc-editor .NgxEditor__Content > :last-child {
+  margin-bottom: 0;
+}
+
+.df-doc-content h1,
+.df-doc-content h2,
+.df-doc-content h3,
+.df-doc-editor .NgxEditor__Content h1,
+.df-doc-editor .NgxEditor__Content h2,
+.df-doc-editor .NgxEditor__Content h3 {
+  color: var(--text);
+  font-family: var(--font-display);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.df-doc-content h1,
+.df-doc-editor .NgxEditor__Content h1 {
+  margin: 1.5em 0 0.6em;
+  font-size: 1.65rem;
+  font-weight: 750;
+}
+
+.df-doc-content h2,
+.df-doc-editor .NgxEditor__Content h2 {
+  position: relative;
+  margin: 1.7em 0 0.65em;
+  padding-left: 14px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.df-doc-content h2::before,
+.df-doc-editor .NgxEditor__Content h2::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  content: '';
+}
+
+.df-doc-content h3,
+.df-doc-editor .NgxEditor__Content h3 {
+  margin: 1.35em 0 0.45em;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.df-doc-content p,
+.df-doc-editor .NgxEditor__Content p {
+  margin: 0 0 1em;
+}
+
+.df-doc-content ul,
+.df-doc-content ol,
+.df-doc-editor .NgxEditor__Content ul,
+.df-doc-editor .NgxEditor__Content ol {
+  margin: 0 0 1.25em;
+  padding-left: 1.4rem;
+}
+
+.df-doc-content li,
+.df-doc-editor .NgxEditor__Content li {
+  margin: 0.4em 0;
+  padding-left: 0.2rem;
+}
+
+.df-doc-content a,
+.df-doc-editor .NgxEditor__Content a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.df-doc-content .doc-intro,
+.df-doc-editor .NgxEditor__Content .doc-intro {
+  margin: 0 0 28px;
+  padding: 22px 24px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface) 78%);
+}
+
+.df-doc-content .doc-intro h2,
+.df-doc-editor .NgxEditor__Content .doc-intro h2 {
+  margin: 0 0 8px;
+  padding-left: 0;
+}
+
+.df-doc-content .doc-intro h2::before,
+.df-doc-editor .NgxEditor__Content .doc-intro h2::before {
+  display: none;
+}
+
+.df-doc-content .doc-kicker,
+.df-doc-editor .NgxEditor__Content .doc-kicker {
+  display: inline-flex;
+  margin-bottom: 9px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.df-doc-content .doc-intro p,
+.df-doc-editor .NgxEditor__Content .doc-intro p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.df-doc-content .doc-section,
+.df-doc-editor .NgxEditor__Content .doc-section {
+  margin: 28px 0;
+}
+
+.df-doc-content .doc-section--soft,
+.df-doc-editor .NgxEditor__Content .doc-section--soft {
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.df-doc-content .doc-section--soft h2:first-child,
+.df-doc-editor .NgxEditor__Content .doc-section--soft h2:first-child {
+  margin-top: 0;
+}
+
+.df-doc-content .table-wrap,
+.df-doc-editor .NgxEditor__Content .table-wrap {
+  margin: 14px 0 24px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content table,
+.df-doc-editor .NgxEditor__Content table {
+  width: 100%;
+  min-width: 520px;
+  border: 0;
+  border-collapse: collapse;
+  background: var(--surface);
+  font-size: 0.9rem;
+}
+
+.df-doc-content th,
+.df-doc-content td,
+.df-doc-editor .NgxEditor__Content th,
+.df-doc-editor .NgxEditor__Content td {
+  padding: 13px 15px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.df-doc-content th,
+.df-doc-editor .NgxEditor__Content th {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.df-doc-content tr:last-child td,
+.df-doc-editor .NgxEditor__Content tr:last-child td {
+  border-bottom: 0;
+}
+
+.df-doc-content tbody tr:hover,
+.df-doc-editor .NgxEditor__Content tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.df-doc-content .steps > ol,
+.df-doc-editor .NgxEditor__Content .steps > ol {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: doc-step;
+}
+
+.df-doc-content .steps > ol > li,
+.df-doc-editor .NgxEditor__Content .steps > ol > li {
+  position: relative;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px 16px 12px 58px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  counter-increment: doc-step;
+}
+
+.df-doc-content .steps > ol > li::before,
+.df-doc-editor .NgxEditor__Content .steps > ol > li::before {
+  position: absolute;
+  top: 9px;
+  left: 12px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  content: counter(doc-step);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.df-doc-content .checklist,
+.df-doc-editor .NgxEditor__Content .checklist {
+  display: grid;
+  gap: 9px;
+  padding: 0;
+  list-style: none;
+}
+
+.df-doc-content .checklist li,
+.df-doc-editor .NgxEditor__Content .checklist li {
+  position: relative;
+  margin: 0;
+  padding: 4px 0 4px 30px;
+}
+
+.df-doc-content .checklist li::before,
+.df-doc-editor .NgxEditor__Content .checklist li::before {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--success-soft);
+  color: var(--success);
+  content: '\2713';
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.df-doc-content .callout,
+.df-doc-content .warning,
+.df-doc-editor .NgxEditor__Content .callout,
+.df-doc-editor .NgxEditor__Content .warning {
+  position: relative;
+  margin: 22px 0;
+  padding: 16px 18px 16px 54px;
+  border: 1px solid color-mix(in srgb, var(--info) 28%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--info-soft);
+  color: var(--text);
+}
+
+.df-doc-content .warning,
+.df-doc-editor .NgxEditor__Content .warning {
+  border-color: color-mix(in srgb, var(--warn) 34%, var(--border));
+  background: var(--warn-soft);
+}
+
+.df-doc-content .callout::before,
+.df-doc-content .warning::before,
+.df-doc-editor .NgxEditor__Content .callout::before,
+.df-doc-editor .NgxEditor__Content .warning::before {
+  position: absolute;
+  top: 15px;
+  left: 16px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--info);
+  color: white;
+  content: 'i';
+  font: 800 0.8rem/1 var(--font-body);
+}
+
+.df-doc-content .warning::before,
+.df-doc-editor .NgxEditor__Content .warning::before {
+  background: var(--warn);
+  content: '!';
+}
+
+.df-doc-content .callout p:last-child,
+.df-doc-content .warning p:last-child,
+.df-doc-editor .NgxEditor__Content .callout p:last-child,
+.df-doc-editor .NgxEditor__Content .warning p:last-child {
+  margin-bottom: 0;
+}
+
+.df-doc-editor .NgxEditor__Content .callout > p:first-child,
+.df-doc-editor .NgxEditor__Content .warning > p:first-child {
+  margin-bottom: 4px;
+}
+
+.df-doc-content .faq-list,
+.df-doc-editor .NgxEditor__Content .faq-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.df-doc-content .faq-item,
+.df-doc-editor .NgxEditor__Content .faq-item {
+  padding: 17px 19px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .faq-item h3,
+.df-doc-editor .NgxEditor__Content .faq-item h3 {
+  margin: 0 0 7px;
+  color: var(--accent);
+}
+
+.df-doc-content .faq-item p:last-child,
+.df-doc-editor .NgxEditor__Content .faq-item p:last-child {
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+
+.df-doc-content .result-card,
+.df-doc-editor .NgxEditor__Content .result-card {
+  margin: 22px 0;
+  padding: 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--success) 30%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--success-soft);
+}
+
+.df-doc-content .result-card strong,
+.df-doc-editor .NgxEditor__Content .result-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--success);
+}
+
+.df-doc-editor .NgxEditor__Content .result-card > p:first-child {
+  margin-bottom: 5px;
+}
+
+/* Blocos estruturais inspirados no portal de ajuda: objetivos, telas e fluxos. */
+.df-doc-content .objective-card,
+.df-doc-editor .NgxEditor__Content .objective-card {
+  position: relative;
+  margin: 24px 0 30px;
+  padding: 18px 22px 18px 62px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.df-doc-content .objective-card::before,
+.df-doc-editor .NgxEditor__Content .objective-card::before {
+  position: absolute;
+  top: 17px;
+  left: 20px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  content: 'i';
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+.df-doc-content .objective-card strong,
+.df-doc-editor .NgxEditor__Content .objective-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.df-doc-content .objective-card > p:first-child,
+.df-doc-editor .NgxEditor__Content .objective-card > p:first-child {
+  margin-bottom: 4px;
+}
+
+.df-doc-content .objective-card p,
+.df-doc-editor .NgxEditor__Content .objective-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.df-doc-content .screen-frame,
+.df-doc-editor .NgxEditor__Content .screen-frame {
+  margin: 15px 0 26px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .screen-frame img,
+.df-doc-editor .NgxEditor__Content .screen-frame img {
+  width: 100%;
+  margin: 0;
+}
+
+.df-doc-content .screen-frame figcaption,
+.df-doc-editor .NgxEditor__Content .screen-frame figcaption {
+  padding: 10px 5px 2px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.df-doc-content .screen-placeholder,
+.df-doc-editor .NgxEditor__Content .screen-placeholder {
+  display: grid;
+  min-height: 260px;
+  padding: 30px;
+  place-content: center;
+  border: 2px dashed color-mix(in srgb, var(--accent) 32%, var(--border));
+  border-radius: calc(var(--radius-md) - 3px);
+  background:
+    linear-gradient(
+      135deg,
+      transparent 49.5%,
+      color-mix(in srgb, var(--accent) 7%, transparent) 50%,
+      transparent 50.5%
+    ),
+    var(--surface);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.df-doc-content .screen-placeholder strong,
+.df-doc-editor .NgxEditor__Content .screen-placeholder strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.df-doc-content .screen-placeholder span,
+.df-doc-editor .NgxEditor__Content .screen-placeholder span {
+  font-size: 0.82rem;
+}
+
+.df-doc-content .screen-placeholder--compact,
+.df-doc-editor .NgxEditor__Content .screen-placeholder--compact {
+  min-height: 150px;
+  padding: 20px;
+  border-width: 1px;
+}
+
+.df-doc-content .content-grid,
+.df-doc-content .annotation-grid,
+.df-doc-content .screen-grid,
+.df-doc-editor .NgxEditor__Content .content-grid,
+.df-doc-editor .NgxEditor__Content .annotation-grid,
+.df-doc-editor .NgxEditor__Content .screen-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.df-doc-content .content-grid--2,
+.df-doc-editor .NgxEditor__Content .content-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.df-doc-content .content-grid--3,
+.df-doc-content .annotation-grid,
+.df-doc-content .screen-grid,
+.df-doc-editor .NgxEditor__Content .content-grid--3,
+.df-doc-editor .NgxEditor__Content .annotation-grid,
+.df-doc-editor .NgxEditor__Content .screen-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.df-doc-content .annotation-grid,
+.df-doc-editor .NgxEditor__Content .annotation-grid {
+  counter-reset: annotation;
+}
+
+.df-doc-content .annotation-card,
+.df-doc-editor .NgxEditor__Content .annotation-card {
+  position: relative;
+  min-height: 116px;
+  padding: 18px 18px 16px 58px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  counter-increment: annotation;
+}
+
+.df-doc-content .annotation-card::before,
+.df-doc-editor .NgxEditor__Content .annotation-card::before {
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  content: counter(annotation);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.df-doc-content .annotation-card h3,
+.df-doc-content .rule-card h2,
+.df-doc-content .rule-card h3,
+.df-doc-content .guide-card h3,
+.df-doc-content .topic-card h3,
+.df-doc-editor .NgxEditor__Content .annotation-card h3,
+.df-doc-editor .NgxEditor__Content .rule-card h2,
+.df-doc-editor .NgxEditor__Content .rule-card h3,
+.df-doc-editor .NgxEditor__Content .guide-card h3,
+.df-doc-editor .NgxEditor__Content .topic-card h3 {
+  margin: 0 0 7px;
+  padding: 0;
+  color: var(--text);
+}
+
+.df-doc-content .annotation-card p,
+.df-doc-content .rule-card p:last-child,
+.df-doc-content .guide-card p:last-child,
+.df-doc-content .topic-card p:last-child,
+.df-doc-editor .NgxEditor__Content .annotation-card p,
+.df-doc-editor .NgxEditor__Content .rule-card p:last-child,
+.df-doc-editor .NgxEditor__Content .guide-card p:last-child,
+.df-doc-editor .NgxEditor__Content .topic-card p:last-child {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.df-doc-content .rule-card,
+.df-doc-content .guide-card,
+.df-doc-content .topic-card,
+.df-doc-editor .NgxEditor__Content .rule-card,
+.df-doc-editor .NgxEditor__Content .guide-card,
+.df-doc-editor .NgxEditor__Content .topic-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .rule-card,
+.df-doc-editor .NgxEditor__Content .rule-card {
+  border-top: 3px solid var(--accent);
+}
+
+.df-doc-content .guide-card,
+.df-doc-editor .NgxEditor__Content .guide-card {
+  position: relative;
+  padding: 12px 12px 20px;
+}
+
+.df-doc-content .guide-card h3,
+.df-doc-content .guide-card p,
+.df-doc-editor .NgxEditor__Content .guide-card h3,
+.df-doc-editor .NgxEditor__Content .guide-card p {
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.df-doc-content .guide-card__number,
+.df-doc-editor .NgxEditor__Content .guide-card__number {
+  position: absolute;
+  z-index: 1;
+  top: 22px;
+  left: 22px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 900;
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .topic-card,
+.df-doc-editor .NgxEditor__Content .topic-card {
+  text-align: center;
+}
+
+.df-doc-content .topic-card__icon,
+.df-doc-editor .NgxEditor__Content .topic-card__icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.df-doc-content .flow-strip,
+.df-doc-editor .NgxEditor__Content .flow-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 18px 0 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+
+.df-doc-content .flow-strip li,
+.df-doc-editor .NgxEditor__Content .flow-strip li {
+  position: relative;
+  min-height: 118px;
+  margin: 0;
+  padding: 54px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: center;
+  counter-increment: flow;
+}
+
+.df-doc-content .flow-strip li::before,
+.df-doc-editor .NgxEditor__Content .flow-strip li::before {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  content: counter(flow);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.df-doc-content .flow-strip li:not(:last-child)::after,
+.df-doc-editor .NgxEditor__Content .flow-strip li:not(:last-child)::after {
+  position: absolute;
+  z-index: 2;
+  top: 48px;
+  right: -19px;
+  color: var(--accent);
+  content: '\2192';
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.df-doc-content .flow-strip strong,
+.df-doc-content .flow-strip span,
+.df-doc-editor .NgxEditor__Content .flow-strip strong,
+.df-doc-editor .NgxEditor__Content .flow-strip span {
+  display: block;
+}
+
+.df-doc-content .flow-strip span,
+.df-doc-editor .NgxEditor__Content .flow-strip span {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.df-doc-content .number-badge,
+.df-doc-editor .NgxEditor__Content .number-badge {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.df-doc-content .status-badge,
+.df-doc-editor .NgxEditor__Content .status-badge {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.df-doc-content .status-badge--required,
+.df-doc-editor .NgxEditor__Content .status-badge--required {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.df-doc-content .doc-intro--center,
+.df-doc-editor .NgxEditor__Content .doc-intro--center {
+  text-align: center;
+}
+
+.df-doc-content .filter-chips,
+.df-doc-editor .NgxEditor__Content .filter-chips {
+  margin: 0 0 24px;
+}
+
+.df-doc-content .filter-chips p,
+.df-doc-editor .NgxEditor__Content .filter-chips p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+}
+
+.df-doc-content .filter-chip,
+.df-doc-editor .NgxEditor__Content .filter-chip {
+  display: inline-flex;
+  min-height: 34px;
+  padding: 7px 16px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.df-doc-content .filter-chip--active,
+.df-doc-editor .NgxEditor__Content .filter-chip--active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+
+.df-doc-content .resource-list,
+.df-doc-editor .NgxEditor__Content .resource-list {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.df-doc-content .resource-item,
+.df-doc-editor .NgxEditor__Content .resource-item {
+  display: flex;
+  min-width: 0;
+  padding: 12px 15px;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.df-doc-content .resource-item:last-child,
+.df-doc-editor .NgxEditor__Content .resource-item:last-child {
+  border-bottom: 0;
+}
+
+.df-doc-content .resource-item > span:not(.number-badge),
+.df-doc-editor .NgxEditor__Content .resource-item > span:not(.number-badge) {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+}
+
+.df-doc-content .resource-item strong,
+.df-doc-editor .NgxEditor__Content .resource-item strong {
+  color: var(--accent);
+}
+
+.df-doc-content .resource-item small,
+.df-doc-content .resource-item > span:last-child,
+.df-doc-editor .NgxEditor__Content .resource-item small,
+.df-doc-editor .NgxEditor__Content .resource-item > span:last-child {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.df-doc-content .resource-list--large .resource-item,
+.df-doc-editor .NgxEditor__Content .resource-list--large .resource-item {
+  min-height: 72px;
+}
+
+.df-doc-content .resource-item__meta,
+.df-doc-editor .NgxEditor__Content .resource-item__meta {
+  flex: 0 0 auto !important;
+  text-align: right;
+}
+
+.df-doc-content .rank-list,
+.df-doc-editor .NgxEditor__Content .rank-list {
+  display: grid;
+  gap: 9px;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+
+.df-doc-content .rank-list li,
+.df-doc-editor .NgxEditor__Content .rank-list li {
+  position: relative;
+  margin: 0;
+  padding: 4px 0 4px 34px;
+  counter-increment: rank;
+}
+
+.df-doc-content .rank-list li::before,
+.df-doc-editor .NgxEditor__Content .rank-list li::before {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 50%;
+  color: var(--accent);
+  content: counter(rank);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.df-doc-content .journey-grid,
+.df-doc-editor .NgxEditor__Content .journey-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.df-doc-content .journey-card,
+.df-doc-editor .NgxEditor__Content .journey-card {
+  position: relative;
+  min-height: 178px;
+  padding: 54px 17px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .journey-card:not(:last-child)::after,
+.df-doc-editor .NgxEditor__Content .journey-card:not(:last-child)::after {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: -15px;
+  color: var(--accent);
+  content: '\2192';
+  font-weight: 900;
+}
+
+.df-doc-content .journey-card__number,
+.df-doc-editor .NgxEditor__Content .journey-card__number {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.df-doc-content .journey-card h3,
+.df-doc-editor .NgxEditor__Content .journey-card h3 {
+  margin: 0 0 8px;
+  color: var(--accent);
+}
+
+.df-doc-content .journey-card p,
+.df-doc-editor .NgxEditor__Content .journey-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.df-doc-content .status-list,
+.df-doc-editor .NgxEditor__Content .status-list {
+  display: grid;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  list-style: none;
+}
+
+.df-doc-content .status-item,
+.df-doc-editor .NgxEditor__Content .status-item {
+  display: flex;
+  margin: 0;
+  padding: 10px 13px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.df-doc-content .status-item:last-child,
+.df-doc-editor .NgxEditor__Content .status-item:last-child {
+  border-bottom: 0;
+}
+
+.df-doc-content .status-item strong,
+.df-doc-editor .NgxEditor__Content .status-item strong {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.df-doc-content .status-item--done strong,
+.df-doc-editor .NgxEditor__Content .status-item--done strong {
+  color: var(--success);
+}
+
+.df-doc-content .status-item--progress strong,
+.df-doc-editor .NgxEditor__Content .status-item--progress strong {
+  color: var(--warn);
+}
+
+.df-doc-content .related-links,
+.df-doc-editor .NgxEditor__Content .related-links {
+  margin: 26px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.df-doc-content .related-links p,
+.df-doc-editor .NgxEditor__Content .related-links p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 0;
+}
+
+.df-doc-content .related-links strong,
+.df-doc-editor .NgxEditor__Content .related-links strong {
+  flex-basis: 100%;
+}
+
+.df-doc-content .related-links span,
+.df-doc-editor .NgxEditor__Content .related-links span {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.df-doc-content .related-links span::after,
+.df-doc-editor .NgxEditor__Content .related-links span::after {
+  margin-left: 7px;
+  content: '\2192';
+}
+
+.df-doc-editor .NgxEditor__Content th p,
+.df-doc-editor .NgxEditor__Content td p {
+  margin-bottom: 0;
+}
+
+.df-doc-content pre,
+.df-doc-editor .NgxEditor__Content pre {
+  margin: 18px 0;
+  padding: 16px 18px;
+  overflow: auto;
+  border-radius: var(--radius-md);
+  background: #202124;
+  color: #e8eaed;
+  font: 400 13px/1.6 var(--font-mono);
+}
+
+.df-doc-content img,
+.df-doc-editor .NgxEditor__Content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 18px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 640px) {
+  .df-doc-content .doc-intro,
+  .df-doc-content .doc-section--soft,
+  .df-doc-editor .NgxEditor__Content .doc-intro,
+  .df-doc-editor .NgxEditor__Content .doc-section--soft {
+    padding: 17px;
+  }
+
+  .df-doc-content .steps > ol > li,
+  .df-doc-editor .NgxEditor__Content .steps > ol > li {
+    padding-right: 12px;
+  }
+
+  .df-doc-content .content-grid--2,
+  .df-doc-content .content-grid--3,
+  .df-doc-content .annotation-grid,
+  .df-doc-content .screen-grid,
+  .df-doc-content .flow-strip,
+  .df-doc-editor .NgxEditor__Content .content-grid--2,
+  .df-doc-editor .NgxEditor__Content .content-grid--3,
+  .df-doc-editor .NgxEditor__Content .annotation-grid,
+  .df-doc-editor .NgxEditor__Content .screen-grid,
+  .df-doc-editor .NgxEditor__Content .flow-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .df-doc-content .flow-strip li:not(:last-child)::after,
+  .df-doc-editor .NgxEditor__Content .flow-strip li:not(:last-child)::after {
+    top: auto;
+    right: 50%;
+    bottom: -25px;
+    transform: translateX(50%) rotate(90deg);
+  }
+
+  .df-doc-content .objective-card,
+  .df-doc-editor .NgxEditor__Content .objective-card {
+    padding: 54px 17px 17px;
+  }
+
+  .df-doc-content .journey-grid,
+  .df-doc-editor .NgxEditor__Content .journey-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .df-doc-content .journey-card:not(:last-child)::after,
+  .df-doc-editor .NgxEditor__Content .journey-card:not(:last-child)::after {
+    top: auto;
+    right: 50%;
+    bottom: -14px;
+    transform: translateX(50%) rotate(90deg);
+  }
+
+  .df-doc-content .resource-item,
+  .df-doc-editor .NgxEditor__Content .resource-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .df-doc-content .resource-item__meta,
+  .df-doc-editor .NgxEditor__Content .resource-item__meta {
+    flex-basis: 100% !important;
+    text-align: left;
+  }
+}

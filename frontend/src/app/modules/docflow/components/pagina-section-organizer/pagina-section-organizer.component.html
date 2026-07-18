@@ -1,0 +1,97 @@
+<section class="section-organizer" aria-label="Organizador visual de seções">
+  <header class="section-organizer__head">
+    <span>
+      <strong>Organizar seções</strong>
+      <small>Arraste pela alça ou use as setas. A alteração é aplicada ao conteúdo da página.</small>
+    </span>
+    <span class="section-organizer__head-actions">
+      <span class="section-organizer__save-status" [attr.data-status]="salvamentoStatus()">
+        {{ statusLabel() }}
+      </span>
+      <button
+        type="button"
+        class="section-organizer__undo"
+        [disabled]="!podeDesfazer()"
+        (click)="desfazer()"
+        title="Desfazer última alteração"
+      >
+        <span aria-hidden="true">↶</span> Desfazer
+      </button>
+      <span class="section-organizer__count">{{ secoes().length }} seções</span>
+    </span>
+  </header>
+
+  @if (secoes().length > 0) {
+    <div
+      class="section-organizer__list"
+      cdkDropList
+      [cdkDropListData]="secoes()"
+      (cdkDropListDropped)="reordenar($event)"
+    >
+      @for (secao of secoes(); track secao.id; let indice = $index; let primeira = $first; let ultima = $last) {
+        <article class="section-organizer__item" cdkDrag>
+          <div class="section-organizer__toolbar">
+            <button
+              type="button"
+              class="section-organizer__handle"
+              cdkDragHandle
+              [attr.aria-label]="'Arrastar ' + secao.titulo"
+              title="Arrastar seção"
+            >
+              <span aria-hidden="true">⋮⋮</span>
+            </button>
+            <span class="section-organizer__number">{{ indice + 1 }}</span>
+            <span class="section-organizer__meta">
+              <strong>{{ secao.titulo }}</strong>
+              <small>{{ secao.tipo }} · {{ secao.resumo || 'Sem texto descritivo' }}</small>
+            </span>
+            <span class="section-organizer__actions">
+              <button
+                type="button"
+                [disabled]="primeira"
+                (click)="mover(indice, -1)"
+                [attr.aria-label]="'Mover ' + secao.titulo + ' para cima'"
+                title="Mover para cima"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                [disabled]="ultima"
+                (click)="mover(indice, 1)"
+                [attr.aria-label]="'Mover ' + secao.titulo + ' para baixo'"
+                title="Mover para baixo"
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                (click)="duplicar(indice)"
+                [attr.aria-label]="'Duplicar ' + secao.titulo"
+                title="Duplicar seção"
+              >
+                ⧉
+              </button>
+              <button
+                type="button"
+                class="section-organizer__delete"
+                (click)="solicitarExclusao(secao)"
+                [attr.aria-label]="'Excluir ' + secao.titulo"
+                title="Excluir seção"
+              >
+                ×
+              </button>
+            </span>
+          </div>
+          <div class="section-organizer__preview df-doc-content" [innerHTML]="secao.html"></div>
+          <div class="section-organizer__placeholder" *cdkDragPlaceholder></div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="section-organizer__notice">
+      <strong>Nenhuma seção para organizar.</strong>
+      <span>Escolha um modelo ou insira blocos na página.</span>
+    </div>
+  }
+</section>

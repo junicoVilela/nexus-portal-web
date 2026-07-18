@@ -63,13 +63,25 @@
           <p class="pub-det__empty">Sem changelog registrado para esta publicação.</p>
         }
       </ui-card>
+    }
 
-      <div class="pub-det__actions">
+    <div class="pub-det__actions">
+      @if (publicacao()!.status === 'SUCESSO') {
         <ui-button variant="secondary" icon="Link" (clicked)="copiarLink()">
           Copiar link público temporário (download ZIP sem login)
         </ui-button>
-      </div>
-    }
+      }
+      <ui-button
+        *appPermissao="'PUBLICACAO:EXCLUIR'"
+        variant="danger"
+        icon="Trash2"
+        [disabled]="publicacao()!.status === 'GERANDO'"
+        [loading]="excluindo()"
+        (clicked)="excluir()"
+        i18n="@@docflow.publicacaoDetalhe.excluir"
+        >Excluir publicação</ui-button
+      >
+    </div>
   } @else {
     <ui-card padding="md">
       <p class="pub-det__empty">Carregando…</p>

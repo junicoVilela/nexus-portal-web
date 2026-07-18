@@ -9,7 +9,7 @@
   emptyIcon="Layers"
 >
   <div actions>
-    <ui-button icon="Plus" (clicked)="novo()">Novo módulo</ui-button>
+    <ui-button *appPermissao="'MODULO:CRIAR'" icon="Plus" (clicked)="novo()">Novo módulo</ui-button>
   </div>
 
   <div filters class="modulos__filters">
@@ -83,7 +83,25 @@
               />
             </td>
             <td class="modulos__td modulos__td--actions">
-              <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(modulo)">Editar</ui-button>
+              <ui-button
+                *appPermissao="'MODULO:EDITAR'"
+                variant="ghost"
+                size="sm"
+                icon="Pencil"
+                (clicked)="editar(modulo)"
+                >Editar</ui-button
+              >
+              <ui-button
+                *appPermissao="'MODULO:EXCLUIR'"
+                variant="danger"
+                size="sm"
+                icon="Trash2"
+                [disabled]="!!excluindoId()"
+                [loading]="excluindoId() === modulo.id"
+                (clicked)="excluir(modulo)"
+                i18n="@@docflow.modulos.excluir"
+                >Excluir</ui-button
+              >
             </td>
           </tr>
         }

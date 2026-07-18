@@ -1,15 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '@env/environment';
+import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
-import { Pagina, PaginaAnexo, PaginaRevisao, StatusPagina } from '../models/pagina.model';
+import {
+  Pagina,
+  PaginaAnexo,
+  PaginaQualidade,
+  PaginaRevisao,
+  PaginaTemplate,
+  PaginaTemplateAplicacao,
+  PaginaTemplateAplicada,
+  PaginaTemplateCriacao,
+  PaginaTemplateDuplicacao,
+  PaginaTemplateVersao,
+  StatusPagina,
+} from '../models/pagina.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaginaService {
   private readonly base = environment.apiUrl;
+  private readonly templatesCache = new Map<
+    string,
+    { expiresAt: number; request: Observable<PaginaTemplate[]> }
+  >();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -49,10 +66,110 @@ export class PaginaService {
     return this.http.get<Pagina>(`${this.base}/paginas/${id}`);
   }
 
+  templatesPagina(
+    filtros: {
+      projetoId?: string;
+      clienteId?: string;
+      somenteContexto?: boolean;
+      incluirArquivados?: boolean;
+    } = {},
+  ): Observable<PaginaTemplate[]> {
+    const chave = JSON.stringify({
+      projetoId: filtros.projetoId ?? '',
+      clienteId: filtros.clienteId ?? '',
+      somenteContexto: filtros.somenteContexto ?? true,
+      incluirArquivados: filtros.incluirArquivados ?? false,
+    });
+    const agora = Date.now();
+    const cache = this.templatesCache.get(chave);
+    if (cache && cache.expiresAt > agora) return cache.request;
+
+    const request = this.http
+      .get<PaginaTemplate[]>(`${this.base}/paginas/templates`, {
+        params: buildQueryParams(filtros),
+      })
+      .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.templatesCache.set(chave, {
+      expiresAt: agora + TIMINGS.serviceCacheTtlMs,
+      request,
+    });
+    return request;
+  }
+
+  criarTemplatePagina(payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
+    return this.http
+      .post<PaginaTemplate>(`${this.base}/paginas/templates`, payload)
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  excluirTemplatePagina(id: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.base}/paginas/templates/${id}`)
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  atualizarTemplatePagina(id: string, payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
+    return this.http
+      .put<PaginaTemplate>(`${this.base}/paginas/templates/${id}`, payload)
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  duplicarTemplatePagina(id: string, payload: PaginaTemplateDuplicacao): Observable<PaginaTemplate> {
+    return this.http
+      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/duplicar`, payload)
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  aplicarTemplatePagina(id: string, payload: PaginaTemplateAplicacao): Observable<PaginaTemplateAplicada> {
+    return this.http.post<PaginaTemplateAplicada>(`${this.base}/paginas/templates/${id}/aplicar`, payload);
+  }
+
+  arquivarTemplatePagina(id: string): Observable<PaginaTemplate> {
+    return this.http
+      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/arquivar`, {})
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  reativarTemplatePagina(id: string): Observable<PaginaTemplate> {
+    return this.http
+      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/reativar`, {})
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  versoesTemplatePagina(id: string): Observable<PaginaTemplateVersao[]> {
+    return this.http.get<PaginaTemplateVersao[]>(`${this.base}/paginas/templates/${id}/versoes`);
+  }
+
+  restaurarVersaoTemplatePagina(id: string, numero: number): Observable<PaginaTemplate> {
+    return this.http
+      .post<PaginaTemplate>(`${this.base}/paginas/templates/${id}/versoes/${numero}/restaurar`, {})
+      .pipe(tap(() => this.invalidarCacheTemplates()));
+  }
+
+  private invalidarCacheTemplates(): void {
+    this.templatesCache.clear();
+  }
+
   salvarPagina(payload: Partial<Pagina>, id?: string): Observable<Pagina> {
     return id
       ? this.http.put<Pagina>(`${this.base}/paginas/${id}`, payload)
       : this.http.post<Pagina>(`${this.base}/paginas`, payload);
+  }
+
+  excluirPagina(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/paginas/${id}`);
+  }
+
+  autosavePagina(id: string, payload: Partial<Pagina>): Observable<Pagina> {
+    return this.http.put<Pagina>(`${this.base}/paginas/${id}/autosave`, payload);
+  }
+
+  qualidadePagina(id: string): Observable<PaginaQualidade> {
+    return this.http.get<PaginaQualidade>(`${this.base}/paginas/${id}/qualidade`);
+  }
+
+  previewPaginaHtml(id: string): Observable<string> {
+    return this.http.get(`${this.base}/paginas/${id}/preview`, { responseType: 'text' });
   }
 
   salvarRascunho(id: string): Observable<Pagina> {

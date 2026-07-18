@@ -16,6 +16,32 @@ Cliente → Projeto → Módulo → Página → Publicação
 - **Página**: unidade de conteúdo HTML editável com status editorial (rascunho → revisão → aprovado → publicado → arquivado).
 - **Publicação**: geração de pacote ZIP por cliente em uma versão específica.
 
+O editor de página usa autosave persistido, backup local, `version` para concorrência otimista,
+checklist editorial e prévia HTML fornecida pelo renderizador do backend. O catálogo possui
+12 modelos visuais responsivos no estilo portal de ajuda, com objetivo, captura de tela,
+marcações numeradas, cartões, fluxos e tabelas de referência. A biblioteca do editor oferece
+13 blocos reutilizáveis inseridos sem substituir o conteúdo atual, com busca textual e
+abertura contextual pelo comando `/` em uma linha vazia. A prévia inclui um organizador
+de seções com drag-and-drop e controles de subir/descer; a nova ordem atualiza o HTML e
+participa do autosave existente. O organizador também permite duplicar, excluir com
+confirmação e desfazer até 20 alterações da sessão, além de exibir o estado do autosave.
+O catálogo aceita modelos personalizados por projeto ou cliente, criados a partir do HTML
+atual e administrados na mesma galeria sem permitir exclusão dos modelos de sistema.
+Os modelos também possuem aplicação contextual com variáveis, filtro de compatibilidade,
+edição, duplicação, arquivamento e histórico imutável. Páginas registram o modelo e a versão
+de origem sem acoplar seu conteúdo às alterações posteriores do catálogo.
+Antes de aplicar, cada modelo pode ser pré-visualizado com as variáveis resolvidas para o
+contexto atual. O primeiro autosave preserva o catálogo e a prévia abertos.
+
+As rotas e ações sensíveis usam permissões RBAC `DOMINIO:ACAO`. Exceções de runtime passam
+por `GlobalErrorHandler`; erros HTTP passam pelos interceptors e pelo host global de toast.
+Projetos, módulos e templates usam cache leve com TTL e invalidação após mutações.
+
+O contrato do backend está versionado em `frontend/openapi/softon-portal-api.json` e gera o
+cliente Angular em `frontend/src/app/api/generated/` por `npm run api:generate`. O fluxo E2E
+`e2e/docflow-golden-flow.spec.ts` cobre criação estrutural, prévia, workflow editorial,
+permissões, axe/WCAG e layout mobile sem depender de backend real.
+
 ## Estrutura atual
 
 Implementado em `src/app/modules/docflow/` (renomeado de `manual-usuario` em 2026-06-09):
@@ -26,7 +52,7 @@ src/app/modules/docflow/
 │   ├── cliente.model.ts        (Cliente, PreviewToken)
 │   ├── projeto.model.ts        (Projeto)
 │   ├── modulo.model.ts         (Modulo)
-│   ├── pagina.model.ts         (Pagina, StatusPagina, PaginaAnexo, PaginaRevisao, ChangelogItem)
+│   ├── pagina.model.ts         (Pagina, StatusPagina, PaginaAnexo, PaginaRevisao, PaginaTemplate, ChangelogItem)
 │   └── publicacao.model.ts     (Publicacao, StatusPublicacao)
 ├── services/
 │   ├── cliente.service.ts
@@ -76,17 +102,18 @@ Para spec frontend completa, ver `docs/docflow/` (00-06 + 99).
 Base: `/api/doc-flow`
 
 ```text
-GET/POST/PUT   /clientes
+GET/POST/PUT/DELETE /clientes
 GET            /clientes/:id/vinculos
 PUT            /clientes/:id/projetos | /modulos | /paginas
 POST           /clientes/:id/copiar-vinculos
 POST/DELETE    /clientes/:id/logo
-GET/POST/PUT   /projetos
-GET/POST/PUT   /modulos
-GET/POST/PUT   /paginas
+GET/POST/PUT/DELETE /projetos
+GET/POST/PUT/DELETE /modulos
+GET/POST/PUT/DELETE /paginas
 POST           /paginas/:id/publicar | /aprovar | /arquivar | /duplicar | /enviar-revisao
 GET/POST/DELETE /paginas/:id/anexos
 GET/POST/PUT   /publicacoes
+DELETE         /publicacoes/:id
 GET            /publicacoes/preview | /preview-html | /diagnostico
 POST           /publicacoes/:id/reprocessar
 GET            /publicacoes/:id/download | /download-pdf | /download-token | /changelog

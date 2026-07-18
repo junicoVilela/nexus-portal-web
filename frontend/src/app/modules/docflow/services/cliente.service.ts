@@ -35,6 +35,10 @@ export class ClienteService {
       : this.http.post<Cliente>(`${this.base}/clientes`, payload);
   }
 
+  excluirCliente(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/clientes/${id}`);
+  }
+
   vinculosCliente(
     id: string,
   ): Observable<{ projetoIds: string[]; moduloIds: string[]; paginaIds: string[] }> {

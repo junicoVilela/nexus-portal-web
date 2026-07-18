@@ -1,33 +1,89 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="pt-BR" datatype="plaintext" original="ng2.template">
+  <file source-language="pt" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="shell.home" datatype="html">
+        <source>Início</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">4,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="shell.logout" datatype="html">
+        <source>Sair</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
+          <context context-type="linenumber">75,82</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="shell.openMenu" datatype="html">
         <source>Menu</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
-          <context context-type="linenumber">51,54</context>
+          <context context-type="linenumber">90,93</context>
         </context-group>
       </trans-unit>
       <trans-unit id="shell.portalLabel" datatype="html">
         <source>Portal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
-          <context context-type="linenumber">55,57</context>
+          <context context-type="linenumber">94,96</context>
         </context-group>
       </trans-unit>
       <trans-unit id="shell.openCommandPalette" datatype="html">
         <source>Abrir paleta de comandos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
-          <context context-type="linenumber">63,66</context>
+          <context context-type="linenumber">102,105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="shell.search" datatype="html">
         <source>Buscar…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell/app-shell.component.html</context>
-          <context context-type="linenumber">66,70</context>
+          <context context-type="linenumber">105,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.clientes.excluir" datatype="html">
+        <source>Excluir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/clientes/clientes-list/clientes.component.html</context>
+          <context context-type="linenumber">87,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.modulos.excluir" datatype="html">
+        <source>Excluir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/modulos/modulos-list/modulos.component.html</context>
+          <context context-type="linenumber">95,101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.paginas.excluir" datatype="html">
+        <source>Excluir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/paginas/paginas-list/paginas.component.html</context>
+          <context context-type="linenumber">146,153</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.projetos.excluir" datatype="html">
+        <source>Excluir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/projetos/projetos-list/projetos.component.html</context>
+          <context context-type="linenumber">77,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.publicacaoDetalhe.excluir" datatype="html">
+        <source>Excluir publicação</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/publicacoes/publicacao-detalhe/publicacao-detalhe.component.html</context>
+          <context context-type="linenumber">81,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="docflow.publicacoes.excluir" datatype="html">
+        <source>Excluir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/docflow/pages/publicacoes/publicacoes-list/publicacoes.component.html</context>
+          <context context-type="linenumber">114,118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ui.errorState.network.title" datatype="html">

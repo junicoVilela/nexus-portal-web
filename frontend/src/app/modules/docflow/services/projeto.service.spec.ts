@@ -60,4 +60,17 @@ describe('ProjetoService', () => {
     expect(req.request.method).toBe('PUT');
     req.flush({} as Projeto);
   });
+
+  it('excluirProjeto() DELETEs e invalida o cache', () => {
+    service.projetos().subscribe();
+    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
+
+    service.excluirProjeto('p1').subscribe();
+    const req = http.expectOne(`${BASE}/projetos/p1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+
+    service.projetos().subscribe();
+    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
+  });
 });

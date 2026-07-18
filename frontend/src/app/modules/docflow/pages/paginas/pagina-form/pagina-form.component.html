@@ -12,21 +12,174 @@
     icon="FileText"
   />
 
+  @if (paginaAtual()) {
+    <div class="pf-status-line">
+      <span>Status editorial</span>
+      <app-pagina-status-badge [status]="paginaAtual()!.status" />
+      <span class="pf-autosave" [attr.data-status]="autosaveStatus()">{{ autosaveLabel }}</span>
+      <span class="pf-status-line__shortcut">Ctrl+S salva sem sair do editor</span>
+    </div>
+  }
+
+  @if (conflitoMensagem()) {
+    <div class="pf-conflict" role="alert">
+      <div>
+        <strong>Outra edição foi salva antes da sua.</strong>
+        <span>{{ conflitoMensagem() }} Seu conteúdo permanece no backup local.</span>
+      </div>
+      <div class="pf-conflict__actions">
+        <ui-button type="button" size="sm" variant="ghost" (clicked)="usarVersaoServidor()">
+          Carregar servidor
+        </ui-button>
+        <ui-button type="button" size="sm" variant="danger" (clicked)="sobrescreverConflito()">
+          Manter minha versão
+        </ui-button>
+      </div>
+    </div>
+  }
+
   <form [formGroup]="form" (ngSubmit)="salvar()">
     <div class="pf-body">
+      @if (mostrarTemplates()) {
+        <app-pagina-template-picker
+          [templates]="templates()"
+          [selecionadoId]="templateSelecionadoId()"
+          [somenteContexto]="somenteTemplatesContexto()"
+          [incluirArquivados]="incluirTemplatesArquivados()"
+          [previewingId]="previsualizandoTemplateId()"
+          [podeDuplicar]="podeCriarTemplate()"
+          [podeEditar]="podeEditarTemplate()"
+          [podeExcluir]="podeExcluirTemplate()"
+          (selecionado)="selecionarTemplate($event)"
+          (previewSolicitada)="previsualizarTemplate($event)"
+          (edicaoSolicitada)="editarTemplatePersonalizado($event)"
+          (duplicacaoSolicitada)="duplicarTemplate($event)"
+          (arquivamentoSolicitado)="arquivarTemplate($event)"
+          (reativacaoSolicitada)="reativarTemplate($event)"
+          (historicoSolicitado)="abrirHistoricoTemplate($event)"
+          (exclusaoSolicitada)="excluirTemplatePersonalizado($event)"
+          (contextoAlterado)="alterarContextoTemplates($event)"
+          (arquivadosAlterado)="alterarArquivadosTemplates($event)"
+          (fechado)="mostrarTemplates.set(false)"
+        />
+        @if (templatePreview(); as preview) {
+          <section class="pf-template-preview" aria-labelledby="template-preview-title" aria-live="polite">
+            <header>
+              <div>
+                <span>Prévia com o contexto atual</span>
+                <h3 id="template-preview-title">{{ preview.template.nome }}</h3>
+              </div>
+              <button type="button" (click)="templatePreview.set(null)" aria-label="Fechar prévia do modelo">×</button>
+            </header>
+            <div class="pf-template-preview__context">
+              @for (item of preview.aplicado.variaveisResolvidas | keyvalue; track item.key) {
+                <span
+                  ><strong>{{ item.key }}</strong
+                  >{{ item.value }}</span
+                >
+              }
+              @if ((preview.aplicado.variaveisResolvidas | keyvalue).length === 0) {
+                <span>Nenhuma variável pôde ser preenchida com os campos atuais.</span>
+              }
+            </div>
+            @if (preview.aplicado.variaveisPendentes.length) {
+              <div class="pf-template-preview__warning" role="status">
+                <lucide-icon name="AlertTriangle" />
+                <span>
+                  <strong>Complete {{ preview.aplicado.variaveisPendentes.length }} variável(is)</strong>
+                  {{ preview.aplicado.variaveisPendentes.join(', ') }}
+                </span>
+              </div>
+            }
+            <div class="pf-template-preview__canvas df-doc-content" [innerHTML]="preview.aplicado.conteudoHtml"></div>
+            <footer>
+              <ui-button type="button" variant="ghost" size="sm" (clicked)="templatePreview.set(null)"
+                >Fechar</ui-button
+              >
+              <ui-button
+                type="button"
+                size="sm"
+                [disabled]="preview.template.ativo === false"
+                (clicked)="selecionarTemplate(preview.template)"
+              >
+                Aplicar este modelo
+              </ui-button>
+            </footer>
+          </section>
+        }
+        @if (templateHistorico()) {
+          <section class="pf-template-history" aria-labelledby="template-history-title">
+            <header>
+              <div>
+                <span>Histórico imutável</span>
+                <h3 id="template-history-title">{{ templateHistorico()!.nome }}</h3>
+              </div>
+              <button type="button" (click)="templateHistorico.set(null)" aria-label="Fechar histórico">×</button>
+            </header>
+            @if (carregandoVersoesTemplate()) {
+              <p>Carregando versões…</p>
+            } @else {
+              <div class="pf-template-history__list">
+                @for (versao of templateVersoes(); track versao.id) {
+                  <article>
+                    <span class="pf-template-history__number">v{{ versao.numero }}</span>
+                    <span>
+                      <strong>{{ versao.nome }}</strong>
+                      <small>
+                        {{ versao.createdAt | date: 'dd/MM/yyyy HH:mm' }} · {{ versao.paginasOriginadas }} página(s)
+                        originada(s)
+                      </small>
+                    </span>
+                    @if (
+                      podeEditarTemplate() &&
+                      templateHistorico()!.personalizado &&
+                      versao.numero !== templateHistorico()!.versaoAtual
+                    ) {
+                      <button type="button" (click)="restaurarVersaoTemplate(versao)">Restaurar</button>
+                    } @else if (versao.numero === templateHistorico()!.versaoAtual) {
+                      <em>Atual</em>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        }
+      } @else if (!paginaAtual()) {
+        <div class="pf-template-resume">
+          <span>Estrutura inicial definida. Você pode trocar o modelo antes de salvar.</span>
+          <ui-button
+            type="button"
+            variant="ghost"
+            size="sm"
+            icon="LayoutTemplate"
+            (clicked)="mostrarTemplates.set(true)"
+          >
+            Escolher modelo
+          </ui-button>
+        </div>
+      }
+
       <div class="pf-fields">
         <div class="df-form__grid">
           <div class="df-form__field df-form__field--4">
-            <label class="df-form__label">Título</label>
-            <input class="df-form__input" formControlName="titulo" />
+            <label class="df-form__label" for="pagina-titulo">Título *</label>
+            <input id="pagina-titulo" class="df-form__input" formControlName="titulo" />
+            @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+              <small class="df-form__error">Informe o título.</small>
+            }
           </div>
           <div class="df-form__field df-form__field--4">
-            <label class="df-form__label">Slug</label>
-            <input class="df-form__input" formControlName="slug" />
+            <label class="df-form__label" for="pagina-slug">Slug</label>
+            <input id="pagina-slug" class="df-form__input" formControlName="slug" />
+            <small class="pf-hint">Se ficar vazio, será gerado a partir do título.</small>
           </div>
           <div class="df-form__field df-form__field--4">
-            <label class="df-form__label">Código da tela</label>
-            <input class="df-form__input" formControlName="codigoTela" />
+            <label class="df-form__label" for="pagina-codigo">Código da tela *</label>
+            <input id="pagina-codigo" class="df-form__input" formControlName="codigoTela" />
+            @if (form.controls.codigoTela.touched && form.controls.codigoTela.invalid) {
+              <small class="df-form__error">Informe o código da tela.</small>
+            }
           </div>
           <app-pagina-meta-fields
             [form]="form"
@@ -38,22 +191,50 @@
             (moduloChange)="onModuloChange()"
           />
           <div class="df-form__field df-form__field--3">
-            <label class="df-form__label">Ordem</label>
-            <input class="df-form__input" type="number" formControlName="ordem" />
+            <label class="df-form__label" for="pagina-ordem">Ordem</label>
+            <input id="pagina-ordem" class="df-form__input" type="number" formControlName="ordem" />
           </div>
           <div class="df-form__field df-form__field--3">
-            <span class="df-form__label">Status</span>
+            <span class="df-form__label">Disponibilidade</span>
             <label class="df-form__check df-form__check--inline">
               <input type="checkbox" formControlName="ativo" />
               <span>Página ativa</span>
             </label>
           </div>
           <div class="df-form__field df-form__field--12">
-            <label class="df-form__label">Resumo</label>
-            <textarea class="df-form__textarea" formControlName="resumo"></textarea>
+            <label class="df-form__label" for="pagina-resumo">Resumo</label>
+            <textarea id="pagina-resumo" class="df-form__textarea" formControlName="resumo"></textarea>
           </div>
         </div>
       </div>
+
+      <section class="pf-quality" [class.pf-quality--ready]="aptoParaRevisao()">
+        <header class="pf-quality__head">
+          <div>
+            <span class="pf-quality__eyebrow">Prontidão editorial</span>
+            <h3>Checklist antes da revisão</h3>
+          </div>
+          <div class="pf-quality__score">
+            <strong>{{ qualidadeConcluidos() }}/{{ qualidadeItens().length }}</strong>
+            <span>{{ aptoParaRevisao() ? 'Pode enviar para revisão' : 'Ainda há pendências' }}</span>
+          </div>
+        </header>
+        <div class="pf-quality__items">
+          @for (item of qualidadeItens(); track item.codigo) {
+            <div
+              class="pf-quality__item"
+              [class.pf-quality__item--ok]="item.ok"
+              [class.pf-quality__item--warn]="!item.ok && item.severidade === 'AVISO'"
+            >
+              <span class="pf-quality__icon" aria-hidden="true">{{ item.ok ? '✓' : '!' }}</span>
+              <span
+                ><strong>{{ item.titulo }}</strong
+                ><small>{{ item.descricao }}</small></span
+              >
+            </div>
+          }
+        </div>
+      </section>
 
       <div class="pf-editor">
         <div class="pf-editor-head">
@@ -92,7 +273,50 @@
               </div>
             </div>
           </div>
+          <div class="pf-editor-actions">
+            <ui-button
+              type="button"
+              size="sm"
+              variant="ghost"
+              icon="LayoutTemplate"
+              (clicked)="mostrarTemplates.set(true)"
+            >
+              Modelos
+            </ui-button>
+            @if (podeCriarTemplate()) {
+              <ui-button
+                type="button"
+                size="sm"
+                variant="secondary"
+                [disabled]="!form.controls.conteudoHtml.value.trim()"
+                (clicked)="templateEmEdicao.set(null); mostrarSalvarTemplate.set(true)"
+              >
+                Salvar como modelo
+              </ui-button>
+            }
+          </div>
         </div>
+        @if (mostrarSalvarTemplate()) {
+          <app-pagina-template-save
+            [projetos]="projetos()"
+            [clientes]="clientes()"
+            [projetoIdInicial]="form.controls.projetoId.value"
+            [saving]="salvandoTemplate()"
+            [template]="templateEmEdicao()"
+            (confirmado)="salvarTemplatePersonalizado($event)"
+            (cancelado)="mostrarSalvarTemplate.set(false); templateEmEdicao.set(null)"
+          />
+        }
+        @if (variaveisPendentes().length) {
+          <div class="pf-template-variables" role="status">
+            <lucide-icon name="Braces" />
+            <span>
+              <strong>{{ variaveisPendentes().length }} variável(is) ainda sem valor</strong>
+              <small>{{ variaveisPendentes().join(', ') }}</small>
+            </span>
+            <span>Preencha os campos da página ou substitua os marcadores no conteúdo.</span>
+          </div>
+        }
         <app-pagina-editor-toolbar
           [atalhosEstrutura]="atalhosEstrutura"
           [atalhosBlocos]="atalhosBlocos"
@@ -100,8 +324,11 @@
           (atalhoSelecionado)="executarAtalho($event)"
           (modoChange)="definirEditorModo($event)"
         />
+        <app-pagina-block-library (blocoSelecionado)="inserirBloco($event)" />
         @if (!editId()) {
-          <p class="pf-helper">Salve a página antes para anexar imagens como arquivo.</p>
+          <p class="pf-helper">
+            Na primeira imagem, criaremos automaticamente um rascunho para armazenar o arquivo com segurança.
+          </p>
         }
         <input #fotoInput type="file" accept="image/*" multiple hidden (change)="anexarFotos($event)" />
         <div
@@ -117,7 +344,10 @@
                 ><small>WYSIWYG com toolbar. Bold, listas, links, headings, alinhamento e cores.</small>
               </div>
               @defer (on immediate) {
-                <app-pagina-rich-editor [control]="$any(form.controls.conteudoHtml)" />
+                <app-pagina-rich-editor
+                  [control]="$any(form.controls.conteudoHtml)"
+                  (slashSolicitado)="abrirBibliotecaPorAtalho()"
+                />
               } @loading (minimum 200ms) {
                 <div class="pf-rich-loading" aria-busy="true" aria-label="Carregando editor">
                   <ui-skeleton width="100%" height="38px" />
@@ -131,30 +361,64 @@
           @if (editorModo() === 'codigo' || editorModo() === 'split') {
             <section class="pf-code-pane">
               <div class="pf-pane-head"><strong>Código-fonte</strong><small>HTML final da página.</small></div>
-              <textarea #conteudoHtmlInput class="pf-textarea" formControlName="conteudoHtml"></textarea>
+              <textarea
+                #conteudoHtmlInput
+                class="pf-textarea"
+                formControlName="conteudoHtml"
+                (keydown)="atalhoBlocoNoCodigo($event)"
+              ></textarea>
             </section>
           }
           @if (editorModo() !== 'codigo') {
             <section class="pf-preview-pane">
               <div class="pf-pane-head">
-                <strong>Prévia renderizada</strong><small>Estrutura aproximada do manual final.</small>
+                <span> <strong>Prévia renderizada</strong><small>Estrutura aproximada do manual final.</small> </span>
+                <span class="pf-pane-actions">
+                  <ui-button
+                    type="button"
+                    size="sm"
+                    [variant]="organizandoSecoes() ? 'secondary' : 'ghost'"
+                    (clicked)="alternarOrganizadorSecoes()"
+                  >
+                    {{ organizandoSecoes() ? 'Concluir organização' : 'Organizar seções' }}
+                  </ui-button>
+                  <ui-button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    [loading]="previewing()"
+                    [disabled]="form.invalid || saving() || autosaveStatus() === 'saving'"
+                    (clicked)="abrirPreviewFiel()"
+                  >
+                    Abrir prévia fiel
+                  </ui-button>
+                </span>
               </div>
-              <div class="pf-preview-manual">
-                <div class="pf-preview-topbar">
-                  <span class="pf-preview-chip">Prévia local</span>
-                  <span class="pf-preview-code">{{ codigoTelaPreview }}</span>
+              @if (organizandoSecoes()) {
+                <app-pagina-section-organizer
+                  [html]="form.controls.conteudoHtml.value"
+                  [salvamentoStatus]="autosaveStatus()"
+                  (htmlReordenado)="aplicarOrdemSecoes($event)"
+                  (exclusaoSolicitada)="confirmarExclusaoSecao($event)"
+                />
+              } @else {
+                <div class="pf-preview-manual">
+                  <div class="pf-preview-topbar">
+                    <span class="pf-preview-chip">Prévia local</span>
+                    <span class="pf-preview-code">{{ codigoTelaPreview }}</span>
+                  </div>
+                  <article class="pf-preview-article">
+                    <header class="pf-preview-header">
+                      <span class="pf-preview-breadcrumb">{{ breadcrumbPreview }}</span>
+                      <h1>{{ tituloPreview }}</h1>
+                      @if (resumoPreview) {
+                        <p>{{ resumoPreview }}</p>
+                      }
+                    </header>
+                    <div class="pf-preview-body df-doc-content" [innerHTML]="conteudoPreview"></div>
+                  </article>
                 </div>
-                <article class="pf-preview-article">
-                  <header class="pf-preview-header">
-                    <span class="pf-preview-breadcrumb">{{ breadcrumbPreview }}</span>
-                    <h1>{{ tituloPreview }}</h1>
-                    @if (resumoPreview) {
-                      <p>{{ resumoPreview }}</p>
-                    }
-                  </header>
-                  <div class="pf-preview-body" [innerHTML]="conteudoPreview"></div>
-                </article>
-              </div>
+              }
             </section>
           }
         </div>
@@ -172,12 +436,25 @@
 
     <div class="df-form__actions u-mt-16">
       @if (rascunhoSalvoEm()) {
-        <span class="df-form__autosave" title="Rascunho salvo localmente no navegador">
-          Rascunho salvo às {{ rascunhoSalvoEm() | date: 'HH:mm' }}
+        <span class="df-form__autosave" title="Backup local para recuperação em caso de falha de conexão">
+          Backup local às {{ rascunhoSalvoEm() | date: 'HH:mm' }}
         </span>
+      } @else {
+        <span class="df-form__autosave">{{ autosaveLabel }}</span>
       }
       <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
-      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">Salvar</ui-button>
+      <ui-button variant="ghost" type="button" [disabled]="form.invalid || saving()" (clicked)="salvar('nova')">
+        Salvar e criar próxima
+      </ui-button>
+      <ui-button
+        variant="secondary"
+        type="button"
+        [disabled]="form.invalid || saving()"
+        (clicked)="salvar('continuar')"
+      >
+        Salvar e continuar
+      </ui-button>
+      <ui-button type="submit" [loading]="saving()" [disabled]="form.invalid">Salvar e voltar</ui-button>
     </div>
   </form>
 

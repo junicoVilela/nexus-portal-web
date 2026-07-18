@@ -55,6 +55,10 @@ export class ModuloService {
     return op.pipe(tap(() => this.invalidarCache()));
   }
 
+  excluirModulo(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/modulos/${id}`).pipe(tap(() => this.invalidarCache()));
+  }
+
   invalidarCache(): void {
     this.cache.clear();
   }

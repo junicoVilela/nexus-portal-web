@@ -66,4 +66,17 @@ describe('ModuloService', () => {
     expect(req.request.method).toBe('PUT');
     req.flush({} as Modulo);
   });
+
+  it('excluirModulo() DELETEs e invalida o cache', () => {
+    service.modulos('p1').subscribe();
+    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+
+    service.excluirModulo('m1').subscribe();
+    const req = http.expectOne(`${BASE}/modulos/m1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+
+    service.modulos('p1').subscribe();
+    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+  });
 });

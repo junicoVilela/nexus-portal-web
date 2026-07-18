@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
@@ -28,6 +29,8 @@ import {
 } from '@shared/ui';
 import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-status-badge';
 import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-filters';
+import { PermissaoDirective } from '@modules/seguranca/directives';
+import { AuthService } from '@core/auth/services/auth.service';
 
 @Component({
   selector: 'app-paginas',
@@ -41,6 +44,7 @@ import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-fil
     BulkActionBarComponent,
     PaginaStatusBadgeComponent,
     PaginasFiltersComponent,
+    PermissaoDirective,
   ],
   templateUrl: './paginas.component.html',
   styleUrl: './paginas.component.css',
@@ -49,6 +53,8 @@ import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-fil
 export class PaginasComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly notifications = inject(NotificationService);
+  private readonly auth = inject(AuthService);
+  readonly podeEditarPagina = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   readonly projetos = signal<Projeto[]>([]);
   readonly todosModulos = signal<Modulo[]>([]);
   readonly modulos = signal<Modulo[]>([]);
@@ -82,6 +88,7 @@ export class PaginasComponent implements OnInit {
     status: [''],
   });
   readonly resumoStatusGlobal = signal<Record<string, number>>({});
+  readonly excluindoId = signal<string | null>(null);
 
   constructor(
     private readonly fb: FormBuilder,
@@ -258,8 +265,52 @@ export class PaginasComponent implements OnInit {
     });
   }
 
+  async excluir(pagina: Pagina): Promise<void> {
+    if (this.excluindoId()) return;
+    const ok = await this.confirmService.confirm({
+      title: 'Excluir página?',
+      message: `A página "${pagina.titulo}", suas revisões e anexos serão excluídos permanentemente. Subpáginas precisam ser removidas antes.`,
+      acceptLabel: 'Excluir página',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!ok) return;
+
+    this.excluindoId.set(pagina.id);
+    this.paginaService
+      .excluirPagina(pagina.id)
+      .pipe(finalize(() => this.excluindoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Página excluída.');
+          this.selecionados.update(ids => {
+            const atualizados = new Set(ids);
+            atualizados.delete(pagina.id);
+            return atualizados;
+          });
+          this.resumoStatusGlobal.update(resumo => ({
+            ...resumo,
+            [pagina.status]: Math.max(0, (resumo[pagina.status] ?? 1) - 1),
+          }));
+          if (this.paginas().length === 1 && this.paginasPage() > 1) {
+            this.paginasPage.update(page => page - 1);
+            this.atualizarUrl();
+          } else {
+            this.carregar();
+          }
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao excluir página.')),
+      });
+  }
+
   nova(): void {
-    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']));
+    const { projetoId, moduloId } = this.filtros.getRawValue();
+    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
+      queryParams: compactQueryParams({
+        projetoId: projetoId || null,
+        moduloId: moduloId || null,
+      }),
+    });
   }
 
   toggleSelecionado(id: string): void {
@@ -476,6 +527,7 @@ export class PaginasComponent implements OnInit {
       ativo: pagina.ativo,
       moduloId: pagina.moduloId,
       parentId,
+      version: pagina.version,
     };
     this.paginaService.salvarPagina(payload, pagina.id).subscribe({
       next: () => {
@@ -527,6 +579,16 @@ export class PaginasComponent implements OnInit {
       return a - b;
     }
     return String(a).localeCompare(String(b));
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) return fallback;
+    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
+    if (typeof error.error?.message === 'string') return error.error.message;
+    if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
+      return error.error.errors.join(' ');
+    }
+    return fallback;
   }
 
   private atualizarUrl(): void {

@@ -22,17 +22,6 @@
   line-height: 1.7;
 }
 
-:host ::ng-deep .NgxEditor__Content p {
-  margin: 0 0 12px;
-}
-
-:host ::ng-deep .NgxEditor__Content h1,
-:host ::ng-deep .NgxEditor__Content h2,
-:host ::ng-deep .NgxEditor__Content h3 {
-  margin: 16px 0 8px;
-  color: var(--text);
-}
-
 :host ::ng-deep .NgxEditor__MenuBar {
   background: var(--surface-2);
   border-bottom: 1px solid var(--border);

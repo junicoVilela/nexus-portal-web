@@ -21,7 +21,8 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-clientes',
@@ -32,6 +33,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    PermissaoDirective,
   ],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.css',
@@ -39,6 +41,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
 })
 export class ClientesComponent implements OnInit {
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   protected readonly clientes = signal<Cliente[]>([]);
   protected readonly totalClientes = signal(0);
@@ -62,6 +65,7 @@ export class ClientesComponent implements OnInit {
   protected readonly loadingVinculos = signal(false);
   protected paginasLoaded = false;
   protected readonly savingVinculos = signal(false);
+  protected readonly excluindoId = signal<string | null>(null);
 
   protected readonly modulosDisponiveis = computed<Modulo[]>(() => {
     const ids = this.projetoIds();
@@ -221,6 +225,42 @@ export class ClientesComponent implements OnInit {
     this.router.navigate(docFlowRouterCommands(['clientes', cliente.id, 'editar']));
   }
 
+  async excluir(cliente: Cliente): Promise<void> {
+    if (this.excluindoId()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Excluir cliente?',
+      message: `O cliente "${cliente.nome}", seus vínculos, tokens de prévia e logo serão excluídos. Publicações precisam ser removidas antes.`,
+      acceptLabel: 'Excluir cliente',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado) return;
+
+    this.excluindoId.set(cliente.id);
+    this.clienteService
+      .excluirCliente(cliente.id)
+      .pipe(finalize(() => this.excluindoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Cliente excluído.');
+          const fecharVinculos = this.clienteVinculos()?.id === cliente.id;
+          if (fecharVinculos) {
+            this.clienteVinculos.set(undefined);
+            this.clienteVinculosId = '';
+          }
+          if (this.clientes().length === 1 && this.clientesPage() > 1) {
+            this.clientesPage.update(page => page - 1);
+            this.atualizarUrlClientes();
+          } else if (fecharVinculos) {
+            this.atualizarUrlClientes();
+          } else {
+            this.carregarClientes();
+          }
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao excluir cliente.')),
+      });
+  }
+
   abrirVinculos(cliente: Cliente): void {
     this.clienteVinculosId = cliente.id;
     this.clienteVinculos.set(cliente);
@@ -364,6 +404,7 @@ export class ClientesComponent implements OnInit {
 
   private errorMessage(error: unknown, fallback: string): string {
     if (!(error instanceof HttpErrorResponse)) return fallback;
+    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
     if (typeof error.error?.message === 'string') return error.error.message;
     if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
       return error.error.errors.join(' ');

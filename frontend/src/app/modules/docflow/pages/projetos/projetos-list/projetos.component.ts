@@ -1,5 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { Projeto } from '@modules/docflow/models/projeto.model';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
@@ -13,7 +15,8 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-projetos',
@@ -24,6 +27,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    PermissaoDirective,
   ],
   templateUrl: './projetos.component.html',
   styleUrl: './projetos.component.css',
@@ -31,6 +35,7 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
 })
 export class ProjetosComponent implements OnInit {
   private readonly toast = inject(ToastService);
+  private readonly confirm = inject(ConfirmService);
 
   protected readonly projetos = signal<Projeto[]>([]);
   protected readonly totalProjetos = signal(0);
@@ -39,6 +44,7 @@ export class ProjetosComponent implements OnInit {
   protected readonly projetosPageSize = signal(10);
   protected projetoSort = 'nome';
   protected projetoDir: SortDirection = 'ASC';
+  protected readonly excluindoId = signal<string | null>(null);
 
   constructor(
     private readonly projetoService: ProjetoService,
@@ -90,6 +96,35 @@ export class ProjetosComponent implements OnInit {
     this.router.navigate(docFlowRouterCommands(['projetos', projeto.id, 'editar']));
   }
 
+  async excluir(projeto: Projeto): Promise<void> {
+    if (this.excluindoId()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Excluir projeto?',
+      message: `O projeto "${projeto.nome}" será excluído. Remova antes todos os módulos vinculados a ele.`,
+      acceptLabel: 'Excluir projeto',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado) return;
+
+    this.excluindoId.set(projeto.id);
+    this.projetoService
+      .excluirProjeto(projeto.id)
+      .pipe(finalize(() => this.excluindoId.set(null)))
+      .subscribe({
+        next: () => {
+          this.toast.success('Projeto excluído.');
+          if (this.projetos().length === 1 && this.projetosPage() > 1) {
+            this.projetosPage.update(page => page - 1);
+            this.atualizarUrl();
+          } else {
+            this.carregar();
+          }
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao excluir projeto.')),
+      });
+  }
+
   novo(): void {
     this.router.navigate(docFlowRouterCommands(['projetos', 'novo']));
   }
@@ -125,6 +160,16 @@ export class ProjetosComponent implements OnInit {
     this.projetosPageSize.set(size);
     this.projetosPage.set(1);
     this.atualizarUrl();
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) return fallback;
+    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
+    if (typeof error.error?.message === 'string') return error.error.message;
+    if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
+      return error.error.errors.join(' ');
+    }
+    return fallback;
   }
 
   private atualizarUrl(): void {
