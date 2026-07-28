@@ -160,6 +160,9 @@ Páginas novas são criadas como rascunho assim que os campos obrigatórios esti
 O `localStorage`, sob a chave `docflow:pagina-form:<editId|novo>`, permanece como fallback
 para falha de conexão.
 
+A leitura, persistência, expiração e comparação com `updatedAt` ficam isoladas em
+`PaginaDraftService`; o componente concentra apenas a orquestração do formulário e do autosave.
+
 Ao abrir o form:
 
 - Se existe rascunho com idade < 7 dias, restaura e mostra flash "Rascunho local restaurado."
@@ -178,7 +181,8 @@ As consultas de projetos, módulos e catálogo de templates usam cache leve com 
 ## 6. Prontidão editorial e prévia fiel
 
 O checklist reage ao conteúdo do formulário e valida título, código da tela, tamanho mínimo,
-placeholders do modelo, acessibilidade das imagens, resumo e organização em seções. Erros
+placeholders do modelo, texto alternativo e origem das imagens, links inseguros ou vazios,
+hierarquia de títulos, resumo e organização em seções. Erros
 impedem o envio para revisão no backend; avisos são recomendações.
 
 “Abrir prévia fiel” sincroniza o rascunho e carrega `GET /paginas/:id/preview` como HTML via

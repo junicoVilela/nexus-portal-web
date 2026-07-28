@@ -20,7 +20,6 @@ import { debounceTime, startWith, takeUntil } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TIMINGS } from '@core/config/timings';
 import { AuthService } from '@core/auth/services/auth.service';
-import { idadeEmDias } from '@shared/utils/dates';
 import { CanDeactivateComponent } from '@shared/guards';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
@@ -69,6 +68,13 @@ import {
   PaginaTemplateSalvarDados,
   PaginaTemplateSaveComponent,
 } from '@modules/docflow/components/pagina-template-save';
+import {
+  PaginaCreationProgressComponent,
+  PaginaCreationStep,
+  PaginaCreationStepId,
+} from '@modules/docflow/components/pagina-creation-progress/pagina-creation-progress.component';
+import { avaliarQualidadePagina } from '@modules/docflow/utils/pagina-quality.util';
+import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
 type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
@@ -95,6 +101,7 @@ type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'er
     PaginaBlockLibraryComponent,
     PaginaSectionOrganizerComponent,
     PaginaTemplateSaveComponent,
+    PaginaCreationProgressComponent,
   ],
   templateUrl: './pagina-form.component.html',
   styleUrl: './pagina-form.component.css',
@@ -103,6 +110,7 @@ type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'er
 export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComponent {
   private readonly toast = inject(ToastService);
   private readonly auth = inject(AuthService);
+  private readonly paginaDraftService = inject(PaginaDraftService);
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('fotoInput') fotoInput?: ElementRef<HTMLInputElement>;
@@ -165,6 +173,7 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
   protected readonly conflitoMensagem = signal<string | null>(null);
   protected readonly previewing = signal(false);
   protected readonly organizandoSecoes = signal(false);
+  protected readonly etapaAtiva = signal<PaginaCreationStepId>('modelo');
   protected readonly podeCriarTemplate = computed(() => this.auth.tem()('PAGINA:CRIAR'));
   protected readonly podeEditarTemplate = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   protected readonly podeExcluirTemplate = computed(() => this.auth.tem()('PAGINA:EXCLUIR'));
@@ -202,7 +211,7 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
     conteudoHtml: [''],
     ordem: [0],
     ativo: [true],
-    projetoId: [''],
+    projetoId: ['', Validators.required],
     moduloId: ['', Validators.required],
     parentId: [''],
   });
@@ -233,64 +242,9 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
     return ordenadas;
   });
 
-  protected readonly qualidadeItens = computed<PaginaQualidadeItem[]>(() => {
-    const raw = this.formValue();
-    const document = new DOMParser().parseFromString(raw.conteudoHtml || '', 'text/html');
-    const texto = document.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    const placeholder =
-      /\{\{\s*[a-zA-Z0-9_.-]+\s*}}|\b(explique|descreva|informe|liste|registre aqui|nome do campo|escreva uma resposta)\b/i;
-    return [
-      this.itemQualidade(
-        'TITULO',
-        'Título definido',
-        'Informe um título claro para a página.',
-        !!raw.titulo?.trim(),
-        'ERRO',
-      ),
-      this.itemQualidade(
-        'CODIGO_TELA',
-        'Código da tela definido',
-        'Vincule a documentação à tela correta.',
-        !!raw.codigoTela?.trim(),
-        'ERRO',
-      ),
-      this.itemQualidade(
-        'CONTEUDO',
-        'Conteúdo desenvolvido',
-        'A página precisa ter pelo menos 80 caracteres de conteúdo útil.',
-        texto.length >= 80,
-        'ERRO',
-      ),
-      this.itemQualidade(
-        'PLACEHOLDERS',
-        'Textos de orientação substituídos',
-        'Remova instruções do modelo como “Explique”, “Descreva” ou “Nome do campo”.',
-        !placeholder.test(texto),
-        'ERRO',
-      ),
-      this.itemQualidade(
-        'IMAGENS_ALT',
-        'Imagens acessíveis',
-        'Toda imagem deve possuir texto alternativo.',
-        Array.from(document.querySelectorAll('img')).every(img => !!img.getAttribute('alt')?.trim()),
-        'ERRO',
-      ),
-      this.itemQualidade(
-        'RESUMO',
-        'Resumo preenchido',
-        'Inclua uma descrição curta para buscas e navegação.',
-        (raw.resumo?.trim().length ?? 0) >= 30,
-        'AVISO',
-      ),
-      this.itemQualidade(
-        'SECOES',
-        'Conteúdo organizado em seções',
-        'Use ao menos um título de seção para facilitar a leitura.',
-        !!document.querySelector('h2, h3'),
-        'AVISO',
-      ),
-    ];
-  });
+  protected readonly qualidadeItens = computed<PaginaQualidadeItem[]>(() =>
+    avaliarQualidadePagina(this.formValue()),
+  );
 
   protected readonly qualidadeConcluidos = computed(
     () => this.qualidadeItens().filter(item => item.ok).length,
@@ -298,6 +252,36 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
   protected readonly aptoParaRevisao = computed(() =>
     this.qualidadeItens().every(item => item.severidade !== 'ERRO' || item.ok),
   );
+  protected readonly etapasCriacao = computed<PaginaCreationStep[]>(() => {
+    const qualidade = this.qualidadeItens();
+    const ok = (codigo: string) => qualidade.find(item => item.codigo === codigo)?.ok ?? false;
+    return [
+      {
+        id: 'modelo',
+        label: 'Modelo',
+        description: 'Estrutura inicial',
+        complete: !this.mostrarTemplates(),
+      },
+      {
+        id: 'contexto',
+        label: 'Contexto',
+        description: 'Identificação e local',
+        complete: ok('TITULO') && ok('CODIGO_TELA') && ok('CONTEXTO'),
+      },
+      {
+        id: 'conteudo',
+        label: 'Conteúdo',
+        description: 'Texto e imagens',
+        complete: ok('CONTEUDO') && ok('PLACEHOLDERS') && ok('IMAGENS_ALT'),
+      },
+      {
+        id: 'revisao',
+        label: 'Revisão',
+        description: 'Qualidade e preview',
+        complete: qualidade.every(item => item.ok),
+      },
+    ];
+  });
   protected readonly variaveisPendentes = computed(() => {
     const html = this.formValue().conteudoHtml ?? '';
     return [...html.matchAll(/\{\{\s*([a-zA-Z0-9_.-]+)\s*}}/g)]
@@ -383,46 +367,25 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
       .subscribe(value => {
         this.dirty = true;
         this.justSaved = false;
-        try {
-          localStorage.setItem(this.draftKey, JSON.stringify({ value, at: Date.now() }));
-          this.rascunhoSalvoEm.set(new Date());
-        } catch {
-          /* storage full / disabled */
-        }
+        this.rascunhoSalvoEm.set(this.paginaDraftService.salvar(this.draftKey, value));
         this.autosalvarServidor();
       });
   }
 
   private restaurarRascunho(): void {
-    try {
-      const raw = localStorage.getItem(this.draftKey);
-      if (!raw) return;
-      const { value, at } = JSON.parse(raw) as { value: unknown; at: number };
-      if (!value || typeof value !== 'object') return;
-      const ageDays = idadeEmDias(at);
-      if (ageDays > TIMINGS.draftMaxAgeDays) {
-        localStorage.removeItem(this.draftKey);
-        return;
-      }
-      const atualizadoNoServidor = this.paginaAtual()?.updatedAt;
-      if (atualizadoNoServidor && at <= new Date(atualizadoNoServidor).getTime()) {
-        localStorage.removeItem(this.draftKey);
-        return;
-      }
-      this.form.patchValue(value as Record<string, unknown>);
-      this.rascunhoSalvoEm.set(new Date(at));
-      this.toast.success('Rascunho local restaurado.');
-    } catch {
-      localStorage.removeItem(this.draftKey);
-    }
+    const snapshot = this.paginaDraftService.carregar<Record<string, unknown>>(this.draftKey, {
+      maxAgeDays: TIMINGS.draftMaxAgeDays,
+      servidorAtualizadoEm: this.paginaAtual()?.updatedAt,
+    });
+    if (!snapshot) return;
+
+    this.form.patchValue(snapshot.value);
+    this.rascunhoSalvoEm.set(snapshot.savedAt);
+    this.toast.success('Rascunho local restaurado.');
   }
 
   private limparRascunho(key = this.draftKey): void {
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      /* noop */
-    }
+    this.paginaDraftService.remover(key);
     this.dirty = false;
     this.rascunhoSalvoEm.set(null);
   }
@@ -586,6 +549,74 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
     if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return;
     event.preventDefault();
     this.salvar('continuar');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  protected protegerSaidaDoNavegador(event: BeforeUnloadEvent): void {
+    if (!this.hasUnsavedChanges()) return;
+    event.preventDefault();
+  }
+
+  protected irParaEtapa(etapa: PaginaCreationStepId): void {
+    this.etapaAtiva.set(etapa);
+    if (etapa === 'modelo') this.mostrarTemplates.set(true);
+    queueMicrotask(() => {
+      document.getElementById(`pagina-${etapa}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  protected corrigirPendencia(codigo: string): void {
+    const alvos: Record<string, { etapa: PaginaCreationStepId; elemento?: string }> = {
+      TITULO: { etapa: 'contexto', elemento: 'pagina-titulo' },
+      CODIGO_TELA: { etapa: 'contexto', elemento: 'pagina-codigo' },
+      CONTEXTO: { etapa: 'contexto', elemento: 'pagina-projeto' },
+      RESUMO: { etapa: 'contexto', elemento: 'pagina-resumo' },
+      CONTEUDO: { etapa: 'conteudo' },
+      PLACEHOLDERS: { etapa: 'conteudo' },
+      IMAGENS_ALT: { etapa: 'conteudo' },
+      SECOES: { etapa: 'conteudo' },
+    };
+    const alvo = alvos[codigo] ?? { etapa: 'revisao' as PaginaCreationStepId };
+    this.pendenciaDestacada.set(codigo);
+    if (codigo === 'IMAGENS_ALT' || codigo === 'IMAGENS_ORIGEM') this.destacarImagemNoCodigo(codigo);
+    if (codigo === 'PLACEHOLDERS') this.destacarPlaceholderNoCodigo();
+    this.irParaEtapa(alvo.etapa);
+    queueMicrotask(() => document.getElementById(alvo.elemento ?? `pagina-${alvo.etapa}`)?.focus());
+    window.setTimeout(() => this.pendenciaDestacada.set(null), 3600);
+  }
+
+  protected readonly pendenciaDestacada = signal<string | null>(null);
+
+  private destacarImagemNoCodigo(codigo: 'IMAGENS_ALT' | 'IMAGENS_ORIGEM'): void {
+    this.editorModo.set('codigo');
+    const html = this.form.controls.conteudoHtml.value ?? '';
+    const documento = new DOMParser().parseFromString(html, 'text/html');
+    const imagem = Array.from(documento.querySelectorAll('img')).find(item =>
+      codigo === 'IMAGENS_ALT' ? !item.getAttribute('alt')?.trim() : !item.getAttribute('src')?.trim(),
+    );
+    if (!imagem) return;
+    const inicio = html.indexOf(imagem.outerHTML);
+    if (inicio < 0) return;
+    window.setTimeout(() => {
+      const textarea = this.conteudoHtmlInput?.nativeElement;
+      if (!textarea) return;
+      textarea.focus();
+      textarea.setSelectionRange(inicio, inicio + imagem.outerHTML.length);
+    });
+  }
+
+  private destacarPlaceholderNoCodigo(): void {
+    this.editorModo.set('codigo');
+    const html = this.form.controls.conteudoHtml.value ?? '';
+    const placeholder = /\{\{\s*[a-zA-Z0-9_.-]+\s*}}|\b(explique|descreva|informe|liste|registre aqui|nome do campo|escreva uma resposta)\b/i;
+    const encontrado = html.match(placeholder);
+    if (!encontrado || encontrado.index === undefined) return;
+    window.setTimeout(() => {
+      const textarea = this.conteudoHtmlInput?.nativeElement;
+      if (!textarea) return;
+      textarea.focus();
+      textarea.setSelectionRange(encontrado.index!, encontrado.index! + encontrado[0].length);
+    });
   }
 
   voltar(): void {
@@ -754,6 +785,7 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
       this.templateOrigemVersao.set(undefined);
       this.form.controls.conteudoHtml.setValue('');
       this.mostrarTemplates.set(false);
+      this.irParaEtapa('contexto');
       return;
     }
     this.aplicandoTemplate.set(true);
@@ -767,6 +799,7 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
       this.form.controls.conteudoHtml.setValue(aplicado.conteudoHtml);
       this.templatePreview.set(null);
       this.mostrarTemplates.set(false);
+      this.irParaEtapa('contexto');
       const pendencias = aplicado.variaveisPendentes.length;
       this.toast.success(
         pendencias
@@ -1209,6 +1242,7 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
 
   private carregarPagina(pagina: Pagina): void {
     this.paginaAtual.set(pagina);
+    this.etapaAtiva.set('conteudo');
     this.templateOrigemId.set(pagina.templateOrigemId);
     this.templateOrigemVersao.set(pagina.templateOrigemVersao);
     this.templateSelecionadoId.set(pagina.templateOrigemId ?? null);
@@ -1437,16 +1471,6 @@ export class PaginaFormComponent implements OnInit, OnDestroy, CanDeactivateComp
     this.autosaveStatus.set('saved');
     this.autosaveServidorEm.set(new Date());
     return pagina;
-  }
-
-  private itemQualidade(
-    codigo: string,
-    titulo: string,
-    descricao: string,
-    ok: boolean,
-    severidade: 'ERRO' | 'AVISO',
-  ): PaginaQualidadeItem {
-    return { codigo, titulo, descricao, ok, severidade };
   }
 
   private previewLoadingHtml(): string {

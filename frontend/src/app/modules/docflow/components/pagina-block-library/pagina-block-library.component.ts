@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { BLOCOS_PAGINA, BlocoPagina, CategoriaBlocoPagina } from './pagina-block-library.blocks';
 
+type FiltroBloco = CategoriaBlocoPagina | 'Todos' | 'Recentes';
+
 @Component({
   selector: 'app-pagina-block-library',
   standalone: true,
@@ -21,10 +23,12 @@ export class PaginaBlockLibraryComponent {
 
   readonly blocoSelecionado = output<BlocoPagina>();
   readonly aberta = signal(false);
-  readonly categoria = signal<CategoriaBlocoPagina | 'Todos'>('Todos');
+  readonly categoria = signal<FiltroBloco>('Todos');
   readonly busca = signal('');
-  readonly categorias: readonly (CategoriaBlocoPagina | 'Todos')[] = [
+  readonly recentes = signal<string[]>(this.carregarRecentes());
+  readonly categorias: readonly FiltroBloco[] = [
     'Todos',
+    'Recentes',
     'Estrutura',
     'Orientação',
     'Referência',
@@ -33,7 +37,13 @@ export class PaginaBlockLibraryComponent {
   readonly blocos = computed(() => {
     const categoria = this.categoria();
     const porCategoria =
-      categoria === 'Todos' ? BLOCOS_PAGINA : BLOCOS_PAGINA.filter(bloco => bloco.categoria === categoria);
+      categoria === 'Todos'
+        ? BLOCOS_PAGINA
+        : categoria === 'Recentes'
+          ? this.recentes()
+              .map(id => BLOCOS_PAGINA.find(bloco => bloco.id === id))
+              .filter((bloco): bloco is BlocoPagina => !!bloco)
+          : BLOCOS_PAGINA.filter(bloco => bloco.categoria === categoria);
     const termo = this.normalizar(this.busca());
     return termo
       ? porCategoria.filter(bloco =>
@@ -60,6 +70,13 @@ export class PaginaBlockLibraryComponent {
   }
 
   selecionar(bloco: BlocoPagina): void {
+    const recentes = [bloco.id, ...this.recentes().filter(id => id !== bloco.id)].slice(0, 6);
+    this.recentes.set(recentes);
+    try {
+      localStorage.setItem('docflow:blocos-recentes', JSON.stringify(recentes));
+    } catch {
+      // A inserção continua funcionando sem persistir a preferência.
+    }
     this.blocoSelecionado.emit(bloco);
     this.fechar();
   }
@@ -74,5 +91,14 @@ export class PaginaBlockLibraryComponent {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .trim();
+  }
+
+  private carregarRecentes(): string[] {
+    try {
+      const ids = JSON.parse(localStorage.getItem('docflow:blocos-recentes') ?? '[]') as unknown;
+      return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string').slice(0, 6) : [];
+    } catch {
+      return [];
+    }
   }
 }

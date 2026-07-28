@@ -1,16 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { ClienteService } from '@modules/docflow/services/cliente.service';
-import { ModuloService } from '@modules/docflow/services/modulo.service';
-import { PaginaService } from '@modules/docflow/services/pagina.service';
-import { ProjetoService } from '@modules/docflow/services/projeto.service';
+import { DocFlowDashboardService } from '@modules/docflow/services/docflow-dashboard.service';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
-import { Cliente } from '@modules/docflow/models/cliente.model';
-import { Pagina, StatusPagina } from '@modules/docflow/models/pagina.model';
+import { StatusPagina } from '@modules/docflow/models/pagina.model';
 import { Publicacao } from '@modules/docflow/models/publicacao.model';
 import { compactQueryParams, SortDirection } from '@shared/utils/query-state';
 import { parseEnum, parseInt10, parseString, readUrlState } from '@shared/utils/url-state.util';
@@ -27,6 +23,8 @@ interface FilaItem {
   quantidade: number;
   acao: string;
   destaque: boolean;
+  route: string[];
+  queryParams?: Record<string, string>;
 }
 interface StatusStat {
   status: StatusPagina;
@@ -44,6 +42,7 @@ interface StatusStat {
     CardComponent,
     BadgeComponent,
     KpiCardComponent,
+    RouterLink,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -54,13 +53,17 @@ export class DashboardComponent implements OnInit {
   protected readonly totalProjetos = signal(0);
   protected readonly totalModulos = signal(0);
   protected readonly totalPaginas = signal(0);
-  protected readonly publicacoes = signal<Publicacao[]>([]);
+  protected readonly totalPublicacoes = signal(0);
   protected readonly ultimasPublicacoes = signal<Publicacao[]>([]);
   protected readonly totalHistoricoPublicacoes = signal(0);
-  protected readonly paginasPendentes = signal<Pagina[]>([]);
-  protected readonly publicacoesComErro = signal<Publicacao[]>([]);
-  protected readonly publicacoesGerando = signal<Publicacao[]>([]);
-  protected readonly clientesSemPublicacao = signal<Cliente[]>([]);
+  protected readonly paginasPendentes = signal(0);
+  protected readonly paginasEmRevisao = signal(0);
+  protected readonly publicacoesComErro = signal(0);
+  protected readonly publicacoesGerando = signal(0);
+  protected readonly clientesSemPublicacao = signal(0);
+  protected readonly paginasSemResumo = signal(0);
+  protected readonly paginasDesatualizadas = signal(0);
+  protected readonly taxaSucessoPublicacoes = signal(0);
   protected readonly statusStats = signal<StatusStat[]>([]);
 
   protected filaOperacionalSort = 'quantidade';
@@ -74,38 +77,41 @@ export class DashboardComponent implements OnInit {
 
   protected readonly filaOperacional = computed<FilaItem[]>(() => [
     {
-      situacao: 'Páginas pendentes de revisão / publicação',
-      quantidade: this.paginasPendentes().length,
-      acao: 'Revisar e publicar',
-      destaque: this.paginasPendentes().length > 0,
+      situacao: 'Páginas aguardando revisão',
+      quantidade: this.paginasEmRevisao(),
+      acao: 'Abrir central de revisão',
+      destaque: this.paginasEmRevisao() > 0,
+      route: ['/doc-flow/revisoes'],
     },
     {
       situacao: 'Publicações em andamento',
-      quantidade: this.publicacoesGerando().length,
+      quantidade: this.publicacoesGerando(),
       acao: 'Aguardar conclusão',
-      destaque: this.publicacoesGerando().length > 0,
+      destaque: this.publicacoesGerando() > 0,
+      route: ['/doc-flow/publicacoes'],
+      queryParams: { status: 'GERANDO' },
     },
     {
       situacao: 'Publicações com falha',
-      quantidade: this.publicacoesComErro().length,
+      quantidade: this.publicacoesComErro(),
       acao: 'Reprocessar',
-      destaque: this.publicacoesComErro().length > 0,
+      destaque: this.publicacoesComErro() > 0,
+      route: ['/doc-flow/publicacoes'],
+      queryParams: { status: 'ERRO' },
     },
     {
       situacao: 'Clientes sem publicação ativa',
-      quantidade: this.clientesSemPublicacao().length,
+      quantidade: this.clientesSemPublicacao(),
       acao: 'Gerar 1ª versão',
-      destaque: this.clientesSemPublicacao().length > 0,
+      destaque: this.clientesSemPublicacao() > 0,
+      route: ['/doc-flow/publicacoes/novo'],
     },
   ]);
 
   private readonly toast = inject(ToastService);
 
   constructor(
-    private readonly clienteService: ClienteService,
-    private readonly projetoService: ProjetoService,
-    private readonly moduloService: ModuloService,
-    private readonly paginaService: PaginaService,
+    private readonly dashboardService: DocFlowDashboardService,
     private readonly publicacaoService: PublicacaoService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -129,11 +135,7 @@ export class DashboardComponent implements OnInit {
       this.historicoSort = state.sort;
       this.historicoDir = state.dir;
       forkJoin({
-        clientes: this.clienteService.clientes(),
-        projetos: this.projetoService.projetos(),
-        modulos: this.moduloService.modulos(),
-        paginas: this.paginaService.paginas(),
-        publicacoes: this.publicacaoService.publicacoes(),
+        resumo: this.dashboardService.resumo(),
         historico: this.publicacaoService.listarPublicacoes({
           page: this.ultimasPublicacoesPage(),
           size: this.ultimasPublicacoesPageSize(),
@@ -141,30 +143,27 @@ export class DashboardComponent implements OnInit {
           dir: this.historicoDir,
         }),
       }).subscribe({
-        next: ({ clientes, projetos, modulos, paginas, publicacoes, historico }) => {
-          this.totalClientes.set(clientes.length);
-          this.totalProjetos.set(projetos.length);
-          this.totalModulos.set(modulos.length);
-          this.totalPaginas.set(paginas.length);
-          this.publicacoes.set(publicacoes);
+        next: ({ resumo, historico }) => {
+          this.totalClientes.set(resumo.totalClientes);
+          this.totalProjetos.set(resumo.totalProjetos);
+          this.totalModulos.set(resumo.totalModulos);
+          this.totalPaginas.set(resumo.totalPaginas);
+          this.totalPublicacoes.set(resumo.totalPublicacoes);
           this.ultimasPublicacoes.set(historico.items);
           this.totalHistoricoPublicacoes.set(historico.totalItems);
           this.ultimasPublicacoesPage.set(historico.page);
           this.ultimasPublicacoesPageSize.set(historico.size);
-          this.paginasPendentes.set(
-            paginas.filter(p => ['RASCUNHO', 'EM_REVISAO', 'APROVADO'].includes(p.status)),
-          );
-          this.publicacoesComErro.set(publicacoes.filter(p => p.status === 'ERRO'));
-          this.publicacoesGerando.set(publicacoes.filter(p => p.status === 'GERANDO'));
-          const comPublicacao = new Set(
-            publicacoes.filter(p => p.status === 'SUCESSO').map(p => p.clienteId),
-          );
-          this.clientesSemPublicacao.set(clientes.filter(c => c.ativo && !comPublicacao.has(c.id)));
-          const contagem = new Map<string, number>();
-          paginas.forEach(p => contagem.set(p.status, (contagem.get(p.status) ?? 0) + 1));
+          this.paginasPendentes.set(resumo.paginasPendentes);
+          this.paginasEmRevisao.set(resumo.paginasEmRevisao);
+          this.publicacoesComErro.set(resumo.publicacoesComErro);
+          this.publicacoesGerando.set(resumo.publicacoesGerando);
+          this.clientesSemPublicacao.set(resumo.clientesSemPublicacao);
+          this.paginasSemResumo.set(resumo.paginasSemResumo);
+          this.paginasDesatualizadas.set(resumo.paginasDesatualizadas);
+          this.taxaSucessoPublicacoes.set(resumo.taxaSucessoPublicacoes);
           this.statusStats.set(
             (['RASCUNHO', 'EM_REVISAO', 'APROVADO', 'PUBLICADO', 'ARQUIVADO'] as StatusPagina[])
-              .map(s => ({ status: s, total: contagem.get(s) ?? 0 }))
+              .map(s => ({ status: s, total: resumo.paginasPorStatus[s] ?? 0 }))
               .filter(s => s.total > 0),
           );
         },

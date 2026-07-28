@@ -8,6 +8,7 @@ export interface PortalModule {
   readonly icon: string;
   readonly route: string;
   readonly description: string;
+  readonly highlights: readonly string[];
   readonly available: boolean;
 }
 
@@ -18,6 +19,7 @@ export const PORTAL_MODULES: readonly PortalModule[] = [
     icon: 'pi-book',
     route: '/doc-flow',
     description: 'Gestão de manuais por cliente — módulos, páginas e publicações.',
+    highlights: ['Conteúdo estruturado', 'Templates visuais', 'Publicação em PDF'],
     available: true,
   },
   {
@@ -26,6 +28,7 @@ export const PORTAL_MODULES: readonly PortalModule[] = [
     icon: 'pi-tag',
     route: '/release-orchestrator',
     description: 'Gestão de releases, entregas a clientes, delta de artefatos e pacotes.',
+    highlights: ['Releases centralizadas', 'Controle de entregas', 'Rastreabilidade'],
     available: true,
   },
 ] as const;

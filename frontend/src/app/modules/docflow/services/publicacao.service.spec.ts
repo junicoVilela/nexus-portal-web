@@ -20,10 +20,11 @@ describe('PublicacaoService', () => {
 
   afterEach(() => http.verify());
 
-  it('listarPublicacoes() sends clienteId + paging', () => {
-    service.listarPublicacoes({ clienteId: 'c1', page: 2, size: 5 }).subscribe();
+  it('listarPublicacoes() sends clienteId, status + paging', () => {
+    service.listarPublicacoes({ clienteId: 'c1', status: 'ERRO', page: 2, size: 5 }).subscribe();
     const req = http.expectOne(r => r.url === `${BASE}/publicacoes`);
     expect(req.request.params.get('clienteId')).toBe('c1');
+    expect(req.request.params.get('status')).toBe('ERRO');
     expect(req.request.params.get('page')).toBe('2');
     req.flush({ items: [], totalItems: 0 });
   });
@@ -77,6 +78,14 @@ describe('PublicacaoService', () => {
     req.flush({} as Publicacao);
   });
 
+  it('reprocessarPublicacoes() POSTs ids to the bulk endpoint', () => {
+    service.reprocessarPublicacoes(['p1', 'p2']).subscribe();
+    const req = http.expectOne(`${BASE}/publicacoes/reprocessar-lote`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ ids: ['p1', 'p2'] });
+    req.flush({ solicitadas: 2, reprocessadas: 2, ignoradas: 0 });
+  });
+
   it('excluirPublicacao() DELETEs /publicacoes/:id', () => {
     service.excluirPublicacao('p1').subscribe();
     const req = http.expectOne(`${BASE}/publicacoes/p1`);
@@ -106,7 +115,7 @@ describe('PublicacaoService', () => {
 
   it('montarUrlDownloadPacotePublico() URL-encodes token', () => {
     expect(service.montarUrlDownloadPacotePublico('a/b c')).toBe(
-      `${BASE}/public/publicacoes/download?token=a%2Fb%20c`,
+      `${window.location.origin}${BASE}/public/publicacoes/download?token=a%2Fb%20c`,
     );
   });
 

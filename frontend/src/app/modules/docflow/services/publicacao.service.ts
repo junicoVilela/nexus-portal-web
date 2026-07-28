@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
-import { Publicacao } from '../models/publicacao.model';
+import { Publicacao, ReprocessamentoPublicacoes } from '../models/publicacao.model';
 import { Pagina } from '../models/pagina.model';
 import { ChangelogItem } from '../models/pagina.model';
 
@@ -58,7 +58,14 @@ export class PublicacaoService {
   }
 
   listarPublicacoes(
-    params: { clienteId?: string; sort?: string; dir?: SortDirection; page?: number; size?: number } = {},
+    params: {
+      clienteId?: string;
+      status?: Publicacao['status'];
+      sort?: string;
+      dir?: SortDirection;
+      page?: number;
+      size?: number;
+    } = {},
   ): Observable<PageResult<Publicacao>> {
     return this.http.get<PageResult<Publicacao>>(`${this.base}/publicacoes`, {
       params: buildQueryParams(params),
@@ -107,6 +114,10 @@ export class PublicacaoService {
     return this.http.post<Publicacao>(`${this.base}/publicacoes/${publicacaoId}/reprocessar`, {});
   }
 
+  reprocessarPublicacoes(ids: string[]): Observable<ReprocessamentoPublicacoes> {
+    return this.http.post<ReprocessamentoPublicacoes>(`${this.base}/publicacoes/reprocessar-lote`, { ids });
+  }
+
   excluirPublicacao(publicacaoId: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/publicacoes/${publicacaoId}`);
   }
@@ -129,8 +140,12 @@ export class PublicacaoService {
     );
   }
 
-  montarUrlDownloadPacotePublico(token: string): string {
-    return `${this.base}/public/publicacoes/download?token=${encodeURIComponent(token)}`;
+  montarUrlDownloadPacotePublico(
+    token: string,
+    urlPath = `${this.base}/public/publicacoes/download`,
+  ): string {
+    const path = `${urlPath}?token=${encodeURIComponent(token)}`;
+    return new URL(path, window.location.origin).toString();
   }
 
   downloadPdfUrl(publicacaoId: string): string {

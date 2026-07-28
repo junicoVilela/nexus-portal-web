@@ -43,6 +43,28 @@ interface EstadoDocFlow {
     createdBy: string;
     updatedBy: string;
   }>;
+  ajuda: AjudaConteudoE2E[];
+  ajudaEventos: Record<string, unknown>[];
+}
+
+interface AjudaConteudoE2E {
+  id: string;
+  codigo: string;
+  tipo: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
+  jornadaCodigo: string | null;
+  titulo: string;
+  resumo: string | null;
+  conteudo: string | null;
+  rotaContexto: string | null;
+  rotaAcao: string | null;
+  rotuloAcao: string | null;
+  icone: string | null;
+  seletorAlvo: string | null;
+  mediaTipo: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
+  mediaUrls: string[];
+  mediaAlt: string | null;
+  ordem: number;
+  ativo: boolean;
 }
 
 const TODAS_PERMISSOES = [
@@ -65,6 +87,10 @@ const TODAS_PERMISSOES = [
   'PUBLICACAO:LER',
   'PUBLICACAO:CRIAR',
   'PUBLICACAO:EXCLUIR',
+  'AJUDA:LER',
+  'AJUDA:CRIAR',
+  'AJUDA:EDITAR',
+  'AJUDA:EXCLUIR',
 ];
 
 const AGORA = '2026-07-18T15:00:00Z';
@@ -80,6 +106,85 @@ const TEMPLATE = {
   versaoAtual: 2,
   paginasOriginadas: 4,
 };
+
+const AJUDA_CONTEUDOS: AjudaConteudoE2E[] = [
+  {
+    id: 'ajuda-jornada',
+    codigo: 'JORNADA_ESTRUTURA',
+    tipo: 'JORNADA',
+    jornadaCodigo: null,
+    titulo: 'Preparar a estrutura',
+    resumo: 'Cadastre a base que organiza o manual.',
+    conteudo: 'Cliente, projeto e módulo formam a estrutura.',
+    rotaContexto: '/doc-flow',
+    rotaAcao: '/doc-flow/clientes/novo',
+    rotuloAcao: 'Começar',
+    icone: 'Layers',
+    seletorAlvo: null,
+    mediaTipo: 'IMAGEM',
+    mediaUrls: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='],
+    mediaAlt: 'Fluxo de estrutura do manual',
+    ordem: 10,
+    ativo: true,
+  },
+  {
+    id: 'ajuda-etapa',
+    codigo: 'ESTRUTURA_CLIENTE',
+    tipo: 'ETAPA',
+    jornadaCodigo: 'JORNADA_ESTRUTURA',
+    titulo: 'Cadastre o cliente',
+    resumo: 'Defina quem receberá o manual.',
+    conteudo: 'O cliente concentra os vínculos do manual.',
+    rotaContexto: '/doc-flow/clientes',
+    rotaAcao: '/doc-flow/clientes/novo',
+    rotuloAcao: 'Novo cliente',
+    icone: 'Building2',
+    seletorAlvo: null,
+    mediaTipo: 'NENHUMA',
+    mediaUrls: [],
+    mediaAlt: null,
+    ordem: 11,
+    ativo: true,
+  },
+  {
+    id: 'ajuda-faq',
+    codigo: 'FAQ_ORDEM',
+    tipo: 'FAQ',
+    jornadaCodigo: null,
+    titulo: 'Qual é a ordem correta dos cadastros?',
+    resumo: 'Cliente, projeto, módulo e página.',
+    conteudo: null,
+    rotaContexto: '/doc-flow',
+    rotaAcao: null,
+    rotuloAcao: null,
+    icone: 'HelpCircle',
+    seletorAlvo: null,
+    mediaTipo: 'NENHUMA',
+    mediaUrls: [],
+    mediaAlt: null,
+    ordem: 100,
+    ativo: true,
+  },
+  {
+    id: 'ajuda-tour-dashboard',
+    codigo: 'TOUR_DASHBOARD',
+    tipo: 'TOUR_PASSO',
+    jornadaCodigo: null,
+    titulo: 'Acompanhe o trabalho',
+    resumo: 'O dashboard reúne os indicadores principais.',
+    conteudo: null,
+    rotaContexto: null,
+    rotaAcao: '/doc-flow',
+    rotuloAcao: 'Abrir dashboard',
+    icone: 'BarChart2',
+    seletorAlvo: '[data-help-id="dashboard"]',
+    mediaTipo: 'NENHUMA',
+    mediaUrls: [],
+    mediaAlt: null,
+    ordem: 200,
+    ativo: true,
+  },
+];
 
 function resultadoPaginado<T>(items: T[]) {
   return { items, totalItems: items.length, totalPages: items.length ? 1 : 0, page: 1, size: 1000 };
@@ -102,7 +207,14 @@ async function instalarApiDocFlow(
   page: Page,
   permissoes: string[] = TODAS_PERMISSOES,
 ): Promise<EstadoDocFlow> {
-  const estado: EstadoDocFlow = { clientes: [], projetos: [], modulos: [], paginas: [] };
+  const estado: EstadoDocFlow = {
+    clientes: [],
+    projetos: [],
+    modulos: [],
+    paginas: [],
+    ajuda: structuredClone(AJUDA_CONTEUDOS),
+    ajudaEventos: [],
+  };
   const payloadToken = Buffer.from(JSON.stringify({ sub: 'admin', exp: 4_102_444_800 })).toString(
     'base64url',
   );
@@ -132,6 +244,48 @@ async function instalarApiDocFlow(
         grupos: [{ id: 'grupo-admin', codigo: 'ADMIN', nome: 'Administradores' }],
         permissoes,
       });
+    }
+
+    if (method === 'GET' && path === '/api/doc-flow/ajuda/conteudos') {
+      return responder(estado.ajuda.filter(item => item.ativo));
+    }
+    if (method === 'GET' && path === '/api/doc-flow/ajuda/conteudos/admin') {
+      return responder(estado.ajuda);
+    }
+    if (method === 'GET' && path === '/api/doc-flow/ajuda/metricas') {
+      return responder({
+        desde: AGORA,
+        totalEventos: estado.ajudaEventos.length,
+        buscas: 2,
+        buscasSemResultado: 1,
+        toursIniciados: 1,
+        toursConcluidos: 1,
+        taxaConclusaoTour: 100,
+        conteudosMaisAcessados: [],
+        buscasFrequentes: [],
+      });
+    }
+    if (method === 'POST' && path === '/api/doc-flow/ajuda/eventos') {
+      estado.ajudaEventos.push(await jsonDaRota(route));
+      return route.fulfill({ status: 204 });
+    }
+    if (method === 'POST' && path === '/api/doc-flow/ajuda/conteudos') {
+      const body = await jsonDaRota(route);
+      const item = { id: `ajuda-${estado.ajuda.length + 1}`, ...body } as AjudaConteudoE2E;
+      estado.ajuda.push(item);
+      return responder(item, 201);
+    }
+    const ajudaItem = path.match(/^\/api\/doc-flow\/ajuda\/conteudos\/([^/]+)$/);
+    if (method === 'PUT' && ajudaItem) {
+      const body = await jsonDaRota(route);
+      const index = estado.ajuda.findIndex(item => item.id === ajudaItem[1]);
+      if (index < 0) return responder({ message: 'Conteúdo não encontrado' }, 404);
+      estado.ajuda[index] = { ...estado.ajuda[index], ...body } as AjudaConteudoE2E;
+      return responder(estado.ajuda[index]);
+    }
+    if (method === 'DELETE' && ajudaItem) {
+      estado.ajuda = estado.ajuda.filter(item => item.id !== ajudaItem[1]);
+      return route.fulfill({ status: 204 });
     }
 
     if (path === '/api/doc-flow/clientes' && method === 'GET')
@@ -307,6 +461,19 @@ async function instalarApiDocFlow(
 }
 
 test.describe('DocFlow — fluxo de ouro', () => {
+  test('dashboard prioriza quatro indicadores e resume a estrutura', async ({ page }) => {
+    await instalarApiDocFlow(page);
+    await page.goto('/doc-flow');
+
+    await expect(page.getByRole('heading', { name: 'Visão operacional' })).toBeVisible();
+    await expect(page.locator('.df-dash__stats ui-kpi-card')).toHaveCount(4);
+    await expect(page.locator('.df-dash__structure-metric')).toHaveCount(3);
+    await expect(page.locator('.df-dash__structure')).toContainText('Clientes');
+    await expect(page.locator('.df-dash__structure')).toContainText('Projetos');
+    await expect(page.locator('.df-dash__structure')).toContainText('Módulos');
+    await expect(page.locator('.df-dash__kpi-link').first()).toHaveAttribute('href', '/doc-flow/paginas');
+  });
+
   test('cria a estrutura, pré-visualiza o modelo e publica a página', async ({ page }) => {
     const estado = await instalarApiDocFlow(page);
 
@@ -330,6 +497,7 @@ test.describe('DocFlow — fluxo de ouro', () => {
 
     await page.goto('/doc-flow/paginas/novo?projetoId=projeto-1&moduloId=modulo-1');
     await expect(page.getByRole('heading', { name: 'Como você quer começar?' })).toBeVisible();
+    await expect(page.locator('.creation-progress__steps button')).toHaveCount(4);
     await page.locator('input[formcontrolname="titulo"]').fill('Cadastrar fornecedor');
     await page.locator('input[formcontrolname="codigoTela"]').fill('CAD_FORNECEDOR');
 
@@ -347,6 +515,7 @@ test.describe('DocFlow — fluxo de ouro', () => {
     expect(acessibilidade.violations).toEqual([]);
 
     await preview.getByRole('button', { name: 'Aplicar este modelo' }).click();
+    await expect(page.getByRole('button', { name: /Contexto/ })).toHaveAttribute('aria-current', 'step');
     await expect(page.locator('.pf-preview-body')).toContainText('Cadastrar fornecedor');
     await page.getByRole('button', { name: 'Salvar e voltar' }).click();
     await expect(page).toHaveURL(/\/doc-flow\/paginas(?:\?.*)?$/);
@@ -373,6 +542,63 @@ test.describe('DocFlow — fluxo de ouro', () => {
     await expect(page.locator('.paginas__drop-root')).toHaveCount(0);
   });
 
+  test('central de ajuda oferece pesquisa, mídia, onboarding e tour acessíveis', async ({ page }) => {
+    const estado = await instalarApiDocFlow(page);
+    await page.goto('/doc-flow/ajuda');
+
+    await expect(page.getByRole('heading', { name: 'Central de ajuda' })).toBeVisible();
+    await expect(page.locator('.help-media img')).toHaveAttribute('alt', 'Fluxo de estrutura do manual');
+    await page.getByRole('searchbox', { name: 'Pesquisar jornadas e etapas' }).fill('cliente');
+    await expect(page.getByRole('heading', { name: 'Preparar a estrutura' })).toBeVisible();
+
+    const acessibilidade = await new AxeBuilder({ page })
+      .include('.help-page')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(acessibilidade.violations).toEqual([]);
+
+    const acionador = page.getByRole('button', { name: 'Abrir ajuda desta tela' });
+    await acionador.click();
+    const painel = page.getByRole('dialog', { name: 'Como podemos ajudar?' });
+    await expect(painel).toBeFocused();
+    await painel.getByRole('tab', { name: /Primeiros passos/ }).click();
+    await painel.locator('.onboarding-list li').first().getByRole('button').click();
+    await expect(painel.getByRole('tab', { name: /Primeiros passos/ })).toContainText('17%');
+    await page.keyboard.press('Escape');
+    await expect(painel).toBeHidden();
+    await expect(acionador).toBeFocused();
+
+    await acionador.click();
+    await page.getByRole('button', { name: 'Fazer tour pelo Doc Flow' }).click();
+    const tour = page.locator('.tour-card');
+    await expect(tour).toBeFocused();
+    await expect(tour).toContainText('Acompanhe o trabalho');
+    await page.keyboard.press('Escape');
+    await expect(tour).toBeHidden();
+    expect(estado.ajudaEventos.some(item => item['tipo'] === 'TOUR_INICIADO')).toBe(true);
+  });
+
+  test('administra o catálogo de ajuda e protege a gestão por permissão', async ({ page }) => {
+    const estado = await instalarApiDocFlow(page);
+    await page.goto('/doc-flow/ajuda/gerenciar');
+
+    await expect(page.getByRole('heading', { name: 'Gestão da ajuda' })).toBeVisible();
+    await expect(page.getByLabel('Métricas dos últimos 30 dias')).toContainText('100%');
+    await page.getByRole('button', { name: 'Novo conteúdo' }).click();
+    await page.locator('input[formcontrolname="codigo"]').fill('ARTIGO_E2E');
+    await page.locator('input[formcontrolname="titulo"]').fill('Artigo criado no teste');
+    await page.locator('textarea[formcontrolname="resumo"]').fill('Orientação de validação E2E.');
+    await page.getByRole('button', { name: 'Salvar conteúdo' }).click();
+    await expect(page.getByRole('cell', { name: /Artigo criado no teste/ })).toBeVisible();
+    expect(estado.ajuda.some(item => item.codigo === 'ARTIGO_E2E')).toBe(true);
+
+    const paginaSemPermissao = await page.context().newPage();
+    await instalarApiDocFlow(paginaSemPermissao, ['AJUDA:LER']);
+    await paginaSemPermissao.goto('/doc-flow/ajuda/gerenciar');
+    await expect(paginaSemPermissao).toHaveURL(/\/seguranca\/acesso-negado$/);
+    await paginaSemPermissao.close();
+  });
+
   test('catálogo de modelos usa uma coluna em viewport mobile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await instalarApiDocFlow(page);
@@ -382,5 +608,44 @@ test.describe('DocFlow — fluxo de ouro', () => {
       .locator('.template-picker__grid')
       .evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean));
     expect(colunas).toHaveLength(1);
+  });
+
+  test('shell autenticado e lista atendem WCAG A/AA', async ({ page }) => {
+    await instalarApiDocFlow(page);
+    await page.goto('/doc-flow/paginas');
+    await expect(page.locator('.shell__topbar')).toBeVisible();
+
+    const acessibilidade = await new AxeBuilder({ page })
+      .include('.shell')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+
+    expect(acessibilidade.violations).toEqual([]);
+  });
+
+  test('shell, menu do módulo e tabela não vazam a viewport mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await instalarApiDocFlow(page);
+    await page.goto('/doc-flow/paginas');
+
+    await expect(page.locator('.df-shell__nav')).toBeVisible();
+    const layout = await page.evaluate(() => {
+      const nav = document.querySelector<HTMLElement>('.df-shell__nav');
+      return {
+        viewport: document.documentElement.clientWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        navOverflow: nav ? getComputedStyle(nav).overflowX : '',
+        offenders: Array.from(document.querySelectorAll<HTMLElement>('body *'))
+          .filter(element => element.getBoundingClientRect().right > document.documentElement.clientWidth + 1)
+          .slice(0, 8)
+          .map(element => `${element.tagName.toLowerCase()}.${element.className}`),
+      };
+    });
+
+    expect(
+      layout.documentWidth,
+      `Elementos fora da viewport: ${layout.offenders.join(', ')}`,
+    ).toBeLessThanOrEqual(layout.viewport);
+    expect(layout.navOverflow).toBe('auto');
   });
 });

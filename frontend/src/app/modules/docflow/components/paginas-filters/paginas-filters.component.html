@@ -4,24 +4,35 @@
       class="paginas__search"
       formControlName="busca"
       placeholder="Busca full-text em título, resumo e código..."
+      aria-label="Buscar em título, resumo e código"
     />
-    <input class="paginas__input" formControlName="titulo" placeholder="Título" />
-    <input class="paginas__input" formControlName="codigoTela" placeholder="Código tela" />
+    <input class="paginas__input" formControlName="titulo" placeholder="Título" aria-label="Filtrar por título" />
+    <input
+      class="paginas__input"
+      formControlName="codigoTela"
+      placeholder="Código tela"
+      aria-label="Filtrar por código da tela"
+    />
   </div>
   <div class="paginas__filter-row">
-    <select class="paginas__select" formControlName="projetoId" (change)="projetoChange.emit()">
+    <select
+      class="paginas__select"
+      formControlName="projetoId"
+      aria-label="Filtrar por projeto"
+      (change)="projetoChange.emit()"
+    >
       <option value="">Todos os projetos</option>
       @for (p of projetos(); track p.id) {
         <option [value]="p.id">{{ p.nome }}</option>
       }
     </select>
-    <select class="paginas__select" formControlName="moduloId">
+    <select class="paginas__select" formControlName="moduloId" aria-label="Filtrar por módulo">
       <option value="">Todos os módulos</option>
       @for (m of modulos(); track m.id) {
         <option [value]="m.id">{{ m.nome }}</option>
       }
     </select>
-    <select class="paginas__select" formControlName="status">
+    <select class="paginas__select" formControlName="status" aria-label="Filtrar por status">
       <option value="">Todos os status</option>
       <option>RASCUNHO</option>
       <option>EM_REVISAO</option>

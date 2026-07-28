@@ -1,0 +1,211 @@
+<div class="help-page">
+  <ui-page-header
+    title="Central de ajuda"
+    subtitle="Aprenda o Doc Flow por jornadas curtas e avance no seu ritmo."
+    icon="HelpCircle"
+  >
+    @if (auth.tem()('AJUDA:EDITAR')) {
+      <a actions class="help-manage" routerLink="/doc-flow/ajuda/gerenciar">
+        <lucide-icon name="Settings" /> Gerenciar conteúdo
+      </a>
+    }
+  </ui-page-header>
+
+  <section class="help-hero" aria-labelledby="help-hero-title">
+    <div class="help-hero__content">
+      <span class="help-eyebrow"><lucide-icon name="BookOpen" /> Guia interativo</span>
+      <h2 id="help-hero-title">Da estrutura ao manual publicado</h2>
+      <p>
+        Siga o fluxo completo ou pesquise uma dúvida. Cada etapa explica o objetivo e leva você diretamente à tela
+        correta.
+      </p>
+      <div class="help-hero__actions">
+        <a class="help-action help-action--primary" [routerLink]="['/doc-flow', 'paginas', 'novo']">
+          <lucide-icon name="Plus" /> Criar primeira página
+        </a>
+        <a class="help-action" [routerLink]="['/doc-flow', 'revisoes']">
+          Abrir fila de revisão <lucide-icon name="ArrowRight" />
+        </a>
+      </div>
+    </div>
+
+    <div class="help-flow" aria-label="Fluxo resumido do Doc Flow">
+      @for (item of ['Cliente', 'Projeto', 'Módulo', 'Página', 'Revisão', 'Publicação']; track item; let i = $index) {
+        <span
+          ><small>{{ i + 1 }}</small
+          >{{ item }}</span
+        >
+      }
+    </div>
+  </section>
+
+  <section class="help-search" aria-label="Pesquisar na ajuda">
+    <lucide-icon name="Search" aria-hidden="true" />
+    <input
+      type="search"
+      [value]="busca()"
+      (input)="atualizarBusca($event)"
+      placeholder="O que você quer aprender? Ex.: publicar, revisar, criar página"
+      aria-label="Pesquisar jornadas e etapas"
+    />
+    @if (busca()) {
+      <button type="button" (click)="busca.set('')" aria-label="Limpar pesquisa">Limpar</button>
+    }
+  </section>
+
+  <div class="help-workspace">
+    <nav class="help-journeys" aria-label="Jornadas de aprendizado">
+      <div class="help-section-title">
+        <span>Jornadas</span>
+        <small>{{ jornadas().length }} encontradas</small>
+      </div>
+      @for (jornada of jornadas(); track jornada.id) {
+        <button
+          type="button"
+          class="help-journey"
+          [class.help-journey--active]="jornadaAtiva().id === jornada.id"
+          [attr.aria-pressed]="jornadaAtiva().id === jornada.id"
+          (click)="selecionarJornada(jornada.id)"
+        >
+          <span class="help-journey__icon"><lucide-icon [name]="jornada.icon" /></span>
+          <span>
+            <small>{{ jornada.ordem }} · {{ jornada.tempo }}</small>
+            <strong>{{ jornada.titulo }}</strong>
+            <em>{{ jornada.descricao }}</em>
+          </span>
+          <lucide-icon name="ChevronRight" aria-hidden="true" />
+        </button>
+      } @empty {
+        <div class="help-no-results">
+          <lucide-icon name="Search" />
+          <strong>Nenhuma jornada encontrada</strong>
+          <span>Tente pesquisar por página, revisão ou publicação.</span>
+        </div>
+      }
+    </nav>
+
+    <main class="help-guide">
+      @if (jornadaAtiva(); as jornada) {
+        <header class="help-guide__header">
+          <div>
+            <span class="help-eyebrow">Jornada {{ jornada.ordem }}</span>
+            <h2>{{ jornada.titulo }}</h2>
+            <p>{{ jornada.descricao }}</p>
+          </div>
+          <span class="help-time"><lucide-icon name="Clock" /> {{ jornada.tempo }}</span>
+        </header>
+
+        @if (jornada.mediaUrls.length) {
+          <div class="help-media" [class.help-media--gallery]="jornada.mediaTipo === 'GALERIA'">
+            @for (url of jornada.mediaUrls; track url) {
+              @if (jornada.mediaTipo === 'VIDEO') {
+                <video controls preload="metadata" [attr.aria-label]="jornada.mediaAlt || jornada.titulo">
+                  <source [src]="url" />
+                </video>
+              } @else {
+                <img [src]="url" [alt]="jornada.mediaAlt || jornada.titulo" loading="lazy" />
+              }
+            }
+          </div>
+        }
+
+        <div class="help-progress">
+          <div>
+            <span>Seu progresso</span>
+            <strong>{{ progresso() }}%</strong>
+          </div>
+          <div
+            class="help-progress__track"
+            role="progressbar"
+            aria-label="Progresso da jornada"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-valuenow]="progresso()"
+          >
+            <i [style.width.%]="progresso()"></i>
+          </div>
+        </div>
+
+        <ol class="help-steps">
+          @for (etapa of jornada.etapas; track etapa.id; let numero = $index) {
+            <li [class.help-step--done]="etapaConcluida(etapa.id)">
+              <button
+                type="button"
+                class="help-step__check"
+                [attr.aria-label]="(etapaConcluida(etapa.id) ? 'Desmarcar ' : 'Concluir ') + etapa.titulo"
+                [attr.aria-pressed]="etapaConcluida(etapa.id)"
+                (click)="alternarEtapa(etapa.id, etapa.codigo)"
+              >
+                @if (etapaConcluida(etapa.id)) {
+                  <lucide-icon name="Check" />
+                } @else {
+                  {{ numero + 1 }}
+                }
+              </button>
+              <div>
+                <h3>{{ etapa.titulo }}</h3>
+                <p>{{ etapa.descricao }}</p>
+                @if (etapa.mediaUrls.length) {
+                  <div class="help-media help-media--compact">
+                    @for (url of etapa.mediaUrls; track url) {
+                      @if (etapa.mediaTipo === 'VIDEO') {
+                        <video controls preload="metadata" [attr.aria-label]="etapa.mediaAlt || etapa.titulo">
+                          <source [src]="url" />
+                        </video>
+                      } @else {
+                        <img [src]="url" [alt]="etapa.mediaAlt || etapa.titulo" loading="lazy" />
+                      }
+                    }
+                  </div>
+                }
+              </div>
+              <a [routerLink]="etapa.rota">{{ etapa.acao }} <lucide-icon name="ArrowUpRight" /></a>
+            </li>
+          }
+        </ol>
+
+        @if (progresso() === 100) {
+          <div class="help-complete" aria-live="polite">
+            <span><lucide-icon name="CheckCircle2" /></span>
+            <div>
+              <strong>Jornada concluída</strong><small>Você já pode avançar para a próxima etapa do fluxo.</small>
+            </div>
+          </div>
+        }
+
+        <button type="button" class="help-reset" (click)="reiniciarJornada()">Reiniciar esta jornada</button>
+      } @else {
+        <div class="help-guide__empty">
+          <lucide-icon name="BookOpen" />
+          <h2>Pesquise de outra forma</h2>
+          <p>Não encontramos etapas relacionadas ao termo informado.</p>
+        </div>
+      }
+    </main>
+  </div>
+
+  <section class="help-faq" aria-labelledby="help-faq-title">
+    <header>
+      <span class="help-eyebrow">Dúvidas frequentes</span>
+      <h2 id="help-faq-title">Respostas rápidas</h2>
+    </header>
+    <div class="help-faq__list">
+      @for (faq of faqs(); track faq.id) {
+        <article [class.help-faq__item--open]="faqAberto() === faq.id">
+          <button
+            type="button"
+            [attr.aria-expanded]="faqAberto() === faq.id"
+            [attr.aria-controls]="'faq-' + faq.id"
+            (click)="alternarFaq(faq.id, faq.codigo)"
+          >
+            <span>{{ faq.pergunta }}</span>
+            <lucide-icon name="ChevronDown" aria-hidden="true" />
+          </button>
+          @if (faqAberto() === faq.id) {
+            <p [id]="'faq-' + faq.id">{{ faq.resposta }}</p>
+          }
+        </article>
+      }
+    </div>
+  </section>
+</div>

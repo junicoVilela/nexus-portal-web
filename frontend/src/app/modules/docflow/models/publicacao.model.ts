@@ -17,3 +17,10 @@ export interface Publicacao {
   updatedAt?: string;
   updatedBy?: string;
 }
+
+export interface ReprocessamentoPublicacoes {
+  solicitadas: number;
+  reprocessadas: number;
+  ignoradas: number;
+  publicacoes: Publicacao[];
+}

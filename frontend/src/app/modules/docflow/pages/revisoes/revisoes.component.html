@@ -1,0 +1,147 @@
+<ui-list-page
+  title="Central de revisão"
+  subtitle="Acompanhe pendências, compare versões e aprove conteúdos em um único fluxo."
+  icon="ClipboardCheck"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Fila editorial em dia"
+  emptyDescription="Não há páginas aguardando revisão neste momento."
+  emptyIllustration="success"
+  emptyIcon="CheckCircle"
+>
+  <div actions>
+    <ui-badge tone="warn" [dot]="true">{{ total() }} aguardando revisão</ui-badge>
+  </div>
+
+  <div class="review-layout">
+    <section class="review-queue" aria-label="Páginas aguardando revisão">
+      @for (pagina of paginas(); track pagina.id) {
+        <button
+          type="button"
+          class="review-item"
+          [class.review-item--active]="selecionada()?.id === pagina.id"
+          (click)="selecionar(pagina)"
+        >
+          <span class="review-item__top">
+            <strong>{{ pagina.titulo }}</strong>
+            <ui-badge [tone]="diasNaFila(pagina) >= 3 ? 'danger' : diasNaFila(pagina) >= 1 ? 'warn' : 'info'">
+              {{ diasNaFila(pagina) }}d
+            </ui-badge>
+          </span>
+          <span>{{ pagina.projetoNome }} · {{ pagina.moduloNome }}</span>
+          <small>{{ pagina.codigoTela }} · por {{ pagina.updatedBy || pagina.createdBy || 'sistema' }}</small>
+        </button>
+      }
+      <app-table-pagination
+        [totalItems]="total()"
+        [page]="page()"
+        [pageSize]="pageSize()"
+        (pageChange)="alterarPagina($event)"
+        (pageSizeChange)="alterarTamanhoPagina($event)"
+      />
+    </section>
+
+    <section class="review-detail" aria-live="polite">
+      @if (selecionada(); as pagina) {
+        <header class="review-detail__header">
+          <div>
+            <span class="review-detail__eyebrow">{{ pagina.codigoTela }}</span>
+            <h2>{{ pagina.titulo }}</h2>
+            <p>
+              {{ pagina.projetoNome }} / {{ pagina.moduloNome }}
+              @if (responsavel()) {
+                · Responsável: {{ responsavel() }}
+              }
+            </p>
+          </div>
+          <div class="review-detail__actions">
+            <ui-button variant="ghost" size="sm" (clicked)="editar()">Abrir editor</ui-button>
+            <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="assumir()"
+              >Assumir</ui-button
+            >
+            <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="devolver()"
+              >Devolver</ui-button
+            >
+            <ui-button
+              size="sm"
+              icon="Check"
+              [disabled]="qualidade()?.aptoParaRevisao === false"
+              [loading]="executandoAcao()"
+              (clicked)="aprovar()"
+              >Aprovar</ui-button
+            >
+          </div>
+        </header>
+
+        @if (carregandoDetalhe()) {
+          <div class="review-loading">Carregando análise editorial…</div>
+        } @else {
+          <div class="review-detail__columns">
+            <article class="review-panel">
+              <h3>Checklist de qualidade</h3>
+              <div class="review-checklist">
+                @for (item of qualidade()?.itens ?? []; track item.codigo) {
+                  <div [class.review-check--ok]="item.ok" [class.review-check--error]="!item.ok">
+                    <span>{{ item.ok ? '✓' : '!' }}</span>
+                    <p>
+                      <strong>{{ item.titulo }}</strong
+                      ><small>{{ item.descricao }}</small>
+                    </p>
+                  </div>
+                }
+              </div>
+            </article>
+
+            <article class="review-panel">
+              <h3>Comentários</h3>
+              <label class="review-comment">
+                <span>Nova observação</span>
+                <textarea [(ngModel)]="comentario" rows="3" maxlength="280"></textarea>
+              </label>
+              <ui-button size="sm" [disabled]="!comentario.trim()" [loading]="executandoAcao()" (clicked)="comentar()"
+                >Registrar comentário</ui-button
+              >
+              <div class="review-comments">
+                @for (item of comentarios(); track item.id) {
+                  <div>
+                    <strong>{{ item.createdBy || 'sistema' }}</strong
+                    ><span>{{ item.createdAt | date: 'short' }}</span>
+                  </div>
+                  <p>{{ item.descricao }}</p>
+                } @empty {
+                  <p class="review-empty">Nenhum comentário registrado.</p>
+                }
+              </div>
+            </article>
+          </div>
+
+          <article class="review-panel review-panel--diff">
+            <h3>Alterações da versão mais recente</h3>
+            @if (diff().length) {
+              <div class="review-diff">
+                @for (linha of diff(); track $index) {
+                  <div [attr.data-type]="linha.tipo">
+                    <span>{{ linha.tipo }}</span>
+                    <code>
+                      @for (token of linha.tokens; track $index) {
+                        <mark [attr.data-type]="token.tipo">{{ token.texto }}</mark>
+                      }
+                    </code>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="review-empty">Ainda não há duas versões para comparar.</p>
+            }
+          </article>
+        }
+      } @else {
+        <div class="review-placeholder">
+          <span>01</span>
+          <h2>Selecione uma página</h2>
+          <p>O checklist, as alterações e os comentários aparecerão aqui.</p>
+        </div>
+      }
+    </section>
+  </div>
+</ui-list-page>

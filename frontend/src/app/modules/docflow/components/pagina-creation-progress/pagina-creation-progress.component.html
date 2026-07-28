@@ -1,0 +1,29 @@
+<nav class="creation-progress" aria-label="Etapas da criação da página">
+  <div class="creation-progress__summary">
+    <span>Progresso da página</span>
+    <strong>{{ completed() }}/{{ steps().length }} concluídas</strong>
+    <span class="creation-progress__percent">{{ progress() }}%</span>
+  </div>
+  <div class="creation-progress__track" aria-hidden="true">
+    <span [style.width.%]="progress()"></span>
+  </div>
+  <ol class="creation-progress__steps">
+    @for (step of steps(); track step.id; let index = $index) {
+      <li>
+        <button
+          type="button"
+          [class.is-current]="current() === step.id"
+          [class.is-complete]="step.complete"
+          [attr.aria-current]="current() === step.id ? 'step' : null"
+          (click)="selected.emit(step.id)"
+        >
+          <span class="creation-progress__number">{{ step.complete ? '✓' : index + 1 }}</span>
+          <span
+            ><strong>{{ step.label }}</strong
+            ><small>{{ step.description }}</small></span
+          >
+        </button>
+      </li>
+    }
+  </ol>
+</nav>

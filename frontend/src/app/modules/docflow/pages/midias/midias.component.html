@@ -1,0 +1,44 @@
+<ui-list-page
+  title="Biblioteca de mídia"
+  subtitle="Localize imagens já utilizadas e reutilize os endereços nos conteúdos."
+  icon="Image"
+  [loading]="loading()"
+  [isEmpty]="!loading() && total() === 0"
+  emptyTitle="Nenhuma imagem encontrada"
+  emptyDescription="As imagens anexadas às páginas aparecerão nesta biblioteca."
+  emptyIllustration="inbox"
+  emptyIcon="ImageOff"
+>
+  <div filters class="media-filters">
+    <label>
+      <span>Buscar imagem</span>
+      <input [(ngModel)]="busca" type="search" placeholder="Nome do arquivo" (keyup.enter)="pesquisar()" />
+    </label>
+    <ui-button variant="secondary" size="sm" icon="Search" (clicked)="pesquisar()">Buscar</ui-button>
+    <span>{{ total() }} arquivo(s)</span>
+  </div>
+
+  <div class="media-grid">
+    @for (anexo of anexos(); track anexo.id) {
+      <article class="media-card">
+        <div class="media-card__preview"><img [src]="url(anexo)" [alt]="anexo.nomeOriginal" loading="lazy" /></div>
+        <div class="media-card__body">
+          <strong [title]="anexo.nomeOriginal">{{ anexo.nomeOriginal }}</strong>
+          <span>{{ anexo.paginaTitulo || 'Página' }}</span>
+          <small>{{ anexo.tamanhoBytes / 1024 | number: '1.0-0' }} KB · {{ anexo.contentType }}</small>
+        </div>
+        <div class="media-card__actions">
+          <ui-button variant="ghost" size="sm" (clicked)="copiar(anexo)">Copiar URL</ui-button>
+          <ui-button variant="secondary" size="sm" (clicked)="editarPagina(anexo)">Abrir página</ui-button>
+        </div>
+      </article>
+    }
+  </div>
+  <app-table-pagination
+    [totalItems]="total()"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    (pageChange)="alterarPagina($event)"
+    (pageSizeChange)="alterarTamanhoPagina($event)"
+  />
+</ui-list-page>

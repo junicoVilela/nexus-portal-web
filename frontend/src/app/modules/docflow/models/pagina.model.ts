@@ -29,6 +29,7 @@ export interface Pagina {
 export interface PaginaAnexo {
   id: string;
   paginaId: string;
+  paginaTitulo?: string;
   nomeOriginal: string;
   contentType: string;
   tamanhoBytes: number;
@@ -50,7 +51,8 @@ export interface PaginaRevisao {
     | 'APROVACAO'
     | 'PUBLICACAO'
     | 'ARQUIVAMENTO'
-    | 'DUPLICACAO';
+    | 'DUPLICACAO'
+    | 'COMENTARIO';
   descricao?: string;
   resumo?: string;
   conteudoHtml?: string;

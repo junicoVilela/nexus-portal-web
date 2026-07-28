@@ -43,6 +43,9 @@ export class PaginaTemplatePickerComponent {
   readonly arquivadosAlterado = output<boolean>();
   readonly fechado = output<void>();
   readonly filtro = signal<TemplateFiltro>('TODOS');
+  readonly busca = signal('');
+  readonly somenteFavoritos = signal(false);
+  readonly favoritos = signal<Set<string>>(this.carregarFavoritos());
   readonly totalAplicacoes = computed(() =>
     this.templates().reduce((total, template) => total + (template.paginasOriginadas ?? 0), 0),
   );
@@ -51,11 +54,27 @@ export class PaginaTemplatePickerComponent {
   );
   readonly templatesVisiveis = computed(() => {
     const filtro = this.filtro();
-    if (filtro === 'SISTEMA') return this.templates().filter(template => !template.personalizado);
-    if (filtro === 'PROJETO') return this.templates().filter(template => !!template.projetoId);
-    if (filtro === 'CLIENTE') return this.templates().filter(template => !!template.clienteId);
-    if (filtro === 'ARQUIVADOS') return this.templates().filter(template => template.ativo === false);
-    return this.templates().filter(template => template.ativo !== false);
+    const termo = this.normalizar(this.busca());
+    let templates = this.templates();
+    if (filtro === 'SISTEMA') templates = templates.filter(template => !template.personalizado);
+    else if (filtro === 'PROJETO') templates = templates.filter(template => !!template.projetoId);
+    else if (filtro === 'CLIENTE') templates = templates.filter(template => !!template.clienteId);
+    else if (filtro === 'ARQUIVADOS') templates = templates.filter(template => template.ativo === false);
+    else templates = templates.filter(template => template.ativo !== false);
+
+    if (this.somenteFavoritos()) templates = templates.filter(template => this.favoritos().has(template.id));
+    if (termo) {
+      templates = templates.filter(template =>
+        this.normalizar(`${template.nome} ${template.descricao ?? ''} ${template.codigo}`).includes(termo),
+      );
+    }
+    return [...templates].sort((a, b) => {
+      const favoritoA = this.favoritos().has(a.id) ? 1 : 0;
+      const favoritoB = this.favoritos().has(b.id) ? 1 : 0;
+      return (
+        favoritoB - favoritoA || (b.paginasOriginadas ?? 0) - (a.paginasOriginadas ?? 0) || a.ordem - b.ordem
+      );
+    });
   });
 
   totalFiltro(filtro: TemplateFiltro): number {
@@ -82,5 +101,35 @@ export class PaginaTemplatePickerComponent {
     if (template.projetoNome) return `Projeto · ${template.projetoNome}`;
     if (template.clienteNome) return `Cliente · ${template.clienteNome}`;
     return 'Modelo do sistema';
+  }
+
+  alternarFavorito(template: PaginaTemplate, event: Event): void {
+    event.stopPropagation();
+    const favoritos = new Set(this.favoritos());
+    if (favoritos.has(template.id)) favoritos.delete(template.id);
+    else favoritos.add(template.id);
+    this.favoritos.set(favoritos);
+    try {
+      localStorage.setItem('docflow:templates-favoritos', JSON.stringify([...favoritos]));
+    } catch {
+      // Preferência não persistida quando o storage estiver indisponível.
+    }
+  }
+
+  private carregarFavoritos(): Set<string> {
+    try {
+      const ids = JSON.parse(localStorage.getItem('docflow:templates-favoritos') ?? '[]') as unknown;
+      return new Set(Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  private normalizar(valor: string): string {
+    return valor
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 }

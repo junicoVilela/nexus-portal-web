@@ -69,7 +69,10 @@ export class AppShellComponent implements OnInit {
 
   protected readonly mobileOpen = signal(false);
   protected readonly userMenuOpen = signal(false);
-  protected readonly breadcrumb = signal<string>('Início');
+  protected readonly breadcrumb = signal(this.deriveBreadcrumb(this.router.url));
+  protected readonly workspaceLabel = signal(this.deriveWorkspace(this.router.url).label);
+  protected readonly workspaceIcon = signal(this.deriveWorkspace(this.router.url).icon);
+  protected readonly moduleNavAtTop = signal(this.hasFullHeightModuleNav(this.router.url));
 
   private readonly sectionsTodas: NavSection[] = [
     { items: [{ label: 'Início', icon: 'House', route: '/', exact: true }] },
@@ -101,7 +104,12 @@ export class AppShellComponent implements OnInit {
     this.palette.registerMany('shell', [
       { id: 'nav-home', label: 'Ir para Início', group: 'Navegação', route: '/' },
       { id: 'nav-doc', label: 'Ir para DocFlow', group: 'Navegação', route: '/doc-flow' },
-      { id: 'nav-rel', label: 'Ir para Release Orchestrator', group: 'Navegação', route: '/release-orchestrator' },
+      {
+        id: 'nav-rel',
+        label: 'Ir para Release Orchestrator',
+        group: 'Navegação',
+        route: '/release-orchestrator',
+      },
       { id: 'nav-seg', label: 'Ir para Segurança', group: 'Navegação', route: '/seguranca' },
       { id: 'theme', label: 'Alternar tema', group: 'Preferências', action: () => this.theme.toggle() },
       ...(Object.entries(ACCENT_PRESETS) as [AccentPreset, { label: string }][]).map(([id, p]) => ({
@@ -121,7 +129,12 @@ export class AppShellComponent implements OnInit {
       .subscribe(e => {
         this.mobileOpen.set(false);
         this.userMenuOpen.set(false);
-        this.breadcrumb.set(this.deriveBreadcrumb((e as NavigationEnd).urlAfterRedirects));
+        const url = (e as NavigationEnd).urlAfterRedirects;
+        const workspace = this.deriveWorkspace(url);
+        this.moduleNavAtTop.set(this.hasFullHeightModuleNav(url));
+        this.workspaceLabel.set(workspace.label);
+        this.workspaceIcon.set(workspace.icon);
+        this.breadcrumb.set(this.deriveBreadcrumb(url));
       });
 
     if (this.swUpdate?.isEnabled) {
@@ -169,11 +182,6 @@ export class AppShellComponent implements OnInit {
   private deriveBreadcrumb(url: string): string {
     const segs = url.split(/[?#]/)[0]!.split('/').filter(Boolean);
     if (!segs.length) return 'Início';
-    const moduleMap: Record<string, string> = {
-      'doc-flow': 'DocFlow',
-      'release-orchestrator': 'Release Orchestrator',
-      seguranca: 'Segurança',
-    };
     const segMap: Record<string, string> = {
       clientes: 'Clientes',
       projetos: 'Projetos',
@@ -197,7 +205,6 @@ export class AppShellComponent implements OnInit {
       revisao: 'Revisão',
     };
     const partes: string[] = [];
-    partes.push(moduleMap[segs[0]] ?? segs[0]);
     // pular IDs (UUIDs ou hashes longos)
     const isId = (s: string) => /^[0-9a-f]{8,}/i.test(s) || /^\d+$/.test(s);
     for (let i = 1; i < segs.length; i++) {
@@ -205,6 +212,21 @@ export class AppShellComponent implements OnInit {
       if (isId(s)) continue;
       partes.push(segMap[s] ?? s);
     }
-    return partes.join(' › ');
+    return partes.length ? partes.join(' › ') : 'Visão geral';
+  }
+
+  private deriveWorkspace(url: string): { label: string; icon: string } {
+    const firstSegment = url.split(/[?#]/)[0]?.split('/').filter(Boolean)[0];
+    const workspaces: Record<string, { label: string; icon: string }> = {
+      'doc-flow': { label: 'Doc Flow', icon: 'FileText' },
+      'release-orchestrator': { label: 'Release Orchestrator', icon: 'Tag' },
+      seguranca: { label: 'Segurança', icon: 'Shield' },
+    };
+    return workspaces[firstSegment ?? ''] ?? { label: 'Softon Portal', icon: 'House' };
+  }
+
+  private hasFullHeightModuleNav(url: string): boolean {
+    const path = url.split(/[?#]/)[0] ?? '';
+    return path.startsWith('/doc-flow') || path.startsWith('/release-orchestrator');
   }
 }

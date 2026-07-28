@@ -50,6 +50,52 @@
 .paginas__td--actions {
   white-space: nowrap;
 }
+.paginas__more-actions {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+}
+.paginas__more-actions summary {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font-body);
+}
+.paginas__more-actions summary::-webkit-details-marker {
+  display: none;
+}
+.paginas__more-actions summary::after {
+  margin-left: 6px;
+  content: '⌄';
+}
+.paginas__more-actions[open] summary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.paginas__more-actions-menu {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  min-width: 154px;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.paginas__more-actions-menu ui-button {
+  width: 100%;
+}
 .paginas__row {
   cursor: grab;
 }

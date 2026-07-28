@@ -65,6 +65,32 @@
   gap: 7px;
   margin-bottom: 14px;
 }
+.template-picker__search {
+  display: flex;
+  min-width: min(100%, 220px);
+  height: 32px;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+.template-picker__search lucide-icon {
+  width: 14px;
+  height: 14px;
+}
+.template-picker__search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: 500 11.5px var(--font-body);
+}
 
 .template-picker__insight {
   display: flex;
@@ -228,6 +254,10 @@
   font: 600 10px/1 var(--font-body);
   cursor: pointer;
   white-space: nowrap;
+}
+.template-card__actions button.is-favorite {
+  color: var(--warn);
+  background: var(--warn-soft);
 }
 
 .template-card__actions button:hover {

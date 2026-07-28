@@ -1,4 +1,4 @@
-<div class="shell" [class.shell--mobile-open]="mobileOpen()">
+<div class="shell" [class.shell--mobile-open]="mobileOpen()" [class.shell--module-nav-top]="moduleNavAtTop()">
   <aside class="shell__rail" aria-label="Navegação principal">
     <a class="shell__brand" routerLink="/" i18n-aria-label="@@shell.home" aria-label="Início">
       <span class="shell__brand-mark">S</span>
@@ -16,7 +16,6 @@
             routerLinkActive="shell__nav-link--active"
             [routerLinkActiveOptions]="{ exact: !!item.exact }"
             [attr.aria-label]="item.label"
-            [title]="item.label"
           >
             <lucide-icon [name]="item.icon" class="shell__nav-icon" />
             <span class="shell__tip">{{ item.label }}</span>
@@ -43,11 +42,7 @@
       </button>
 
       @if (userMenuOpen()) {
-        <div
-          class="shell__user-menu"
-          role="menu"
-          (click)="$event.stopPropagation()"
-        >
+        <div class="shell__user-menu" role="menu" (click)="$event.stopPropagation()">
           <div class="shell__user-menu-header">
             <ui-avatar [name]="auth.currentUser() || 'Usuário'" size="md" />
             <div class="shell__user-menu-info">
@@ -56,12 +51,7 @@
             </div>
           </div>
           <div class="shell__user-menu-sep"></div>
-          <button
-            type="button"
-            role="menuitem"
-            class="shell__user-menu-item"
-            (click)="toggleTheme(); closeUserMenu()"
-          >
+          <button type="button" role="menuitem" class="shell__user-menu-item" (click)="toggleTheme(); closeUserMenu()">
             <lucide-icon [name]="theme.theme() === 'dark' ? 'Sun' : 'Moon'" />
             <span>{{ theme.theme() === 'dark' ? 'Tema claro' : 'Tema escuro' }}</span>
           </button>
@@ -90,21 +80,30 @@
       >
         <lucide-icon name="ChevronRight" />
       </button>
-      <div class="shell__crumb">
-        <span i18n="@@shell.portalLabel">Portal</span><lucide-icon name="ChevronRight" /><span>{{ breadcrumb() }}</span>
+
+      <div class="shell__workspace">
+        <span class="shell__workspace-icon" aria-hidden="true">
+          <lucide-icon [name]="workspaceIcon()" />
+        </span>
+        <div class="shell__workspace-copy">
+          <strong>{{ workspaceLabel() }}</strong>
+          <span class="shell__crumb">{{ breadcrumb() }}</span>
+        </div>
       </div>
+
+      <button
+        class="shell__search"
+        type="button"
+        (click)="openPalette()"
+        i18n-aria-label="@@shell.openCommandPalette"
+        aria-label="Abrir paleta de comandos"
+      >
+        <lucide-icon name="Search" />
+        <span i18n="@@shell.search">O que você procura?</span>
+        <kbd>⌘K</kbd>
+      </button>
+
       <div class="shell__topbar-actions">
-        <button
-          class="shell__search"
-          type="button"
-          (click)="openPalette()"
-          i18n-aria-label="@@shell.openCommandPalette"
-          aria-label="Abrir paleta de comandos"
-        >
-          <lucide-icon name="Search" />
-          <span i18n="@@shell.search">Buscar…</span>
-          <kbd>⌘K</kbd>
-        </button>
         <ui-install-prompt />
         <ui-notification-center />
         <ui-icon-button

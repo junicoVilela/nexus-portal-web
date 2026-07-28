@@ -3,7 +3,17 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { importProvidersFrom } from '@angular/core';
-import { LucideAngularModule, FileText, Tag, ArrowRight, Shield, User, Settings } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  FileText,
+  Tag,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Shield,
+  User,
+  Settings,
+} from 'lucide-angular';
 
 import { HomeComponent } from './home.component';
 
@@ -17,7 +27,18 @@ describe('HomeComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        importProvidersFrom(LucideAngularModule.pick({ FileText, Tag, ArrowRight, Shield, User, Settings })),
+        importProvidersFrom(
+          LucideAngularModule.pick({
+            FileText,
+            Tag,
+            ArrowRight,
+            ArrowUpRight,
+            Check,
+            Shield,
+            User,
+            Settings,
+          }),
+        ),
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(HomeComponent);
@@ -33,6 +54,9 @@ describe('HomeComponent', () => {
     const text = fixture.nativeElement.textContent;
     expect(text).toContain('Doc Flow');
     expect(text).toContain('Release Orchestrator');
+    expect(text).toContain('Conteúdo estruturado');
+    expect(text).toContain('Rastreabilidade');
+    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(2);
   });
 
   it('renders the KPI strip with all 4 labels', () => {

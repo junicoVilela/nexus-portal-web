@@ -14,6 +14,7 @@
           [routerLink]="item.route"
           routerLinkActive="df-shell__nav-link--active"
           [routerLinkActiveOptions]="{ exact: !!item.exact }"
+          [attr.data-help-id]="item.helpId"
         >
           <lucide-icon [name]="item.icon" class="df-shell__nav-icon" />
           <span>{{ item.label }}</span>
@@ -24,4 +25,5 @@
   <main class="df-shell__main">
     <router-outlet />
   </main>
+  <app-ajuda-contextual />
 </div>

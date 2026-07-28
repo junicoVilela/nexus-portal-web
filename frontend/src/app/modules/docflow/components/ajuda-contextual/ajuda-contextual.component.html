@@ -1,0 +1,162 @@
+@if (mostrarBoasVindas() && !aberto() && tourIndex() === null) {
+  <aside class="context-welcome" aria-label="Primeiros passos">
+    <span class="context-welcome__icon"><lucide-icon name="Sparkles" /></span>
+    <div><strong>Primeira vez no Doc Flow?</strong><small>Conclua o guia inicial no seu ritmo.</small></div>
+    <button type="button" (click)="abrir('onboarding')">Começar</button>
+    <button type="button" class="context-welcome__close" (click)="fechar()" aria-label="Fechar">
+      <lucide-icon name="X" />
+    </button>
+  </aside>
+}
+
+<button
+  #contextTrigger
+  type="button"
+  class="context-trigger"
+  (click)="abrir()"
+  aria-label="Abrir ajuda desta tela"
+  title="Ajuda desta tela"
+>
+  <lucide-icon name="CircleHelp" />
+</button>
+
+@if (aberto()) {
+  <button type="button" class="context-backdrop" (click)="fechar()" aria-label="Fechar ajuda"></button>
+  <aside
+    #contextDrawer
+    class="context-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="context-drawer-title"
+    tabindex="-1"
+  >
+    <header class="context-drawer__header">
+      <span><lucide-icon name="CircleHelp" /></span>
+      <div>
+        <strong id="context-drawer-title">Como podemos ajudar?</strong><small>Orientação sem sair da tela atual.</small>
+      </div>
+      <button type="button" (click)="fechar()" aria-label="Fechar"><lucide-icon name="X" /></button>
+    </header>
+
+    <div class="context-tabs" role="tablist">
+      <button
+        id="context-tab-contexto"
+        type="button"
+        role="tab"
+        aria-controls="context-panel"
+        [attr.aria-selected]="aba() === 'contexto'"
+        [class.active]="aba() === 'contexto'"
+        (click)="aba.set('contexto')"
+      >
+        Nesta tela
+      </button>
+      <button
+        id="context-tab-onboarding"
+        type="button"
+        role="tab"
+        aria-controls="context-panel"
+        [attr.aria-selected]="aba() === 'onboarding'"
+        [class.active]="aba() === 'onboarding'"
+        (click)="aba.set('onboarding')"
+      >
+        Primeiros passos <span>{{ progressoOnboarding() }}%</span>
+      </button>
+    </div>
+
+    <div
+      id="context-panel"
+      class="context-drawer__body"
+      role="tabpanel"
+      [attr.aria-labelledby]="aba() === 'contexto' ? 'context-tab-contexto' : 'context-tab-onboarding'"
+    >
+      @if (aba() === 'contexto') {
+        <section class="context-intro">
+          <span>GUIA CONTEXTUAL</span>
+          <h2>{{ contextuais()[0]?.titulo || 'Orientação do Doc Flow' }}</h2>
+          <p>{{ contextuais()[0]?.resumo || 'Use a Central de Ajuda para acompanhar o fluxo completo.' }}</p>
+          <button type="button" (click)="iniciarTour()"><lucide-icon name="Play" /> Fazer tour pelo Doc Flow</button>
+        </section>
+
+        <div class="context-list">
+          @for (item of contextuais(); track item.codigo) {
+            <article>
+              <span><lucide-icon [name]="item.icone || 'BookOpen'" /></span>
+              <div>
+                <strong>{{ item.titulo }}</strong
+                ><small>{{ item.resumo || item.conteudo }}</small>
+              </div>
+              @if (item.rotaAcao) {
+                <a [routerLink]="item.rotaAcao" (click)="abrirConteudo(item.codigo); fechar()" aria-label="Abrir">
+                  <lucide-icon name="ArrowUpRight" />
+                </a>
+              }
+            </article>
+          }
+        </div>
+
+        <a class="context-central" routerLink="/doc-flow/ajuda" (click)="fechar()">
+          Ver Central de Ajuda completa <lucide-icon name="ArrowRight" />
+        </a>
+      } @else {
+        <section class="onboarding-head">
+          <div>
+            <span>SEU PROGRESSO</span><strong>{{ progressoOnboarding() }}%</strong>
+          </div>
+          <div class="onboarding-progress"><i [style.width.%]="progressoOnboarding()"></i></div>
+          <p>Marque cada etapa conforme conhecer o fluxo.</p>
+        </section>
+        <ol class="onboarding-list">
+          @for (item of onboarding; track item.id; let numero = $index) {
+            <li [class.done]="itemOnboardingConcluido(item.id)">
+              <button
+                type="button"
+                (click)="concluirOnboarding(item)"
+                [attr.aria-pressed]="itemOnboardingConcluido(item.id)"
+              >
+                @if (itemOnboardingConcluido(item.id)) {
+                  <lucide-icon name="Check" />
+                } @else {
+                  {{ numero + 1 }}
+                }
+              </button>
+              <div>
+                <strong>{{ item.titulo }}</strong
+                ><small>{{ item.descricao }}</small>
+              </div>
+              <a [routerLink]="item.rota" (click)="concluirOnboarding(item); fechar()"
+                ><lucide-icon name="ArrowUpRight"
+              /></a>
+            </li>
+          }
+        </ol>
+      }
+    </div>
+  </aside>
+}
+
+@if (passoTour(); as passo) {
+  <div class="tour-backdrop" aria-hidden="true"></div>
+  <section
+    #tourDialog
+    class="tour-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tour-title"
+    aria-describedby="tour-description"
+    tabindex="-1"
+  >
+    <header>
+      <span>TOUR · {{ (tourIndex() ?? 0) + 1 }}/{{ ajuda.passosTour().length }}</span
+      ><button type="button" (click)="encerrarTour()" aria-label="Encerrar tour"><lucide-icon name="X" /></button>
+    </header>
+    <div class="tour-card__icon"><lucide-icon [name]="passo.icone || 'Compass'" /></div>
+    <h2 id="tour-title">{{ passo.titulo }}</h2>
+    <p id="tour-description">{{ passo.resumo }}</p>
+    <footer>
+      <button type="button" class="tour-secondary" [disabled]="tourIndex() === 0" (click)="voltarTour()">Voltar</button>
+      <button type="button" class="tour-primary" (click)="avancarTour()">
+        {{ tourIndex() === ajuda.passosTour().length - 1 ? 'Concluir' : 'Próximo' }} <lucide-icon name="ArrowRight" />
+      </button>
+    </footer>
+  </section>
+}

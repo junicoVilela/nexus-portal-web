@@ -38,10 +38,13 @@
     </div>
   }
 
+  <app-pagina-creation-progress [steps]="etapasCriacao()" [current]="etapaAtiva()" (selected)="irParaEtapa($event)" />
+
   <form [formGroup]="form" (ngSubmit)="salvar()">
     <div class="pf-body">
       @if (mostrarTemplates()) {
         <app-pagina-template-picker
+          id="pagina-modelo"
           [templates]="templates()"
           [selecionadoId]="templateSelecionadoId()"
           [somenteContexto]="somenteTemplatesContexto()"
@@ -182,7 +185,7 @@
           </section>
         }
       } @else if (!paginaAtual()) {
-        <div class="pf-template-resume">
+        <div id="pagina-modelo" class="pf-template-resume">
           <span>Estrutura inicial definida. Você pode trocar o modelo antes de salvar.</span>
           <ui-button
             type="button"
@@ -196,16 +199,16 @@
         </div>
       }
 
-      <div class="pf-fields">
+      <div id="pagina-contexto" class="pf-fields pf-workflow-anchor">
         <div class="df-form__grid">
-          <div class="df-form__field df-form__field--4">
+          <div class="df-form__field df-form__field--4" [class.pf-attention]="pendenciaDestacada() === 'TITULO'">
             <label class="df-form__label" for="pagina-titulo">Título *</label>
             <input id="pagina-titulo" class="df-form__input" formControlName="titulo" />
             @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
               <small class="df-form__error">Informe o título.</small>
             }
           </div>
-          <div class="df-form__field df-form__field--4">
+          <div class="df-form__field df-form__field--4" [class.pf-attention]="pendenciaDestacada() === 'CODIGO_TELA'">
             <label class="df-form__label" for="pagina-slug">Slug</label>
             <input id="pagina-slug" class="df-form__input" formControlName="slug" />
             <small class="pf-hint">Se ficar vazio, será gerado a partir do título.</small>
@@ -218,6 +221,7 @@
             }
           </div>
           <app-pagina-meta-fields
+            [class.pf-attention]="pendenciaDestacada() === 'CONTEXTO'"
             [form]="form"
             [projetos]="projetos()"
             [modulos]="modulos()"
@@ -237,42 +241,19 @@
               <span>Página ativa</span>
             </label>
           </div>
-          <div class="df-form__field df-form__field--12">
+          <div class="df-form__field df-form__field--12" [class.pf-attention]="pendenciaDestacada() === 'RESUMO'">
             <label class="df-form__label" for="pagina-resumo">Resumo</label>
             <textarea id="pagina-resumo" class="df-form__textarea" formControlName="resumo"></textarea>
           </div>
         </div>
       </div>
 
-      <section class="pf-quality" [class.pf-quality--ready]="aptoParaRevisao()">
-        <header class="pf-quality__head">
-          <div>
-            <span class="pf-quality__eyebrow">Prontidão editorial</span>
-            <h3>Checklist antes da revisão</h3>
-          </div>
-          <div class="pf-quality__score">
-            <strong>{{ qualidadeConcluidos() }}/{{ qualidadeItens().length }}</strong>
-            <span>{{ aptoParaRevisao() ? 'Pode enviar para revisão' : 'Ainda há pendências' }}</span>
-          </div>
-        </header>
-        <div class="pf-quality__items">
-          @for (item of qualidadeItens(); track item.codigo) {
-            <div
-              class="pf-quality__item"
-              [class.pf-quality__item--ok]="item.ok"
-              [class.pf-quality__item--warn]="!item.ok && item.severidade === 'AVISO'"
-            >
-              <span class="pf-quality__icon" aria-hidden="true">{{ item.ok ? '✓' : '!' }}</span>
-              <span
-                ><strong>{{ item.titulo }}</strong
-                ><small>{{ item.descricao }}</small></span
-              >
-            </div>
-          }
-        </div>
-      </section>
-
-      <div class="pf-editor">
+      <div
+        id="pagina-conteudo"
+        class="pf-editor pf-workflow-anchor"
+        [class.pf-attention]="['CONTEUDO', 'PLACEHOLDERS', 'IMAGENS_ALT', 'IMAGENS_ORIGEM', 'LINKS', 'SECOES', 'TITULOS'].includes(pendenciaDestacada() ?? '')"
+        tabindex="-1"
+      >
         <div class="pf-editor-head">
           <div class="pf-editor-headline">
             <span class="pf-editor-badge" aria-hidden="true">
@@ -460,6 +441,55 @@
         </div>
       </div>
 
+      <section id="pagina-revisao" class="pf-quality pf-workflow-anchor" [class.pf-quality--ready]="aptoParaRevisao()">
+        <header class="pf-quality__head">
+          <div>
+            <span class="pf-quality__eyebrow">Prontidão editorial</span>
+            <h3>Checklist antes da revisão</h3>
+          </div>
+          <div class="pf-quality__score">
+            <strong>{{ qualidadeConcluidos() }}/{{ qualidadeItens().length }}</strong>
+            <span>{{ aptoParaRevisao() ? 'Pode enviar para revisão' : 'Ainda há pendências' }}</span>
+          </div>
+        </header>
+        <div class="pf-quality__items">
+          @for (item of qualidadeItens(); track item.codigo) {
+            <div
+              class="pf-quality__item"
+              [class.pf-quality__item--ok]="item.ok"
+              [class.pf-quality__item--warn]="!item.ok && item.severidade === 'AVISO'"
+              [class.pf-quality__item--actionable]="!item.ok"
+              [attr.role]="!item.ok ? 'button' : null"
+              [attr.tabindex]="!item.ok ? 0 : null"
+              (click)="!item.ok && corrigirPendencia(item.codigo)"
+              (keydown.enter)="!item.ok && corrigirPendencia(item.codigo)"
+              (keydown.space)="!item.ok && corrigirPendencia(item.codigo); $event.preventDefault()"
+            >
+              <span class="pf-quality__icon" aria-hidden="true">{{ item.ok ? '✓' : '!' }}</span>
+              <span
+                ><strong>{{ item.titulo }}</strong
+                ><small>{{ item.descricao }}</small></span
+              >
+              @if (!item.ok) {
+                <button type="button" class="pf-quality__fix" (click)="$event.stopPropagation(); corrigirPendencia(item.codigo)">Corrigir</button>
+              }
+            </div>
+          }
+        </div>
+        <footer class="pf-quality__actions">
+          <ui-button type="button" variant="ghost" (clicked)="irParaEtapa('conteudo')">Voltar ao conteúdo</ui-button>
+          <ui-button
+            type="button"
+            icon="Eye"
+            [loading]="previewing()"
+            [disabled]="!aptoParaRevisao() || saving() || autosaveStatus() === 'saving'"
+            (clicked)="abrirPreviewFiel()"
+          >
+            Conferir prévia final
+          </ui-button>
+        </footer>
+      </section>
+
       @if (editId()) {
         <app-pagina-anexos
           [anexos]="anexos()"
@@ -470,7 +500,7 @@
       }
     </div>
 
-    <div class="df-form__actions u-mt-16">
+    <div class="df-form__actions ui-form-actions u-mt-16">
       @if (rascunhoSalvoEm()) {
         <span class="df-form__autosave" title="Backup local para recuperação em caso de falha de conexão">
           Backup local às {{ rascunhoSalvoEm() | date: 'HH:mm' }}

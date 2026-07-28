@@ -5,58 +5,103 @@
     icon="LayoutDashboard"
   />
 
-  <div class="df-dash__stats">
-    <ui-kpi-card
-      label="Clientes"
-      [valor]="totalClientes()"
-      icon="Building2"
-      tone="blue"
-      description="Total de clientes cadastrados"
-    />
-    <ui-kpi-card
-      label="Projetos"
-      [valor]="totalProjetos()"
-      icon="FolderOpen"
-      tone="purple"
-      description="Projetos ativos"
-    />
-    <ui-kpi-card
-      label="Módulos"
-      [valor]="totalModulos()"
-      icon="Layers"
-      tone="neutral"
-      description="Módulos no sistema"
-    />
-    <ui-kpi-card
-      label="Páginas"
-      [valor]="totalPaginas()"
-      icon="FileText"
-      tone="neutral"
-      description="Páginas de conteúdo"
-    />
-    <ui-kpi-card
-      label="Publicações"
-      [valor]="publicacoes().length"
-      icon="CloudUpload"
-      tone="green"
-      description="Total de publicações"
-    />
+  <section class="df-dash__overview" aria-labelledby="df-dash-overview-title">
+    <div class="df-dash__section-head">
+      <div>
+        <h2 id="df-dash-overview-title">Visão operacional</h2>
+        <p>O que exige acompanhamento no fluxo de documentação.</p>
+      </div>
+    </div>
 
-    <ui-kpi-card
-      label="Pendências"
-      [valor]="paginasPendentes().length"
-      icon="AlertTriangle"
-      [tone]="paginasPendentes().length > 0 ? 'amber' : 'neutral'"
-      description="Páginas aguardando revisão"
-    />
-    <ui-kpi-card
-      label="Erros"
-      [valor]="publicacoesComErro().length"
-      icon="XCircle"
-      [tone]="publicacoesComErro().length > 0 ? 'red' : 'neutral'"
-      description="Publicações com falha"
-    />
-  </div>
+    <div class="df-dash__stats">
+      <a class="df-dash__kpi-link" routerLink="/doc-flow/paginas" aria-label="Abrir páginas documentadas">
+        <ui-kpi-card
+          label="Páginas"
+          [valor]="totalPaginas()"
+          icon="FileText"
+          tone="blue"
+          description="Conteúdo documentado"
+        />
+      </a>
+      <a class="df-dash__kpi-link" routerLink="/doc-flow/publicacoes" aria-label="Abrir publicações">
+        <ui-kpi-card
+          label="Publicações"
+          [valor]="totalPublicacoes()"
+          icon="CloudUpload"
+          tone="green"
+          description="Versões geradas"
+        />
+      </a>
+      <a class="df-dash__kpi-link" routerLink="/doc-flow/paginas" aria-label="Abrir páginas com pendências">
+        <ui-kpi-card
+          label="Pendências"
+          [valor]="paginasPendentes()"
+          icon="AlertTriangle"
+          tone="amber"
+          description="Aguardando revisão"
+        />
+      </a>
+      <a
+        class="df-dash__kpi-link"
+        routerLink="/doc-flow/publicacoes"
+        [queryParams]="{ status: 'ERRO' }"
+        aria-label="Abrir publicações com erro"
+      >
+        <ui-kpi-card
+          label="Erros"
+          [valor]="publicacoesComErro()"
+          icon="XCircle"
+          tone="red"
+          description="Publicações com falha"
+        />
+      </a>
+    </div>
+  </section>
+
+  <section class="df-dash__health" aria-labelledby="df-dash-health-title">
+    <div class="df-dash__health-copy">
+      <span class="df-dash__structure-icon" aria-hidden="true"><lucide-icon name="Activity" /></span>
+      <div>
+        <h2 id="df-dash-health-title">Saúde editorial</h2>
+        <p>Indicadores calculados diretamente sobre toda a base.</p>
+      </div>
+    </div>
+    <div class="df-dash__health-metrics">
+      <a routerLink="/doc-flow/paginas"
+        ><strong>{{ paginasSemResumo() }}</strong
+        ><span>sem resumo</span></a
+      >
+      <a routerLink="/doc-flow/paginas"
+        ><strong>{{ paginasDesatualizadas() }}</strong
+        ><span>desatualizadas</span></a
+      >
+      <a routerLink="/doc-flow/publicacoes"
+        ><strong>{{ taxaSucessoPublicacoes() }}%</strong><span>sucesso nas publicações</span></a
+      >
+    </div>
+  </section>
+
+  <section class="df-dash__structure" aria-labelledby="df-dash-structure-title">
+    <div class="df-dash__structure-copy">
+      <span class="df-dash__structure-icon" aria-hidden="true"><lucide-icon name="Layers" /></span>
+      <div>
+        <h2 id="df-dash-structure-title">Estrutura documentada</h2>
+        <p>Base utilizada para organizar páginas e publicações.</p>
+      </div>
+    </div>
+
+    <nav class="df-dash__structure-metrics" aria-label="Abrir cadastros estruturais">
+      <a class="df-dash__structure-metric" routerLink="/doc-flow/clientes"
+        ><span>Clientes</span><strong>{{ totalClientes() }}</strong></a
+      >
+      <a class="df-dash__structure-metric" routerLink="/doc-flow/projetos"
+        ><span>Projetos</span><strong>{{ totalProjetos() }}</strong></a
+      >
+      <a class="df-dash__structure-metric" routerLink="/doc-flow/modulos"
+        ><span>Módulos</span><strong>{{ totalModulos() }}</strong></a
+      >
+    </nav>
+  </section>
 
   <div class="df-dash__grid">
     <ui-card padding="none" class="df-dash__card">
@@ -85,7 +130,11 @@
               <td class="df-dash__td df-dash__td--center">
                 <ui-badge [tone]="item.destaque ? 'warn' : 'neutral'">{{ item.quantidade }}</ui-badge>
               </td>
-              <td class="df-dash__td df-dash__td--muted">{{ item.acao }}</td>
+              <td class="df-dash__td df-dash__td--muted">
+                <a class="df-dash__action-link" [routerLink]="item.route" [queryParams]="item.queryParams">
+                  {{ item.acao }} <span aria-hidden="true">→</span>
+                </a>
+              </td>
             </tr>
           }
         </tbody>
@@ -133,17 +182,15 @@
     </ui-card>
   </div>
 
-  @if (clientesSemPublicacao().length > 0) {
+  @if (clientesSemPublicacao() > 0) {
     <ui-card padding="md">
       <div class="df-dash__alert-head">
         <lucide-icon name="AlertTriangle" class="df-dash__alert-icon" />
-        <span class="df-dash__alert-title">Clientes ativos sem publicação</span>
+        <span class="df-dash__alert-title"
+          >{{ clientesSemPublicacao() }} cliente(s) ativo(s) ainda não possuem publicação</span
+        >
       </div>
-      <div class="df-dash__alert-chips">
-        @for (c of clientesSemPublicacao(); track c.id) {
-          <ui-badge tone="warn">{{ c.nome }}</ui-badge>
-        }
-      </div>
+      <a class="df-dash__action-link" routerLink="/doc-flow/publicacoes/novo">Gerar primeira versão →</a>
     </ui-card>
   }
 

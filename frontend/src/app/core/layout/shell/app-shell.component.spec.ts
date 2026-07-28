@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
@@ -24,6 +24,7 @@ import {
   ChevronDown,
   Inbox,
   LayoutDashboard,
+  Layers,
   Users,
   Network,
   Lock,
@@ -69,6 +70,7 @@ describe('AppShellComponent', () => {
             ChevronDown,
             Inbox,
             LayoutDashboard,
+            Layers,
             Users,
             Network,
             Lock,
@@ -99,5 +101,32 @@ describe('AppShellComponent', () => {
     expect(theme.theme()).not.toBe(before);
     themeCmd.action?.();
     expect(theme.theme()).toBe(before);
+  });
+
+  it('ativa o menu no topo no Doc Flow e no Release Orchestrator', async () => {
+    const router = TestBed.inject(Router);
+
+    await router.navigateByUrl('/doc-flow/clientes');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.shell').classList).toContain('shell--module-nav-top');
+    expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
+      'Doc Flow',
+    );
+    expect(fixture.nativeElement.querySelector('.shell__crumb').textContent.trim()).toBe('Clientes');
+
+    await router.navigateByUrl('/release-orchestrator');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.shell').classList).toContain('shell--module-nav-top');
+    expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
+      'Release Orchestrator',
+    );
+    expect(fixture.nativeElement.querySelector('.shell__crumb').textContent.trim()).toBe('Visão geral');
+
+    await router.navigateByUrl('/seguranca');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.shell').classList).not.toContain('shell--module-nav-top');
+    expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
+      'Segurança',
+    );
   });
 });

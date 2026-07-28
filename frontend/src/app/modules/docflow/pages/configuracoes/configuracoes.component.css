@@ -1,5 +1,8 @@
 .config {
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-form);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -77,6 +80,6 @@
     grid-template-columns: 1fr;
   }
   .config {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

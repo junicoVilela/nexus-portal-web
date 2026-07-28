@@ -1,8 +1,23 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .ui-tabs {
   display: flex;
+  flex-wrap: nowrap;
   gap: 4px;
   border-bottom: 1px solid var(--border);
   padding: 0 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.ui-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .ui-tabs__btn {
@@ -18,6 +33,7 @@
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+  flex: 0 0 auto;
   transition:
     color 0.12s,
     border-color 0.12s,

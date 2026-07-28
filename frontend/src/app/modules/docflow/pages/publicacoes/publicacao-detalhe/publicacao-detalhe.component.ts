@@ -81,7 +81,7 @@ export class PublicacaoDetalheComponent implements OnInit {
     if (!pub || pub.status !== 'SUCESSO') return;
     this.publicacaoService.tokenDownloadPacote(this.id).subscribe({
       next: t => {
-        const url = this.publicacaoService.montarUrlDownloadPacotePublico(t.token);
+        const url = this.publicacaoService.montarUrlDownloadPacotePublico(t.token, t.urlPath);
         navigator.clipboard
           .writeText(url)
           .then(() => {

@@ -4,6 +4,10 @@
   background: var(--bg);
   color: var(--text);
   --rail-width: 64px;
+  --module-nav-width: 220px;
+  --shell-topbar-height: 58px;
+  --shell-topbar-gap: 12px;
+  --shell-topbar-offset: calc(var(--shell-topbar-height) + var(--shell-topbar-gap));
 }
 
 .shell__rail {
@@ -62,7 +66,9 @@
   overflow-x: visible;
   scrollbar-width: none;
 }
-.shell__nav::-webkit-scrollbar { display: none; }
+.shell__nav::-webkit-scrollbar {
+  display: none;
+}
 
 .shell__nav-divider {
   display: block;
@@ -290,56 +296,106 @@
 }
 
 .shell__topbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(240px, 460px) minmax(160px, 1fr);
   align-items: center;
-  gap: 12px;
-  padding: 12px 22px;
+  gap: 14px;
+  height: var(--shell-topbar-height);
+  margin: var(--shell-topbar-gap) 14px 0;
+  padding: 8px 12px 8px 16px;
   background: var(--topbar-bg);
-  border-bottom: 1px solid var(--topbar-border);
+  border: 1px solid var(--topbar-border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(22px) saturate(140%);
   position: sticky;
-  top: 0;
-  z-index: 5;
-}
-[data-theme='dark'] .shell__topbar {
-  backdrop-filter: blur(20px);
+  top: var(--shell-topbar-gap);
+  z-index: 20;
 }
 
-.shell__crumb {
+/* Nos módulos com navegação própria, o menu lateral ocupa também a faixa superior. */
+.shell--module-nav-top .shell__topbar {
+  margin-left: calc(var(--module-nav-width) + 14px);
+}
+[data-theme='dark'] .shell__topbar {
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.32);
+}
+
+.shell__workspace {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font: 500 12.5px/1 var(--font-body);
-  color: var(--text-muted);
+  gap: 10px;
+  min-width: 190px;
 }
-.shell__crumb lucide-icon {
-  width: 12px;
-  height: 12px;
+.shell__workspace-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.shell__workspace-icon lucide-icon {
+  width: 16px;
+  height: 16px;
+}
+.shell__workspace-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.shell__workspace-copy strong {
+  font: 700 12.5px/1 var(--font-body);
+  color: var(--text);
+  white-space: nowrap;
+}
+.shell__crumb {
+  display: block;
+  max-width: 260px;
+  overflow: hidden;
+  font: 500 10.5px/1 var(--font-body);
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .shell__topbar-actions {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-self: end;
 }
 
 .shell__search {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
-  border-radius: var(--radius);
+  width: 100%;
+  margin: 0;
+  padding: 8px 11px;
+  border-radius: 10px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   color: var(--text-muted);
-  font: 500 12.5px/1 var(--font-body);
+  font: 500 11.5px/1 var(--font-body);
   cursor: pointer;
-  min-width: 220px;
-  transition: border-color var(--motion-default) var(--ease-out);
+  transition:
+    border-color var(--motion-default) var(--ease-out),
+    box-shadow var(--motion-default) var(--ease-out),
+    background-color var(--motion-default) var(--ease-out);
 }
 .shell__search:hover {
   border-color: var(--border-strong);
+  background: var(--surface);
   color: var(--text);
+}
+.shell__search:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
 }
 .shell__search lucide-icon {
   width: 14px;
@@ -396,8 +452,39 @@
     justify-content: center;
   }
   .shell__search {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+  }
+  .shell__search span,
+  .shell__search kbd {
+    display: none;
+  }
+  .shell__workspace {
     min-width: 0;
-    flex: 1;
+  }
+  .shell__workspace-copy strong {
+    display: none;
+  }
+  .shell__crumb {
+    max-width: min(32vw, 150px);
+    font-size: 11px;
+    color: var(--text);
+  }
+  .shell__topbar {
+    display: flex;
+    gap: 8px;
+    margin-inline: 10px;
+    padding-inline: 10px;
+  }
+  .shell__topbar-actions {
+    gap: 4px;
+  }
+  .shell__topbar-actions ui-install-prompt {
+    display: none;
   }
   .shell__backdrop {
     display: block;
@@ -408,9 +495,36 @@
     animation: shell-fade 180ms var(--ease-out);
   }
   @keyframes shell-fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   /* Em mobile o tooltip vira inútil (rail sai por cima) — esconder */
-  .shell__tip { display: none; }
+  .shell__tip {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .shell__topbar {
+    grid-template-columns: minmax(160px, 1fr) minmax(200px, 340px) auto;
+  }
+  .shell__crumb {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell--module-nav-top .shell__topbar {
+    margin-left: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shell--module-nav-top .shell__topbar {
+    margin-left: 10px;
+  }
 }

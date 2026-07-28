@@ -1,8 +1,21 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .ui-spb {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
   padding: 6px 0 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+.ui-spb::-webkit-scrollbar {
+  display: none;
 }
 .ui-spb__pill {
   background: var(--surface-2);
@@ -15,6 +28,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex: 0 0 auto;
 }
 .ui-spb__pill span {
   color: var(--text-muted);

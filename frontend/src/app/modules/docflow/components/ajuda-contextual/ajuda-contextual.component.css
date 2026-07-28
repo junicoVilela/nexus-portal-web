@@ -1,0 +1,514 @@
+:host {
+  position: relative;
+  z-index: 1000;
+}
+.context-trigger {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 900;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-content: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+.context-trigger:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+.context-trigger:focus-visible,
+.context-welcome button:focus-visible,
+.context-drawer button:focus-visible,
+.context-drawer a:focus-visible,
+.tour-card button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  outline-offset: 3px;
+}
+.context-drawer:focus,
+.tour-card:focus {
+  outline: none;
+}
+.context-trigger lucide-icon {
+  width: 19px;
+  height: 19px;
+}
+.context-welcome {
+  position: fixed;
+  right: 20px;
+  bottom: 78px;
+  z-index: 901;
+  display: grid;
+  width: min(390px, calc(100vw - 28px));
+  grid-template-columns: 38px minmax(0, 1fr) auto 26px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+.context-welcome__icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-content: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.context-welcome div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.context-welcome strong {
+  color: var(--text);
+  font: 700 12px/1.2 var(--font-body);
+}
+.context-welcome small {
+  color: var(--text-muted);
+  font: 500 10.5px/1.3 var(--font-body);
+}
+.context-welcome > button:not(.context-welcome__close) {
+  min-height: 32px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-text);
+  font: 700 10px/1 var(--font-body);
+  cursor: pointer;
+}
+.context-welcome__close {
+  display: grid;
+  place-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.context-welcome__close lucide-icon {
+  width: 15px;
+  height: 15px;
+}
+.context-backdrop,
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  border: 0;
+  background: rgb(6 8 24 / 38%);
+  backdrop-filter: blur(1px);
+}
+.context-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 999;
+  display: flex;
+  width: min(440px, 100vw);
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: drawer-in var(--motion-slower) var(--ease-out);
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .context-trigger,
+  .context-drawer {
+    transition: none;
+    animation: none;
+  }
+}
+.context-drawer__header {
+  display: grid;
+  grid-template-columns: 40px 1fr 30px;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.context-drawer__header > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-content: center;
+  border-radius: 11px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.context-drawer__header div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.context-drawer__header strong {
+  font: 730 14px/1.2 var(--font-display);
+}
+.context-drawer__header small {
+  color: var(--text-muted);
+  font-size: 10.5px;
+}
+.context-drawer__header button {
+  display: grid;
+  place-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.context-drawer__header lucide-icon {
+  width: 17px;
+  height: 17px;
+}
+.context-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 8px 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.context-tabs button {
+  min-height: 40px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font: 650 11px/1 var(--font-body);
+  cursor: pointer;
+}
+.context-tabs button.active {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+.context-tabs span {
+  margin-left: 4px;
+  color: var(--text-subtle);
+  font-size: 9px;
+}
+.context-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+.context-intro {
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--surface), var(--accent-soft));
+}
+.context-intro > span,
+.onboarding-head span {
+  color: var(--accent);
+  font: 750 9px/1 var(--font-body);
+  letter-spacing: 0.08em;
+}
+.context-intro h2 {
+  margin: 8px 0 5px;
+  color: var(--text);
+  font: 750 19px/1.15 var(--font-display);
+}
+.context-intro p {
+  margin: 0;
+  color: var(--text-muted);
+  font: 500 11px/1.5 var(--font-body);
+}
+.context-intro button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-text);
+  font: 700 10px/1 var(--font-body);
+  cursor: pointer;
+}
+.context-intro button lucide-icon {
+  width: 13px;
+  height: 13px;
+}
+.context-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 14px;
+}
+.context-list article {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.context-list article > span {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-content: center;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--accent);
+}
+.context-list article lucide-icon {
+  width: 14px;
+  height: 14px;
+}
+.context-list article div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.context-list strong {
+  color: var(--text);
+  font: 680 11px/1.25 var(--font-body);
+}
+.context-list small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 500 10px/1.35 var(--font-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.context-list a {
+  color: var(--accent);
+}
+.context-central {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 12px 2px;
+  color: var(--accent);
+  font: 700 10.5px/1 var(--font-body);
+  text-decoration: none;
+}
+.context-central lucide-icon {
+  width: 14px;
+  height: 14px;
+}
+.onboarding-head {
+  padding: 4px 2px 16px;
+}
+.onboarding-head > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.onboarding-head strong {
+  color: var(--accent);
+  font: 750 13px/1 var(--font-mono);
+}
+.onboarding-head p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 10.5px;
+}
+.onboarding-progress {
+  height: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.onboarding-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+}
+.onboarding-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.onboarding-list li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.onboarding-list li.done {
+  background: color-mix(in srgb, var(--success-soft) 40%, var(--surface));
+}
+.onboarding-list li > button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--accent);
+  font: 700 10px/1 var(--font-mono);
+  cursor: pointer;
+}
+.onboarding-list li.done > button {
+  border-color: var(--success);
+  background: var(--success);
+  color: white;
+}
+.onboarding-list li lucide-icon {
+  width: 13px;
+  height: 13px;
+}
+.onboarding-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.onboarding-list strong {
+  color: var(--text);
+  font: 680 11px/1.2 var(--font-body);
+}
+.onboarding-list small {
+  color: var(--text-muted);
+  font: 500 10px/1.3 var(--font-body);
+}
+.onboarding-list a {
+  color: var(--accent);
+}
+.tour-backdrop {
+  z-index: 1000;
+  background: rgb(6 8 24 / 55%);
+}
+.tour-card {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 1003;
+  width: min(390px, calc(100vw - 28px));
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+.tour-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tour-card header span {
+  color: var(--accent);
+  font: 750 9px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.tour-card header button {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.tour-card header lucide-icon {
+  width: 15px;
+  height: 15px;
+}
+.tour-card__icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin-top: 16px;
+  place-content: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.tour-card__icon lucide-icon {
+  width: 18px;
+  height: 18px;
+}
+.tour-card h2 {
+  margin: 12px 0 5px;
+  color: var(--text);
+  font: 750 20px/1.15 var(--font-display);
+}
+.tour-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font: 500 11.5px/1.55 var(--font-body);
+}
+.tour-card footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.tour-card footer button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 13px;
+  border-radius: var(--radius);
+  font: 700 10.5px/1 var(--font-body);
+  cursor: pointer;
+}
+.tour-secondary {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+.tour-secondary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.tour-primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.tour-primary lucide-icon {
+  width: 13px;
+  height: 13px;
+}
+@media (max-width: 600px) {
+  .context-trigger {
+    right: 14px;
+    bottom: 14px;
+  }
+  .context-welcome {
+    right: 14px;
+    bottom: 68px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+  .context-welcome__close {
+    display: none;
+  }
+  .tour-card {
+    right: 14px;
+    bottom: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .context-drawer,
+  .context-trigger {
+    animation: none;
+    transition: none;
+  }
+}

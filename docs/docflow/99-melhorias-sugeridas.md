@@ -8,6 +8,15 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ## A. UX
 
+### A.0 Operação editorial consolidada
+
+- **Status**: ✅ entregue.
+- Dashboard calculado no backend, com saúde editorial, taxa de sucesso e fila acionável.
+- Central de revisão com SLA visual, checklist, comentários, diff, aprovação e devolução.
+- Biblioteca de mídia global com busca, paginação, cópia de URL e acesso à página de origem.
+- Publicações com filtro de status no servidor e reprocessamento em lote.
+- Qualidade automática alinhada entre cliente e servidor para imagens, links e títulos.
+
 ### A.1 Toolbar rich-text no editor de página
 
 - **Status**: ✅ entregue via `PaginaRichEditorComponent` (`ngx-editor`, modo **rico** default).

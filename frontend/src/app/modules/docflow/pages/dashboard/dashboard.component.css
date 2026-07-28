@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-list);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 .df-dash__error {
@@ -22,10 +25,143 @@
   flex-shrink: 0;
 }
 
+.df-dash__overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.df-dash__section-head h2,
+.df-dash__structure-copy h2 {
+  margin: 0;
+  font: 700 14px/1.2 var(--font-display);
+  color: var(--text);
+}
+.df-dash__section-head p,
+.df-dash__structure-copy p {
+  margin: 4px 0 0;
+  font: 400 12.5px/1.4 var(--font-body);
+  color: var(--text-muted);
+}
+
 .df-dash__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
+}
+.df-dash__kpi-link {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  transition: transform var(--motion-default) var(--ease-out);
+}
+.df-dash__kpi-link:hover {
+  transform: translateY(-2px);
+}
+
+.df-dash__structure {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 38%), var(--surface);
+}
+.df-dash__health {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.df-dash__health-copy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.df-dash__health-copy h2 {
+  margin: 0;
+  font: 700 14px/1.2 var(--font-display);
+}
+.df-dash__health-copy p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font: 500 12px/1.3 var(--font-body);
+}
+.df-dash__health-metrics {
+  display: flex;
+  align-items: stretch;
+}
+.df-dash__health-metrics a {
+  display: flex;
+  min-width: 132px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 18px;
+  border-left: 1px solid var(--border);
+}
+.df-dash__health-metrics strong {
+  color: var(--text);
+  font: 750 18px/1 var(--font-display);
+}
+.df-dash__health-metrics span {
+  color: var(--text-muted);
+  font: 500 11px/1.2 var(--font-body);
+}
+.df-dash__structure-copy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.df-dash__structure-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: var(--radius);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.df-dash__structure-icon lucide-icon {
+  width: 18px;
+  height: 18px;
+}
+.df-dash__structure-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(92px, 120px));
+  margin: 0;
+}
+.df-dash__structure-metric {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  padding: 2px 18px;
+  border-left: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+.df-dash__structure-metric:hover {
+  background: var(--surface-2);
+}
+.df-dash__structure-metric span {
+  font: 500 11.5px/1 var(--font-body);
+  color: var(--text-muted);
+}
+.df-dash__structure-metric strong {
+  font: 700 20px/1 var(--font-display);
+  color: var(--text);
+  font-feature-settings: 'tnum' 1;
 }
 
 .df-dash__grid {
@@ -34,6 +170,31 @@
   gap: 16px;
 }
 @media (max-width: 900px) {
+  .df-dash__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .df-dash__structure {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .df-dash__health {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .df-dash__health-metrics {
+    width: 100%;
+  }
+  .df-dash__health-metrics a {
+    min-width: 0;
+    flex: 1;
+  }
+  .df-dash__structure-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .df-dash__structure-metric:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
   .df-dash__grid {
     grid-template-columns: 1fr;
   }
@@ -128,6 +289,14 @@
   font-family: var(--font-mono, monospace);
   font-size: 12px;
 }
+.df-dash__action-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.df-dash__action-link:hover {
+  text-decoration: underline;
+}
 .df-dash__row:hover .df-dash__td {
   background: var(--surface-2);
 }
@@ -137,6 +306,28 @@
 
 @media (max-width: 768px) {
   .df-dash {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
+  }
+}
+
+@media (max-width: 560px) {
+  .df-dash__stats {
+    grid-template-columns: 1fr;
+  }
+  .df-dash__structure {
+    padding: 14px;
+  }
+  .df-dash__structure-metric {
+    padding-inline: 12px;
+  }
+  .df-dash__health-metrics {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .df-dash__health-metrics a {
+    width: 100%;
+    padding: 0;
+    border-left: 0;
   }
 }

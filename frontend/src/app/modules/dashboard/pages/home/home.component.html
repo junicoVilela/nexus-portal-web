@@ -1,5 +1,5 @@
 <div class="home">
-  <header class="home__hero">
+  <header class="home__hero u-context-surface">
     <h1>{{ greeting() }}, {{ userName() }}.</h1>
     <p>Você tem tudo o que precisa para tocar o dia abaixo. Use ⌘K para pular direto ao que quiser.</p>
   </header>
@@ -18,28 +18,57 @@
     }
   </section>
 
-  <section class="home__modules">
-    <div class="home__section-title">Seus módulos</div>
+  <section class="home__modules" aria-labelledby="home-modules-title">
+    <div class="home__section-heading">
+      <div>
+        <span class="home__section-eyebrow">Seu workspace</span>
+        <h2 id="home-modules-title">Escolha onde deseja trabalhar</h2>
+        <p>Acesse as ferramentas disponíveis e continue seus fluxos de trabalho.</p>
+      </div>
+      <span class="home__module-count">{{ modules.length }} módulos disponíveis</span>
+    </div>
+
     <div class="home__module-grid">
-      @for (m of modules; track m.id) {
-        <ui-card padding="md" [interactive]="m.available">
+      @for (m of modules; track m.id; let index = $index) {
+        <ui-card padding="none" [interactive]="m.available">
           <a
             class="home__module"
             [class.home__module--disabled]="!m.available"
+            [attr.data-module]="m.id"
             (click)="onModule(m)"
             [attr.href]="m.available ? m.route : null"
+            [attr.aria-disabled]="!m.available"
           >
-            <span class="home__module-ico"><lucide-icon [name]="lucideFor(m)" /></span>
-            <span class="home__module-body">
-              <span class="home__module-name">{{ m.label }}</span>
-              <span class="home__module-desc">{{ m.description }}</span>
-              @if (!m.available) {
+            <span class="home__module-glow" aria-hidden="true"></span>
+            <span class="home__module-index" aria-hidden="true">0{{ index + 1 }}</span>
+
+            <span class="home__module-top">
+              <span class="home__module-ico"><lucide-icon [name]="lucideFor(m)" /></span>
+              @if (m.available) {
+                <ui-badge tone="success" [dot]="true">Disponível</ui-badge>
+              } @else {
                 <ui-badge tone="neutral">Em breve</ui-badge>
               }
             </span>
-            @if (m.available) {
-              <lucide-icon name="ArrowRight" class="home__module-arrow" />
-            }
+
+            <span class="home__module-body">
+              <span class="home__module-name">{{ m.label }}</span>
+              <span class="home__module-desc">{{ m.description }}</span>
+              <span class="home__module-features" aria-label="Principais recursos">
+                @for (highlight of m.highlights; track highlight) {
+                  <span><lucide-icon name="Check" />{{ highlight }}</span>
+                }
+              </span>
+            </span>
+
+            <span class="home__module-footer">
+              <span>{{ m.available ? 'Acessar módulo' : 'Indisponível no momento' }}</span>
+              @if (m.available) {
+                <span class="home__module-arrow" aria-hidden="true">
+                  <lucide-icon name="ArrowUpRight" />
+                </span>
+              }
+            </span>
           </a>
         </ui-card>
       }

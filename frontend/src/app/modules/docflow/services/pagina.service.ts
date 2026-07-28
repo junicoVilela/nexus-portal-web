@@ -313,6 +313,16 @@ export class PaginaService {
     return this.http.get<PaginaAnexo[]>(`${this.base}/paginas/${id}/anexos`);
   }
 
+  bibliotecaAnexos(busca = '', page = 1, size = 24): Observable<PageResult<PaginaAnexo>> {
+    return this.http.get<PageResult<PaginaAnexo>>(`${this.base}/paginas/anexos`, {
+      params: buildQueryParams({ busca, page, size }),
+    });
+  }
+
+  comentarRevisaoPagina(id: string, comentario: string): Observable<PaginaRevisao> {
+    return this.http.post<PaginaRevisao>(`${this.base}/paginas/${id}/revisoes/comentarios`, { comentario });
+  }
+
   anexarPagina(id: string, file: File): Observable<PaginaAnexo> {
     const formData = new FormData();
     formData.append('file', file);

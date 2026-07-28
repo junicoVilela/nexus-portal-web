@@ -24,6 +24,15 @@
   }
 
   <div class="template-picker__filters" aria-label="Filtrar modelos por origem">
+    <label class="template-picker__search">
+      <lucide-icon name="Search" aria-hidden="true" />
+      <input
+        type="search"
+        placeholder="Buscar modelo..."
+        [value]="busca()"
+        (input)="busca.set($any($event.target).value)"
+      />
+    </label>
     <button
       type="button"
       [class.is-active]="filtro() === 'TODOS'"
@@ -72,6 +81,15 @@
     </button>
     <button type="button" class="template-picker__setting" (click)="arquivadosAlterado.emit(!incluirArquivados())">
       {{ incluirArquivados() ? 'Ocultar arquivados' : 'Incluir arquivados' }}
+    </button>
+    <button
+      type="button"
+      class="template-picker__setting"
+      [class.is-active]="somenteFavoritos()"
+      [attr.aria-pressed]="somenteFavoritos()"
+      (click)="somenteFavoritos.update(value => !value)"
+    >
+      <lucide-icon name="Star" aria-hidden="true" /> Favoritos
     </button>
   </div>
 
@@ -135,6 +153,17 @@
           </span>
         </button>
         <div class="template-card__actions">
+          <button
+            type="button"
+            [class.is-favorite]="favoritos().has(template.id)"
+            (click)="alternarFavorito(template, $event)"
+            [attr.aria-label]="
+              (favoritos().has(template.id) ? 'Remover ' : 'Adicionar ') + template.nome + ' dos favoritos'
+            "
+            [title]="favoritos().has(template.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+          >
+            <lucide-icon name="Star" /><span>{{ favoritos().has(template.id) ? 'Favorito' : 'Favoritar' }}</span>
+          </button>
           <button
             type="button"
             (click)="previewSolicitada.emit(template)"

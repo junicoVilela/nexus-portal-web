@@ -10,12 +10,14 @@ import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
+import { AjudaService } from '@modules/docflow/services/ajuda.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import { Cliente } from '@modules/docflow/models/cliente.model';
 import { Modulo } from '@modules/docflow/models/modulo.model';
 import { Pagina } from '@modules/docflow/models/pagina.model';
 import { Projeto } from '@modules/docflow/models/projeto.model';
 import { Publicacao } from '@modules/docflow/models/publicacao.model';
+import { AjudaConteudo } from '@modules/docflow/models/ajuda.model';
 import {
   PageHeaderComponent,
   CardComponent,
@@ -47,7 +49,7 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
   protected termo = '';
   protected readonly carregando = signal(false);
   protected readonly tipoAtivo = signal<
-    'todos' | 'clientes' | 'projetos' | 'modulos' | 'paginas' | 'publicacoes'
+    'todos' | 'clientes' | 'projetos' | 'modulos' | 'paginas' | 'publicacoes' | 'ajuda'
   >('todos');
   private readonly destroy$ = new Subject<void>();
 
@@ -56,6 +58,7 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
   protected readonly modulos = signal<Modulo[]>([]);
   protected readonly paginas = signal<Pagina[]>([]);
   protected readonly publicacoes = signal<Publicacao[]>([]);
+  protected readonly ajudaResultados = signal<AjudaConteudo[]>([]);
   protected publicacoesSort = 'createdAt';
   protected publicacoesDir: 'ASC' | 'DESC' = 'DESC';
 
@@ -79,11 +82,13 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
     private readonly moduloService: ModuloService,
     private readonly paginaService: PaginaService,
     private readonly publicacaoService: PublicacaoService,
+    private readonly ajudaService: AjudaService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.ajudaService.carregar();
     this.route.queryParamMap.subscribe(params => {
       this.termo = params.get('q') ?? '';
       this.form.patchValue({ q: this.termo }, { emitEvent: false });
@@ -143,6 +148,14 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
             ),
           ),
         );
+        const ajuda = this.ajudaService.pesquisar(this.termo);
+        this.ajudaResultados.set(ajuda);
+        this.ajudaService.registrarEvento({
+          tipo: ajuda.length ? 'BUSCA' : 'BUSCA_SEM_RESULTADO',
+          termo: this.termo,
+          rota: '/doc-flow/busca',
+          resultadoQuantidade: ajuda.length,
+        });
         this.carregando.set(false);
       },
       error: () => {
@@ -174,6 +187,15 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
     this.router.navigate(docFlowRouterCommands(['publicacoes']), { queryParams: { page: 1 } });
   }
 
+  abrirAjuda(item: AjudaConteudo): void {
+    this.ajudaService.registrarEvento({
+      tipo: 'CONTEUDO_ABERTO',
+      conteudoCodigo: item.codigo,
+      rota: '/doc-flow/busca',
+    });
+    this.router.navigate(['/doc-flow', 'ajuda'], { queryParams: { q: this.termo } });
+  }
+
   ordenarPublicacoes(campo: string): void {
     if (this.publicacoesSort === campo) {
       this.publicacoesDir = this.publicacoesDir === 'ASC' ? 'DESC' : 'ASC';
@@ -195,6 +217,7 @@ export class BuscaGlobalComponent implements OnInit, OnDestroy {
     this.modulos.set([]);
     this.paginas.set([]);
     this.publicacoes.set([]);
+    this.ajudaResultados.set([]);
   }
 
   private atualizarUrl(): void {

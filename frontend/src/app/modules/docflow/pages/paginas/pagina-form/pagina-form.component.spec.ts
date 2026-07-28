@@ -348,6 +348,8 @@ describe('PaginaFormComponent (smoke)', () => {
     fixture.componentInstance['form'].patchValue({
       titulo: 'Cadastro de clientes',
       codigoTela: 'CLI-001',
+      projetoId: 'projeto-1',
+      moduloId: 'modulo-1',
       resumo: 'Orientações completas para cadastrar clientes no sistema.',
       conteudoHtml:
         '<h2>Como cadastrar</h2><p>Acesse a tela de clientes, preencha todos os campos obrigatórios, revise os dados apresentados e selecione Salvar para concluir o procedimento com segurança.</p>',

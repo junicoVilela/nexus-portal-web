@@ -125,6 +125,20 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['PAGINA:LER'] },
       },
       {
+        path: 'revisoes',
+        loadComponent: () =>
+          import('./pages/revisoes/revisoes.component').then(component => component.RevisoesComponent),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:LER'] },
+      },
+      {
+        path: 'midias',
+        loadComponent: () =>
+          import('./pages/midias/midias.component').then(component => component.MidiasComponent),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:LER'] },
+      },
+      {
         path: 'publicacoes/:id/detalhe',
         loadComponent: () =>
           import('./pages/publicacoes/publicacao-detalhe/publicacao-detalhe.component').then(
@@ -166,6 +180,22 @@ export const DOCFLOW_ROUTES: Routes = [
           import('./pages/configuracoes/configuracoes.component').then(
             component => component.ConfiguracoesComponent,
           ),
+      },
+      {
+        path: 'ajuda/gerenciar',
+        loadComponent: () =>
+          import('./pages/ajuda-admin/ajuda-admin.component').then(
+            component => component.AjudaAdminComponent,
+          ),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['AJUDA:EDITAR'] },
+      },
+      {
+        path: 'ajuda',
+        loadComponent: () =>
+          import('./pages/ajuda/ajuda.component').then(component => component.AjudaComponent),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['AJUDA:LER'] },
       },
     ],
   },

@@ -1,7 +1,7 @@
 <div class="busca">
   <ui-page-header
     title="Busca global"
-    subtitle="Encontre clientes, projetos, módulos, páginas e publicações em um único lugar."
+    subtitle="Encontre dados, páginas, publicações e orientações em um único lugar."
     icon="Search"
   />
 
@@ -78,6 +78,15 @@
       >
         Publicações ({{ publicacoes().length }})
       </button>
+      <button
+        type="button"
+        class="busca__chip"
+        [class.busca__chip--active]="tipoAtivo() === 'ajuda'"
+        (click)="tipoAtivo.set('ajuda')"
+        role="tab"
+      >
+        Ajuda ({{ ajudaResultados().length }})
+      </button>
     </div>
 
     <div class="busca__grid">
@@ -134,6 +143,28 @@
       }
     </div>
 
+    @if (tipoAtivo() === 'todos' || tipoAtivo() === 'ajuda') {
+      <ui-card padding="none">
+        <div class="busca__table-head">
+          <h3 class="busca__card-title">Central de Ajuda</h3>
+          <p class="busca__card-sub">Jornadas, respostas e orientações relacionadas à pesquisa.</p>
+        </div>
+        @if (ajudaResultados().length === 0) {
+          <p class="busca__empty busca__empty--pad">Nenhuma orientação encontrada.</p>
+        } @else {
+          <div class="busca__help-results">
+            @for (item of ajudaResultados(); track item.codigo) {
+              <button type="button" (click)="abrirAjuda(item)">
+                <span>{{ item.tipo }}</span>
+                <strong>{{ item.titulo }}</strong>
+                <small>{{ item.resumo || item.conteudo }}</small>
+              </button>
+            }
+          </div>
+        }
+      </ui-card>
+    }
+
     @if (tipoAtivo() === 'todos' || tipoAtivo() === 'publicacoes') {
       <ui-card padding="none">
         <div class="busca__table-head">
@@ -143,7 +174,7 @@
         @if (publicacoes().length === 0) {
           <p class="busca__empty busca__empty--pad">Sem publicações encontradas.</p>
         } @else {
-          <div class="busca__table-wrap">
+          <div class="busca__table-wrap ui-table-scroll">
             <table class="busca__table">
               <thead>
                 <tr>

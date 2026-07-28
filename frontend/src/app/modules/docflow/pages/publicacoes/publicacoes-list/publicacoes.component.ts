@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 import { TIMINGS } from '@core/config/timings';
@@ -46,6 +54,12 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
   protected publicacaoDir: SortDirection = 'DESC';
   protected readonly loadingHistory = signal(false);
   protected readonly excluindoId = signal<string | null>(null);
+  protected readonly statusFiltro = signal<Publicacao['status'] | ''>('');
+  protected readonly reprocessandoFalhas = signal(false);
+  protected readonly publicacoesVisiveis = computed(() => this.publicacoes());
+  protected readonly falhasVisiveis = computed(() =>
+    this.publicacoes().filter(item => item.status === 'ERRO'),
+  );
   private refreshTimer?: number;
   private eventosSubscription?: Subscription;
 
@@ -67,6 +81,8 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
           }>('docflow:publicacoes');
       this.publicacaoSort = params.get('sort') ?? persistidos?.sort ?? 'createdAt';
       this.publicacaoDir = parseSortDirection(params.get('dir') ?? persistidos?.dir ?? null, 'DESC');
+      const status = params.get('status');
+      this.statusFiltro.set(status === 'GERANDO' || status === 'SUCESSO' || status === 'ERRO' ? status : '');
       this.publicacoesPage.set(parsePositiveInt(params.get('page'), 1));
       this.publicacoesPageSize.set(parsePositiveInt(params.get('size'), persistidos?.pageSize ?? 10));
       this.carregar();
@@ -98,6 +114,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
         size: this.publicacoesPageSize(),
         sort: this.publicacaoSort,
         dir: this.publicacaoDir,
+        status: this.statusFiltro() || undefined,
       })
       .pipe(finalize(() => this.loadingHistory.set(false)))
       .subscribe({
@@ -144,6 +161,38 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
     });
   }
 
+  async reprocessarFalhas(): Promise<void> {
+    const falhas = this.falhasVisiveis();
+    if (!falhas.length || this.reprocessandoFalhas()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Reprocessar publicações com falha?',
+      message: `${falhas.length} publicação(ões) desta página serão reenviadas para geração.`,
+      acceptLabel: 'Reprocessar falhas',
+      icon: 'RotateCcw',
+    });
+    if (!confirmado) return;
+    this.reprocessandoFalhas.set(true);
+    this.publicacaoService
+      .reprocessarPublicacoes(falhas.map(item => item.id))
+      .pipe(finalize(() => this.reprocessandoFalhas.set(false)))
+      .subscribe({
+        next: resultado => {
+          this.toast.success(
+            `${resultado.reprocessadas} publicação(ões) reenviada(s)` +
+              (resultado.ignoradas ? `; ${resultado.ignoradas} já estavam em geração.` : '.'),
+          );
+          this.statusFiltro.set('GERANDO');
+          this.atualizarUrl();
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao reprocessar as publicações.')),
+      });
+  }
+
+  alterarFiltroStatus(status: string): void {
+    this.statusFiltro.set(status === 'GERANDO' || status === 'SUCESSO' || status === 'ERRO' ? status : '');
+    this.atualizarUrl();
+  }
+
   async excluir(item: Publicacao): Promise<void> {
     if (item.status === 'GERANDO' || this.excluindoId()) return;
     const confirmado = await this.confirm.confirm({
@@ -181,7 +230,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
     if (!this.podeBaixar(item)) return;
     this.publicacaoService.tokenDownloadPacote(item.id).subscribe({
       next: token => {
-        const url = this.publicacaoService.montarUrlDownloadPacotePublico(token.token);
+        const url = this.publicacaoService.montarUrlDownloadPacotePublico(token.token, token.urlPath);
         navigator.clipboard
           .writeText(url)
           .then(() => {
@@ -247,6 +296,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
             this.publicacaoSort === 'createdAt' && this.publicacaoDir === 'DESC' ? null : this.publicacaoDir,
           page: this.publicacoesPage(),
           size: this.publicacoesPageSize(),
+          status: this.statusFiltro() || null,
         },
         { page: 1, size: 10 },
       ),

@@ -16,6 +16,7 @@ describe('PaginaTemplatePickerComponent', () => {
   };
 
   beforeEach(async () => {
+    localStorage.removeItem('docflow:templates-favoritos');
     await TestBed.configureTestingModule({
       imports: [PaginaTemplatePickerComponent],
       providers: [lucideTestIcons],
@@ -152,5 +153,18 @@ describe('PaginaTemplatePickerComponent', () => {
     expect(fixture.nativeElement.querySelector('[title="Editar modelo"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('.is-danger')).toBeNull();
     expect(fixture.nativeElement.querySelector('[title="Pré-visualizar com dados atuais"]')).not.toBeNull();
+  });
+
+  it('busca modelos e mantém favoritos no topo', () => {
+    const faq = { ...template, id: 'faq-1', codigo: 'FAQ', nome: 'Perguntas frequentes', ordem: 20 };
+    fixture.componentRef.setInput('templates', [template, faq]);
+    fixture.componentInstance.busca.set('perguntas');
+
+    expect(fixture.componentInstance.templatesVisiveis().map(item => item.id)).toEqual(['faq-1']);
+
+    fixture.componentInstance.busca.set('');
+    fixture.componentInstance.alternarFavorito(faq, new Event('click'));
+    expect(fixture.componentInstance.templatesVisiveis()[0].id).toBe('faq-1');
+    expect(localStorage.getItem('docflow:templates-favoritos')).toContain('faq-1');
   });
 });

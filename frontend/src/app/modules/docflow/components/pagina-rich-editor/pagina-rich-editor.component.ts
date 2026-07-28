@@ -48,6 +48,11 @@ export class PaginaRichEditorComponent implements OnInit, OnDestroy {
 
   inserirHtml(html: string): void {
     this.editor.commands.focus().insertHTML(html).exec();
+    // O comando do editor não propaga a alteração de forma confiável ao FormControl.
+    // Sincronizar aqui mantém autosave e checklist editorial atualizados após anexar uma imagem.
+    const conteudo = this.editor.view.dom.innerHTML;
+    this.control().setValue(conteudo);
+    this.control().markAsDirty();
   }
 
   aoPressionarTecla(event: KeyboardEvent): void {

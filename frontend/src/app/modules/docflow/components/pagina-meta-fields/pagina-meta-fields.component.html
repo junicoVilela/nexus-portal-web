@@ -16,7 +16,6 @@
       class="df-form__select"
       formControlName="moduloId"
       (change)="moduloChange.emit()"
-      [disabled]="!form().controls['projetoId'].value"
     >
       <option value="">Selecione</option>
       @for (m of modulos(); track m.id) {

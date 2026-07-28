@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-list);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 .ui-list__filters:empty {
   display: none;
@@ -16,17 +19,17 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 12px 14px;
-  box-shadow: var(--shadow-xs);
+  box-shadow: none;
   position: sticky;
-  top: 12px;
+  top: calc(var(--shell-topbar-offset, 70px) + var(--space-3));
   z-index: 10;
 }
 .ui-list__content {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-xs);
+  overflow-x: auto;
+  box-shadow: none;
 }
 .ui-list__error {
   background: var(--danger-soft);
@@ -63,6 +66,6 @@
 
 @media (max-width: 768px) {
   .ui-list {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

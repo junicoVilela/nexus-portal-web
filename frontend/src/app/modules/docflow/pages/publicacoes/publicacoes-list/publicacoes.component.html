@@ -19,6 +19,15 @@
 
   <div filters class="pubs__filters">
     <span class="pubs__count">{{ totalPublicacoes() }} publicações</span>
+    <label class="pubs__status-filter">
+      <span>Status</span>
+      <select [value]="statusFiltro()" (change)="alterarFiltroStatus($any($event.target).value)">
+        <option value="">Todos</option>
+        <option value="GERANDO">Em andamento</option>
+        <option value="SUCESSO">Concluídas</option>
+        <option value="ERRO">Com falha</option>
+      </select>
+    </label>
     <span class="pubs__stats">
       <ui-badge tone="success" [dot]="true"
         >{{ publicacoes().filter(i => i.status === 'SUCESSO').length }} concluídas</ui-badge
@@ -34,6 +43,18 @@
         >
       }
     </span>
+    @if (falhasVisiveis().length > 0) {
+      <ui-button
+        *appPermissao="'PUBLICACAO:EDITAR'"
+        variant="secondary"
+        size="sm"
+        icon="RotateCcw"
+        [loading]="reprocessandoFalhas()"
+        (clicked)="reprocessarFalhas()"
+      >
+        Reprocessar falhas
+      </ui-button>
+    }
   </div>
 
   <table class="pubs__table">
@@ -60,7 +81,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (item of publicacoes(); track item.id) {
+      @for (item of publicacoesVisiveis(); track item.id) {
         <tr class="pubs__row">
           <td class="pubs__td pubs__td--bold">{{ item.clienteNome }}</td>
           <td class="pubs__td pubs__td--mono">{{ item.versao }}</td>
@@ -78,6 +99,9 @@
               [dot]="true"
               >{{ item.status }}</ui-badge
             >
+            @if (item.status === 'GERANDO') {
+              <span class="pubs__progress" aria-label="Geração em andamento"><i></i></span>
+            }
           </td>
           <td class="pubs__td">{{ item.quantidadePaginas }}</td>
           <td class="pubs__td"><app-audit-stamp [user]="item.createdBy" [date]="item.createdAt" /></td>
@@ -90,31 +114,34 @@
           </td>
           <td class="pubs__td pubs__td--actions">
             <ui-button variant="ghost" size="sm" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
-            <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="baixar(item)"
-              >Baixar</ui-button
-            >
-            <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)"
-              >Link público</ui-button
-            >
-            <ui-button
-              *appPermissao="'PUBLICACAO:EDITAR'"
-              variant="secondary"
-              size="sm"
-              [disabled]="item.status === 'GERANDO'"
-              (clicked)="reprocessar(item)"
-              >Reprocessar</ui-button
-            >
-            <ui-button
-              *appPermissao="'PUBLICACAO:EXCLUIR'"
-              variant="danger"
-              size="sm"
-              icon="Trash2"
-              [disabled]="item.status === 'GERANDO' || !!excluindoId()"
-              [loading]="excluindoId() === item.id"
-              (clicked)="excluir(item)"
-              i18n="@@docflow.publicacoes.excluir"
-              >Excluir</ui-button
-            >
+            @if (podeBaixar(item)) {
+              <ui-button variant="secondary" size="sm" (clicked)="baixar(item)">Baixar</ui-button>
+            }
+            <details class="pubs__more-actions">
+              <summary>Mais ações</summary>
+              <div class="pubs__more-actions-menu">
+                <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
+                <ui-button
+                  *appPermissao="'PUBLICACAO:EDITAR'"
+                  variant="secondary"
+                  size="sm"
+                  [disabled]="item.status === 'GERANDO'"
+                  (clicked)="reprocessar(item)"
+                  >Reprocessar</ui-button
+                >
+                <ui-button
+                  *appPermissao="'PUBLICACAO:EXCLUIR'"
+                  variant="danger"
+                  size="sm"
+                  icon="Trash2"
+                  [disabled]="item.status === 'GERANDO' || !!excluindoId()"
+                  [loading]="excluindoId() === item.id"
+                  (clicked)="excluir(item)"
+                  i18n="@@docflow.publicacoes.excluir"
+                  >Excluir</ui-button
+                >
+              </div>
+            </details>
           </td>
         </tr>
         @if (item.status === 'ERRO' && item.observacao) {
@@ -122,6 +149,10 @@
             <td class="pubs__td pubs__td--error-detail" colspan="8">{{ item.observacao }}</td>
           </tr>
         }
+      } @empty {
+        <tr>
+          <td class="pubs__td pubs__td--empty" colspan="8">Nenhuma publicação encontrada para este status.</td>
+        </tr>
       }
     </tbody>
   </table>

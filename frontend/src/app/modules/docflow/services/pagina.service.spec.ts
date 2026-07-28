@@ -224,6 +224,23 @@ describe('PaginaService', () => {
     http.expectOne(`${BASE}/paginas/pg1/anexos`).flush([{}, {}] as PaginaAnexo[]);
   });
 
+  it('bibliotecaAnexos() consulta a mídia global com busca e paginação', () => {
+    service.bibliotecaAnexos('logo', 2, 12).subscribe();
+    const req = http.expectOne(r => r.url === `${BASE}/paginas/anexos`);
+    expect(req.request.params.get('busca')).toBe('logo');
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('size')).toBe('12');
+    req.flush({ items: [], totalItems: 0 });
+  });
+
+  it('comentarRevisaoPagina() registra comentário editorial', () => {
+    service.comentarRevisaoPagina('pg1', 'Revisar o passo 2').subscribe();
+    const req = http.expectOne(`${BASE}/paginas/pg1/revisoes/comentarios`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ comentario: 'Revisar o passo 2' });
+    req.flush({});
+  });
+
   it('anexarPagina() POSTs FormData with key "file"', () => {
     const file = new File(['x'], 'a.png', { type: 'image/png' });
     service.anexarPagina('pg1', file).subscribe();

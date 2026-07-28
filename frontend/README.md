@@ -20,6 +20,14 @@ Frontend Angular 21+ do portal interno corporativo da Softon.
 - Node 20+ e npm 10+
 - Backend `softon-portal-api` rodando em `http://localhost:8080` (ou ajustar `proxy.conf.json`).
 
+## Executar no IntelliJ
+
+O frontend não é executado via Docker Compose. Com o backend iniciado pelo IntelliJ,
+execute o script npm `start` a partir da pasta `frontend` (pela janela **npm** do
+IntelliJ ou com `npm start` no terminal). A aplicação ficará disponível em
+`http://localhost:4200` e o proxy local encaminhará as chamadas de API para
+`http://localhost:8080`.
+
 ## Scripts
 
 | Comando | O que faz |

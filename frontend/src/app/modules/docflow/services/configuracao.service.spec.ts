@@ -28,10 +28,18 @@ describe('ConfiguracaoService', () => {
     expect(service.logoEmpresaUrl()).toBe('');
   });
 
-  it('logoEmpresaExiste() retorna false quando API responde 404', async () => {
+  it('logoEmpresaExiste() retorna false quando ainda não há logo', async () => {
     const promise = firstValueFrom(service.logoEmpresaExiste());
     const req = httpMock.expectOne(`${environment.apiUrl}/empresa/logo`);
-    req.flush(null, { status: 404, statusText: 'Not Found' });
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    expect(await promise).toBe(false);
+    expect(service.logoEmpresaUrl()).toBe('');
+  });
+
+  it('logoEmpresaExiste() mantém fallback para falhas da API', async () => {
+    const promise = firstValueFrom(service.logoEmpresaExiste());
+    const req = httpMock.expectOne(`${environment.apiUrl}/empresa/logo`);
+    req.flush(null, { status: 500, statusText: 'Internal Server Error' });
     expect(await promise).toBe(false);
     expect(service.logoEmpresaUrl()).toBe('');
   });
@@ -49,7 +57,9 @@ describe('ConfiguracaoService', () => {
 
   it('removerLogoEmpresa() DELETE limpa URL', async () => {
     const uploadPromise = firstValueFrom(service.uploadLogoEmpresa(PNG_TINY));
-    httpMock.expectOne(`${environment.apiUrl}/empresa/logo`).flush(null, { status: 204, statusText: 'No Content' });
+    httpMock
+      .expectOne(`${environment.apiUrl}/empresa/logo`)
+      .flush(null, { status: 204, statusText: 'No Content' });
     await uploadPromise;
 
     const removePromise = firstValueFrom(service.removerLogoEmpresa());

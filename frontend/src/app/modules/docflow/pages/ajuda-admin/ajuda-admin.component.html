@@ -1,0 +1,166 @@
+<div class="help-admin">
+  <ui-page-header
+    title="Gestão da ajuda"
+    subtitle="Atualize jornadas, tours, FAQs, artigos e mídias sem alterar o frontend."
+    icon="Settings"
+  >
+    <div actions class="help-admin__actions">
+      <a routerLink="/doc-flow/ajuda"><lucide-icon name="ArrowLeft" /> Voltar à ajuda</a>
+      <button type="button" (click)="novo()"><lucide-icon name="Plus" /> Novo conteúdo</button>
+    </div>
+  </ui-page-header>
+
+  @if (metricas(); as dados) {
+    <section class="help-metrics" aria-label="Métricas dos últimos 30 dias">
+      <article>
+        <span>Eventos</span><strong>{{ dados.totalEventos }}</strong
+        ><small>últimos 30 dias</small>
+      </article>
+      <article>
+        <span>Buscas</span><strong>{{ dados.buscas }}</strong
+        ><small>{{ dados.buscasSemResultado }} sem resultado</small>
+      </article>
+      <article>
+        <span>Tours iniciados</span><strong>{{ dados.toursIniciados }}</strong
+        ><small>{{ dados.toursConcluidos }} concluídos</small>
+      </article>
+      <article>
+        <span>Conclusão do tour</span><strong>{{ dados.taxaConclusaoTour }}%</strong><small>taxa de conclusão</small>
+      </article>
+    </section>
+    <section class="help-rankings">
+      <article>
+        <header><lucide-icon name="TrendingUp" /><strong>Conteúdos mais acessados</strong></header>
+        @for (item of dados.conteudosMaisAcessados; track item.chave) {
+          <div>
+            <span>{{ item.rotulo }}</span
+            ><strong>{{ item.total }}</strong>
+          </div>
+        } @empty {
+          <p>Ainda não há acessos registrados.</p>
+        }
+      </article>
+      <article>
+        <header><lucide-icon name="Search" /><strong>Buscas frequentes</strong></header>
+        @for (item of dados.buscasFrequentes; track item.chave) {
+          <div>
+            <span>{{ item.rotulo }}</span
+            ><strong>{{ item.total }}</strong>
+          </div>
+        } @empty {
+          <p>Ainda não há buscas registradas.</p>
+        }
+      </article>
+    </section>
+  }
+
+  @if (editorAberto()) {
+    <section class="help-editor">
+      <header>
+        <div>
+          <span>{{ editandoId() ? 'EDIÇÃO' : 'NOVO CONTEÚDO' }}</span>
+          <h2>{{ editandoId() ? form.controls.titulo.value : 'Criar orientação' }}</h2>
+        </div>
+        <button type="button" (click)="cancelar()" aria-label="Fechar"><lucide-icon name="X" /></button>
+      </header>
+      <form [formGroup]="form" (ngSubmit)="salvar()">
+        <label>Código<input formControlName="codigo" placeholder="ARTIGO_EDITOR" /></label>
+        <label
+          >Tipo<select formControlName="tipo">
+            @for (tipo of tipos; track tipo) {
+              <option [value]="tipo">{{ tipo }}</option>
+            }
+          </select></label
+        >
+        <label class="span-2">Título<input formControlName="titulo" /></label>
+        <label class="span-2">Resumo<textarea formControlName="resumo" rows="2"></textarea></label>
+        <label class="span-2">Conteúdo detalhado<textarea formControlName="conteudo" rows="4"></textarea></label>
+        @if (form.controls.tipo.value === 'ETAPA') {
+          <label
+            >Jornada vinculada<select formControlName="jornadaCodigo">
+              <option value="">Selecione uma jornada</option>
+              @for (jornada of jornadas(); track jornada.codigo) {
+                <option [value]="jornada.codigo">{{ jornada.titulo }}</option>
+              }
+            </select></label
+          >
+        }
+        <label>Ordem<input type="number" formControlName="ordem" /></label>
+        <label>Rota de contexto<input formControlName="rotaContexto" placeholder="/doc-flow/paginas" /></label>
+        <label>Rota da ação<input formControlName="rotaAcao" placeholder="/doc-flow/paginas/novo" /></label>
+        <label>Texto da ação<input formControlName="rotuloAcao" placeholder="Criar página" /></label>
+        <label>Ícone Lucide<input formControlName="icone" placeholder="BookOpen" /></label>
+        <label class="span-2"
+          >Seletor do alvo do tour<input formControlName="seletorAlvo" placeholder='[data-help-id="paginas"]'
+        /></label>
+        <label
+          >Tipo de mídia<select formControlName="mediaTipo">
+            @for (tipo of midias; track tipo) {
+              <option [value]="tipo">{{ tipo }}</option>
+            }
+          </select></label
+        >
+        <label>Descrição acessível<input formControlName="mediaAlt" /></label>
+        <label class="span-2"
+          >URLs de mídia <small>Uma URL por linha. Aceita imagem, GIF, vídeo ou galeria.</small
+          ><textarea formControlName="mediaUrls" rows="3"></textarea>
+        </label>
+        <label class="help-active"><input type="checkbox" formControlName="ativo" /> Conteúdo ativo</label>
+        <footer>
+          <button type="button" class="secondary" (click)="cancelar()">Cancelar</button
+          ><button type="submit" [disabled]="salvando()">{{ salvando() ? 'Salvando…' : 'Salvar conteúdo' }}</button>
+        </footer>
+      </form>
+    </section>
+  }
+
+  <section class="help-catalog">
+    <header>
+      <div>
+        <span>CATÁLOGO</span>
+        <h2>{{ conteudos().length }} conteúdos configurados</h2>
+      </div>
+      <button type="button" (click)="carregar()"><lucide-icon name="RotateCw" /> Atualizar</button>
+    </header>
+    @if (carregando()) {
+      <p class="help-state">Carregando conteúdos…</p>
+    } @else {
+      <div class="help-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Conteúdo</th>
+              <th>Tipo</th>
+              <th>Contexto</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of conteudos(); track item.codigo) {
+              <tr>
+                <td>
+                  <strong>{{ item.titulo }}</strong
+                  ><small>{{ item.codigo }}</small>
+                </td>
+                <td>
+                  <span class="type-pill">{{ item.tipo }}</span>
+                </td>
+                <td>{{ item.rotaContexto || 'Global' }}</td>
+                <td>
+                  <span class="status" [class.off]="!item.ativo">{{ item.ativo ? 'Ativo' : 'Inativo' }}</span>
+                </td>
+                <td>
+                  <button type="button" (click)="editar(item)" aria-label="Editar"><lucide-icon name="Pencil" /></button
+                  ><button type="button" class="danger" (click)="excluir(item)" aria-label="Excluir">
+                    <lucide-icon name="Trash2" />
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

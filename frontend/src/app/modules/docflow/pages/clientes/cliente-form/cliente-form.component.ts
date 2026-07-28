@@ -35,8 +35,6 @@ export class ClienteFormComponent implements OnInit {
     nome: ['', Validators.required],
     slug: [''],
     ativo: [true],
-    temaCorPrimaria: [''],
-    temaCorFundo: [''],
   });
 
   constructor(
@@ -58,8 +56,6 @@ export class ClienteFormComponent implements OnInit {
           nome: cliente.nome,
           slug: cliente.slug,
           ativo: cliente.ativo,
-          temaCorPrimaria: cliente.temaCorPrimaria ?? '',
-          temaCorFundo: cliente.temaCorFundo ?? '',
         });
         if (cliente.logoDisponivel) {
           this.logoPreviewUrl.set(this.clienteService.logoUrlCliente(id));
@@ -78,16 +74,12 @@ export class ClienteFormComponent implements OnInit {
       return;
     }
     this.saving.set(true);
-    const temaPrim = raw.temaCorPrimaria?.trim();
-    const temaFund = raw.temaCorFundo?.trim();
     this.clienteService
       .salvarCliente(
         {
           nome,
           slug: raw.slug.trim() || undefined,
           ativo: raw.ativo,
-          temaCorPrimaria: temaPrim || undefined,
-          temaCorFundo: temaFund || undefined,
         },
         this.editId(),
       )

@@ -115,46 +115,37 @@
           </td>
           <td class="paginas__td paginas__td--actions">
             <ng-container *appPermissao="'PAGINA:EDITAR'">
-              <ui-button variant="ghost" size="sm" icon="ArrowUp" (clicked)="moverParaCima(pagina)" />
-              <ui-button variant="ghost" size="sm" icon="ArrowDown" (clicked)="moverParaBaixo(pagina)" />
               <ui-button variant="ghost" size="sm" (clicked)="editar(pagina)">Editar</ui-button>
-              <ui-button
-                variant="secondary"
-                size="sm"
-                [disabled]="pagina.status === 'EM_REVISAO' || pagina.status === 'PUBLICADO'"
-                (clicked)="enviarRevisao(pagina)"
-                >Revisão</ui-button
-              >
-              <ui-button
-                variant="secondary"
-                size="sm"
-                [disabled]="pagina.status !== 'EM_REVISAO'"
-                (clicked)="aprovar(pagina)"
-                >Aprovar</ui-button
-              >
-              <ui-button
-                variant="secondary"
-                size="sm"
-                [disabled]="pagina.status !== 'APROVADO'"
-                (clicked)="publicar(pagina)"
-                >Publicar</ui-button
-              >
-              <ui-button variant="danger" size="sm" (clicked)="arquivar(pagina)">Arquivar</ui-button>
+              @if (pagina.status === 'RASCUNHO') {
+                <ui-button variant="secondary" size="sm" (clicked)="enviarRevisao(pagina)">Enviar revisão</ui-button>
+              } @else if (pagina.status === 'EM_REVISAO') {
+                <ui-button variant="secondary" size="sm" (clicked)="aprovar(pagina)">Aprovar</ui-button>
+              } @else if (pagina.status === 'APROVADO') {
+                <ui-button variant="secondary" size="sm" (clicked)="publicar(pagina)">Publicar</ui-button>
+              }
             </ng-container>
-            <ui-button *appPermissao="'PAGINA:CRIAR'" variant="secondary" size="sm" (clicked)="duplicar(pagina)"
-              >Duplicar</ui-button
-            >
-            <ui-button
-              *appPermissao="'PAGINA:EXCLUIR'"
-              variant="danger"
-              size="sm"
-              icon="Trash2"
-              [disabled]="!!excluindoId()"
-              [loading]="excluindoId() === pagina.id"
-              (clicked)="excluir(pagina)"
-              i18n="@@docflow.paginas.excluir"
-              >Excluir</ui-button
-            >
+            <details class="paginas__more-actions">
+              <summary>Mais ações</summary>
+              <div class="paginas__more-actions-menu">
+                <ng-container *appPermissao="'PAGINA:EDITAR'">
+                  <ui-button variant="ghost" size="sm" icon="ArrowUp" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>
+                  <ui-button variant="ghost" size="sm" icon="ArrowDown" (clicked)="moverParaBaixo(pagina)">Mover abaixo</ui-button>
+                  <ui-button variant="danger" size="sm" (clicked)="arquivar(pagina)">Arquivar</ui-button>
+                </ng-container>
+                <ui-button *appPermissao="'PAGINA:CRIAR'" variant="secondary" size="sm" (clicked)="duplicar(pagina)">Duplicar</ui-button>
+                <ui-button
+                  *appPermissao="'PAGINA:EXCLUIR'"
+                  variant="danger"
+                  size="sm"
+                  icon="Trash2"
+                  [disabled]="!!excluindoId()"
+                  [loading]="excluindoId() === pagina.id"
+                  (clicked)="excluir(pagina)"
+                  i18n="@@docflow.paginas.excluir"
+                  >Excluir</ui-button
+                >
+              </div>
+            </details>
           </td>
         </tr>
       }

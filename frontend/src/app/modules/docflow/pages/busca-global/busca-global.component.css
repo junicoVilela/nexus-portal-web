@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-list);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 .busca__msg {
   padding: 12px 14px;
@@ -87,6 +90,42 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+.busca__help-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+  padding: 14px;
+}
+.busca__help-results button {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.busca__help-results button:hover {
+  border-color: var(--accent);
+}
+.busca__help-results span {
+  color: var(--accent);
+  font: 750 9px/1 var(--font-mono);
+}
+.busca__help-results strong {
+  font: 680 12px/1.25 var(--font-body);
+}
+.busca__help-results small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 500 10.5px/1.4 var(--font-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .busca__card-title {
@@ -199,7 +238,7 @@
 
 @media (max-width: 768px) {
   .busca {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
   .busca__grid {
     grid-template-columns: 1fr;

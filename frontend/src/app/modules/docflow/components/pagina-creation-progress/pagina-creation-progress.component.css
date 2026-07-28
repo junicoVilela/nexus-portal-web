@@ -1,0 +1,109 @@
+:host {
+  display: block;
+}
+.creation-progress {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.creation-progress__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font: 500 11.5px/1 var(--font-body);
+}
+.creation-progress__summary strong {
+  color: var(--text);
+}
+.creation-progress__percent {
+  margin-left: auto;
+  color: var(--accent);
+  font-weight: 700;
+}
+.creation-progress__track {
+  height: 3px;
+  margin: 10px 0 12px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+}
+.creation-progress__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-grad);
+  transition: width var(--motion-slow) var(--ease-out);
+}
+.creation-progress__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.creation-progress__steps button {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  text-align: left;
+  cursor: pointer;
+}
+.creation-progress__steps button:hover,
+.creation-progress__steps button.is-current {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.creation-progress__number {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  font: 700 11px/1 var(--font-body);
+}
+.is-current .creation-progress__number {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.is-complete .creation-progress__number {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.creation-progress__steps strong,
+.creation-progress__steps small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.creation-progress__steps strong {
+  color: inherit;
+  font: 650 12px/1.2 var(--font-body);
+}
+.creation-progress__steps small {
+  margin-top: 3px;
+  font: 400 10.5px/1.2 var(--font-body);
+}
+@media (max-width: 760px) {
+  .creation-progress__steps {
+    grid-template-columns: repeat(4, minmax(145px, 1fr));
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .creation-progress__steps::-webkit-scrollbar {
+    display: none;
+  }
+}

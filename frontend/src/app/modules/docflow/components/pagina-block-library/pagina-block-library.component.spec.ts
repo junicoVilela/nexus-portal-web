@@ -5,6 +5,7 @@ describe('PaginaBlockLibraryComponent', () => {
   let fixture: ComponentFixture<PaginaBlockLibraryComponent>;
 
   beforeEach(async () => {
+    localStorage.removeItem('docflow:blocos-recentes');
     await TestBed.configureTestingModule({ imports: [PaginaBlockLibraryComponent] }).compileComponents();
     fixture = TestBed.createComponent(PaginaBlockLibraryComponent);
     fixture.detectChanges();
@@ -56,5 +57,14 @@ describe('PaginaBlockLibraryComponent', () => {
 
     expect(emitSpy).toHaveBeenCalledWith(jasmine.objectContaining({ id: 'introducao' }));
     expect(fixture.componentInstance.aberta()).toBe(false);
+  });
+
+  it('mantém os últimos blocos usados disponíveis no filtro Recentes', () => {
+    const bloco = fixture.componentInstance.blocos()[2]!;
+    fixture.componentInstance.selecionar(bloco);
+    fixture.componentInstance.categoria.set('Recentes');
+
+    expect(fixture.componentInstance.blocos().map(item => item.id)).toEqual([bloco.id]);
+    expect(localStorage.getItem('docflow:blocos-recentes')).toContain(bloco.id);
   });
 });
