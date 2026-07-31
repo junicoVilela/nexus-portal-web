@@ -1,7 +1,11 @@
 <div class="delta">
   <ui-page-header
     title="Range e delta"
-    [subtitle]="entrega() ? 'Entrega ' + entrega()!.clienteSigla + ' · ' + entrega()!.produtoSigla + ' ' + entrega()!.releaseVersao : 'Carregando…'"
+    [subtitle]="
+      entrega()
+        ? 'Entrega ' + entrega()!.clienteSigla + ' · ' + entrega()!.produtoSigla + ' ' + entrega()!.releaseVersao
+        : 'Carregando…'
+    "
     icon="Layers"
   >
     <div actions>
@@ -15,30 +19,20 @@
     <ui-skeleton width="60%" height="20px" />
     <ui-skeleton width="100%" height="220px" />
   } @else if (erro()) {
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    />
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
   } @else if (entrega(); as e) {
     @if (!podeEditar()) {
       <ui-card padding="md">
         <p class="delta__hint">
-          Entrega em <strong>{{ statusLabels[e.status] }}</strong> — o delta só pode ser
-          recalculado em RASCUNHO ou FALHA. Esta tela é somente leitura.
+          Entrega em <strong>{{ statusLabels[e.status] }}</strong> — o delta só pode ser recalculado em RASCUNHO ou
+          FALHA. Esta tela é somente leitura.
         </p>
       </ui-card>
     }
 
     <div class="delta__kpis">
       <ui-kpi-card label="Módulos" [valor]="modulosSelecionados()" icon="Boxes" tone="blue" />
-      <ui-kpi-card
-        label="Arquivos"
-        [valor]="resumo()?.totalArtefatos ?? 0"
-        icon="Files"
-        tone="purple"
-      />
+      <ui-kpi-card label="Arquivos" [valor]="resumo()?.totalArtefatos ?? 0" icon="Files" tone="purple" />
       <ui-kpi-card
         label="Tamanho estimado"
         [valor]="formatarTamanho(resumo()?.totalTamanhoBytes)"
@@ -81,32 +75,21 @@
                   placeholder="v1.4.0"
                 />
                 @if (linha.fromOriginal && linha.fromEdit !== linha.fromOriginal) {
-                  <button
-                    type="button"
-                    class="delta__restore-btn"
-                    (click)="restaurarOriginal(linha)"
-                  >
+                  <button type="button" class="delta__restore-btn" (click)="restaurarOriginal(linha)">
                     Restaurar default ({{ linha.fromOriginal }})
                   </button>
                 }
               </div>
               <div class="delta__field">
                 <label class="delta__label">TO_TAG</label>
-                <input
-                  class="delta__input"
-                  [value]="linha.em.versaoTo || ''"
-                  disabled
-                  placeholder="—"
-                />
+                <input class="delta__input" [value]="linha.em.versaoTo || ''" disabled placeholder="—" />
                 <span class="delta__hint">Vem da release</span>
               </div>
             </div>
 
             @if (linha.fromEdit !== (linha.fromOriginal || '')) {
               <div class="delta__field">
-                <label class="delta__label">
-                  Justificativa <span class="delta__req">*</span>
-                </label>
+                <label class="delta__label"> Justificativa <span class="delta__req">*</span> </label>
                 <textarea
                   class="delta__input delta__textarea"
                   rows="2"
@@ -137,13 +120,10 @@
         }
       </div>
 
-      <div class="delta__footer">
-        <ui-button
-          variant="ghost"
-          type="button"
-          icon="ArrowLeft"
-          (clicked)="confirmar()"
-        >Voltar para entrega</ui-button>
+      <div class="delta__footer ui-form-actions">
+        <ui-button variant="ghost" type="button" icon="ArrowLeft" (clicked)="confirmar()"
+          >Voltar para entrega</ui-button
+        >
         @if (podeEditar()) {
           <ui-button
             type="button"
@@ -151,7 +131,8 @@
             [loading]="recalculando()"
             [disabled]="!temAlteracoes()"
             (clicked)="recalcular()"
-          >Recalcular delta</ui-button>
+            >Recalcular delta</ui-button
+          >
         }
       </div>
     }

@@ -61,4 +61,18 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-14: 56px;
+
+  /* Layout de páginas alinhado às bordas do header do shell. */
+  --page-gutter: 14px;
+  --page-block: 28px;
+  --page-max-list: 100%;
+  --page-max-form: 100%;
+  --page-max-detail: 100%;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-gutter: 10px;
+    --page-block: 18px;
+  }
 }

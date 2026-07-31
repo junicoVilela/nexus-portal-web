@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
+  width: 100%;
+  max-width: var(--page-max-form);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 .pe-form__back {
@@ -127,6 +130,6 @@
 
 @media (max-width: 768px) {
   .pe-form {
-    padding: 14px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

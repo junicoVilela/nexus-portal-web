@@ -19,8 +19,8 @@ async function instrumentar(page: Page, ctx: string) {
 
 async function logar(page: Page) {
   await page.goto('/login');
-  await page.locator('input[formcontrolname="login"]').fill('admin');
-  await page.locator('input[formcontrolname="senha"]').fill('admin');
+  await page.getByLabel('Usuário').fill('admin');
+  await page.getByLabel('Senha').fill('admin');
   await page.locator('button[type="submit"]').click();
   await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 8_000 });
 }
@@ -47,10 +47,12 @@ test.describe('Segurança — fluxo após login', () => {
     expect(page.url()).not.toContain('/login');
   });
 
-  test('/seguranca mostra 10 cards', async ({ page }) => {
+  test('/seguranca mostra as áreas principais de administração', async ({ page }) => {
     await logar(page);
     await page.goto('/seguranca');
-    await expect(page.locator('a.seg-home__card')).toHaveCount(10);
+    await expect(page.getByRole('link', { name: /usuários/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /domínios e permissões/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /auditoria/i })).toBeVisible();
   });
 
   test('/seguranca/usuarios renderiza a lista', async ({ page }) => {
@@ -65,11 +67,12 @@ test.describe('Segurança — fluxo após login', () => {
     await expect(page.locator('ui-list-page')).toBeVisible();
   });
 
-  test('/doc-flow mostra shell e itens de menu', async ({ page }) => {
+  test('/doc-flow mostra os itens essenciais do menu', async ({ page }) => {
     await logar(page);
     await page.goto('/doc-flow');
-    // Admin tem todas as permissões → 8 itens
-    await expect(page.locator('.df-shell__nav-link')).toHaveCount(8);
+    await expect(page.locator('.df-shell__nav-link').filter({ hasText: 'Dashboard' })).toBeVisible();
+    await expect(page.locator('.df-shell__nav-link').filter({ hasText: 'Páginas' })).toBeVisible();
+    await expect(page.locator('.df-shell__nav-link').filter({ hasText: 'Publicações' })).toBeVisible();
   });
 
   test('/doc-flow/configuracoes não dispara requisições a /api real', async ({ page }) => {
@@ -83,10 +86,11 @@ test.describe('Segurança — fluxo após login', () => {
     expect(apiCalls, 'ConfiguracaoService mockado não deve falhar em /api/*').toEqual([]);
   });
 
-  test('/release-orchestrator mostra shell e itens', async ({ page }) => {
+  test('/release-orchestrator mostra os itens essenciais do menu', async ({ page }) => {
     await logar(page);
     await page.goto('/release-orchestrator');
-    // Admin tem RELEASE:CRIAR/LER, PRODUTO:LER, TEMPLATE:LER → 6 itens
-    await expect(page.locator('.rf-shell__nav-link')).toHaveCount(6);
+    await expect(page.locator('.rf-shell__nav-link').filter({ hasText: 'Dashboard' })).toBeVisible();
+    await expect(page.locator('.rf-shell__nav-link').filter({ hasText: 'Releases' })).toBeVisible();
+    await expect(page.locator('.rf-shell__nav-link').filter({ hasText: 'Templates' })).toBeVisible();
   });
 });

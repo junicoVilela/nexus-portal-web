@@ -1,48 +1,26 @@
 <div class="ent-list">
-  <ui-page-header
-    title="Entregas"
-    subtitle="Histórico de pacotes gerados, em geração e cancelados"
-    icon="Package"
-  >
+  <ui-page-header title="Entregas" subtitle="Histórico de pacotes gerados, em geração e cancelados" icon="Package">
     <div actions>
-      <ui-button
-        icon="Plus"
-        [routerLink]="['/release-orchestrator/entregas/nova']"
-      >Nova entrega</ui-button>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/entregas/nova']">Nova entrega</ui-button>
     </div>
   </ui-page-header>
 
   <div class="ent-list__filter">
-    <select
-      class="ent-list__select"
-      [(ngModel)]="filtros.clienteId"
-      (change)="onFiltroChange()"
-      aria-label="Cliente"
-    >
+    <select class="ent-list__select" [(ngModel)]="filtros.clienteId" (change)="onFiltroChange()" aria-label="Cliente">
       <option value="">Todos os clientes</option>
       @for (c of clientes(); track c.id) {
         <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
       }
     </select>
 
-    <select
-      class="ent-list__select"
-      [(ngModel)]="filtros.produtoId"
-      (change)="onFiltroChange()"
-      aria-label="Produto"
-    >
+    <select class="ent-list__select" [(ngModel)]="filtros.produtoId" (change)="onFiltroChange()" aria-label="Produto">
       <option value="">Todos os produtos</option>
       @for (p of produtos(); track p.id) {
         <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
       }
     </select>
 
-    <select
-      class="ent-list__select"
-      [(ngModel)]="filtros.status"
-      (change)="onFiltroChange()"
-      aria-label="Status"
-    >
+    <select class="ent-list__select" [(ngModel)]="filtros.status" (change)="onFiltroChange()" aria-label="Status">
       <option value="">Todos os status</option>
       @for (s of statusKeys; track s) {
         <option [value]="s">{{ statusLabels[s] }}</option>
@@ -61,12 +39,7 @@
       <ui-skeleton width="100%" height="40px" />
     </div>
   } @else if (erro()) {
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    />
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
   } @else if (entregas().length === 0) {
     <ui-empty-state
       icon="PackageOpen"
@@ -74,7 +47,7 @@
       description="Quando entregas forem geradas pelo assistente, elas aparecem aqui."
     />
   } @else {
-    <div class="ent-list__table-wrap">
+    <div class="ent-list__table-wrap ui-table-scroll">
       <table class="ent-list__table">
         <thead>
           <tr>
@@ -92,16 +65,12 @@
           @for (e of entregas(); track e.id) {
             <tr>
               <td>
-                <a
-                  class="ent-list__link"
-                  [routerLink]="['/release-orchestrator/entregas', e.id]"
-                >{{ e.createdAt | date: 'dd/MM/yyyy HH:mm' }}</a>
+                <a class="ent-list__link" [routerLink]="['/release-orchestrator/entregas', e.id]">{{
+                  e.createdAt | date: 'dd/MM/yyyy HH:mm'
+                }}</a>
               </td>
               <td>
-                <a
-                  class="ent-list__link"
-                  [routerLink]="['/release-orchestrator/clientes', e.clienteId]"
-                >
+                <a class="ent-list__link" [routerLink]="['/release-orchestrator/clientes', e.clienteId]">
                   <code>{{ e.clienteSigla }}</code> {{ e.clienteNome }}
                 </a>
               </td>
@@ -132,7 +101,8 @@
                     icon="RefreshCw"
                     [loading]="reentregandoId() === e.id"
                     (clicked)="reentregar(e)"
-                  >Reentregar</ui-button>
+                    >Reentregar</ui-button
+                  >
                 }
               </td>
             </tr>
@@ -150,9 +120,7 @@
           [disabled]="page() <= 1"
           (clicked)="irParaPagina(page() - 1)"
         />
-        <span class="ent-list__paginfo">
-          Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total
-        </span>
+        <span class="ent-list__paginfo"> Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total </span>
         <ui-button
           variant="ghost"
           size="sm"

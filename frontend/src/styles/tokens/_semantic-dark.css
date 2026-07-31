@@ -41,4 +41,19 @@
 
   /* Dark-only base background gradient for body */
   --body-bg-image: radial-gradient(120% 80% at 0% 0%, #1a1f3a 0%, #0b0e1f 60%, #060818 100%);
+
+  /* Compatibilidade temporária com telas legadas do Release Orchestrator. */
+  --text-primary: var(--text);
+  --text-secondary: var(--text-muted);
+  --bg-card: var(--surface);
+  --bg-subtle: var(--surface-2);
+  --border-subtle: var(--border);
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
+  --muted: var(--text-muted);
+  --danger-bg: var(--danger-soft);
+  --danger-text: var(--danger);
+  --warn-bg: var(--warn-soft);
+  --warn-border: color-mix(in srgb, var(--warn) 30%, transparent);
+  --warn-text: var(--warn);
 }

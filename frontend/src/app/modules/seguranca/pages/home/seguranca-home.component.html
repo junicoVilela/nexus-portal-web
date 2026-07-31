@@ -1,0 +1,64 @@
+<main class="seg-home">
+  <ui-page-header title="Segurança" subtitle="Identidade, grupos, permissões e escopos de acesso." icon="Shield" />
+
+  <section class="seg-home__overview" aria-labelledby="seg-overview-title">
+    <div class="seg-home__overview-copy">
+      <ui-badge tone="success" [dot]="true">Central de controle</ui-badge>
+      <h2 id="seg-overview-title">Proteja acessos sem perder a visão do todo</h2>
+      <p>
+        Encontre em um só lugar as ferramentas para administrar identidades, definir políticas e acompanhar atividades
+        críticas.
+      </p>
+    </div>
+
+    <div class="seg-home__pillars" aria-label="Áreas da central de segurança">
+      <span><lucide-icon name="Fingerprint" />Identidades</span>
+      <span><lucide-icon name="ShieldCheck" />Controles</span>
+      <span><lucide-icon name="ScanSearch" />Rastreabilidade</span>
+    </div>
+
+    <lucide-icon class="seg-home__overview-mark" name="Shield" aria-hidden="true" />
+  </section>
+
+  <div class="seg-home__categories">
+    @for (categoria of categorias; track categoria.id) {
+      <section
+        class="seg-home__category"
+        [attr.data-category]="categoria.id"
+        [attr.aria-labelledby]="'seg-category-' + categoria.id"
+      >
+        <header class="seg-home__category-header">
+          <span class="seg-home__category-icon" aria-hidden="true">
+            <lucide-icon [name]="categoria.icon" />
+          </span>
+          <span>
+            <h2 [id]="'seg-category-' + categoria.id">{{ categoria.titulo }}</h2>
+            <p>{{ categoria.descricao }}</p>
+          </span>
+        </header>
+
+        <div class="seg-home__grid">
+          @for (atalho of categoria.atalhos; track atalho.route) {
+            <ui-card *appPermissao="atalho.permissao" padding="none" [interactive]="true">
+              <a class="seg-home__card" [routerLink]="atalho.route">
+                <span class="seg-home__card-top">
+                  <span class="seg-home__card-icon" aria-hidden="true">
+                    <lucide-icon [name]="atalho.icon" />
+                  </span>
+                  <lucide-icon class="seg-home__card-arrow" name="ArrowUpRight" aria-hidden="true" />
+                </span>
+
+                <span class="seg-home__card-body">
+                  <strong>{{ atalho.titulo }}</strong>
+                  <span>{{ atalho.descricao }}</span>
+                </span>
+
+                <span class="seg-home__card-footer">Abrir ferramenta</span>
+              </a>
+            </ui-card>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</main>

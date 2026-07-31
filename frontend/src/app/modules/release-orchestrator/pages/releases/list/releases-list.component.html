@@ -126,7 +126,7 @@
   @if (erro()) {
     <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Tentar novamente" (retry)="buscar()" />
   } @else {
-    <div class="rf-rel__table-wrap">
+    <div class="rf-rel__table-wrap ui-table-scroll">
       <table class="rf-rel__table">
         <thead>
           <tr>
@@ -170,7 +170,9 @@
               </td>
               <td class="rf-rel__td rf-rel__td--mono">{{ rel.versao }}</td>
               <td class="rf-rel__td rf-rel__td--titulo">
-                <a class="rf-rel__titulo-link" [routerLink]="['/release-orchestrator/releases', rel.id]">{{ rel.titulo }}</a>
+                <a class="rf-rel__titulo-link" [routerLink]="['/release-orchestrator/releases', rel.id]">{{
+                  rel.titulo
+                }}</a>
               </td>
               <td class="rf-rel__td">
                 <app-release-status-badge [status]="rel.status" />
@@ -184,7 +186,12 @@
               <td class="rf-rel__td rf-rel__td--center">{{ rel.totalItens ?? 0 }}</td>
               <td class="rf-rel__td rf-rel__td--actions">
                 <div class="rf-rel__row-actions">
-                  <ui-button variant="ghost" size="sm" icon="Eye" [routerLink]="['/release-orchestrator/releases', rel.id]" />
+                  <ui-button
+                    variant="ghost"
+                    size="sm"
+                    icon="Eye"
+                    [routerLink]="['/release-orchestrator/releases', rel.id]"
+                  />
                   <ui-button
                     variant="ghost"
                     size="sm"

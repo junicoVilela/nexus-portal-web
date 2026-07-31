@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-detail);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 .rf-rev--loading {
   padding: 60px 32px;
@@ -238,6 +241,6 @@
 }
 @media (max-width: 768px) {
   .rf-rev {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

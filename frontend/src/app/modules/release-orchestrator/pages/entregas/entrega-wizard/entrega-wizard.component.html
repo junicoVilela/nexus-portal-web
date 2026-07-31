@@ -48,11 +48,7 @@
               <p class="wiz__hint">Apenas clientes ativos aparecem aqui.</p>
               <div class="wiz__field">
                 <label class="wiz__label">Cliente <span class="wiz__req">*</span></label>
-                <select
-                  class="wiz__input"
-                  [(ngModel)]="dados.clienteId"
-                  (change)="onClienteChange()"
-                >
+                <select class="wiz__input" [(ngModel)]="dados.clienteId" (change)="onClienteChange()">
                   <option value="">— Selecione —</option>
                   @for (c of clientes(); track c.id) {
                     <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
@@ -62,18 +58,21 @@
 
               @if (clienteSelecionado(); as c) {
                 <div class="wiz__preview">
-                  <h3 class="wiz__preview-title">
-                    <lucide-icon name="Info" [size]="14" /> Cliente selecionado
-                  </h3>
+                  <h3 class="wiz__preview-title"><lucide-icon name="Info" [size]="14" /> Cliente selecionado</h3>
                   <dl class="wiz__dl">
-                    <dt>Sigla</dt><dd><code>{{ c.sigla }}</code></dd>
-                    <dt>Nome</dt><dd>{{ c.nome }}</dd>
-                    <dt>Ambiente padrão</dt><dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
+                    <dt>Sigla</dt>
+                    <dd>
+                      <code>{{ c.sigla }}</code>
+                    </dd>
+                    <dt>Nome</dt>
+                    <dd>{{ c.nome }}</dd>
+                    <dt>Ambiente padrão</dt>
+                    <dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
                   </dl>
                   @if (proximasDoCliente().length > 0) {
                     <p class="wiz__hint">
-                      Este cliente tem {{ proximasDoCliente().length }} entrega(s) agendada(s).
-                      Considere começar pela agenda para pré-preencher os campos.
+                      Este cliente tem {{ proximasDoCliente().length }} entrega(s) agendada(s). Considere começar pela
+                      agenda para pré-preencher os campos.
                     </p>
                   }
                 </div>
@@ -86,11 +85,7 @@
               <div class="wiz__row">
                 <div class="wiz__field wiz__field--grow-2">
                   <label class="wiz__label">Produto <span class="wiz__req">*</span></label>
-                  <select
-                    class="wiz__input"
-                    [(ngModel)]="dados.produtoId"
-                    (change)="onProdutoChange()"
-                  >
+                  <select class="wiz__input" [(ngModel)]="dados.produtoId" (change)="onProdutoChange()">
                     <option value="">— Selecione —</option>
                     @for (p of produtos(); track p.id) {
                       <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
@@ -109,12 +104,14 @@
 
               @if (produtoSelecionado(); as prod) {
                 <div class="wiz__preview">
-                  <h3 class="wiz__preview-title">
-                    <lucide-icon name="Box" [size]="14" /> Produto selecionado
-                  </h3>
+                  <h3 class="wiz__preview-title"><lucide-icon name="Box" [size]="14" /> Produto selecionado</h3>
                   <dl class="wiz__dl">
-                    <dt>Sigla</dt><dd><code>{{ prod.sigla }}</code></dd>
-                    <dt>Nome</dt><dd>{{ prod.nome }}</dd>
+                    <dt>Sigla</dt>
+                    <dd>
+                      <code>{{ prod.sigla }}</code>
+                    </dd>
+                    <dt>Nome</dt>
+                    <dd>{{ prod.nome }}</dd>
                   </dl>
                 </div>
               }
@@ -134,16 +131,8 @@
               } @else {
                 <div class="wiz__radios">
                   @for (r of releases(); track r.id) {
-                    <label
-                      class="wiz__radio"
-                      [class.wiz__radio--selected]="dados.releaseId === r.id"
-                    >
-                      <input
-                        type="radio"
-                        name="release"
-                        [value]="r.id"
-                        [(ngModel)]="dados.releaseId"
-                      />
+                    <label class="wiz__radio" [class.wiz__radio--selected]="dados.releaseId === r.id">
+                      <input type="radio" name="release" [value]="r.id" [(ngModel)]="dados.releaseId" />
                       <div class="wiz__radio-content">
                         <div class="wiz__radio-head">
                           <code class="wiz__radio-versao">{{ r.versao }}</code>
@@ -163,8 +152,7 @@
                     <option [ngValue]="null">— Sem vínculo —</option>
                     @for (pe of proximasDoCliente(); track pe.id) {
                       <option [value]="pe.id">
-                        {{ pe.produtoSigla }} {{ pe.releaseVersao || '' }}
-                        ({{ pe.dataPrevista }})
+                        {{ pe.produtoSigla }} {{ pe.releaseVersao || '' }} ({{ pe.dataPrevista }})
                       </option>
                     }
                   </select>
@@ -186,9 +174,8 @@
             <ui-card padding="md">
               <h2 class="wiz__title">Passo 4 de 5 · Módulos do pacote</h2>
               <p class="wiz__hint">
-                Marque/desmarque módulos opcionais. Módulos fora do contrato aparecem destacados.
-                Use <strong>Calcular preview</strong> para ver quantos arquivos cada módulo
-                vai entregar.
+                Marque/desmarque módulos opcionais. Módulos fora do contrato aparecem destacados. Use
+                <strong>Calcular preview</strong> para ver quantos arquivos cada módulo vai entregar.
               </p>
 
               @if (salvando()) {
@@ -208,7 +195,8 @@
                     icon="Calculator"
                     [loading]="calculandoDelta()"
                     (clicked)="calcularDelta()"
-                  >{{ resumoDelta() ? 'Recalcular preview' : 'Calcular preview' }}</ui-button>
+                    >{{ resumoDelta() ? 'Recalcular preview' : 'Calcular preview' }}</ui-button
+                  >
                   @if (resumoDelta(); as r) {
                     <span class="wiz__preview-summary">
                       <lucide-icon name="Layers" [size]="13" />
@@ -241,7 +229,9 @@
                             (change)="toggleSelecao(m)"
                           />
                         </td>
-                        <td><strong>{{ m.moduloCodigo }}</strong> — {{ m.moduloNome }}</td>
+                        <td>
+                          <strong>{{ m.moduloCodigo }}</strong> — {{ m.moduloNome }}
+                        </td>
                         <td>
                           <ui-badge [tone]="tipoModuloTones[m.moduloTipo]">
                             {{ tipoModuloLabels[m.moduloTipo] }}
@@ -253,10 +243,8 @@
                           @if (!m.selecionado) {
                             <span class="wiz__hint">—</span>
                           } @else if (resumoPorModulo().get(m.moduloProdutoId); as r) {
-                            <code class="wiz__delta-count">
-                              +{{ r.artefatos }}
-                            </code>
-                            <span class="wiz__hint" style="margin-left: 6px;">
+                            <code class="wiz__delta-count"> +{{ r.artefatos }} </code>
+                            <span class="wiz__hint" style="margin-left: 6px">
                               {{ formatarTamanho(r.tamanhoBytes) }}
                             </span>
                           } @else {
@@ -285,9 +273,7 @@
 
               <div class="wiz__review">
                 <ui-card padding="md">
-                  <h3 class="wiz__preview-title">
-                    <lucide-icon name="Info" [size]="14" /> Identificação
-                  </h3>
+                  <h3 class="wiz__preview-title"><lucide-icon name="Info" [size]="14" /> Identificação</h3>
                   <dl class="wiz__dl">
                     <dt>Cliente</dt>
                     <dd>
@@ -316,31 +302,33 @@
                           <code>{{ r.versao }}</code>
                         }
                         @if (versoesDivergentes()) {
-                          <span class="wiz__hint" style="margin-left: 8px;">
+                          <span class="wiz__hint" style="margin-left: 8px">
                             ⚠️ módulos têm versões divergentes — usando a mais comum
                           </span>
                         }
                       </dd>
                     }
-                    <dt>Ambiente</dt><dd>{{ ambienteLabels[dados.ambiente] }}</dd>
+                    <dt>Ambiente</dt>
+                    <dd>{{ ambienteLabels[dados.ambiente] }}</dd>
                     @if (dados.observacoes) {
-                      <dt>Observações</dt><dd>{{ dados.observacoes }}</dd>
+                      <dt>Observações</dt>
+                      <dd>{{ dados.observacoes }}</dd>
                     }
                   </dl>
                 </ui-card>
 
                 <ui-card padding="md">
-                  <h3 class="wiz__preview-title">
-                    <lucide-icon name="Layers" [size]="14" /> Resumo do pacote
-                  </h3>
+                  <h3 class="wiz__preview-title"><lucide-icon name="Layers" [size]="14" /> Resumo do pacote</h3>
                   @if (calculandoDelta()) {
                     <ui-skeleton width="100%" height="80px" />
                   } @else if (resumoDelta(); as d) {
                     <dl class="wiz__dl">
                       <dt>Módulos</dt>
                       <dd>{{ modulosSelecionados() }} de {{ modulos().length }}</dd>
-                      <dt>Artefatos</dt><dd>{{ d.totalArtefatos }}</dd>
-                      <dt>Tamanho estimado</dt><dd>{{ formatarTamanho(d.totalTamanhoBytes) }}</dd>
+                      <dt>Artefatos</dt>
+                      <dd>{{ d.totalArtefatos }}</dd>
+                      <dt>Tamanho estimado</dt>
+                      <dd>{{ formatarTamanho(d.totalTamanhoBytes) }}</dd>
                     </dl>
                   } @else {
                     <p class="wiz__hint">Delta ainda não calculado.</p>
@@ -352,14 +340,15 @@
         }
 
         <!-- Rodapé com navegação -->
-        <div class="wiz__footer">
+        <div class="wiz__footer ui-form-actions">
           <ui-button
             variant="ghost"
             type="button"
             [disabled]="passo() === 1 || salvando()"
             (clicked)="voltar()"
             icon="ArrowLeft"
-          >Voltar</ui-button>
+            >Voltar</ui-button
+          >
 
           <div class="wiz__footer-right">
             @if (passo() < 5) {
@@ -369,20 +358,15 @@
                 [loading]="salvando()"
                 (clicked)="avancar()"
                 icon="ArrowRight"
-              >{{ passo() === 3 ? 'Criar rascunho' : 'Avançar' }}</ui-button>
+                >{{ passo() === 3 ? 'Criar rascunho' : 'Avançar' }}</ui-button
+              >
             } @else {
-              <ui-button
-                variant="secondary"
-                type="button"
-                icon="Save"
-                (clicked)="salvarRascunho()"
-              >Salvar rascunho</ui-button>
-              <ui-button
-                type="button"
-                icon="Play"
-                [loading]="gerando()"
-                (clicked)="gerarPacote()"
-              >Gerar pacote</ui-button>
+              <ui-button variant="secondary" type="button" icon="Save" (clicked)="salvarRascunho()"
+                >Salvar rascunho</ui-button
+              >
+              <ui-button type="button" icon="Play" [loading]="gerando()" (clicked)="gerarPacote()"
+                >Gerar pacote</ui-button
+              >
             }
           </div>
         </div>

@@ -17,9 +17,7 @@
     <form [formGroup]="form" (ngSubmit)="salvar()" class="cli-form__body">
       <!-- Seção: Dados gerais -->
       <section class="cli-form__section">
-        <h2 class="cli-form__section-title">
-          <lucide-icon name="FileText" [size]="16" /> Dados gerais
-        </h2>
+        <h2 class="cli-form__section-title"><lucide-icon name="FileText" [size]="16" /> Dados gerais</h2>
         <div class="cli-form__row">
           <div class="cli-form__field cli-form__field--grow-2">
             <label class="cli-form__label">Nome <span class="cli-form__req">*</span></label>
@@ -51,11 +49,7 @@
         <div class="cli-form__row">
           <div class="cli-form__field cli-form__field--grow-2">
             <label class="cli-form__label">Razão social</label>
-            <input
-              class="cli-form__input"
-              formControlName="razaoSocial"
-              placeholder="Ex: ACME Comércio LTDA"
-            />
+            <input class="cli-form__input" formControlName="razaoSocial" placeholder="Ex: ACME Comércio LTDA" />
           </div>
           <div class="cli-form__field cli-form__field--grow-1">
             <label class="cli-form__label">CNPJ</label>
@@ -81,9 +75,7 @@
 
       <!-- Seção: Ambiente -->
       <section class="cli-form__section">
-        <h2 class="cli-form__section-title">
-          <lucide-icon name="Server" [size]="16" /> Ambiente
-        </h2>
+        <h2 class="cli-form__section-title"><lucide-icon name="Server" [size]="16" /> Ambiente</h2>
         <div class="cli-form__row">
           <div class="cli-form__field cli-form__field--grow-1">
             <label class="cli-form__label">Ambiente padrão <span class="cli-form__req">*</span></label>
@@ -111,11 +103,7 @@
           </div>
           <div class="cli-form__field cli-form__field--grow-1">
             <label class="cli-form__label">Fuso horário</label>
-            <input
-              class="cli-form__input"
-              formControlName="fusoHorario"
-              placeholder="America/Sao_Paulo"
-            />
+            <input class="cli-form__input" formControlName="fusoHorario" placeholder="America/Sao_Paulo" />
           </div>
         </div>
       </section>
@@ -123,16 +111,10 @@
       <!-- Seção: Contatos -->
       <section class="cli-form__section">
         <div class="cli-form__section-head">
-          <h2 class="cli-form__section-title">
-            <lucide-icon name="Users" [size]="16" /> Contatos
-          </h2>
-          <ui-button
-            type="button"
-            variant="secondary"
-            size="sm"
-            icon="Plus"
-            (clicked)="adicionarContato()"
-          >Adicionar contato</ui-button>
+          <h2 class="cli-form__section-title"><lucide-icon name="Users" [size]="16" /> Contatos</h2>
+          <ui-button type="button" variant="secondary" size="sm" icon="Plus" (clicked)="adicionarContato()"
+            >Adicionar contato</ui-button
+          >
         </div>
 
         @if (contatosArray.length === 0) {
@@ -143,13 +125,7 @@
               <div [formGroupName]="i" class="cli-form__contato">
                 <div class="cli-form__contato-head">
                   <ui-badge tone="info">Contato {{ i + 1 }}</ui-badge>
-                  <ui-button
-                    type="button"
-                    variant="danger"
-                    size="sm"
-                    icon="Trash2"
-                    (clicked)="removerContato(i)"
-                  />
+                  <ui-button type="button" variant="danger" size="sm" icon="Trash2" (clicked)="removerContato(i)" />
                 </div>
                 <div class="cli-form__row">
                   <div class="cli-form__field cli-form__field--grow-2">
@@ -186,11 +162,7 @@
                   </div>
                   <div class="cli-form__field cli-form__field--grow-1">
                     <label class="cli-form__label">Telefone</label>
-                    <input
-                      class="cli-form__input"
-                      formControlName="telefone"
-                      placeholder="(11) 99999-9999"
-                    />
+                    <input class="cli-form__input" formControlName="telefone" placeholder="(11) 99999-9999" />
                   </div>
                 </div>
               </div>
@@ -201,9 +173,7 @@
 
       <!-- Seção: Observações -->
       <section class="cli-form__section">
-        <h2 class="cli-form__section-title">
-          <lucide-icon name="MessageSquare" [size]="16" /> Observações
-        </h2>
+        <h2 class="cli-form__section-title"><lucide-icon name="MessageSquare" [size]="16" /> Observações</h2>
         <div class="cli-form__field">
           <textarea
             class="cli-form__input cli-form__textarea"
@@ -214,12 +184,8 @@
         </div>
       </section>
 
-      <div class="cli-form__footer">
-        <ui-button
-          variant="ghost"
-          type="button"
-          [routerLink]="['/release-orchestrator/clientes']"
-        >Cancelar</ui-button>
+      <div class="cli-form__footer ui-form-actions">
+        <ui-button variant="ghost" type="button" [routerLink]="['/release-orchestrator/clientes']">Cancelar</ui-button>
         <ui-button type="submit" [loading]="salvando()">
           {{ editando() ? 'Salvar alterações' : 'Cadastrar cliente' }}
         </ui-button>

@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
+  width: 100%;
+  max-width: var(--page-max-list);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 .pe-list__filter {
@@ -125,6 +128,6 @@
 
 @media (max-width: 768px) {
   .pe-list {
-    padding: 14px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

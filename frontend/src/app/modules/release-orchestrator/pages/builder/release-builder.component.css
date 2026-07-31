@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-list);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 /* ── Form shared ── */
@@ -249,7 +252,7 @@
 /* ── Topbar ── */
 .rf-builder__topbar {
   position: sticky;
-  top: 0;
+  top: var(--shell-topbar-offset, 70px);
   z-index: 50;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -314,7 +317,7 @@
 .rf-builder__body {
   display: grid;
   grid-template-columns: 380px 1fr;
-  min-height: calc(100vh - 48px - 57px);
+  min-height: calc(100vh - var(--shell-topbar-offset, 70px) - 48px);
   margin: 0 -32px;
 }
 
@@ -325,8 +328,8 @@
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 57px;
-  height: calc(100vh - 48px - 57px);
+  top: calc(var(--shell-topbar-offset, 70px) + 48px);
+  height: calc(100vh - var(--shell-topbar-offset, 70px) - 48px);
   overflow-y: auto;
 }
 
@@ -499,7 +502,7 @@
 
 @media (max-width: 900px) {
   .rf-builder {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
   .rf-builder__body {
     grid-template-columns: 1fr;

@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Softon Portal — opções de header</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --canvas: #eef1f6;
+        --surface: #ffffff;
+        --surface-soft: #f7f8fb;
+        --surface-raised: rgba(255, 255, 255, 0.88);
+        --border: #e2e6ed;
+        --border-strong: #d5dae4;
+        --text: #101522;
+        --muted: #697386;
+        --faint: #929aaa;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-soft: #eef0ff;
+        --success: #16a36a;
+        --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+        --shadow-md: 0 14px 38px rgba(27, 35, 58, 0.11);
+        --radius: 12px;
+      }
+
+      [data-theme='dark'] {
+        color-scheme: dark;
+        --canvas: #070916;
+        --surface: #101322;
+        --surface-soft: #151929;
+        --surface-raised: rgba(21, 25, 41, 0.82);
+        --border: rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.14);
+        --text: #eef0f7;
+        --muted: #9ba3b8;
+        --faint: #737b91;
+        --accent: #8b8cf8;
+        --accent-hover: #a5a6ff;
+        --accent-soft: rgba(129, 140, 248, 0.13);
+        --success: #5ee0ad;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+        --shadow-md: 0 18px 54px rgba(0, 0, 0, 0.38);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 8% 0%, rgba(79, 70, 229, 0.09), transparent 28rem),
+          var(--canvas);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        transition: background 180ms ease, color 180ms ease;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .page {
+        width: min(1460px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 42px 0 72px;
+      }
+
+      .intro {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 32px;
+        margin-bottom: 30px;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 760px;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.02;
+        letter-spacing: -0.045em;
+      }
+
+      .intro-copy {
+        margin: 14px 0 0;
+        max-width: 690px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        min-width: max-content;
+        padding: 10px 13px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--border-strong);
+      }
+
+      .theme-toggle svg,
+      .icon svg {
+        width: 17px;
+        height: 17px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+      }
+
+      .choice-nav {
+        position: sticky;
+        top: 12px;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: max-content;
+        max-width: 100%;
+        margin-bottom: 26px;
+        padding: 5px;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface-raised);
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(18px);
+      }
+
+      .choice-nav a {
+        padding: 9px 14px;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .choice-nav a:hover {
+        background: var(--surface-soft);
+        color: var(--text);
+      }
+
+      .options {
+        display: grid;
+        gap: 30px;
+      }
+
+      .option-card {
+        scroll-margin-top: 86px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: var(--shadow-md);
+      }
+
+      .option-description {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 24px;
+        padding: 23px 26px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .option-kicker {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 7px;
+      }
+
+      .number {
+        display: inline-grid;
+        place-items: center;
+        width: 25px;
+        height: 25px;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .recommended {
+        padding: 4px 7px;
+        border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--success) 10%, transparent);
+        color: var(--success);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .option-title {
+        margin: 0;
+        font-size: 21px;
+        letter-spacing: -0.025em;
+      }
+
+      .option-summary {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .select-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: 10px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 750;
+        cursor: pointer;
+        transition: 150ms ease;
+      }
+
+      .select-button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      .option-card.is-selected {
+        outline: 3px solid color-mix(in srgb, var(--accent) 28%, transparent);
+        border-color: var(--accent);
+      }
+
+      .option-card.is-selected .select-button {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .mock-window {
+        position: relative;
+        height: 410px;
+        overflow: hidden;
+        background: var(--surface-soft);
+      }
+
+      .portal-rail {
+        position: absolute;
+        inset: 0 auto 0 0;
+        z-index: 5;
+        display: flex;
+        width: 58px;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 13px 0;
+        border-right: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .softon-mark {
+        display: grid;
+        place-items: center;
+        width: 33px;
+        height: 33px;
+        margin-bottom: 8px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #625bf6, #4338ca);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 850;
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.25);
+      }
+
+      .rail-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        color: var(--faint);
+      }
+
+      .rail-icon.active {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .rail-avatar {
+        display: grid;
+        place-items: center;
+        width: 29px;
+        height: 29px;
+        margin-top: auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a78bfa, #22d3ee);
+        color: #111827;
+        font-size: 9px;
+        font-weight: 850;
+      }
+
+      .module-side {
+        position: absolute;
+        inset: 0 auto 0 58px;
+        z-index: 4;
+        width: 194px;
+        padding: 19px 14px;
+        border-right: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .module-brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 0 6px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .module-logo {
+        display: grid;
+        place-items: center;
+        width: 31px;
+        height: 31px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #7c3aed, #06b6d4);
+        color: #fff;
+      }
+
+      .module-logo svg,
+      .nav-item svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+      }
+
+      .module-name {
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .module-sub {
+        display: block;
+        margin-top: 2px;
+        color: var(--faint);
+        font-size: 8px;
+        font-weight: 750;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .module-nav {
+        display: grid;
+        gap: 3px;
+        margin-top: 14px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 9px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+      }
+
+      .nav-item.active {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .app-area {
+        position: absolute;
+        inset: 0 0 0 252px;
+        min-width: 0;
+      }
+
+      .header {
+        color: var(--text);
+      }
+
+      .header-model-1 {
+        display: flex;
+        align-items: center;
+        height: 64px;
+        gap: 18px;
+        padding: 0 21px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-raised);
+        backdrop-filter: blur(18px);
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: max-content;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+      }
+
+      .breadcrumb strong {
+        color: var(--text);
+      }
+
+      .chevron {
+        color: var(--faint);
+      }
+
+      .command-search {
+        display: flex;
+        align-items: center;
+        width: min(340px, 36%);
+        gap: 9px;
+        margin-left: auto;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface-soft);
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .command-search .key {
+        margin-left: auto;
+        padding: 2px 6px;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        background: var(--surface);
+        color: var(--faint);
+        font-size: 9px;
+        font-weight: 750;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .icon-button {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 33px;
+        height: 33px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .icon-button .dot {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 6px;
+        height: 6px;
+        border: 2px solid var(--surface);
+        border-radius: 50%;
+        background: #f43f5e;
+      }
+
+      .primary-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: max-content;
+        padding: 9px 12px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 750;
+        box-shadow: 0 7px 17px color-mix(in srgb, var(--accent) 25%, transparent);
+      }
+
+      .user-avatar {
+        display: grid;
+        place-items: center;
+        width: 33px;
+        height: 33px;
+        border: 2px solid var(--surface);
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fde68a, #fb7185);
+        color: #30151b;
+        font-size: 9px;
+        font-weight: 850;
+        box-shadow: 0 0 0 1px var(--border);
+      }
+
+      .model-2-canvas {
+        padding: 12px 14px 0;
+      }
+
+      .header-model-2 {
+        display: flex;
+        align-items: center;
+        min-height: 58px;
+        gap: 14px;
+        padding: 9px 12px 9px 17px;
+        border: 1px solid var(--border-strong);
+        border-radius: 15px;
+        background: var(--surface-raised);
+        box-shadow: 0 12px 34px rgba(22, 30, 50, 0.12);
+        backdrop-filter: blur(22px) saturate(140%);
+      }
+
+      [data-theme='dark'] .header-model-2 {
+        box-shadow: 0 17px 46px rgba(0, 0, 0, 0.34);
+      }
+
+      .workspace-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: max-content;
+      }
+
+      .workspace-symbol {
+        display: grid;
+        place-items: center;
+        width: 31px;
+        height: 31px;
+        border-radius: 9px;
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .workspace-title {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .workspace-path {
+        display: block;
+        margin-top: 2px;
+        color: var(--faint);
+        font-size: 9px;
+      }
+
+      .model-2-search {
+        display: flex;
+        align-items: center;
+        width: min(360px, 40%);
+        gap: 8px;
+        margin: 0 auto;
+        padding: 8px 11px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--surface-soft) 78%, transparent);
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .live-state {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: max-content;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 700;
+      }
+
+      .live-state::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 15%, transparent);
+      }
+
+      .header-model-3 {
+        display: flex;
+        align-items: center;
+        min-height: 96px;
+        gap: 24px;
+        padding: 17px 23px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .page-context {
+        min-width: 0;
+      }
+
+      .mini-breadcrumb {
+        margin-bottom: 7px;
+        color: var(--accent);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+      }
+
+      .page-context h3 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+
+      .page-context p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .ghost-action,
+      .secondary-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: max-content;
+        padding: 9px 11px;
+        border-radius: 9px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 750;
+      }
+
+      .ghost-action {
+        border: 1px solid transparent;
+        background: transparent;
+      }
+
+      .secondary-action {
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .content-preview {
+        padding: 25px;
+      }
+
+      .content-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 17px;
+      }
+
+      .content-heading h4 {
+        margin: 0;
+        font-size: 19px;
+        letter-spacing: -0.03em;
+      }
+
+      .content-heading p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .filters {
+        display: flex;
+        gap: 7px;
+      }
+
+      .filter-pill {
+        padding: 7px 9px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 650;
+      }
+
+      .table-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .table-row {
+        display: grid;
+        grid-template-columns: minmax(180px, 1.5fr) 0.8fr 0.75fr 34px;
+        align-items: center;
+        min-height: 45px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 9px;
+      }
+
+      .table-row:last-child {
+        border-bottom: 0;
+      }
+
+      .table-row.header-row {
+        min-height: 36px;
+        background: var(--surface-soft);
+        color: var(--faint);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+      }
+
+      .doc-name {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .doc-icon {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .status {
+        width: max-content;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--success) 12%, transparent);
+        color: var(--success);
+        font-size: 8px;
+        font-weight: 800;
+      }
+
+      .selected-toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: calc(100% - 44px);
+        padding: 12px 15px;
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        background: var(--surface-raised);
+        box-shadow: var(--shadow-md);
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: 180ms ease;
+        backdrop-filter: blur(18px);
+      }
+
+      .selected-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 900px) {
+        .page {
+          width: min(100% - 22px, 720px);
+          padding-top: 25px;
+        }
+
+        .intro {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .option-description {
+          align-items: start;
+          grid-template-columns: 1fr;
+        }
+
+        .select-button {
+          width: max-content;
+        }
+
+        .mock-window {
+          height: 390px;
+        }
+
+        .portal-rail {
+          width: 48px;
+        }
+
+        .module-side {
+          display: none;
+        }
+
+        .app-area {
+          left: 48px;
+        }
+
+        .command-search,
+        .model-2-search,
+        .live-state,
+        .header-actions .icon-button,
+        .ghost-action {
+          display: none;
+        }
+
+        .header-model-1,
+        .header-model-3 {
+          padding-inline: 15px;
+        }
+
+        .header-model-1 .header-actions {
+          margin-left: auto;
+        }
+
+        .model-2-canvas {
+          padding-inline: 9px;
+        }
+
+        .header-model-2 .header-actions {
+          margin-left: auto;
+        }
+
+        .header-model-3 {
+          align-items: flex-start;
+          min-height: 112px;
+          flex-direction: column;
+          gap: 11px;
+        }
+
+        .header-model-3 .header-actions {
+          align-self: stretch;
+        }
+
+        .content-preview {
+          padding: 18px 14px;
+        }
+
+        .filters,
+        .table-row > :nth-child(2),
+        .table-row > :nth-child(3) {
+          display: none;
+        }
+
+        .table-row {
+          grid-template-columns: 1fr 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Softon Portal · exploração visual</p>
+          <h1>Três caminhos para o novo header</h1>
+          <p class="intro-copy">
+            Os modelos abaixo usam o shell real: rail global, menu do módulo ocupando toda a altura e o header começando
+            depois dele. Escolha pelo equilíbrio entre clareza, personalidade e espaço útil.
+          </p>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Alternar tema">
+          <span class="icon" id="theme-icon"></span>
+          <span id="theme-label">Ver tema escuro</span>
+        </button>
+      </section>
+
+      <nav class="choice-nav" aria-label="Navegar entre modelos">
+        <a href="#modelo-1">01 Contextual</a>
+        <a href="#modelo-2">02 Flutuante</a>
+        <a href="#modelo-3">03 Orientado à página</a>
+      </nav>
+
+      <section class="options">
+        <article class="option-card" id="modelo-1" data-option="Modelo 1 — Contextual">
+          <header class="option-description">
+            <div>
+              <div class="option-kicker">
+                <span class="number">01</span>
+                <span class="recommended">Recomendado</span>
+              </div>
+              <h2 class="option-title">Contextual e produtivo</h2>
+              <p class="option-summary">Breadcrumb, busca global e ação principal da tela em uma barra compacta de 64 px.</p>
+            </div>
+            <button class="select-button" type="button" data-select>Escolher modelo 1</button>
+          </header>
+          <div class="mock-window">
+            <div class="portal-rail"></div>
+            <div class="module-side"></div>
+            <div class="app-area">
+              <header class="header header-model-1">
+                <div class="breadcrumb"><span>Doc Flow</span><span class="chevron">›</span><strong>Páginas</strong></div>
+                <div class="command-search"><span class="icon" data-icon="search"></span><span>Buscar no portal…</span><span class="key">⌘ K</span></div>
+                <div class="header-actions">
+                  <button class="primary-action" type="button"><span class="icon" data-icon="plus"></span>Nova página</button>
+                  <span class="icon-button icon" data-icon="bell"><i class="dot"></i></span>
+                  <span class="user-avatar">JS</span>
+                </div>
+              </header>
+              <div class="content-preview" data-content></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="option-card" id="modelo-2" data-option="Modelo 2 — Flutuante">
+          <header class="option-description">
+            <div>
+              <div class="option-kicker"><span class="number">02</span></div>
+              <h2 class="option-title">Flutuante e sofisticado</h2>
+              <p class="option-summary">Uma ilha translúcida com cantos arredondados, contexto do workspace e status operacional.</p>
+            </div>
+            <button class="select-button" type="button" data-select>Escolher modelo 2</button>
+          </header>
+          <div class="mock-window">
+            <div class="portal-rail"></div>
+            <div class="module-side"></div>
+            <div class="app-area model-2-canvas">
+              <header class="header header-model-2">
+                <div class="workspace-label">
+                  <span class="workspace-symbol icon" data-icon="layers"></span>
+                  <span><span class="workspace-title">Portal do usuário</span><span class="workspace-path">Doc Flow / Páginas</span></span>
+                </div>
+                <div class="model-2-search"><span class="icon" data-icon="search"></span><span>O que você procura?</span></div>
+                <span class="live-state">Tudo sincronizado</span>
+                <div class="header-actions">
+                  <span class="icon-button icon" data-icon="bell"><i class="dot"></i></span>
+                  <span class="user-avatar">JS</span>
+                </div>
+              </header>
+              <div class="content-preview" data-content></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="option-card" id="modelo-3" data-option="Modelo 3 — Orientado à página">
+          <header class="option-description">
+            <div>
+              <div class="option-kicker"><span class="number">03</span></div>
+              <h2 class="option-title">Orientado à página</h2>
+              <p class="option-summary">Título, descrição e ações vivem no header, reduzindo repetição dentro de cada tela.</p>
+            </div>
+            <button class="select-button" type="button" data-select>Escolher modelo 3</button>
+          </header>
+          <div class="mock-window">
+            <div class="portal-rail"></div>
+            <div class="module-side"></div>
+            <div class="app-area">
+              <header class="header header-model-3">
+                <div class="page-context">
+                  <div class="mini-breadcrumb">Doc Flow / Conteúdo</div>
+                  <h3>Páginas</h3>
+                  <p>Crie, revise e publique a documentação dos seus projetos.</p>
+                </div>
+                <div class="header-actions" style="margin-left: auto">
+                  <span class="ghost-action"><span class="icon" data-icon="search"></span>Buscar</span>
+                  <span class="secondary-action"><span class="icon" data-icon="upload"></span>Importar</span>
+                  <button class="primary-action" type="button"><span class="icon" data-icon="plus"></span>Nova página</button>
+                  <span class="user-avatar">JS</span>
+                </div>
+              </header>
+              <div class="content-preview" data-content data-compact-heading></div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div class="selected-toast" id="selected-toast" role="status">
+      <span class="icon" data-icon="check"></span><span id="selected-label"></span>
+    </div>
+
+    <template id="rail-template">
+      <span class="softon-mark">S</span>
+      <span class="rail-icon icon" data-icon="home"></span>
+      <span class="rail-icon icon active" data-icon="file"></span>
+      <span class="rail-icon icon" data-icon="tag"></span>
+      <span class="rail-icon icon" data-icon="shield"></span>
+      <span class="rail-avatar">JS</span>
+    </template>
+
+    <template id="side-template">
+      <div class="module-brand">
+        <span class="module-logo icon" data-icon="book"></span>
+        <span><span class="module-name">Doc Flow</span><span class="module-sub">Manual do usuário</span></span>
+      </div>
+      <nav class="module-nav">
+        <span class="nav-item"><span class="icon" data-icon="chart"></span>Dashboard</span>
+        <span class="nav-item"><span class="icon" data-icon="building"></span>Clientes</span>
+        <span class="nav-item"><span class="icon" data-icon="folder"></span>Projetos</span>
+        <span class="nav-item"><span class="icon" data-icon="layers"></span>Módulos</span>
+        <span class="nav-item active"><span class="icon" data-icon="file"></span>Páginas</span>
+        <span class="nav-item"><span class="icon" data-icon="cloud"></span>Publicações</span>
+        <span class="nav-item"><span class="icon" data-icon="settings"></span>Configurações</span>
+      </nav>
+    </template>
+
+    <template id="content-template">
+      <div class="content-heading">
+        <div><h4>Páginas do projeto</h4><p>24 páginas · atualizado há 3 minutos</p></div>
+        <div class="filters"><span class="filter-pill">Todos os status</span><span class="filter-pill">Mais recentes</span></div>
+      </div>
+      <div class="table-card">
+        <div class="table-row header-row"><span>Documento</span><span>Módulo</span><span>Status</span><span></span></div>
+        <div class="table-row"><span class="doc-name"><i class="doc-icon icon" data-icon="file"></i>Introdução ao sistema</span><span>Primeiros passos</span><span class="status">Publicado</span><span>•••</span></div>
+        <div class="table-row"><span class="doc-name"><i class="doc-icon icon" data-icon="file"></i>Cadastro de clientes</span><span>Cadastros</span><span class="status">Publicado</span><span>•••</span></div>
+        <div class="table-row"><span class="doc-name"><i class="doc-icon icon" data-icon="file"></i>Fluxo de aprovação</span><span>Operação</span><span class="status">Publicado</span><span>•••</span></div>
+      </div>
+    </template>
+
+    <script>
+      const icons = {
+        search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>',
+        plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>',
+        bell: '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg>',
+        layers: '<svg viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5M3 17l9 5 9-5"></path></svg>',
+        upload: '<svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 20h14"></path></svg>',
+        check: '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg>',
+        home: '<svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"></path></svg>',
+        file: '<svg viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 13h6M9 17h6"></path></svg>',
+        tag: '<svg viewBox="0 0 24 24"><path d="M20 13 13 20l-9-9V4h7z"></path><circle cx="8.5" cy="8.5" r="1.2"></circle></svg>',
+        shield: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path></svg>',
+        book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"></path><path d="M4 5.5v14"></path></svg>',
+        chart: '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>',
+        building: '<svg viewBox="0 0 24 24"><path d="M4 22V4h12v18M16 9h4v13M8 8h4M8 12h4M8 16h4M2 22h20"></path></svg>',
+        folder: '<svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"></path></svg>',
+        cloud: '<svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 1 1 1-7.9A6 6 0 0 1 20 12a3 3 0 0 1-1 6Z"></path><path d="m12 15 3-3m0 0 3 3m-3-3v7"></path></svg>',
+        settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"></path></svg>',
+        sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>',
+        moon: '<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>'
+      };
+
+      const hydrateIcons = (root = document) => {
+        root.querySelectorAll('[data-icon]').forEach((element) => {
+          element.innerHTML = icons[element.dataset.icon] || '';
+        });
+      };
+
+      document.querySelectorAll('.portal-rail').forEach((rail) => {
+        rail.append(document.getElementById('rail-template').content.cloneNode(true));
+      });
+      document.querySelectorAll('.module-side').forEach((side) => {
+        side.append(document.getElementById('side-template').content.cloneNode(true));
+      });
+      document.querySelectorAll('[data-content]').forEach((content) => {
+        content.append(document.getElementById('content-template').content.cloneNode(true));
+        if (content.hasAttribute('data-compact-heading')) content.querySelector('.content-heading').remove();
+      });
+      hydrateIcons();
+
+      const html = document.documentElement;
+      const themeLabel = document.getElementById('theme-label');
+      const themeIcon = document.getElementById('theme-icon');
+      const setThemeButton = () => {
+        const dark = html.dataset.theme === 'dark';
+        themeLabel.textContent = dark ? 'Ver tema claro' : 'Ver tema escuro';
+        themeIcon.innerHTML = dark ? icons.sun : icons.moon;
+      };
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+        setThemeButton();
+      });
+      setThemeButton();
+
+      let toastTimer;
+      document.querySelectorAll('[data-select]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.option-card').forEach((card) => card.classList.remove('is-selected'));
+          const card = button.closest('.option-card');
+          card.classList.add('is-selected');
+          button.textContent = 'Selecionado';
+          document.querySelectorAll('[data-select]').forEach((other) => {
+            if (other !== button) other.textContent = `Escolher modelo ${other.closest('.option-card').id.slice(-1)}`;
+          });
+          document.getElementById('selected-label').textContent = `${card.dataset.option} selecionado`;
+          const toast = document.getElementById('selected-toast');
+          toast.classList.add('show');
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        });
+      });
+    </script>
+  </body>
+</html>

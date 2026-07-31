@@ -13,8 +13,8 @@ test.describe('Smoke', () => {
 
   test('tela de login renderiza form com campos esperados (login/senha)', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.locator('input[formcontrolname="login"]').first()).toBeVisible();
-    await expect(page.locator('input[formcontrolname="senha"]').first()).toBeVisible();
+    await expect(page.getByLabel('Usuário')).toBeVisible();
+    await expect(page.getByLabel('Senha')).toBeVisible();
     await expect(page.locator('button[type="submit"]').first()).toBeVisible();
   });
 

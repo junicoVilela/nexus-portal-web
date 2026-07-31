@@ -37,4 +37,19 @@
 
   --accent-grad: linear-gradient(135deg, var(--indigo-500), var(--indigo-700));
   --body-bg-image: none;
+
+  /* Compatibilidade temporária com telas legadas do Release Orchestrator. */
+  --text-primary: var(--text);
+  --text-secondary: var(--text-muted);
+  --bg-card: var(--surface);
+  --bg-subtle: var(--surface-2);
+  --border-subtle: var(--border);
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
+  --muted: var(--text-muted);
+  --danger-bg: var(--danger-soft);
+  --danger-text: var(--danger);
+  --warn-bg: var(--warn-soft);
+  --warn-border: color-mix(in srgb, var(--warn) 30%, transparent);
+  --warn-text: var(--warn);
 }

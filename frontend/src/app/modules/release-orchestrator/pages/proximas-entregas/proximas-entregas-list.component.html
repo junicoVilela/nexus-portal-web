@@ -5,44 +5,28 @@
     icon="CalendarClock"
   >
     <div actions>
-      <ui-button
-        icon="Plus"
-        [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
-      >Planejar entrega</ui-button>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
+        >Planejar entrega</ui-button
+      >
     </div>
   </ui-page-header>
 
   <div class="pe-list__filter">
-    <select
-      class="pe-list__select"
-      [(ngModel)]="filtros.clienteId"
-      (change)="onFiltroChange()"
-      aria-label="Cliente"
-    >
+    <select class="pe-list__select" [(ngModel)]="filtros.clienteId" (change)="onFiltroChange()" aria-label="Cliente">
       <option value="">Todos os clientes</option>
       @for (c of clientes(); track c.id) {
         <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
       }
     </select>
 
-    <select
-      class="pe-list__select"
-      [(ngModel)]="filtros.produtoId"
-      (change)="onFiltroChange()"
-      aria-label="Produto"
-    >
+    <select class="pe-list__select" [(ngModel)]="filtros.produtoId" (change)="onFiltroChange()" aria-label="Produto">
       <option value="">Todos os produtos</option>
       @for (p of produtos(); track p.id) {
         <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
       }
     </select>
 
-    <select
-      class="pe-list__select"
-      [(ngModel)]="filtros.status"
-      (change)="onFiltroChange()"
-      aria-label="Status"
-    >
+    <select class="pe-list__select" [(ngModel)]="filtros.status" (change)="onFiltroChange()" aria-label="Status">
       <option value="">Todos os status</option>
       @for (s of statusKeys; track s) {
         <option [value]="s">{{ statusLabels[s] }}</option>
@@ -64,11 +48,7 @@
       aria-label="Data fim"
     />
 
-    <button
-      type="button"
-      class="pe-list__clear"
-      (click)="limparFiltros()"
-    >
+    <button type="button" class="pe-list__clear" (click)="limparFiltros()">
       <lucide-icon name="X" [size]="14" /> Limpar
     </button>
   </div>
@@ -80,25 +60,19 @@
       <ui-skeleton width="100%" height="40px" />
     </div>
   } @else if (erro()) {
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    />
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
   } @else if (entregas().length === 0) {
     <ui-empty-state
       icon="CalendarPlus"
       title="Nenhuma entrega planejada"
       description="Crie a primeira entrega no botão acima ou ajuste os filtros."
     >
-      <ui-button
-        icon="Plus"
-        [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
-      >Planejar entrega</ui-button>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/proximas-entregas/nova']"
+        >Planejar entrega</ui-button
+      >
     </ui-empty-state>
   } @else {
-    <div class="pe-list__table-wrap">
+    <div class="pe-list__table-wrap ui-table-scroll">
       <table class="pe-list__table">
         <thead>
           <tr>
@@ -122,10 +96,7 @@
                 }
               </td>
               <td>
-                <a
-                  class="pe-list__link"
-                  [routerLink]="['/release-orchestrator/clientes', pe.clienteId]"
-                >
+                <a class="pe-list__link" [routerLink]="['/release-orchestrator/clientes', pe.clienteId]">
                   <code>{{ pe.clienteSigla }}</code> {{ pe.clienteNome }}
                 </a>
               </td>
@@ -152,7 +123,8 @@
                     icon="Rocket"
                     [routerLink]="['/release-orchestrator/entregas/nova']"
                     [queryParams]="{ proximaEntregaId: pe.id }"
-                  >Gerar</ui-button>
+                    >Gerar</ui-button
+                  >
                 } @else if (proximoStatus(pe); as prox) {
                   <ui-button
                     variant="secondary"
@@ -160,7 +132,8 @@
                     icon="ArrowRight"
                     [loading]="alterandoStatusId() === pe.id"
                     (clicked)="avancarStatus(pe)"
-                  >{{ statusLabels[prox] }}</ui-button>
+                    >{{ statusLabels[prox] }}</ui-button
+                  >
                 }
                 <ui-button
                   variant="ghost"
@@ -169,12 +142,7 @@
                   [routerLink]="['/release-orchestrator/proximas-entregas', pe.id, 'editar']"
                 />
                 @if (transicoes[pe.status].includes('CANCELADA')) {
-                  <ui-button
-                    variant="ghost"
-                    size="sm"
-                    icon="X"
-                    (clicked)="cancelar(pe)"
-                  />
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="cancelar(pe)" />
                 }
               </td>
             </tr>
@@ -192,9 +160,7 @@
           [disabled]="page() <= 1"
           (clicked)="irParaPagina(page() - 1)"
         />
-        <span class="pe-list__paginfo">
-          Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total
-        </span>
+        <span class="pe-list__paginfo"> Página {{ page() }} de {{ totalPaginas() }} · {{ totalItems() }} total </span>
         <ui-button
           variant="ghost"
           size="sm"

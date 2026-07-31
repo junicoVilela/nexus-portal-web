@@ -26,15 +26,94 @@
   gap: 8px;
 }
 
+/* Superfície contextual usada pelos cabeçalhos de páginas e detalhes. */
+.u-context-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(
+      circle at 94% -45%,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      transparent 210px
+    ),
+    var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+.u-context-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--accent-grad);
+}
+
+/* Tabelas extensas mantêm o contexto da página e rolam só no eixo horizontal. */
+.ui-table-scroll,
+.ui-list__content {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior-inline: contain;
+}
+:where(.ui-table-scroll, .ui-list__content) table {
+  width: 100%;
+  min-width: 680px;
+}
+
+/* Barra de ações consistente para formulários que ainda não usam ui-form-page. */
+.ui-form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  background: linear-gradient(to bottom, transparent, var(--bg) 28%);
+}
+
+/* Controles do fluxo guiado do editor Doc Flow ficam globais para não inflar o bundle lazy do editor. */
+.pf-workflow-anchor,
+#pagina-modelo {
+  scroll-margin-top: calc(var(--shell-topbar-offset, 70px) + 86px);
+}
+.pf-quality__fix {
+  margin-left: auto;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--accent);
+  font: 650 10.5px/1 var(--font-body);
+  cursor: pointer;
+}
+.pf-quality__fix:hover {
+  background: var(--accent-soft);
+}
+.pf-quality__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
 /* Padding padrão para form-pages sem shell wrapper.
  * `<ui-list-page>` aplica este padding internamente; para pages que renderizam
  * `<ui-page-header>` + `<form>` direto, aplica esta classe no host. */
 .ui-form-page {
   display: block;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-form);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
+
 @media (max-width: 768px) {
   .ui-form-page {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
 }

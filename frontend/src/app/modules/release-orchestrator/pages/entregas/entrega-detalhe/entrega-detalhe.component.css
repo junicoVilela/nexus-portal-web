@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
+  width: 100%;
+  max-width: var(--page-max-detail);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 .ent-det--loading,
@@ -16,6 +19,7 @@
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
+  padding: 20px;
 }
 
 .ent-det__ident {
@@ -234,7 +238,10 @@
 
 @media (max-width: 768px) {
   .ent-det {
-    padding: 14px;
+    padding: var(--page-block) var(--page-gutter);
+  }
+  .ent-det__header {
+    padding: 16px;
   }
   .ent-det__dl {
     grid-template-columns: 1fr;

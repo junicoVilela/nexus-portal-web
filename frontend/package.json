@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "start": "ng serve",
+    "prebuild": "npm run audit:icons",
     "build": "ng build",
     "test": "ng test",
     "lint": "eslint \"src/**/*.{ts,html}\"",
+    "audit:icons": "node scripts/audit-lucide-icons.mjs",
     "lint:fix": "eslint \"src/**/*.{ts,html}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
@@ -18,6 +20,7 @@
     "api:generate": "openapi-ts && prettier --write \"src/app/api/generated/**/*.ts\"",
     "api:check": "npm run api:generate && git diff --exit-code -- src/app/api/generated openapi/softon-portal-api.json",
     "e2e": "playwright test",
+    "pree2e": "npm run audit:icons",
     "test-storybook": "test-storybook --url http://localhost:6006"
   },
   "lint-staged": {

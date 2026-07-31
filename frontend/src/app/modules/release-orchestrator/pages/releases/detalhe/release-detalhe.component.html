@@ -15,7 +15,7 @@
   </div>
 } @else if (release()) {
   <div class="rf-det">
-    <div class="rf-det__header">
+    <div class="rf-det__header u-context-surface">
       <div class="rf-det__meta">
         <div
           class="rf-det__prod-badge"
@@ -74,7 +74,9 @@
           <ui-button icon="CheckCircle" (clicked)="irParaRevisao()">Publicar</ui-button>
         }
         <div class="rf-det__pdf-group">
-          <ui-button variant="secondary" icon="FileText" size="sm" (clicked)="gerarPdf('CLIENTE')">PDF Cliente</ui-button>
+          <ui-button variant="secondary" icon="FileText" size="sm" (clicked)="gerarPdf('CLIENTE')"
+            >PDF Cliente</ui-button
+          >
           <ui-button variant="secondary" size="sm" (clicked)="gerarPdf('SUPORTE')">Suporte</ui-button>
           <ui-button variant="secondary" size="sm" (clicked)="gerarPdf('INTERNO')">Interno</ui-button>
         </div>

@@ -1,24 +1,12 @@
 <div class="cli-list">
-  <ui-page-header
-    title="Clientes"
-    subtitle="Clientes operacionais que recebem entregas"
-    icon="Users"
-  >
+  <ui-page-header title="Clientes" subtitle="Clientes operacionais que recebem entregas" icon="Users">
     <div actions>
-      <ui-button
-        icon="Plus"
-        [routerLink]="['/release-orchestrator/clientes/novo']"
-      >Novo cliente</ui-button>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/clientes/novo']">Novo cliente</ui-button>
     </div>
   </ui-page-header>
 
   @if (erro()) {
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    />
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
   }
 
   <div class="cli-list__filter">
@@ -55,13 +43,10 @@
       title="Nenhum cliente encontrado"
       description="Cadastre o primeiro cliente operacional para começar a planejar entregas."
     >
-      <ui-button
-        icon="Plus"
-        [routerLink]="['/release-orchestrator/clientes/novo']"
-      >Cadastrar cliente</ui-button>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/clientes/novo']">Cadastrar cliente</ui-button>
     </ui-empty-state>
   } @else {
-    <div class="cli-list__table-wrap">
+    <div class="cli-list__table-wrap ui-table-scroll">
       <table class="cli-list__table">
         <thead>
           <tr>
@@ -80,10 +65,7 @@
                 <code class="cli-list__sigla">{{ c.sigla }}</code>
               </td>
               <td>
-                <a
-                  class="cli-list__nome-link"
-                  [routerLink]="['/release-orchestrator/clientes', c.id]"
-                >{{ c.nome }}</a>
+                <a class="cli-list__nome-link" [routerLink]="['/release-orchestrator/clientes', c.id]">{{ c.nome }}</a>
                 @if (c.razaoSocial) {
                   <div class="cli-list__razao">{{ c.razaoSocial }}</div>
                 }
@@ -103,23 +85,16 @@
                   size="sm"
                   icon="Pencil"
                   [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
-                >Editar</ui-button>
-                <ui-button
-                  variant="ghost"
-                  size="sm"
-                  [icon]="c.ativo ? 'EyeOff' : 'Eye'"
-                  (clicked)="toggleAtivo(c)"
-                >{{ c.ativo ? 'Inativar' : 'Ativar' }}</ui-button>
+                  >Editar</ui-button
+                >
+                <ui-button variant="ghost" size="sm" [icon]="c.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(c)">{{
+                  c.ativo ? 'Inativar' : 'Ativar'
+                }}</ui-button>
                 @if (excluindoId() === c.id) {
                   <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(c)" />
                   <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
                 } @else {
-                  <ui-button
-                    variant="danger"
-                    size="sm"
-                    icon="Trash2"
-                    (clicked)="excluindoId.set(c.id)"
-                  />
+                  <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluindoId.set(c.id)" />
                 }
               </td>
             </tr>

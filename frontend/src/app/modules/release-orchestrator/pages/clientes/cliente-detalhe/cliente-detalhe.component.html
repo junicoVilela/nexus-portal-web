@@ -7,12 +7,7 @@
   </div>
 } @else if (erro()) {
   <div class="cli-det cli-det--errored">
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    >
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()">
       <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/clientes']"
         >Voltar para clientes</ui-button
       >
@@ -21,7 +16,7 @@
 } @else if (cliente(); as c) {
   <div class="cli-det">
     <!-- Cabeçalho -->
-    <div class="cli-det__header">
+    <div class="cli-det__header u-context-surface">
       <div class="cli-det__ident">
         <a class="cli-det__back" [routerLink]="['/release-orchestrator/clientes']">
           <lucide-icon name="ArrowLeft" [size]="14" /> Clientes
@@ -46,34 +41,23 @@
         }
       </div>
       <div class="cli-det__actions">
-        <ui-button
-          variant="secondary"
-          icon="Pencil"
-          [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
-        >Editar</ui-button>
+        <ui-button variant="secondary" icon="Pencil" [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
+          >Editar</ui-button
+        >
         <ui-button
           [variant]="c.ativo ? 'secondary' : 'primary'"
           [icon]="c.ativo ? 'Pause' : 'Play'"
           [loading]="alternandoStatus()"
           (clicked)="alternarStatus()"
-        >{{ c.ativo ? 'Pausar' : 'Reativar' }}</ui-button>
+          >{{ c.ativo ? 'Pausar' : 'Reativar' }}</ui-button
+        >
       </div>
     </div>
 
     <!-- KPIs -->
     <div class="cli-det__kpis">
-      <ui-kpi-card
-        label="Contatos"
-        [valor]="contatos().length"
-        icon="Users"
-        tone="blue"
-      />
-      <ui-kpi-card
-        label="Próximas entregas"
-        [valor]="proximasEntregas().length"
-        icon="CalendarClock"
-        tone="blue"
-      />
+      <ui-kpi-card label="Contatos" [valor]="contatos().length" icon="Users" tone="blue" />
+      <ui-kpi-card label="Próximas entregas" [valor]="proximasEntregas().length" icon="CalendarClock" tone="blue" />
       @if (proximaEntregaPendente(); as prox) {
         <ui-kpi-card
           label="Próxima entrega"
@@ -94,46 +78,47 @@
     </div>
 
     <!-- Tabs -->
-    <ui-tabs
-      [items]="tabsConfig()"
-      [active]="activeTab()"
-      (activeChange)="mudarAba($event)"
-    />
+    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="mudarAba($event)" />
 
     <!-- Conteúdo de aba -->
     @switch (activeTab()) {
       @case ('geral') {
         <div class="cli-det__panes">
           <ui-card padding="md">
-            <h3 class="cli-det__pane-title">
-              <lucide-icon name="FileText" [size]="14" /> Dados gerais
-            </h3>
+            <h3 class="cli-det__pane-title"><lucide-icon name="FileText" [size]="14" /> Dados gerais</h3>
             <dl class="cli-det__dl">
-              <dt>Sigla</dt><dd><code>{{ c.sigla }}</code></dd>
-              <dt>Nome</dt><dd>{{ c.nome }}</dd>
-              <dt>Razão social</dt><dd>{{ c.razaoSocial || '—' }}</dd>
-              <dt>CNPJ</dt><dd>{{ cnpjFormatado() || '—' }}</dd>
-              <dt>Cadastrado em</dt><dd>{{ c.createdAt ? (c.createdAt | date: 'dd/MM/yyyy') : '—' }}</dd>
+              <dt>Sigla</dt>
+              <dd>
+                <code>{{ c.sigla }}</code>
+              </dd>
+              <dt>Nome</dt>
+              <dd>{{ c.nome }}</dd>
+              <dt>Razão social</dt>
+              <dd>{{ c.razaoSocial || '—' }}</dd>
+              <dt>CNPJ</dt>
+              <dd>{{ cnpjFormatado() || '—' }}</dd>
+              <dt>Cadastrado em</dt>
+              <dd>{{ c.createdAt ? (c.createdAt | date: 'dd/MM/yyyy') : '—' }}</dd>
             </dl>
           </ui-card>
 
           <ui-card padding="md">
-            <h3 class="cli-det__pane-title">
-              <lucide-icon name="Server" [size]="14" /> Ambiente
-            </h3>
+            <h3 class="cli-det__pane-title"><lucide-icon name="Server" [size]="14" /> Ambiente</h3>
             <dl class="cli-det__dl">
-              <dt>Ambiente padrão</dt><dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
-              <dt>Tipo de banco</dt><dd>{{ c.tipoBanco ? bancoLabels[c.tipoBanco] : '—' }}</dd>
-              <dt>Codificação</dt><dd>{{ c.codificacao || '—' }}</dd>
-              <dt>Fuso horário</dt><dd>{{ c.fusoHorario || '—' }}</dd>
+              <dt>Ambiente padrão</dt>
+              <dd>{{ ambienteLabels[c.ambientePadrao] }}</dd>
+              <dt>Tipo de banco</dt>
+              <dd>{{ c.tipoBanco ? bancoLabels[c.tipoBanco] : '—' }}</dd>
+              <dt>Codificação</dt>
+              <dd>{{ c.codificacao || '—' }}</dd>
+              <dt>Fuso horário</dt>
+              <dd>{{ c.fusoHorario || '—' }}</dd>
             </dl>
           </ui-card>
 
           @if (c.observacoes) {
             <ui-card padding="md">
-              <h3 class="cli-det__pane-title">
-                <lucide-icon name="MessageSquare" [size]="14" /> Observações
-              </h3>
+              <h3 class="cli-det__pane-title"><lucide-icon name="MessageSquare" [size]="14" /> Observações</h3>
               <p class="cli-det__obs">{{ c.observacoes }}</p>
             </ui-card>
           }
@@ -146,10 +131,9 @@
             title="Nenhum contato cadastrado"
             description="Edite o cliente para adicionar contatos técnicos, comerciais ou operacionais."
           >
-            <ui-button
-              icon="Pencil"
-              [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
-            >Editar cliente</ui-button>
+            <ui-button icon="Pencil" [routerLink]="['/release-orchestrator/clientes', c.id, 'editar']"
+              >Editar cliente</ui-button
+            >
           </ui-empty-state>
         } @else {
           <div class="cli-det__contatos">
@@ -178,9 +162,7 @@
       }
       @case ('produtos') {
         <ui-card padding="md">
-          <h3 class="cli-det__pane-title">
-            <lucide-icon name="Plus" [size]="14" /> Contratar novo produto
-          </h3>
+          <h3 class="cli-det__pane-title"><lucide-icon name="Plus" [size]="14" /> Contratar novo produto</h3>
           @if (produtosDisponiveis().length === 0) {
             <p class="cli-det__hint">Todos os produtos do catálogo já estão contratados.</p>
           } @else {
@@ -201,7 +183,8 @@
                 [disabled]="!novoProdutoId"
                 [loading]="contratandoProduto()"
                 (clicked)="contratarProduto()"
-              >Contratar</ui-button>
+                >Contratar</ui-button
+              >
             </div>
           }
         </ui-card>
@@ -235,10 +218,7 @@
                         (click)="expandirProduto(cp)"
                         [attr.aria-expanded]="expandidoId() === cp.id"
                       >
-                        <lucide-icon
-                          [name]="expandidoId() === cp.id ? 'ChevronDown' : 'ChevronRight'"
-                          [size]="14"
-                        />
+                        <lucide-icon [name]="expandidoId() === cp.id ? 'ChevronDown' : 'ChevronRight'" [size]="14" />
                       </button>
                     </td>
                     <td>
@@ -258,7 +238,8 @@
                         [icon]="cp.ativo ? 'Pause' : 'Play'"
                         [loading]="alterandoProdutoId() === cp.id"
                         (clicked)="toggleProdutoAtivo(cp)"
-                      >{{ cp.ativo ? 'Pausar' : 'Reativar' }}</ui-button>
+                        >{{ cp.ativo ? 'Pausar' : 'Reativar' }}</ui-button
+                      >
                       <ui-button
                         variant="ghost"
                         size="sm"
@@ -334,7 +315,8 @@
                                         icon="Plus"
                                         [loading]="alterandoModuloId() === item.modulo.id"
                                         (clicked)="ativarModulo(cp, item.modulo.id)"
-                                      >Contratar</ui-button>
+                                        >Contratar</ui-button
+                                      >
                                     } @else {
                                       <ui-button
                                         variant="ghost"
@@ -342,7 +324,8 @@
                                         icon="Tag"
                                         [disabled]="alterandoModuloId() === item.modulo.id"
                                         (clicked)="editarVersaoModulo(cp, item.cpm)"
-                                      >Versão</ui-button>
+                                        >Versão</ui-button
+                                      >
                                       <ui-button
                                         variant="ghost"
                                         size="sm"
@@ -391,8 +374,7 @@
               title="Sem matriz disponível"
               description="Catálogo de funcionalidades vazio nos produtos contratados."
             >
-              <ui-button icon="RefreshCw" (clicked)="carregarFuncionalidades()"
-                >Tentar de novo</ui-button>
+              <ui-button icon="RefreshCw" (clicked)="carregarFuncionalidades()">Tentar de novo</ui-button>
             </ui-empty-state>
           </div>
         } @else {
@@ -417,9 +399,7 @@
                       <h4 class="cli-det__dominio-title">
                         <code>{{ dominio.dominio.codigo }}</code>
                         {{ dominio.dominio.nome }}
-                        <span class="cli-det__hint">
-                          {{ dominio.funcionalidades.length }} funcionalidades
-                        </span>
+                        <span class="cli-det__hint"> {{ dominio.funcionalidades.length }} funcionalidades </span>
                       </h4>
                       @if (dominio.funcionalidades.length === 0) {
                         <p class="cli-det__hint">Domínio sem funcionalidades.</p>
@@ -462,9 +442,7 @@
       @case ('config-entrega') {
         @if (editandoConfig()) {
           <ui-card padding="md">
-            <h3 class="cli-det__pane-title">
-              <lucide-icon name="Settings" [size]="14" /> Editando configuração
-            </h3>
+            <h3 class="cli-det__pane-title"><lucide-icon name="Settings" [size]="14" /> Editando configuração</h3>
             <div class="cli-det__form-grid">
               <div class="cli-det__form-field">
                 <label class="cli-det__label">Tipo de destino</label>
@@ -517,12 +495,7 @@
                       <span class="cli-det__hint">(em branco preserva a atual)</span>
                     }
                   </label>
-                  <input
-                    class="cli-det__input"
-                    type="password"
-                    [(ngModel)]="configForm.senha"
-                    placeholder="••••••••"
-                  />
+                  <input class="cli-det__input" type="password" [(ngModel)]="configForm.senha" placeholder="••••••••" />
                 </div>
               </div>
 
@@ -546,11 +519,7 @@
               <div class="cli-det__form-grid">
                 <div class="cli-det__form-field">
                   <label class="cli-det__label">Bucket</label>
-                  <input
-                    class="cli-det__input"
-                    [(ngModel)]="configForm.bucket"
-                    placeholder="acme-releases"
-                  />
+                  <input class="cli-det__input" [(ngModel)]="configForm.bucket" placeholder="acme-releases" />
                 </div>
                 <div class="cli-det__form-field">
                   <label class="cli-det__label">
@@ -565,19 +534,11 @@
                 </div>
                 <div class="cli-det__form-field">
                   <label class="cli-det__label">Região</label>
-                  <input
-                    class="cli-det__input"
-                    [(ngModel)]="configForm.regiao"
-                    placeholder="us-east-1"
-                  />
+                  <input class="cli-det__input" [(ngModel)]="configForm.regiao" placeholder="us-east-1" />
                 </div>
                 <div class="cli-det__form-field">
                   <label class="cli-det__label">Access Key</label>
-                  <input
-                    class="cli-det__input"
-                    [(ngModel)]="configForm.usuario"
-                    placeholder="AKIA…"
-                  />
+                  <input class="cli-det__input" [(ngModel)]="configForm.usuario" placeholder="AKIA…" />
                 </div>
                 <div class="cli-det__form-field">
                   <label class="cli-det__label">
@@ -586,12 +547,7 @@
                       <span class="cli-det__hint">(em branco preserva a atual)</span>
                     }
                   </label>
-                  <input
-                    class="cli-det__input"
-                    type="password"
-                    [(ngModel)]="configForm.senha"
-                    placeholder="••••••••"
-                  />
+                  <input class="cli-det__input" type="password" [(ngModel)]="configForm.senha" placeholder="••••••••" />
                 </div>
               </div>
               <div class="cli-det__form-row">
@@ -612,7 +568,7 @@
                 />
               </div>
               <div class="cli-det__form-field">
-                <label class="cli-det__check" style="margin-top: 22px;">
+                <label class="cli-det__check" style="margin-top: 22px">
                   <input type="checkbox" [(ngModel)]="configForm.exigirAprovacao" />
                   <span>Exigir aprovação</span>
                 </label>
@@ -620,22 +576,16 @@
             </div>
 
             <div class="cli-det__form-actions">
-              <ui-button variant="ghost" type="button" (clicked)="cancelarEdicaoConfig()"
-                >Cancelar</ui-button>
-              <ui-button
-                type="button"
-                icon="Save"
-                [loading]="salvandoConfig()"
-                (clicked)="salvarConfig()"
-              >Salvar</ui-button>
+              <ui-button variant="ghost" type="button" (clicked)="cancelarEdicaoConfig()">Cancelar</ui-button>
+              <ui-button type="button" icon="Save" [loading]="salvandoConfig()" (clicked)="salvarConfig()"
+                >Salvar</ui-button
+              >
             </div>
           </ui-card>
         } @else if (config(); as cfg) {
           <ui-card padding="md">
             <div class="cli-det__matrix-head">
-              <h3 class="cli-det__pane-title">
-                <lucide-icon name="Settings" [size]="14" /> Configuração de entrega
-              </h3>
+              <h3 class="cli-det__pane-title"><lucide-icon name="Settings" [size]="14" /> Configuração de entrega</h3>
               <div class="cli-det__col-actions">
                 <ui-button
                   variant="secondary"
@@ -643,13 +593,16 @@
                   icon="Plug"
                   [loading]="testandoConfig()"
                   (clicked)="testarConfigEntrega()"
-                >Testar conexão</ui-button>
+                  >Testar conexão</ui-button
+                >
                 <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="abrirEdicaoConfig()"
-                  >Editar</ui-button>
+                  >Editar</ui-button
+                >
               </div>
             </div>
             <dl class="cli-det__dl">
-              <dt>Tipo de destino</dt><dd>{{ destinoLabels[cfg.tipoDestino] }}</dd>
+              <dt>Tipo de destino</dt>
+              <dd>{{ destinoLabels[cfg.tipoDestino] }}</dd>
               <dt>Caminho base</dt>
               <dd>
                 @if (cfg.caminhoBase) {
@@ -661,9 +614,13 @@
               @if (cfg.tipoDestino === 'FTP' || cfg.tipoDestino === 'SFTP') {
                 <dt>Host</dt>
                 <dd>
-                  {{ cfg.host || '—' }}@if (cfg.porta) {<span>:{{ cfg.porta }}</span>}
+                  {{ cfg.host || '—' }}
+                  @if (cfg.porta) {
+                    <span>:{{ cfg.porta }}</span>
+                  }
                 </dd>
-                <dt>Usuário</dt><dd>{{ cfg.usuario || '—' }}</dd>
+                <dt>Usuário</dt>
+                <dd>{{ cfg.usuario || '—' }}</dd>
                 <dt>Senha</dt>
                 <dd>
                   @if (cfg.senhaConfigurada) {
@@ -674,11 +631,16 @@
                 </dd>
               }
               @if (cfg.tipoDestino === 'BUCKET') {
-                <dt>Bucket</dt><dd><code>{{ cfg.bucket || '—' }}</code></dd>
+                <dt>Bucket</dt>
+                <dd>
+                  <code>{{ cfg.bucket || '—' }}</code>
+                </dd>
                 <dt>Endpoint</dt>
                 <dd>{{ cfg.endpoint || 'AWS S3 (padrão)' }}</dd>
-                <dt>Região</dt><dd>{{ cfg.regiao || 'us-east-1' }}</dd>
-                <dt>Access Key</dt><dd>{{ cfg.usuario || '—' }}</dd>
+                <dt>Região</dt>
+                <dd>{{ cfg.regiao || 'us-east-1' }}</dd>
+                <dt>Access Key</dt>
+                <dd>{{ cfg.usuario || '—' }}</dd>
                 <dt>Secret Key</dt>
                 <dd>
                   @if (cfg.senhaConfigurada) {
@@ -697,14 +659,10 @@
             </dl>
 
             @if (resultadoTesteConfig(); as msg) {
-              <div class="cli-det__test-ok">
-                <lucide-icon name="CheckCircle" [size]="14" /> {{ msg }}
-              </div>
+              <div class="cli-det__test-ok"><lucide-icon name="CheckCircle" [size]="14" /> {{ msg }}</div>
             }
             @if (erroTesteConfig(); as msg) {
-              <div class="cli-det__test-err">
-                <lucide-icon name="AlertCircle" [size]="14" /> {{ msg }}
-              </div>
+              <div class="cli-det__test-err"><lucide-icon name="AlertCircle" [size]="14" /> {{ msg }}</div>
             }
           </ui-card>
         } @else {
@@ -724,10 +682,7 @@
             title="Nenhuma entrega planejada"
             description="Cadastre próximas entregas na agenda para acompanhar o pipeline deste cliente."
           >
-            <ui-button
-              icon="Plus"
-              [routerLink]="['/release-orchestrator/proximas-entregas']"
-            >Ir para agenda</ui-button>
+            <ui-button icon="Plus" [routerLink]="['/release-orchestrator/proximas-entregas']">Ir para agenda</ui-button>
           </ui-empty-state>
         } @else {
           <ui-card padding="none">
@@ -745,7 +700,9 @@
               <tbody>
                 @for (pe of proximasEntregas(); track pe.id) {
                   <tr>
-                    <td><code>{{ pe.produtoSigla }}</code> · {{ pe.produtoNome }}</td>
+                    <td>
+                      <code>{{ pe.produtoSigla }}</code> · {{ pe.produtoNome }}
+                    </td>
                     <td>{{ pe.releaseVersao || '—' }}</td>
                     <td>{{ pe.dataPrevista | date: 'dd/MM/yyyy' }}</td>
                     <td>{{ ambienteLabels[pe.ambiente] }}</td>

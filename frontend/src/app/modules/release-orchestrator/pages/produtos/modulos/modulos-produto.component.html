@@ -5,11 +5,7 @@
     icon="Boxes"
   >
     <div actions>
-      <a
-        class="mod-prod__back"
-        [routerLink]="['/release-orchestrator/produtos']"
-        aria-label="Voltar para produtos"
-      >
+      <a class="mod-prod__back" [routerLink]="['/release-orchestrator/produtos']" aria-label="Voltar para produtos">
         <lucide-icon name="ArrowLeft" [size]="14" /> Produtos
       </a>
       <ui-button icon="Plus" (clicked)="abrirNovo()" [disabled]="loading()">Novo módulo</ui-button>
@@ -41,7 +37,7 @@
       <ui-button icon="Plus" (clicked)="abrirNovo()">Cadastrar módulo</ui-button>
     </ui-empty-state>
   } @else {
-    <div class="mod-prod__table-wrap">
+    <div class="mod-prod__table-wrap ui-table-scroll">
       <table class="mod-prod__table">
         <thead>
           <tr>
@@ -64,7 +60,9 @@
                   m.ativo ? 'Ativo' : 'Inativo'
                 }}</ui-badge>
               </td>
-              <td><code class="mod-prod__codigo">{{ m.codigo }}</code></td>
+              <td>
+                <code class="mod-prod__codigo">{{ m.codigo }}</code>
+              </td>
               <td>{{ m.nome }}</td>
               <td>
                 <span
@@ -78,12 +76,9 @@
               <td class="mod-prod__col-center">{{ m.obrigatorio ? '✓' : '—' }}</td>
               <td class="mod-prod__col-actions">
                 <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(m)">Editar</ui-button>
-                <ui-button
-                  variant="ghost"
-                  size="sm"
-                  [icon]="m.ativo ? 'EyeOff' : 'Eye'"
-                  (clicked)="toggleAtivo(m)"
-                >{{ m.ativo ? 'Inativar' : 'Ativar' }}</ui-button>
+                <ui-button variant="ghost" size="sm" [icon]="m.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(m)">{{
+                  m.ativo ? 'Inativar' : 'Ativar'
+                }}</ui-button>
                 <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluir(m)" />
               </td>
             </tr>

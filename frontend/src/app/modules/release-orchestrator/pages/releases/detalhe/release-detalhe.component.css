@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-detail);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 .rf-det--loading {
   padding: 60px 32px;
@@ -28,6 +31,7 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  padding: 20px;
 }
 .rf-det__meta {
   display: flex;
@@ -488,10 +492,11 @@
 
 @media (max-width: 768px) {
   .rf-det {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
   .rf-det__header {
     flex-direction: column;
+    padding: 16px;
   }
   .rf-det__info-strip {
     flex-wrap: wrap;

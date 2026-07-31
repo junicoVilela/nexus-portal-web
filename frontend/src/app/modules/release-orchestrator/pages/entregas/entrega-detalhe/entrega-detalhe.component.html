@@ -7,12 +7,7 @@
   </div>
 } @else if (erro()) {
   <div class="ent-det ent-det--errored">
-    <ui-error-state
-      [variant]="erroVariant()"
-      [description]="erro()"
-      retryLabel="Recarregar"
-      (retry)="carregar()"
-    >
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()">
       <ui-button variant="ghost" icon="ArrowLeft" [routerLink]="['/release-orchestrator/entregas']"
         >Voltar para entregas</ui-button
       >
@@ -21,7 +16,7 @@
 } @else if (entrega(); as e) {
   <div class="ent-det">
     <!-- Cabeçalho -->
-    <div class="ent-det__header">
+    <div class="ent-det__header u-context-surface">
       <div class="ent-det__ident">
         <a class="ent-det__back" [routerLink]="['/release-orchestrator/entregas']">
           <lucide-icon name="ArrowLeft" [size]="14" /> Entregas
@@ -35,9 +30,7 @@
             {{ statusLabels[e.status] }}
           </ui-badge>
           @if (emPolling()) {
-            <span class="ent-det__polling">
-              <lucide-icon name="Loader" [size]="12" /> acompanhando…
-            </span>
+            <span class="ent-det__polling"> <lucide-icon name="Loader" [size]="12" /> acompanhando… </span>
           }
         </div>
         <p class="ent-det__sub">
@@ -47,52 +40,27 @@
       </div>
       <div class="ent-det__actions">
         @if (e.status === 'RASCUNHO' || e.status === 'FALHA') {
-          <ui-button
-            variant="secondary"
-            icon="Layers"
-            [routerLink]="['/release-orchestrator/entregas', e.id, 'delta']"
-          >Ajustar delta</ui-button>
+          <ui-button variant="secondary" icon="Layers" [routerLink]="['/release-orchestrator/entregas', e.id, 'delta']"
+            >Ajustar delta</ui-button
+          >
         }
         @if (e.status === 'RASCUNHO') {
-          <ui-button
-            icon="Play"
-            [loading]="iniciandoGeracao()"
-            (clicked)="iniciarGeracao()"
-          >Iniciar geração</ui-button>
+          <ui-button icon="Play" [loading]="iniciandoGeracao()" (clicked)="iniciarGeracao()">Iniciar geração</ui-button>
         }
         @if (e.status === 'FALHA') {
-          <ui-button
-            icon="RotateCw"
-            [loading]="iniciandoGeracao()"
-            (clicked)="iniciarGeracao()"
-          >Reprocessar</ui-button>
+          <ui-button icon="RotateCw" [loading]="iniciandoGeracao()" (clicked)="iniciarGeracao()">Reprocessar</ui-button>
         }
         @if (e.status === 'RASCUNHO' || e.status === 'EM_GERACAO') {
-          <ui-button
-            variant="secondary"
-            icon="X"
-            [loading]="cancelando()"
-            (clicked)="cancelar()"
-          >Cancelar</ui-button>
+          <ui-button variant="secondary" icon="X" [loading]="cancelando()" (clicked)="cancelar()">Cancelar</ui-button>
         }
         @if (e.status === 'CONCLUIDA') {
-          <ui-button
-            icon="Download"
-            [loading]="baixandoZip()"
-            (clicked)="baixarPacote()"
-          >Baixar pacote</ui-button>
-          <ui-button
-            variant="secondary"
-            icon="FileText"
-            [loading]="baixandoDoc()"
-            (clicked)="baixarDocumento()"
-          >Documento (PDF)</ui-button>
-          <ui-button
-            variant="secondary"
-            icon="RefreshCw"
-            [loading]="reentregando()"
-            (clicked)="reentregar()"
-          >Reentregar</ui-button>
+          <ui-button icon="Download" [loading]="baixandoZip()" (clicked)="baixarPacote()">Baixar pacote</ui-button>
+          <ui-button variant="secondary" icon="FileText" [loading]="baixandoDoc()" (clicked)="baixarDocumento()"
+            >Documento (PDF)</ui-button
+          >
+          <ui-button variant="secondary" icon="RefreshCw" [loading]="reentregando()" (clicked)="reentregar()"
+            >Reentregar</ui-button
+          >
         }
       </div>
     </div>
@@ -106,12 +74,7 @@
         tone="blue"
         description="selecionados"
       />
-      <ui-kpi-card
-        label="Artefatos"
-        [valor]="artefatos().length"
-        icon="Layers"
-        tone="purple"
-      />
+      <ui-kpi-card label="Artefatos" [valor]="artefatos().length" icon="Layers" tone="purple" />
       <ui-kpi-card
         label="Tamanho"
         [valor]="formatarTamanho(resumoDelta()?.totalTamanhoBytes ?? e.tamanhoBytes)"
@@ -123,7 +86,7 @@
         [valor]="(e.dataInicioGeracao | date: 'dd/MM HH:mm') ?? '—'"
         icon="Clock"
         tone="neutral"
-        [description]="e.dataConclusao ? ('Concluída ' + (e.dataConclusao | date: 'dd/MM HH:mm')) : null"
+        [description]="e.dataConclusao ? 'Concluída ' + (e.dataConclusao | date: 'dd/MM HH:mm') : null"
       />
     </div>
 
@@ -148,19 +111,13 @@
               {{ statusPubLabels[e.statusPublicacao] }}
             </ui-badge>
             @if (e.tentativasPublicacao !== undefined && e.tentativasPublicacao > 0) {
-              <span class="ent-det__pub-meta">
-                {{ e.tentativasPublicacao }} tentativa(s)
-              </span>
+              <span class="ent-det__pub-meta"> {{ e.tentativasPublicacao }} tentativa(s) </span>
             }
             @if (e.statusPublicacao === 'PENDENTE' && e.proximaTentativaEm) {
-              <span class="ent-det__pub-meta">
-                · próxima em {{ e.proximaTentativaEm | date: 'dd/MM HH:mm' }}
-              </span>
+              <span class="ent-det__pub-meta"> · próxima em {{ e.proximaTentativaEm | date: 'dd/MM HH:mm' }} </span>
             }
             @if (e.statusPublicacao === 'OK' && e.dataPublicacao) {
-              <span class="ent-det__pub-meta">
-                · publicado em {{ e.dataPublicacao | date: 'dd/MM HH:mm' }}
-              </span>
+              <span class="ent-det__pub-meta"> · publicado em {{ e.dataPublicacao | date: 'dd/MM HH:mm' }} </span>
             }
           </div>
           @if (e.destinoPublicacao) {
@@ -179,26 +136,21 @@
               icon="RefreshCw"
               [loading]="reagendandoPub()"
               (clicked)="reagendarPublicacao()"
-            >Tentar agora</ui-button>
+              >Tentar agora</ui-button
+            >
           }
         </div>
       </ui-card>
     }
 
     <!-- Tabs -->
-    <ui-tabs
-      [items]="tabsConfig()"
-      [active]="activeTab()"
-      (activeChange)="mudarAba($event)"
-    />
+    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="mudarAba($event)" />
 
     @switch (activeTab()) {
       @case ('geral') {
         <div class="ent-det__panes">
           <ui-card padding="md">
-            <h3 class="ent-det__pane-title">
-              <lucide-icon name="FileText" [size]="14" /> Identificação
-            </h3>
+            <h3 class="ent-det__pane-title"><lucide-icon name="FileText" [size]="14" /> Identificação</h3>
             <dl class="ent-det__dl">
               <dt>Cliente</dt>
               <dd>
@@ -206,20 +158,22 @@
                   <code>{{ e.clienteSigla }}</code> {{ e.clienteNome }}
                 </a>
               </dd>
-              <dt>Produto</dt><dd><code>{{ e.produtoSigla }}</code> {{ e.produtoNome }}</dd>
+              <dt>Produto</dt>
+              <dd>
+                <code>{{ e.produtoSigla }}</code> {{ e.produtoNome }}
+              </dd>
               <dt>Release</dt>
               <dd>
                 <a [routerLink]="['/release-orchestrator/releases', e.releaseId]">
                   {{ e.releaseVersao }}
                 </a>
               </dd>
-              <dt>Ambiente</dt><dd>{{ ambienteLabels[e.ambiente] }}</dd>
+              <dt>Ambiente</dt>
+              <dd>{{ ambienteLabels[e.ambiente] }}</dd>
               @if (e.entregaOriginalId) {
                 <dt>Reentrega de</dt>
                 <dd>
-                  <a [routerLink]="['/release-orchestrator/entregas', e.entregaOriginalId]">
-                    Entrega original
-                  </a>
+                  <a [routerLink]="['/release-orchestrator/entregas', e.entregaOriginalId]"> Entrega original </a>
                 </dd>
               }
               @if (e.proximaEntregaId) {
@@ -234,11 +188,10 @@
           </ui-card>
 
           <ui-card padding="md">
-            <h3 class="ent-det__pane-title">
-              <lucide-icon name="Package" [size]="14" /> Pacote
-            </h3>
+            <h3 class="ent-det__pane-title"><lucide-icon name="Package" [size]="14" /> Pacote</h3>
             <dl class="ent-det__dl">
-              <dt>Tamanho</dt><dd>{{ formatarTamanho(e.tamanhoBytes) }}</dd>
+              <dt>Tamanho</dt>
+              <dd>{{ formatarTamanho(e.tamanhoBytes) }}</dd>
               <dt>SHA-256</dt>
               <dd>
                 @if (e.arquivoPacoteSha256) {
@@ -264,9 +217,7 @@
 
           @if (e.observacoes) {
             <ui-card padding="md">
-              <h3 class="ent-det__pane-title">
-                <lucide-icon name="MessageSquare" [size]="14" /> Observações
-              </h3>
+              <h3 class="ent-det__pane-title"><lucide-icon name="MessageSquare" [size]="14" /> Observações</h3>
               <p class="ent-det__obs">{{ e.observacoes }}</p>
             </ui-card>
           }
@@ -344,7 +295,9 @@
               <tbody>
                 @for (a of artefatos(); track a.id) {
                   <tr>
-                    <td><code>{{ a.nomeArquivo }}</code></td>
+                    <td>
+                      <code>{{ a.nomeArquivo }}</code>
+                    </td>
                     <td>{{ a.moduloCodigo }} · {{ a.moduloNome }}</td>
                     <td>
                       <ui-badge [tone]="tipoModuloTones[a.moduloTipo]">
@@ -352,7 +305,9 @@
                       </ui-badge>
                     </td>
                     <td>{{ formatarTamanho(a.tamanhoBytes) }}</td>
-                    <td><code class="ent-det__hash-short">{{ a.sha256.slice(0, 12) }}…</code></td>
+                    <td>
+                      <code class="ent-det__hash-short">{{ a.sha256.slice(0, 12) }}…</code>
+                    </td>
                   </tr>
                 }
               </tbody>

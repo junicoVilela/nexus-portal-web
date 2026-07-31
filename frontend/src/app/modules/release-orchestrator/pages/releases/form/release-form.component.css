@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 28px 32px;
+  width: 100%;
+  max-width: var(--page-max-form);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 .df-form__loading {
   padding: 32px;
@@ -105,7 +108,7 @@ select:disabled {
 
 @media (max-width: 768px) {
   .df-form {
-    padding: 18px;
+    padding: var(--page-block) var(--page-gutter);
   }
   .df-form__grid {
     grid-template-columns: 1fr;

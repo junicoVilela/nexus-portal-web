@@ -17,9 +17,7 @@
     <form [formGroup]="form" (ngSubmit)="salvar()" class="pe-form__body">
       <!-- Vínculos -->
       <section class="pe-form__section">
-        <h2 class="pe-form__section-title">
-          <lucide-icon name="Link" [size]="16" /> Vínculos
-        </h2>
+        <h2 class="pe-form__section-title"><lucide-icon name="Link" [size]="16" /> Vínculos</h2>
 
         <div class="pe-form__field">
           <label class="pe-form__label">Cliente <span class="pe-form__req">*</span></label>
@@ -78,9 +76,7 @@
 
       <!-- Agenda -->
       <section class="pe-form__section">
-        <h2 class="pe-form__section-title">
-          <lucide-icon name="Calendar" [size]="16" /> Agenda
-        </h2>
+        <h2 class="pe-form__section-title"><lucide-icon name="Calendar" [size]="16" /> Agenda</h2>
 
         <div class="pe-form__row">
           <div class="pe-form__field pe-form__field--grow-1">
@@ -108,9 +104,7 @@
 
       <!-- Observações -->
       <section class="pe-form__section">
-        <h2 class="pe-form__section-title">
-          <lucide-icon name="MessageSquare" [size]="16" /> Observações
-        </h2>
+        <h2 class="pe-form__section-title"><lucide-icon name="MessageSquare" [size]="16" /> Observações</h2>
         <textarea
           class="pe-form__input pe-form__textarea"
           formControlName="observacoes"
@@ -119,12 +113,10 @@
         ></textarea>
       </section>
 
-      <div class="pe-form__footer">
-        <ui-button
-          variant="ghost"
-          type="button"
-          [routerLink]="['/release-orchestrator/proximas-entregas']"
-        >Cancelar</ui-button>
+      <div class="pe-form__footer ui-form-actions">
+        <ui-button variant="ghost" type="button" [routerLink]="['/release-orchestrator/proximas-entregas']"
+          >Cancelar</ui-button
+        >
         <ui-button type="submit" [loading]="salvando()">
           {{ editando() ? 'Salvar alterações' : 'Planejar entrega' }}
         </ui-button>

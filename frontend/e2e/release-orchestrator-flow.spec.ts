@@ -25,8 +25,8 @@ async function instrumentar(page: Page, ctx: string) {
 
 async function logar(page: Page) {
   await page.goto('/login');
-  await page.locator('input[formcontrolname="login"]').fill('admin');
-  await page.locator('input[formcontrolname="senha"]').fill('admin');
+  await page.getByLabel('Usuário').fill('admin');
+  await page.getByLabel('Senha').fill('admin');
   await page.locator('button[type="submit"]').click();
   await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 8_000 });
 }
