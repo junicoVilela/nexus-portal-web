@@ -1,6 +1,11 @@
 /*
  * Linguagem visual do conteúdo editorial do DocFlow.
  * O escopo explícito também alcança HTML dinâmico inserido por [innerHTML].
+ *
+ * Fonte canônica do portal. Ao alterar componentes (.status-badge, grades,
+ * cards etc.), espelhar as regras equivalentes em
+ * GeradorPacoteService (assets/app.css do ZIP, revisão MANUAL_ASSETS_REVISION)
+ * e nos CSS inline de previewPagina / previewTemplate.
  */
 .df-doc-content,
 .df-doc-editor .NgxEditor__Content {

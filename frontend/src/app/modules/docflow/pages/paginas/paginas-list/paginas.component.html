@@ -3,11 +3,17 @@
   subtitle="Gerencie o conteúdo publicado, a hierarquia entre páginas e o fluxo de revisão."
   icon="FileText"
   [isEmpty]="totalPaginas() === 0"
-  emptyTitle="Nenhuma página encontrada"
-  emptyDescription="Ajuste os filtros ou crie a primeira página para este módulo."
+  [emptyTitle]="emptyTitleAtual()"
+  [emptyDescription]="emptyDescriptionAtual()"
   emptyIllustration="document"
   emptyIcon="FileText"
 >
+  @if (listaVaziaPorFiltro() && !sistemaSemPaginas()) {
+    <div empty-actions>
+      <ui-button variant="secondary" icon="FilterX" (clicked)="limparFiltros()">Limpar filtros</ui-button>
+    </div>
+  }
+
   <div actions>
     <ui-button *appPermissao="'PAGINA:CRIAR'" icon="Plus" (clicked)="nova()">Nova página</ui-button>
   </div>
@@ -36,6 +42,17 @@
   </div>
 
   <ui-bulk-action-bar *appPermissao="'PAGINA:EDITAR'" [count]="totalSelecionados()" (limpar)="limparSelecao()">
+    @if (selecionadosParaRevisao().length) {
+      <ui-button variant="secondary" size="sm" icon="Send" (clicked)="enviarRevisaoSelecionadas()">
+        Enviar revisão
+      </ui-button>
+    }
+    @if (selecionadosParaAprovar().length) {
+      <ui-button variant="secondary" size="sm" icon="CheckCircle" (clicked)="aprovarSelecionadas()">Aprovar</ui-button>
+    }
+    @if (selecionadosParaPublicar().length) {
+      <ui-button variant="secondary" size="sm" icon="Upload" (clicked)="publicarSelecionadas()">Publicar</ui-button>
+    }
     <ui-button variant="danger" size="sm" icon="Archive" (clicked)="arquivarSelecionadas()">Arquivar</ui-button>
   </ui-bulk-action-bar>
 
@@ -124,30 +141,36 @@
                 <ui-button variant="secondary" size="sm" (clicked)="publicar(pagina)">Publicar</ui-button>
               }
             </ng-container>
-            <details class="ui-more-actions">
-              <summary class="ui-more-actions__trigger">Mais ações</summary>
-              <div class="ui-more-actions__menu" role="menu">
-                <ng-container *appPermissao="'PAGINA:EDITAR'">
-                  <ui-button variant="menu" size="sm" icon="ArrowUp" [fullWidth]="true" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>
-                  <ui-button variant="menu" size="sm" icon="ArrowDown" [fullWidth]="true" (clicked)="moverParaBaixo(pagina)">Mover abaixo</ui-button>
-                </ng-container>
-                <ui-button *appPermissao="'PAGINA:CRIAR'" variant="menu" size="sm" icon="Copy" [fullWidth]="true" (clicked)="duplicar(pagina)">Duplicar</ui-button>
-                <div class="ui-more-actions__sep" role="separator"></div>
-                <ui-button *appPermissao="'PAGINA:EDITAR'" variant="danger-soft" size="sm" icon="Archive" [fullWidth]="true" (clicked)="arquivar(pagina)">Arquivar</ui-button>
-                <ui-button
-                  *appPermissao="'PAGINA:EXCLUIR'"
-                  variant="danger-soft"
-                  size="sm"
-                  icon="Trash2"
-                  [fullWidth]="true"
-                  [disabled]="!!excluindoId()"
-                  [loading]="excluindoId() === pagina.id"
-                  (clicked)="excluir(pagina)"
-                  i18n="@@docflow.paginas.excluir"
-                  >Excluir</ui-button
-                >
-              </div>
-            </details>
+            <ui-more-actions>
+              <ng-container *appPermissao="'PAGINA:EDITAR'">
+                <ui-button variant="menu" size="sm" icon="ArrowUp" [fullWidth]="true" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>
+                <ui-button variant="menu" size="sm" icon="ArrowDown" [fullWidth]="true" (clicked)="moverParaBaixo(pagina)">Mover abaixo</ui-button>
+              </ng-container>
+              <ui-button
+                *appPermissao="'PAGINA:CRIAR'"
+                variant="menu"
+                size="sm"
+                icon="FilePlus2"
+                [fullWidth]="true"
+                (clicked)="criarSubpagina(pagina)"
+                >Criar subpágina</ui-button
+              >
+              <ui-button *appPermissao="'PAGINA:CRIAR'" variant="menu" size="sm" icon="Copy" [fullWidth]="true" (clicked)="duplicar(pagina)">Duplicar</ui-button>
+              <div class="ui-more-actions__sep" role="separator"></div>
+              <ui-button *appPermissao="'PAGINA:EDITAR'" variant="danger-soft" size="sm" icon="Archive" [fullWidth]="true" (clicked)="arquivar(pagina)">Arquivar</ui-button>
+              <ui-button
+                *appPermissao="'PAGINA:EXCLUIR'"
+                variant="danger-soft"
+                size="sm"
+                icon="Trash2"
+                [fullWidth]="true"
+                [disabled]="!!excluindoId()"
+                [loading]="excluindoId() === pagina.id"
+                (clicked)="excluir(pagina)"
+                i18n="@@docflow.paginas.excluir"
+                >Excluir</ui-button
+              >
+            </ui-more-actions>
           </td>
         </tr>
       }

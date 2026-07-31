@@ -3,8 +3,12 @@ import { EditorState, TextSelection } from 'prosemirror-state';
 import { DOCFLOW_EDITOR_SCHEMA } from './docflow-editor.schema';
 import {
   adicionarLinha,
+  adicionarColuna,
   contextoTabela,
+  podeAdicionarColuna,
+  podeRemoverColuna,
   podeRemoverLinha,
+  removerColuna,
   removerLinha,
 } from './pagina-rich-editor-table';
 
@@ -79,5 +83,15 @@ describe('pagina-rich-editor-table', () => {
     expect(podeRemoverLinha(state)).toBe(true);
     expect(removerLinha(state, tr => (state = state.apply(tr)))).toBe(true);
     expect(corpoTabela(state.doc)?.childCount).toBe(1);
+  });
+
+  it('adiciona e remove coluna mantendo ao menos uma', () => {
+    let state = estadoComTabela(tabelaHtml);
+    expect(podeAdicionarColuna(state)).toBe(true);
+    expect(adicionarColuna(state, tr => (state = state.apply(tr)))).toBe(true);
+    expect(contextoTabela(state)?.colCount).toBe(3);
+    expect(podeRemoverColuna(state)).toBe(true);
+    expect(removerColuna(state, tr => (state = state.apply(tr)))).toBe(true);
+    expect(contextoTabela(state)?.colCount).toBe(2);
   });
 });

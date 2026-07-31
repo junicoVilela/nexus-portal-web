@@ -14,8 +14,17 @@ import {
   BadgeComponent,
   ConfirmService,
   ToastService,
+  TabItem,
+  TabsComponent,
 } from '@shared/ui';
 import { PermissaoDirective } from '@modules/seguranca/directives';
+
+type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'downloads';
+
+interface PaginaChangelogResumo {
+  paginaTitulo: string;
+  tipoMudanca: ChangelogItem['tipoMudanca'];
+}
 
 @Component({
   selector: 'app-publicacao-detalhe',
@@ -26,6 +35,7 @@ import { PermissaoDirective } from '@modules/seguranca/directives';
     ButtonComponent,
     CardComponent,
     BadgeComponent,
+    TabsComponent,
     PermissaoDirective,
   ],
   templateUrl: './publicacao-detalhe.component.html',
@@ -41,6 +51,9 @@ export class PublicacaoDetalheComponent implements OnInit {
   protected readonly changelog = signal<ChangelogItem[]>([]);
   protected readonly relatorioJson = signal<Record<string, unknown> | null>(null);
   protected readonly excluindo = signal(false);
+  protected readonly baixandoZip = signal(false);
+  protected readonly baixandoPdf = signal(false);
+  protected readonly activeTab = signal<PublicacaoDetalheTab>('visao-geral');
   readonly mudancaTipos = ['ADICIONADO', 'ATUALIZADO', 'REMOVIDO'] as const;
 
   protected readonly avisosValidacao = computed<string[]>(() => {
@@ -48,6 +61,25 @@ export class PublicacaoDetalheComponent implements OnInit {
     if (!Array.isArray(raw)) return [];
     return raw.filter((item): item is string => typeof item === 'string');
   });
+
+  protected readonly paginasUnicas = computed<PaginaChangelogResumo[]>(() => {
+    const vistos = new Set<string>();
+    const resultado: PaginaChangelogResumo[] = [];
+    for (const item of this.changelog()) {
+      const chave = item.paginaId ?? item.paginaTitulo;
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      resultado.push({ paginaTitulo: item.paginaTitulo, tipoMudanca: item.tipoMudanca });
+    }
+    return resultado;
+  });
+
+  protected readonly tabsConfig = computed<TabItem<PublicacaoDetalheTab>[]>(() => [
+    { id: 'visao-geral', label: 'Visão geral', icon: 'LayoutDashboard' },
+    { id: 'paginas', label: 'Páginas', icon: 'FileText', count: this.paginasUnicas().length || undefined },
+    { id: 'changelog', label: 'Changelog', icon: 'List', count: this.changelog().length || undefined },
+    { id: 'downloads', label: 'Downloads', icon: 'Download' },
+  ]);
 
   protected nav = (...segments: string[]): (string | number)[] => docFlowRouterCommands(segments);
 
@@ -73,6 +105,53 @@ export class PublicacaoDetalheComponent implements OnInit {
         this.changelog.set(changelog);
       },
       error: () => this.toast.error('Não foi possível carregar a publicação.'),
+    });
+  }
+
+  podeBaixar(): boolean {
+    const pub = this.publicacao();
+    return !!pub && pub.status === 'SUCESSO' && !!pub.arquivoZipNome;
+  }
+
+  baixarZip(): void {
+    const pub = this.publicacao();
+    if (!pub || !this.podeBaixar() || this.baixandoZip()) return;
+    this.baixandoZip.set(true);
+    this.publicacaoService.baixarPublicacao(this.id).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = pub.arquivoZipNome ?? `manual-${pub.versao}.zip`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.baixandoZip.set(false);
+      },
+      error: () => {
+        this.baixandoZip.set(false);
+        this.toast.error('Erro ao baixar pacote ZIP.');
+      },
+    });
+  }
+
+  baixarPdf(): void {
+    const pub = this.publicacao();
+    if (!pub || pub.status !== 'SUCESSO' || this.baixandoPdf()) return;
+    this.baixandoPdf.set(true);
+    this.publicacaoService.baixarPdf(this.id).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `manual-${pub.versao}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.baixandoPdf.set(false);
+      },
+      error: () => {
+        this.baixandoPdf.set(false);
+        this.toast.error('Erro ao baixar PDF.');
+      },
     });
   }
 

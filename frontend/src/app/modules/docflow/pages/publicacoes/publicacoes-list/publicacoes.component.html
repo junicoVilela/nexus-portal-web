@@ -117,35 +117,32 @@
             @if (podeBaixar(item)) {
               <ui-button variant="secondary" size="sm" icon="Download" (clicked)="baixar(item)">Baixar</ui-button>
             }
-            <details class="ui-more-actions">
-              <summary class="ui-more-actions__trigger">Mais ações</summary>
-              <div class="ui-more-actions__menu" role="menu">
-                <ui-button variant="menu" size="sm" icon="Link" [fullWidth]="true" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
-                <ui-button
-                  *appPermissao="'PUBLICACAO:EDITAR'"
-                  variant="menu"
-                  size="sm"
-                  icon="RefreshCw"
-                  [fullWidth]="true"
-                  [disabled]="item.status === 'GERANDO'"
-                  (clicked)="reprocessar(item)"
-                  >Reprocessar</ui-button
-                >
-                <div class="ui-more-actions__sep" role="separator"></div>
-                <ui-button
-                  *appPermissao="'PUBLICACAO:EXCLUIR'"
-                  variant="danger-soft"
-                  size="sm"
-                  icon="Trash2"
-                  [fullWidth]="true"
-                  [disabled]="item.status === 'GERANDO' || !!excluindoId()"
-                  [loading]="excluindoId() === item.id"
-                  (clicked)="excluir(item)"
-                  i18n="@@docflow.publicacoes.excluir"
-                  >Excluir</ui-button
-                >
-              </div>
-            </details>
+            <ui-more-actions>
+              <ui-button variant="menu" size="sm" icon="Link" [fullWidth]="true" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
+              <ui-button
+                *appPermissao="'PUBLICACAO:EDITAR'"
+                variant="menu"
+                size="sm"
+                icon="RefreshCw"
+                [fullWidth]="true"
+                [disabled]="item.status === 'GERANDO'"
+                (clicked)="reprocessar(item)"
+                >Reprocessar</ui-button
+              >
+              <div class="ui-more-actions__sep" role="separator"></div>
+              <ui-button
+                *appPermissao="'PUBLICACAO:EXCLUIR'"
+                variant="danger-soft"
+                size="sm"
+                icon="Trash2"
+                [fullWidth]="true"
+                [disabled]="item.status === 'GERANDO' || !!excluindoId()"
+                [loading]="excluindoId() === item.id"
+                (clicked)="excluir(item)"
+                i18n="@@docflow.publicacoes.excluir"
+                >Excluir</ui-button
+              >
+            </ui-more-actions>
           </td>
         </tr>
         @if (item.status === 'ERRO' && item.observacao) {

@@ -50,10 +50,12 @@ import {
 } from '@shared/ui';
 import { PaginaRichEditorComponent } from '@modules/docflow/components/pagina-rich-editor';
 import {
+  adicionarColunaHtml,
   adicionarLinhaHtml,
   compactarCelulasTabelaHtml,
   compactarCelulasTabelaNoDom,
   contagemTabelasHtml,
+  removerColunaHtml,
   removerUltimaLinhaHtml,
 } from '@modules/docflow/components/pagina-rich-editor/pagina-table-html';
 import { PaginaRevisoesComponent } from '@modules/docflow/components/pagina-revisoes';
@@ -681,14 +683,24 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.alterarLinhasTabela('remove');
   }
 
+  adicionarColunaTabela(): void {
+    this.alterarColunasTabela('add');
+  }
+
+  removerColunaTabela(): void {
+    this.alterarColunasTabela('remove');
+  }
+
   aoClicarAcaoTabelaPreview(event: MouseEvent): void {
     const alvo = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-table-action]');
     if (!alvo) return;
     event.preventDefault();
     const acao = alvo.dataset['tableAction'];
     const index = Number(alvo.dataset['tableIndex'] ?? '0');
-    if (acao === 'add') this.alterarLinhasTabela('add', index);
-    if (acao === 'remove') this.alterarLinhasTabela('remove', index);
+    if (acao === 'add-row') this.alterarLinhasTabela('add', index);
+    if (acao === 'remove-row') this.alterarLinhasTabela('remove', index);
+    if (acao === 'add-col') this.alterarColunasTabela('add', index);
+    if (acao === 'remove-col') this.alterarColunasTabela('remove', index);
   }
 
   private alterarLinhasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
@@ -719,6 +731,34 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.tabelasDecoradasAssinatura = '';
   }
 
+  private alterarColunasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
+    const atual = this.form.controls.conteudoHtml.value ?? '';
+    if (contagemTabelasHtml(atual) === 0) {
+      this.toast.warn('Inclua um dicionário/tabela no conteúdo antes de alterar colunas.');
+      return;
+    }
+
+    if (this.editorModo() === 'rico' && this.richEditor?.podeAdicionarColuna()) {
+      if (acao === 'add') this.richEditor.adicionarColunaTabela();
+      else this.richEditor.removerColunaTabela();
+      return;
+    }
+
+    const proximo =
+      acao === 'add' ? adicionarColunaHtml(atual, tableIndex) : removerColunaHtml(atual, tableIndex);
+    if (proximo === atual && acao === 'remove') {
+      this.toast.warn('A tabela precisa manter ao menos uma coluna.');
+      return;
+    }
+    this.form.controls.conteudoHtml.setValue(proximo);
+    this.form.controls.conteudoHtml.markAsDirty();
+    this.dirty = true;
+    if (this.editorModo() === 'rico' && this.richEditor) {
+      this.richEditor.aplicarHtml(proximo);
+    }
+    this.tabelasDecoradasAssinatura = '';
+  }
+
   private decorarTabelasPreview(): void {
     const root = this.previewBody?.nativeElement;
     if (!root || this.editorModo() === 'codigo') return;
@@ -735,8 +775,10 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       chrome.setAttribute('contenteditable', 'false');
       chrome.innerHTML = `
         <span class="pf-table-chrome__label">Tabela</span>
-        <button type="button" class="pf-table-chrome__btn" data-table-action="add" data-table-index="${index}">+ Linha</button>
-        <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove" data-table-index="${index}">− Linha</button>
+        <button type="button" class="pf-table-chrome__btn" data-table-action="add-row" data-table-index="${index}">+ Linha</button>
+        <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-row" data-table-index="${index}">− Linha</button>
+        <button type="button" class="pf-table-chrome__btn" data-table-action="add-col" data-table-index="${index}">+ Coluna</button>
+        <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-col" data-table-index="${index}">− Coluna</button>
       `;
       table.parentElement?.insertBefore(chrome, table);
     });

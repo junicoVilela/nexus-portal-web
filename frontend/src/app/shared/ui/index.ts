@@ -16,6 +16,7 @@ export * from './input';
 export * from './install-prompt';
 export * from './kpi-card';
 export * from './loading-bar';
+export * from './more-actions';
 export * from './notification-center';
 export * from './offline-banner';
 export * from './page-header';

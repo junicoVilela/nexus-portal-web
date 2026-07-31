@@ -24,7 +24,7 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, ConfirmService, MoreActionsComponent, ToastService } from '@shared/ui';
 import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
@@ -36,6 +36,7 @@ import { PermissaoDirective } from '@modules/seguranca/directives';
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    MoreActionsComponent,
     PermissaoDirective,
   ],
   templateUrl: './publicacoes.component.html',

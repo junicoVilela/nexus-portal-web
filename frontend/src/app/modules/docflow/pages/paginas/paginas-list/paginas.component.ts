@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { finalize, forkJoin } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +24,7 @@ import {
   BulkActionBarComponent,
   ButtonComponent,
   ConfirmService,
+  MoreActionsComponent,
   NotificationService,
   ToastService,
 } from '@shared/ui';
@@ -44,6 +45,7 @@ import { AuthService } from '@core/auth/services/auth.service';
     BulkActionBarComponent,
     PaginaStatusBadgeComponent,
     PaginasFiltersComponent,
+    MoreActionsComponent,
     PermissaoDirective,
   ],
   templateUrl: './paginas.component.html',
@@ -65,6 +67,38 @@ export class PaginasComponent implements OnInit {
   readonly paginasPageSize = signal(10);
   readonly selecionados = signal<Set<string>>(new Set());
   readonly totalSelecionados = computed(() => this.selecionados().size);
+  readonly filtrosAtivos = computed(() => {
+    const raw = this.filtros.getRawValue();
+    return !!(
+      raw.busca.trim() ||
+      raw.titulo.trim() ||
+      raw.codigoTela.trim() ||
+      raw.projetoId ||
+      raw.moduloId ||
+      raw.status
+    );
+  });
+  readonly listaVaziaPorFiltro = computed(() => this.totalPaginas() === 0 && this.filtrosAtivos());
+  readonly sistemaSemPaginas = computed(() => this.totalPaginasSistema() === 0);
+  readonly emptyTitleAtual = computed(() =>
+    this.listaVaziaPorFiltro() && !this.sistemaSemPaginas()
+      ? 'Nenhuma página corresponde aos filtros'
+      : 'Nenhuma página encontrada',
+  );
+  readonly emptyDescriptionAtual = computed(() =>
+    this.listaVaziaPorFiltro() && !this.sistemaSemPaginas()
+      ? 'Tente outros termos de busca ou limpe os filtros para ver mais resultados.'
+      : 'Ajuste os filtros ou crie a primeira página para este módulo.',
+  );
+  readonly selecionadosParaRevisao = computed(() =>
+    this.paginas().filter(p => this.selecionados().has(p.id) && p.status === 'RASCUNHO'),
+  );
+  readonly selecionadosParaAprovar = computed(() =>
+    this.paginas().filter(p => this.selecionados().has(p.id) && p.status === 'EM_REVISAO'),
+  );
+  readonly selecionadosParaPublicar = computed(() =>
+    this.paginas().filter(p => this.selecionados().has(p.id) && p.status === 'APROVADO'),
+  );
   readonly todosVisiveisSelecionados = computed(() => {
     const lista = this.paginas();
     const sel = this.selecionados();
@@ -313,6 +347,16 @@ export class PaginasComponent implements OnInit {
     });
   }
 
+  criarSubpagina(pagina: Pagina): void {
+    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
+      queryParams: compactQueryParams({
+        projetoId: pagina.projetoId || null,
+        moduloId: pagina.moduloId || null,
+        parentId: pagina.id,
+      }),
+    });
+  }
+
   toggleSelecionado(id: string): void {
     this.selecionados.update(set => {
       const next = new Set(set);
@@ -361,6 +405,84 @@ export class PaginasComponent implements OnInit {
           }
         },
         error: () => undefined /* feedback via errorInterceptor */,
+      });
+    }
+    this.limparSelecao();
+  }
+
+  async enviarRevisaoSelecionadas(): Promise<void> {
+    const lista = this.selecionadosParaRevisao();
+    if (!lista.length) return;
+    const ok = await this.confirmService.confirm({
+      title: 'Enviar para revisão?',
+      message: `Enviar ${lista.length} página(s) para revisão?`,
+      acceptLabel: 'Enviar revisão',
+      icon: 'Send',
+    });
+    if (!ok) return;
+    let restantes = lista.length;
+    for (const pagina of lista) {
+      this.paginaService.enviarRevisaoPagina(pagina.id).subscribe({
+        next: () => {
+          restantes--;
+          if (restantes === 0) {
+            this.toast.success(`${lista.length} página(s) enviada(s) para revisão.`);
+            this.carregar();
+          }
+        },
+        error: () => undefined,
+      });
+    }
+    this.limparSelecao();
+  }
+
+  async aprovarSelecionadas(): Promise<void> {
+    const lista = this.selecionadosParaAprovar();
+    if (!lista.length) return;
+    const ok = await this.confirmService.confirm({
+      title: 'Aprovar páginas?',
+      message: `Aprovar ${lista.length} página(s) selecionada(s)?`,
+      acceptLabel: 'Aprovar',
+      icon: 'CheckCircle',
+    });
+    if (!ok) return;
+    let restantes = lista.length;
+    for (const pagina of lista) {
+      this.paginaService.aprovarPagina(pagina.id).subscribe({
+        next: () => {
+          restantes--;
+          if (restantes === 0) {
+            this.toast.success(`${lista.length} página(s) aprovada(s).`);
+            this.carregar();
+          }
+        },
+        error: () => undefined,
+      });
+    }
+    this.limparSelecao();
+  }
+
+  async publicarSelecionadas(): Promise<void> {
+    const lista = this.selecionadosParaPublicar();
+    if (!lista.length) return;
+    const ok = await this.confirmService.confirm({
+      title: 'Publicar páginas?',
+      message: `Publicar ${lista.length} página(s) selecionada(s)?`,
+      acceptLabel: 'Publicar',
+      icon: 'Upload',
+    });
+    if (!ok) return;
+    let restantes = lista.length;
+    for (const pagina of lista) {
+      this.paginaService.publicarPagina(pagina.id).subscribe({
+        next: () => {
+          restantes--;
+          if (restantes === 0) {
+            this.toast.success(`${lista.length} página(s) publicada(s).`);
+            this.carregar();
+          }
+        },
+        error: () => undefined,
       });
     }
     this.limparSelecao();
@@ -581,16 +703,6 @@ export class PaginasComponent implements OnInit {
     return String(a).localeCompare(String(b));
   }
 
-  private errorMessage(error: unknown, fallback: string): string {
-    if (!(error instanceof HttpErrorResponse)) return fallback;
-    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
-    if (typeof error.error?.message === 'string') return error.error.message;
-    if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
-      return error.error.errors.join(' ');
-    }
-    return fallback;
-  }
-
   private atualizarUrl(): void {
     const raw = this.filtros.getRawValue();
     salvarFiltros('docflow:paginas', {
@@ -624,5 +736,35 @@ export class PaginasComponent implements OnInit {
         { page: 1, size: 10 },
       ),
     });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  protected atalhosLista(event: KeyboardEvent): void {
+    if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (this.estaDigitando(event)) return;
+      const input = document.querySelector<HTMLInputElement>('.paginas__search');
+      if (!input) return;
+      event.preventDefault();
+      input.focus();
+      input.select();
+    }
+  }
+
+  private estaDigitando(event: KeyboardEvent): boolean {
+    const el = event.target as HTMLElement | null;
+    if (!el) return false;
+    const tag = el.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    return el.isContentEditable;
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (!(error instanceof HttpErrorResponse)) return fallback;
+    if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';
+    if (typeof error.error?.message === 'string') return error.error.message;
+    if (Array.isArray(error.error?.errors) && error.error.errors.length > 0) {
+      return error.error.errors.join(' ');
+    }
+    return fallback;
   }
 }

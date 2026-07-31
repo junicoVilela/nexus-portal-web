@@ -142,3 +142,55 @@ export function removerUltimaLinhaHtml(html: string, tableIndex = 0): string {
 export function contagemTabelasHtml(html: string): number {
   return tabelas(parseHtml(html)).length;
 }
+
+function inserirCelulaHtml(doc: Document, row: HTMLTableRowElement, insertAt: number, tag: 'td' | 'th', inner: string): void {
+  const cell = doc.createElement(tag);
+  cell.innerHTML = inner;
+  const ref = row.cells[insertAt] ?? null;
+  if (ref) row.insertBefore(cell, ref);
+  else row.appendChild(cell);
+}
+
+export function adicionarColunaHtml(html: string, tableIndex = 0, colIndex?: number): string {
+  const doc = parseHtml(compactarCelulasTabelaHtml(html));
+  const table = tabelas(doc)[tableIndex];
+  if (!table) return html;
+
+  const cols = contagemColunas(table);
+  const insertAt = colIndex != null ? colIndex + 1 : cols;
+
+  const thead = table.tHead;
+  if (thead) {
+    Array.from(thead.rows).forEach(row => inserirCelulaHtml(doc, row, insertAt, 'th', '<p></p>'));
+  }
+
+  const tbody = table.tBodies[0];
+  if (tbody) {
+    Array.from(tbody.rows).forEach((row, rowIndex) => {
+      const inner =
+        insertAt === 0 ? `<p><span class="number-badge">${rowIndex + 1}</span></p>` : '<p></p>';
+      inserirCelulaHtml(doc, row, insertAt, 'td', inner);
+    });
+    renumerarBadges(tbody);
+  }
+
+  return serializeRoot(doc);
+}
+
+export function removerColunaHtml(html: string, tableIndex = 0, colIndex?: number): string {
+  const doc = parseHtml(html);
+  const table = tabelas(doc)[tableIndex];
+  if (!table) return html;
+
+  const cols = contagemColunas(table);
+  if (cols <= 1) return html;
+
+  const removeAt = colIndex ?? cols - 1;
+  table.querySelectorAll('tr').forEach(row => {
+    if (row.cells.length > removeAt) row.deleteCell(removeAt);
+  });
+
+  const tbody = table.tBodies[0];
+  if (tbody) renumerarBadges(tbody);
+  return serializeRoot(doc);
+}

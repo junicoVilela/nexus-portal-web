@@ -10,6 +10,7 @@ export interface ContextoTabela {
   rowPos: number;
   rowNode: ProseMirrorNode;
   rowIndex: number;
+  colIndex: number;
   colCount: number;
 }
 
@@ -37,6 +38,7 @@ export function contextoTabela(state: EditorState): ContextoTabela | null {
       rowPos: $from.before(depth),
       rowNode: node,
       rowIndex: $from.index(depth - 1),
+      colIndex: $from.index(depth),
       colCount: node.childCount,
     };
   }
@@ -53,6 +55,15 @@ export function podeRemoverLinha(state: EditorState): boolean {
   return ctx.sectionNode.childCount > 1;
 }
 
+export function podeAdicionarColuna(state: EditorState): boolean {
+  return contextoTabela(state) !== null;
+}
+
+export function podeRemoverColuna(state: EditorState): boolean {
+  const ctx = contextoTabela(state);
+  return ctx !== null && ctx.colCount > 1;
+}
+
 function celulaVazia(schema: Schema, badge?: number): ProseMirrorNode {
   const paragraph = schema.nodes['paragraph'];
   const cell = schema.nodes['table_cell'];
@@ -67,6 +78,18 @@ function celulaVazia(schema: Schema, badge?: number): ProseMirrorNode {
     return cell.create(null, paragraph.create(null, badgeNode));
   }
   return cell.createAndFill() ?? cell.create(null, paragraph.create());
+}
+
+function celulaVaziaPorTipo(schema: Schema, isHeader: boolean, badge?: number): ProseMirrorNode {
+  if (isHeader) {
+    const paragraph = schema.nodes['paragraph'];
+    const cell = schema.nodes['table_header'];
+    if (!paragraph || !cell) {
+      throw new Error('Schema sem paragraph/table_header');
+    }
+    return cell.createAndFill() ?? cell.create(null, paragraph.create());
+  }
+  return celulaVazia(schema, badge);
 }
 
 function criarLinha(schema: Schema, colCount: number, badge?: number): ProseMirrorNode {
@@ -215,4 +238,76 @@ function renumerarBadgesNoDoc(tr: Transaction, aroundPos: number): void {
   for (const item of substituicoes.sort((a, b) => b.from - a.from)) {
     tr.replaceWith(item.from, item.to, item.node);
   }
+}
+
+function reconstruirTabelaComColunas(
+  schema: Schema,
+  table: ProseMirrorNode,
+  inserirColuna: (cells: ProseMirrorNode[], sectionName: 'table_head' | 'table_body', rowIndex: number) => ProseMirrorNode[],
+): ProseMirrorNode {
+  const sections: ProseMirrorNode[] = [];
+  for (let s = 0; s < table.childCount; s++) {
+    const section = table.child(s);
+    const sectionName = section.type.name as 'table_head' | 'table_body';
+    const rows: ProseMirrorNode[] = [];
+    for (let r = 0; r < section.childCount; r++) {
+      const row = section.child(r);
+      const cells: ProseMirrorNode[] = [];
+      for (let c = 0; c < row.childCount; c++) {
+        cells.push(row.child(c));
+      }
+      rows.push(schema.nodes['table_row']!.create(null, Fragment.from(inserirColuna(cells, sectionName, r))));
+    }
+    sections.push(section.type.create(null, Fragment.from(rows)));
+  }
+  return table.type.create(table.attrs, Fragment.from(sections));
+}
+
+export function adicionarColuna(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const ctx = contextoTabela(state);
+  if (!ctx) return false;
+
+  const schema = state.schema;
+  const insertAt = ctx.colIndex + 1;
+  const novaTabela = reconstruirTabelaComColunas(schema, ctx.tableNode, (cells, sectionName, rowIndex) => {
+    const isHeader = sectionName === 'table_head';
+    const badge = !isHeader && insertAt === 0 ? rowIndex + 1 : undefined;
+    cells.splice(insertAt, 0, celulaVaziaPorTipo(schema, isHeader, badge));
+    return cells;
+  });
+
+  if (!dispatch) return true;
+
+  const from = ctx.tablePos;
+  const tr = state.tr.replaceWith(from, from + ctx.tableNode.nodeSize, novaTabela);
+  const selPos = Math.min(from + 2 + insertAt, tr.doc.content.size - 1);
+  tr.setSelection(TextSelection.near(tr.doc.resolve(Math.max(1, selPos))));
+  tr.scrollIntoView();
+  dispatch(tr);
+  return true;
+}
+
+export function removerColuna(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+  const ctx = contextoTabela(state);
+  if (!ctx || ctx.colCount <= 1) return false;
+
+  const schema = state.schema;
+  const removeAt = ctx.colIndex;
+  const novaTabela = reconstruirTabelaComColunas(schema, ctx.tableNode, cells => {
+    cells.splice(removeAt, 1);
+    return cells;
+  });
+
+  if (!dispatch) return true;
+
+  const from = ctx.tablePos;
+  const tr = state.tr.replaceWith(from, from + ctx.tableNode.nodeSize, novaTabela);
+  if (removeAt === 0) {
+    renumerarBadgesNoDoc(tr, from + 1);
+  }
+  const selPos = Math.min(from + 2 + Math.min(removeAt, ctx.colCount - 2), tr.doc.content.size - 1);
+  tr.setSelection(TextSelection.near(tr.doc.resolve(Math.max(1, selPos))));
+  tr.scrollIntoView();
+  dispatch(tr);
+  return true;
 }

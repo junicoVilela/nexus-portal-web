@@ -1,7 +1,9 @@
 import {
+  adicionarColunaHtml,
   adicionarLinhaHtml,
   compactarCelulasTabelaHtml,
   contagemTabelasHtml,
+  removerColunaHtml,
   removerUltimaLinhaHtml,
 } from './pagina-table-html';
 
@@ -54,5 +56,12 @@ describe('pagina-table-html', () => {
     expect(compacto).toContain('Descrição');
     expect(compacto).not.toMatch(/Nome<br>/i);
     expect((compacto.match(/<br>/gi) ?? []).length).toBe(0);
+  });
+
+  it('adiciona e remove coluna no HTML', () => {
+    const comColuna = adicionarColunaHtml(html);
+    expect((comColuna.match(/<th>/g) ?? []).length).toBe(3);
+    const semColuna = removerColunaHtml(comColuna, 0, 2);
+    expect((semColuna.match(/<th>/g) ?? []).length).toBe(2);
   });
 });

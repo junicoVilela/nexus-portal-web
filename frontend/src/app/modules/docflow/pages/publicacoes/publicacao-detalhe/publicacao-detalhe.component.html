@@ -3,74 +3,138 @@
     [title]="publicacao() ? 'Publicação ' + publicacao()!.versao : 'Publicação'"
     [subtitle]="publicacao() ? publicacao()!.clienteNome + ' — changelog e validação do pacote' : null"
     icon="Package"
-  />
+  >
+    <div actions>
+      @if (podeBaixar()) {
+        <ui-button
+          variant="secondary"
+          size="sm"
+          icon="Download"
+          [loading]="baixandoZip()"
+          (clicked)="baixarZip()"
+        >
+          Baixar ZIP
+        </ui-button>
+        <ui-button
+          variant="secondary"
+          size="sm"
+          icon="FileText"
+          [loading]="baixandoPdf()"
+          (clicked)="baixarPdf()"
+        >
+          Baixar PDF
+        </ui-button>
+      }
+      <ui-button variant="ghost" size="sm" icon="ArrowLeft" (clicked)="voltar()">Voltar</ui-button>
+    </div>
+  </ui-page-header>
 
   @if (publicacao()) {
-    <ui-card padding="md">
-      <div class="pub-det__status-row">
-        <span class="pub-det__status-label">Status</span>
-        <ui-badge
-          [tone]="
-            publicacao()!.status === 'SUCESSO'
-              ? 'success'
-              : publicacao()!.status === 'ERRO'
-                ? 'danger'
-                : publicacao()!.status === 'GERANDO'
-                  ? 'warn'
-                  : 'neutral'
-          "
-          >{{ publicacao()!.status }}</ui-badge
-        >
-      </div>
-      <p class="pub-det__meta">{{ publicacao()!.createdAt | date: 'short' }} — {{ publicacao()!.createdBy }}</p>
+    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="activeTab.set($event)" />
 
-      @if (publicacao()!.status === 'ERRO' && publicacao()!.observacao) {
-        <div class="df-form__msg df-form__msg--err pub-det__obs">{{ publicacao()!.observacao }}</div>
-      }
+    @switch (activeTab()) {
+      @case ('visao-geral') {
+        <ui-card padding="md">
+          <div class="pub-det__status-row">
+            <span class="pub-det__status-label">Status</span>
+            <ui-badge
+              [tone]="
+                publicacao()!.status === 'SUCESSO'
+                  ? 'success'
+                  : publicacao()!.status === 'ERRO'
+                    ? 'danger'
+                    : publicacao()!.status === 'GERANDO'
+                      ? 'warn'
+                      : 'neutral'
+              "
+              >{{ publicacao()!.status }}</ui-badge
+            >
+          </div>
+          <p class="pub-det__meta">{{ publicacao()!.createdAt | date: 'short' }} — {{ publicacao()!.createdBy }}</p>
 
-      @if (relatorioJson() && avisosValidacao().length) {
-        <h4 class="pub-det__section-title" class="u-mt-16">Avisos da validação</h4>
-        <ul class="pub-det__warn-list">
-          @for (a of avisosValidacao(); track a) {
-            <li>{{ a }}</li>
+          @if (publicacao()!.status === 'ERRO' && publicacao()!.observacao) {
+            <div class="df-form__msg df-form__msg--err pub-det__obs">{{ publicacao()!.observacao }}</div>
           }
-        </ul>
-      }
 
-      @if (publicacao()!.relatorioValidacao) {
-        <details class="pub-det__details">
-          <summary>Relatório técnico (JSON)</summary>
-          <pre class="pub-det__pre">{{ publicacao()!.relatorioValidacao }}</pre>
-        </details>
-      }
-    </ui-card>
-
-    @if (publicacao()!.status === 'SUCESSO') {
-      <ui-card padding="md">
-        <h3 class="pub-det__section-title">Mudanças nesta versão</h3>
-        @for (tipo of mudancaTipos; track tipo) {
-          @let items = changelogPorTipo(tipo);
-          @if (items.length) {
-            <h4 class="pub-det__change-type">{{ tipo }}</h4>
-            <ul class="pub-det__change-list">
-              @for (c of items; track c.id) {
-                <li>{{ c.paginaTitulo }}</li>
+          @if (relatorioJson() && avisosValidacao().length) {
+            <h4 class="pub-det__section-title u-mt-16">Avisos da validação</h4>
+            <ul class="pub-det__warn-list">
+              @for (a of avisosValidacao(); track a) {
+                <li>{{ a }}</li>
               }
             </ul>
           }
-        }
-        @if (!changelog().length) {
-          <p class="pub-det__empty">Sem changelog registrado para esta publicação.</p>
-        }
-      </ui-card>
+
+          @if (publicacao()!.relatorioValidacao) {
+            <details class="pub-det__details">
+              <summary>Relatório técnico (JSON)</summary>
+              <pre class="pub-det__pre">{{ publicacao()!.relatorioValidacao }}</pre>
+            </details>
+          }
+        </ui-card>
+      }
+      @case ('paginas') {
+        <ui-card padding="md">
+          <h3 class="pub-det__section-title">Páginas alteradas</h3>
+          @if (paginasUnicas().length) {
+            <ul class="pub-det__page-list">
+              @for (pagina of paginasUnicas(); track pagina.paginaTitulo) {
+                <li>
+                  <strong>{{ pagina.paginaTitulo }}</strong>
+                  <ui-badge tone="neutral">{{ pagina.tipoMudanca }}</ui-badge>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="pub-det__empty">Sem páginas registradas no changelog desta publicação.</p>
+          }
+        </ui-card>
+      }
+      @case ('changelog') {
+        <ui-card padding="md">
+          <h3 class="pub-det__section-title">Mudanças nesta versão</h3>
+          @for (tipo of mudancaTipos; track tipo) {
+            @let items = changelogPorTipo(tipo);
+            @if (items.length) {
+              <h4 class="pub-det__change-type">{{ tipo }}</h4>
+              <ul class="pub-det__change-list">
+                @for (c of items; track c.id) {
+                  <li>{{ c.paginaTitulo }}</li>
+                }
+              </ul>
+            }
+          }
+          @if (!changelog().length) {
+            <p class="pub-det__empty">Sem changelog registrado para esta publicação.</p>
+          }
+        </ui-card>
+      }
+      @case ('downloads') {
+        <ui-card padding="md">
+          <h3 class="pub-det__section-title">Artefatos disponíveis</h3>
+          @if (podeBaixar()) {
+            <div class="pub-det__downloads">
+              <ui-button variant="secondary" icon="Download" [loading]="baixandoZip()" (clicked)="baixarZip()">
+                Baixar pacote ZIP
+              </ui-button>
+              <ui-button variant="secondary" icon="FileText" [loading]="baixandoPdf()" (clicked)="baixarPdf()">
+                Baixar PDF
+              </ui-button>
+              <ui-button variant="secondary" icon="Link" (clicked)="copiarLink()">
+                Copiar link público temporário (download ZIP sem login)
+              </ui-button>
+            </div>
+            <p class="pub-det__filemeta">
+              Arquivo: <strong>{{ publicacao()!.arquivoZipNome }}</strong>
+            </p>
+          } @else {
+            <p class="pub-det__empty">Downloads disponíveis apenas para publicações concluídas com sucesso.</p>
+          }
+        </ui-card>
+      }
     }
 
     <div class="pub-det__actions">
-      @if (publicacao()!.status === 'SUCESSO') {
-        <ui-button variant="secondary" icon="Link" (clicked)="copiarLink()">
-          Copiar link público temporário (download ZIP sem login)
-        </ui-button>
-      }
       <ui-button
         *appPermissao="'PUBLICACAO:EXCLUIR'"
         variant="danger"

@@ -36,6 +36,24 @@
       >
         − Linha
       </button>
+      <button
+        type="button"
+        class="pf-chip pf-chip--accent"
+        [disabled]="!podeTabela()"
+        (click)="adicionarColunaTabela.emit()"
+        title="Adicionar coluna na tabela"
+      >
+        + Coluna
+      </button>
+      <button
+        type="button"
+        class="pf-chip"
+        [disabled]="!podeTabela()"
+        (click)="removerColunaTabela.emit()"
+        title="Remover coluna da tabela"
+      >
+        − Coluna
+      </button>
     </div>
   </div>
   <div class="pf-toolbar-block">

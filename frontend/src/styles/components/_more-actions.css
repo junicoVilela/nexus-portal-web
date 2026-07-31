@@ -50,14 +50,16 @@
   border-color: var(--border-strong);
 }
 
-.ui-more-actions[open] > .ui-more-actions__trigger {
+.ui-more-actions[open] > .ui-more-actions__trigger,
+.ui-more-actions--open > .ui-more-actions__trigger {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   background: var(--accent-soft);
   color: var(--accent);
   box-shadow: none;
 }
 
-.ui-more-actions[open] > .ui-more-actions__trigger::after {
+.ui-more-actions[open] > .ui-more-actions__trigger::after,
+.ui-more-actions--open > .ui-more-actions__trigger::after {
   margin-top: 0.15em;
   transform: rotate(225deg);
 }

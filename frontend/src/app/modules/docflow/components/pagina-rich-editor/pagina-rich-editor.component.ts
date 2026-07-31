@@ -22,10 +22,14 @@ import {
   inserirHtmlNaSelecao,
 } from './pagina-insert-html';
 import {
+  adicionarColuna,
   adicionarLinha,
   contextoTabela,
+  podeAdicionarColuna,
   podeAdicionarLinha,
+  podeRemoverColuna,
   podeRemoverLinha,
+  removerColuna,
   removerLinha,
 } from './pagina-rich-editor-table';
 import { compactarCelulasTabelaHtml } from './pagina-table-html';
@@ -72,6 +76,28 @@ const TOOLBAR: Toolbar = [
           <lucide-icon name="Minus" [size]="14" aria-hidden="true" />
           Linha
         </button>
+        <button
+          type="button"
+          class="df-table-tools__btn"
+          [disabled]="!podeAdicionarColuna()"
+          (click)="adicionarColunaTabela()"
+          title="Adicionar coluna à direita"
+          aria-label="Adicionar coluna na tabela"
+        >
+          <lucide-icon name="Plus" [size]="14" aria-hidden="true" />
+          Coluna
+        </button>
+        <button
+          type="button"
+          class="df-table-tools__btn df-table-tools__btn--danger"
+          [disabled]="!podeRemoverColuna()"
+          (click)="removerColunaTabela()"
+          title="Remover coluna atual"
+          aria-label="Remover coluna da tabela"
+        >
+          <lucide-icon name="Minus" [size]="14" aria-hidden="true" />
+          Coluna
+        </button>
         @if (!podeAdicionar()) {
           <span class="df-table-tools__hint">Clique em uma célula da tabela para habilitar</span>
         }
@@ -105,6 +131,18 @@ const TOOLBAR: Toolbar = [
             >
               <lucide-icon name="Minus" [size]="16" aria-hidden="true" />
             </button>
+            <button type="button" class="df-table-float__btn" (click)="adicionarColunaTabela()" title="Adicionar coluna">
+              <lucide-icon name="Columns" [size]="16" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              class="df-table-float__btn df-table-float__btn--danger"
+              [disabled]="!podeRemoverColuna()"
+              (click)="removerColunaTabela()"
+              title="Remover coluna"
+            >
+              <lucide-icon name="Columns" [size]="16" aria-hidden="true" />
+            </button>
           </div>
         }
       </div>
@@ -121,6 +159,8 @@ export class PaginaRichEditorComponent implements OnInit, OnDestroy {
   readonly toolbar = TOOLBAR;
   readonly podeAdicionar = signal(false);
   readonly podeRemover = signal(false);
+  readonly podeAdicionarColuna = signal(false);
+  readonly podeRemoverColuna = signal(false);
   readonly floatVisivel = signal(false);
   readonly floatTop = signal(0);
   readonly floatLeft = signal(0);
@@ -203,6 +243,28 @@ export class PaginaRichEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  adicionarColunaTabela(): void {
+    const view = this.editor?.view;
+    if (!view) return;
+    const ok = adicionarColuna(view.state, tr => view.dispatch(tr));
+    if (ok) {
+      view.focus();
+      this.sincronizarControle();
+      this.atualizarFerramentasTabela();
+    }
+  }
+
+  removerColunaTabela(): void {
+    const view = this.editor?.view;
+    if (!view) return;
+    const ok = removerColuna(view.state, tr => view.dispatch(tr));
+    if (ok) {
+      view.focus();
+      this.sincronizarControle();
+      this.atualizarFerramentasTabela();
+    }
+  }
+
   aoPressionarTecla(event: KeyboardEvent): void {
     if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
     const selection = this.editor?.view?.state.selection;
@@ -260,12 +322,16 @@ export class PaginaRichEditorComponent implements OnInit, OnDestroy {
       if (!state?.selection?.$from) {
         this.podeAdicionar.set(false);
         this.podeRemover.set(false);
+        this.podeAdicionarColuna.set(false);
+        this.podeRemoverColuna.set(false);
         this.floatVisivel.set(false);
         return;
       }
       const podeAdd = podeAdicionarLinha(state);
       this.podeAdicionar.set(podeAdd);
       this.podeRemover.set(podeRemoverLinha(state));
+      this.podeAdicionarColuna.set(podeAdicionarColuna(state));
+      this.podeRemoverColuna.set(podeRemoverColuna(state));
       if (!podeAdd) {
         this.floatVisivel.set(false);
         return;
@@ -274,6 +340,8 @@ export class PaginaRichEditorComponent implements OnInit, OnDestroy {
     } catch {
       this.podeAdicionar.set(false);
       this.podeRemover.set(false);
+      this.podeAdicionarColuna.set(false);
+      this.podeRemoverColuna.set(false);
       this.floatVisivel.set(false);
     }
   }
