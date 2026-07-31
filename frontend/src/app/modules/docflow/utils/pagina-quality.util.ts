@@ -7,6 +7,8 @@ export interface PaginaQualityInput {
   moduloId?: string | null;
   resumo?: string | null;
   conteudoHtml?: string | null;
+  filhosCount?: number;
+  indiceItemCount?: number;
 }
 
 export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidadeItem[] {
@@ -153,7 +155,27 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
       !temSteps || temChecklist || temPreRequisitos,
       'AVISO',
     ),
+    item(
+      'INDICE_FILHOS',
+      'Índice de guias alinhado aos filhos',
+      indiceFilhosDescricao(raw.filhosCount, raw.indiceItemCount),
+      indiceFilhosOk(raw.filhosCount, raw.indiceItemCount),
+      'AVISO',
+    ),
   ];
+}
+
+function indiceFilhosOk(filhosCount?: number, indiceItemCount?: number): boolean {
+  if (filhosCount === undefined || indiceItemCount === undefined) return true;
+  if (filhosCount <= 0) return true;
+  return filhosCount === indiceItemCount;
+}
+
+function indiceFilhosDescricao(filhosCount?: number, indiceItemCount?: number): string {
+  if (filhosCount === undefined || indiceItemCount === undefined) return 'Índice não avaliado.';
+  if (filhosCount <= 0) return 'Sem subpáginas vinculadas.';
+  if (filhosCount === indiceItemCount) return 'O índice reflete todas as subpáginas.';
+  return `O índice tem ${indiceItemCount} item(ns), mas há ${filhosCount} subpágina(s) vinculada(s).`;
 }
 
 function linkValido(href: string | null): boolean {

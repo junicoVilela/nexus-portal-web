@@ -19,6 +19,7 @@
       <ui-button variant="menu" size="sm" icon="FileText" [fullWidth]="true" (clicked)="nova()">Página em branco</ui-button>
       <ui-button variant="menu" size="sm" icon="List" [fullWidth]="true" (clicked)="novaPorTipo('lista')">Tipo lista</ui-button>
       <ui-button variant="menu" size="sm" icon="FilePlus2" [fullWidth]="true" (clicked)="novaPorTipo('incluir')">Tipo inclusão</ui-button>
+      <ui-button variant="menu" size="sm" icon="Pencil" [fullWidth]="true" (clicked)="novaPorTipo('editar')">Tipo edição</ui-button>
       <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')">Tipo índice</ui-button>
     </ui-more-actions>
     <ui-button *appPermissao="'PAGINA:CRIAR'" icon="Plus" (clicked)="nova()">Nova página</ui-button>
@@ -182,11 +183,13 @@
       }
     </tbody>
   </table>
-  <app-table-pagination
-    [totalItems]="totalPaginas()"
-    [page]="paginasPage()"
-    [pageSize]="paginasPageSize()"
-    (pageChange)="alterarPagina($event)"
-    (pageSizeChange)="alterarTamanhoPagina($event)"
-  />
+  @if (!ocultarPaginacao()) {
+    <app-table-pagination
+      [totalItems]="totalPaginas()"
+      [page]="paginasPage()"
+      [pageSize]="paginasPageSize()"
+      (pageChange)="alterarPagina($event)"
+      (pageSizeChange)="alterarTamanhoPagina($event)"
+    />
+  }
 </ui-list-page>

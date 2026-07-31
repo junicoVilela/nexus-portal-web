@@ -357,6 +357,17 @@ describe('PaginaFormComponent (smoke)', () => {
 
     expect(fixture.componentInstance['aptoParaRevisao']()).toBe(true);
   });
+
+  it('aplica estrutura inicial do tipo edição', () => {
+    const component = fixture.componentInstance;
+    spyOn(component['route'].snapshot.queryParamMap, 'get').and.callFake((key: string) =>
+      key === 'tipoPagina' ? 'editar' : null,
+    );
+    component['aplicarTipoPaginaInicial']();
+    expect(component['form'].controls.titulo.value).toBe('Editar registro');
+    expect(component['form'].controls.codigoTela.value).toBe('EDITAR-001');
+    expect(component['form'].controls.conteudoHtml.value).toContain('Campos editáveis');
+  });
 });
 
 function paginaRascunho(): Pagina {

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import { Publicacao } from '@modules/docflow/models/publicacao.model';
-import { ChangelogItem } from '@modules/docflow/models/pagina.model';
+import { ChangelogItem, Pagina } from '@modules/docflow/models/pagina.model';
 import {
   PageHeaderComponent,
   ButtonComponent,
@@ -26,11 +26,20 @@ interface PaginaChangelogResumo {
   tipoMudanca: ChangelogItem['tipoMudanca'];
 }
 
+interface PaginaArvoreItem {
+  id?: string;
+  titulo: string;
+  codigoTela?: string;
+  nivel: number;
+  tipoMudanca?: ChangelogItem['tipoMudanca'];
+}
+
 @Component({
   selector: 'app-publicacao-detalhe',
   standalone: true,
   imports: [
     DatePipe,
+    RouterLink,
     PageHeaderComponent,
     ButtonComponent,
     CardComponent,
@@ -49,6 +58,7 @@ export class PublicacaoDetalheComponent implements OnInit {
   protected id = '';
   protected readonly publicacao = signal<Publicacao | undefined>(undefined);
   protected readonly changelog = signal<ChangelogItem[]>([]);
+  protected readonly paginasPreview = signal<Pagina[]>([]);
   protected readonly relatorioJson = signal<Record<string, unknown> | null>(null);
   protected readonly excluindo = signal(false);
   protected readonly baixandoZip = signal(false);
@@ -74,9 +84,32 @@ export class PublicacaoDetalheComponent implements OnInit {
     return resultado;
   });
 
+  protected readonly paginasArvore = computed<PaginaArvoreItem[]>(() => {
+    const preview = this.paginasPreview();
+    const changelogPorPagina = new Map<string, ChangelogItem['tipoMudanca']>();
+    for (const item of this.changelog()) {
+      if (item.paginaId) changelogPorPagina.set(item.paginaId, item.tipoMudanca);
+    }
+
+    if (preview.length) {
+      return this.montarHierarquiaPaginas(preview, changelogPorPagina);
+    }
+
+    return this.paginasUnicas().map(item => ({
+      titulo: item.paginaTitulo,
+      nivel: 0,
+      tipoMudanca: item.tipoMudanca,
+    }));
+  });
+
   protected readonly tabsConfig = computed<TabItem<PublicacaoDetalheTab>[]>(() => [
     { id: 'visao-geral', label: 'Visão geral', icon: 'LayoutDashboard' },
-    { id: 'paginas', label: 'Páginas', icon: 'FileText', count: this.paginasUnicas().length || undefined },
+    {
+      id: 'paginas',
+      label: 'Páginas',
+      icon: 'FileText',
+      count: this.paginasArvore().length || undefined,
+    },
     { id: 'changelog', label: 'Changelog', icon: 'List', count: this.changelog().length || undefined },
     { id: 'downloads', label: 'Downloads', icon: 'Download' },
   ]);
@@ -103,6 +136,10 @@ export class PublicacaoDetalheComponent implements OnInit {
         this.publicacao.set(publicacao);
         this.relatorioJson.set(this.tryParse(publicacao.relatorioValidacao));
         this.changelog.set(changelog);
+        this.publicacaoService
+          .previewPublicacao(publicacao.clienteId)
+          .pipe(catchError(() => of([] as Pagina[])))
+          .subscribe(paginas => this.paginasPreview.set(paginas));
       },
       error: () => this.toast.error('Não foi possível carregar a publicação.'),
     });
@@ -203,6 +240,36 @@ export class PublicacaoDetalheComponent implements OnInit {
 
   voltar(): void {
     void this.router.navigate(docFlowRouterCommands(['publicacoes']));
+  }
+
+  private montarHierarquiaPaginas(
+    lista: Pagina[],
+    changelogPorPagina: Map<string, ChangelogItem['tipoMudanca']>,
+  ): PaginaArvoreItem[] {
+    const filhos = new Map<string, Pagina[]>();
+    const ids = new Set(lista.map(pagina => pagina.id));
+    lista.forEach(pagina => {
+      if (pagina.parentId) {
+        filhos.set(pagina.parentId, [...(filhos.get(pagina.parentId) ?? []), pagina]);
+      }
+    });
+    filhos.forEach(items => items.sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo)));
+    const roots = lista
+      .filter(pagina => !pagina.parentId || !ids.has(pagina.parentId))
+      .sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo));
+    const ordenadas: PaginaArvoreItem[] = [];
+    const append = (pagina: Pagina, nivel: number) => {
+      ordenadas.push({
+        id: pagina.id,
+        titulo: pagina.titulo,
+        codigoTela: pagina.codigoTela,
+        nivel,
+        tipoMudanca: changelogPorPagina.get(pagina.id),
+      });
+      (filhos.get(pagina.id) ?? []).forEach(filho => append(filho, nivel + 1));
+    };
+    roots.forEach(pagina => append(pagina, 0));
+    return ordenadas;
   }
 
   private tryParse(raw?: string): Record<string, unknown> | null {

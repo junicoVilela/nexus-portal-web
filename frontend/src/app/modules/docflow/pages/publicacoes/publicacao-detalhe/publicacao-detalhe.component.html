@@ -75,13 +75,27 @@
       }
       @case ('paginas') {
         <ui-card padding="md">
-          <h3 class="pub-det__section-title">Páginas alteradas</h3>
-          @if (paginasUnicas().length) {
-            <ul class="pub-det__page-list">
-              @for (pagina of paginasUnicas(); track pagina.paginaTitulo) {
-                <li>
-                  <strong>{{ pagina.paginaTitulo }}</strong>
-                  <ui-badge tone="neutral">{{ pagina.tipoMudanca }}</ui-badge>
+          <h3 class="pub-det__section-title">Páginas do pacote</h3>
+          @if (paginasArvore().length) {
+            <ul class="pub-det__page-tree">
+              @for (pagina of paginasArvore(); track pagina.id ?? pagina.titulo) {
+                <li class="pub-det__page-tree-item" [style.padding-left.px]="pagina.nivel * 20">
+                  <div class="pub-det__page-tree-row">
+                    <div class="pub-det__page-tree-info">
+                      <strong>{{ pagina.titulo }}</strong>
+                      @if (pagina.codigoTela) {
+                        <span class="pub-det__page-code">{{ pagina.codigoTela }}</span>
+                      }
+                    </div>
+                    <div class="pub-det__page-tree-actions">
+                      @if (pagina.tipoMudanca) {
+                        <ui-badge tone="neutral">{{ pagina.tipoMudanca }}</ui-badge>
+                      }
+                      @if (pagina.id) {
+                        <a class="pub-det__page-link" [routerLink]="nav('paginas', pagina.id, 'editar')">Editar</a>
+                      }
+                    </div>
+                  </div>
                 </li>
               }
             </ul>

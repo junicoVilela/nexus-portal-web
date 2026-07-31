@@ -133,6 +133,52 @@
   background: var(--surface-2);
   font: 400 13.5px/1.4 var(--font-body);
 }
+.pub-det__page-tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pub-det__page-tree-item {
+  margin: 0;
+}
+.pub-det__page-tree-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font: 400 13.5px/1.4 var(--font-body);
+}
+.pub-det__page-tree-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.pub-det__page-code {
+  font: 400 12px/1.2 var(--font-mono);
+  color: var(--text-muted);
+}
+.pub-det__page-tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.pub-det__page-link {
+  font: 500 12.5px/1 var(--font-body);
+  color: var(--primary);
+  text-decoration: none;
+}
+.pub-det__page-link:hover {
+  text-decoration: underline;
+}
 
 @media (max-width: 768px) {
   .df-form {

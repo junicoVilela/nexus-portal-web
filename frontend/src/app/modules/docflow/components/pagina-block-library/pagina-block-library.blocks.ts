@@ -375,6 +375,20 @@ export const BLOCOS_PAGINA: readonly BlocoPagina[] = [
       '<div class="result-card"><p><strong>Resultado esperado</strong></p><p>O registro aparece na listagem e/ou a mensagem de sucesso é exibida.</p></div>',
   },
   {
+    id: 'kit-editar',
+    nome: 'Kit · Página de edição',
+    descricao: 'Pré-reqs + captura + campos editáveis + passo a passo + resultado — base para EDITAR.',
+    categoria: 'Kits',
+    visual: 'kit',
+    html:
+      '<section class="doc-intro"><span class="doc-kicker">{{MODULO}} · Edição</span><h2>{{TITULO}}</h2><p>Objetivo da edição e impacto no processo.</p></section>' +
+      '<section class="doc-section doc-section--soft"><h2>Pré-requisitos</h2><ul class="checklist"><li>Permissão de edição.</li><li>Registro existente localizado na consulta.</li></ul></section>' +
+      '<section class="doc-section"><h2>Visão da tela</h2><figure class="screen-frame"><div class="screen-placeholder"><p><strong>Insira a captura do formulário de edição</strong></p><p><span>Use a ferramenta de imagem do editor.</span></p></div><figcaption>Formulário de edição com registro carregado.</figcaption></figure></section>' +
+      '<section class="doc-section"><h2>Campos editáveis</h2><div class="table-wrap"><table><thead><tr><th>Campo</th><th>Regra de alteração</th><th>Obrigatório?</th></tr></thead><tbody><tr><td><strong>Campo principal</strong></td><td>Pode ser alterado enquanto o registro estiver ativo.</td><td><span class="status-badge status-badge--sim">Sim</span></td></tr><tr><td><strong>Campo secundário</strong></td><td>Alteração opcional conforme regra de negócio.</td><td><span class="status-badge status-badge--nao">Não</span></td></tr></tbody></table></div></section>' +
+      '<section class="doc-section"><div class="steps"><h2>Passo a passo</h2><ol><li>Localize o registro na consulta e abra a edição.</li><li>Altere os campos necessários.</li><li>Salve e valide a mensagem de confirmação.</li></ol></div></section>' +
+      '<div class="result-card"><p><strong>Resultado esperado</strong></p><p>O registro atualizado aparece na listagem com os novos valores.</p></div>',
+  },
+  {
     id: 'kit-indice',
     nome: 'Kit · Índice de operações',
     descricao: 'Intro + lista de guias — base para página pai (Operações).',

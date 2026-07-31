@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
@@ -78,6 +79,8 @@ export class PaginasComponent implements OnInit {
       raw.status
     );
   });
+  /** Com módulo filtrado, a lista carrega a árvore completa (até 1000) e a paginação some. */
+  readonly ocultarPaginacao = computed(() => !!this.filtros.controls.moduloId.value);
   readonly listaVaziaPorFiltro = computed(() => this.totalPaginas() === 0 && this.filtrosAtivos());
   readonly sistemaSemPaginas = computed(() => this.totalPaginasSistema() === 0);
   readonly emptyTitleAtual = computed(() =>
@@ -184,6 +187,9 @@ export class PaginasComponent implements OnInit {
 
   carregar(): void {
     const raw = this.filtros.getRawValue();
+    const moduloFiltrado = !!raw.moduloId;
+    const page = moduloFiltrado ? 1 : this.paginasPage();
+    const size = moduloFiltrado ? 1000 : this.paginasPageSize();
     this.paginaService
       .listarPaginas({
         busca: raw.busca?.trim() || undefined,
@@ -194,15 +200,20 @@ export class PaginasComponent implements OnInit {
         status: raw.status as StatusPagina | undefined,
         sort: this.paginaSort,
         dir: this.paginaDir,
-        page: this.paginasPage(),
-        size: this.paginasPageSize(),
+        page,
+        size,
       })
       .subscribe({
         next: response => {
           this.paginas.set(response.items);
           this.totalPaginas.set(response.totalItems);
-          this.paginasPage.set(response.page);
-          this.paginasPageSize.set(response.size);
+          if (moduloFiltrado) {
+            this.paginasPage.set(1);
+          } else {
+            this.paginasPage.set(response.page);
+            this.paginasPageSize.set(response.size);
+            this.complementarAncestros(response.items);
+          }
         },
         error: () => this.toast.error('Erro ao filtrar páginas.'),
       });
@@ -282,9 +293,10 @@ export class PaginasComponent implements OnInit {
   }
 
   async arquivar(pagina: Pagina): Promise<void> {
+    const comFilhos = this.temFilhosNaLista(pagina.id);
     const ok = await this.confirmService.confirm({
       title: 'Arquivar página?',
-      message: `A página "${pagina.titulo}" sairá da listagem ativa. Você pode restaurar depois pelo filtro "ARQUIVADO".`,
+      message: this.mensagemArquivar([pagina.titulo], comFilhos),
       acceptLabel: 'Arquivar',
       variant: 'danger',
       icon: 'AlertTriangle',
@@ -347,12 +359,17 @@ export class PaginasComponent implements OnInit {
     });
   }
 
-  novaPorTipo(tipo: 'lista' | 'incluir' | 'indice'): void {
+  novaPorTipo(tipo: 'lista' | 'incluir' | 'editar' | 'indice'): void {
     const { projetoId, moduloId } = this.filtros.getRawValue();
+    const parentId =
+      moduloId && (tipo === 'lista' || tipo === 'incluir' || tipo === 'editar')
+        ? this.encontrarPaginaIndice(moduloId)
+        : undefined;
     this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
       queryParams: compactQueryParams({
         projetoId: projetoId || null,
         moduloId: moduloId || null,
+        parentId: parentId || null,
         tipoPagina: tipo,
       }),
     });
@@ -397,9 +414,13 @@ export class PaginasComponent implements OnInit {
     const ids = [...this.selecionados()];
     const lista = this.paginas().filter(p => ids.includes(p.id) && p.status !== 'ARQUIVADO');
     if (lista.length === 0) return;
+    const comFilhos = lista.some(p => this.temFilhosNaLista(p.id));
     const ok = await this.confirmService.confirm({
       title: 'Arquivar páginas?',
-      message: `Arquivar ${lista.length} página(s)? Elas sairão da listagem ativa.`,
+      message: this.mensagemArquivar(
+        lista.map(p => p.titulo),
+        comFilhos,
+      ),
       acceptLabel: 'Arquivar',
       variant: 'danger',
       icon: 'AlertTriangle',
@@ -669,6 +690,65 @@ export class PaginasComponent implements OnInit {
       },
       error: () => this.toast.error('Não foi possível mover a página.'),
     });
+  }
+
+  private complementarAncestros(paginas: Pagina[]): void {
+    const ids = new Set(paginas.map(p => p.id));
+    const faltando = new Set<string>();
+    for (const pagina of paginas) {
+      if (pagina.parentId && !ids.has(pagina.parentId)) {
+        faltando.add(pagina.parentId);
+      }
+    }
+    if (!faltando.size) return;
+
+    forkJoin(
+      [...faltando].map(id =>
+        this.paginaService.pagina(id).pipe(catchError(() => of(null as Pagina | null))),
+      ),
+    ).subscribe({
+      next: ancestors => {
+        const validos = ancestors.filter((p): p is Pagina => p !== null);
+        if (!validos.length) return;
+        const merged = [...paginas];
+        const mergedIds = new Set(paginas.map(p => p.id));
+        for (const ancestor of validos) {
+          if (!mergedIds.has(ancestor.id)) {
+            merged.push(ancestor);
+            mergedIds.add(ancestor.id);
+          }
+        }
+        this.paginas.set(merged);
+        this.complementarAncestros(merged);
+      },
+    });
+  }
+
+  private encontrarPaginaIndice(moduloId: string): string | undefined {
+    const candidato = this.paginas().find(
+      pagina =>
+        pagina.moduloId === moduloId &&
+        !pagina.parentId &&
+        (/^operações$/i.test(pagina.titulo) ||
+          /^(OPS|EXEMPLO-OPS)/i.test(pagina.codigoTela) ||
+          (pagina.conteudoHtml?.includes('Guias disponíveis') ?? false)),
+    );
+    return candidato?.id;
+  }
+
+  private temFilhosNaLista(paginaId: string): boolean {
+    return this.paginas().some(p => p.parentId === paginaId);
+  }
+
+  private mensagemArquivar(titulos: string[], comFilhos: boolean): string {
+    const base =
+      titulos.length === 1
+        ? `A página "${titulos[0]}" sairá da listagem ativa.`
+        : `Arquivar ${titulos.length} página(s)? Elas sairão da listagem ativa.`;
+    if (comFilhos) {
+      return `${base} As subpáginas vinculadas também serão arquivadas. Você pode restaurar depois pelo filtro "ARQUIVADO".`;
+    }
+    return `${base} Você pode restaurar depois pelo filtro "ARQUIVADO".`;
   }
 
   private compararPaginas = (a: Pagina, b: Pagina): number => {

@@ -29,9 +29,10 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.detectChanges();
 
     const cards = [...fixture.nativeElement.querySelectorAll('.block-card')] as HTMLElement[];
-    expect(cards.length).toBe(3);
+    expect(cards.length).toBe(4);
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de lista');
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de inclusão');
+    expect(fixture.nativeElement.textContent).toContain('Kit · Página de edição');
     expect(fixture.nativeElement.textContent).toContain('Kit · Índice de operações');
   });
 
@@ -149,6 +150,7 @@ describe('PaginaBlockLibraryComponent', () => {
     expect(ids).toContain('acoes-tela');
     expect(ids).toContain('kit-lista');
     expect(ids).toContain('kit-incluir');
+    expect(ids).toContain('kit-editar');
     expect(ids).toContain('kit-indice');
     expect(ids).toContain('callout-erro');
     expect(ids).toContain('ver-tambem');

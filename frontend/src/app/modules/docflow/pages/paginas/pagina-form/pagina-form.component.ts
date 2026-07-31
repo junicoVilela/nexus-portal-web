@@ -263,9 +263,13 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     return ordenadas;
   });
 
-  protected readonly qualidadeItens = computed<PaginaQualidadeItem[]>(() =>
-    avaliarQualidadePagina(this.formValue()),
-  );
+  protected readonly qualidadeItens = computed<PaginaQualidadeItem[]>(() => {
+    const form = this.formValue();
+    const id = this.editId();
+    const filhosCount = id ? this.paginas().filter(pagina => pagina.parentId === id).length : undefined;
+    const indiceItemCount = this.contarItensIndiceGuias(form.conteudoHtml);
+    return avaliarQualidadePagina({ ...form, filhosCount, indiceItemCount });
+  });
 
   protected readonly qualidadeConcluidos = computed(
     () => this.qualidadeItens().filter(item => item.ok).length,
@@ -463,6 +467,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         this.autosaveStatus.set('saved');
         this.autosaveServidorEm.set(new Date());
         this.conflitoMensagem.set(null);
+        if (pagina.parentId) {
+          this.sincronizarIndicePai(pagina.parentId);
+        }
         if (destino === 'lista') {
           this.router.navigate(docFlowRouterCommands(['paginas']));
           return;
@@ -1584,7 +1591,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   private aplicarTipoPaginaInicial(): void {
     const tipo = this.route.snapshot.queryParamMap.get('tipoPagina');
-    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'indice') return;
+    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice') return;
 
     const config = {
       lista: {
@@ -1598,6 +1605,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         codigo: 'INCLUIR-001',
         resumo: 'Formulário para inclusão de novos registros com campos obrigatórios e validações.',
         kitId: 'kit-incluir',
+      },
+      editar: {
+        titulo: 'Editar registro',
+        codigo: 'EDITAR-001',
+        resumo: 'Formulário para alteração de registros existentes com campos editáveis e validações.',
+        kitId: 'kit-editar',
       },
       indice: {
         titulo: 'Operações',
@@ -1655,6 +1668,61 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       body.insertAdjacentHTML('beforeend', secaoHtml);
     }
     return body.innerHTML;
+  }
+
+  private contarItensIndiceGuias(conteudoHtml?: string | null): number | undefined {
+    if (!conteudoHtml?.trim()) return undefined;
+    const doc = new DOMParser().parseFromString(`<body>${conteudoHtml}</body>`, 'text/html');
+    const secao = Array.from(doc.body.querySelectorAll('section')).find(item => {
+      const h2 = item.querySelector('h2');
+      return h2?.textContent?.trim().toLowerCase() === 'guias disponíveis';
+    });
+    if (!secao) return undefined;
+    return secao.querySelectorAll('.resource-item').length;
+  }
+
+  private temSecaoGuiasDisponiveis(html: string): boolean {
+    return this.contarItensIndiceGuias(html) !== undefined;
+  }
+
+  private sincronizarIndicePai(parentId: string): void {
+    this.paginaService.pagina(parentId).subscribe({
+      next: parent => {
+        if (!this.temSecaoGuiasDisponiveis(parent.conteudoHtml ?? '')) return;
+        this.paginaService.paginas({ moduloId: parent.moduloId }).subscribe({
+          next: siblings => {
+            const filhos = siblings
+              .filter(pagina => pagina.parentId === parentId)
+              .sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo));
+            const secaoHtml = this.montarSecaoGuiasDisponiveis(filhos);
+            const novoHtml = this.substituirOuAdicionarSecaoGuias(parent.conteudoHtml ?? '', secaoHtml);
+            if (novoHtml === parent.conteudoHtml) return;
+            this.paginaService
+              .salvarPagina(
+                {
+                  titulo: parent.titulo,
+                  slug: parent.slug,
+                  codigoTela: parent.codigoTela,
+                  resumo: parent.resumo,
+                  conteudoHtml: novoHtml,
+                  ordem: parent.ordem,
+                  ativo: parent.ativo,
+                  moduloId: parent.moduloId,
+                  parentId: parent.parentId,
+                  version: parent.version,
+                },
+                parent.id,
+              )
+              .subscribe({
+                next: () => this.toast.success('Índice de guias do pai atualizado.'),
+                error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
+              });
+          },
+          error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
+        });
+      },
+      error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
+    });
   }
 
   private queryParamsEditor(): Record<string, string | number | null> {
