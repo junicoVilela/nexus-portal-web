@@ -1,10 +1,10 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ModuloService } from './modulo.service';
 import { Modulo } from '../models/modulo.model';
 
-const BASE = '/api/doc-flow';
+const GENERATED_BASE = '/api/v1/docflow';
 
 describe('ModuloService', () => {
   let service: ModuloService;
@@ -20,63 +20,89 @@ describe('ModuloService', () => {
 
   afterEach(() => http.verify());
 
-  it('listarModulos() includes projetoId when provided', () => {
+  it('listarModulos() includes projetoId when provided', fakeAsync(() => {
     service.listarModulos({ projetoId: 'p1', page: 1, size: 10 }).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/modulos`);
-    expect(req.request.params.get('projetoId')).toBe('p1');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`));
+    expect(req.request.url).toContain('projetoId=p1');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('modulos() caches per projetoId', () => {
+  it('modulos() caches per projetoId', fakeAsync(() => {
     service.modulos('p1').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
     service.modulos('p1').subscribe();
-    http.expectNone(r => r.url === `${BASE}/modulos`);
+    tick();
+    http.expectNone(r => r.url.startsWith(`${GENERATED_BASE}/modulos`));
 
     service.modulos('p2').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
+  }));
 
-  it('modulos() without projetoId uses __all__ cache key', () => {
+  it('modulos() without projetoId uses __all__ cache key', fakeAsync(() => {
     service.modulos().subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
     service.modulos().subscribe();
-    http.expectNone(r => r.url === `${BASE}/modulos`);
-  });
+    tick();
+    http.expectNone(r => r.url.startsWith(`${GENERATED_BASE}/modulos`));
+  }));
 
-  it('modulo(id) hits /modulos/:id', () => {
+  it('modulo(id) hits /modulos/:id', fakeAsync(() => {
     service.modulo('m1').subscribe();
-    http.expectOne(`${BASE}/modulos/m1`).flush({} as Modulo);
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/modulos/m1`).flush({} as Modulo);
+    tick();
+  }));
 
-  it('salvarModulo() POSTs without id and invalidates cache', () => {
+  it('salvarModulo() POSTs without id and invalidates cache', fakeAsync(() => {
     service.modulos('p1').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
 
     service.salvarModulo({ nome: 'X' }).subscribe();
-    http.expectOne(`${BASE}/modulos`).flush({} as Modulo);
+    tick();
+    http.expectOne(`${GENERATED_BASE}/modulos`).flush({} as Modulo);
+    tick();
 
     service.modulos('p1').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
+  }));
 
-  it('salvarModulo() PUTs when id is provided', () => {
+  it('salvarModulo() PUTs when id is provided', fakeAsync(() => {
     service.salvarModulo({ nome: 'X' }, 'm1').subscribe();
-    const req = http.expectOne(`${BASE}/modulos/m1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/modulos/m1`);
     expect(req.request.method).toBe('PUT');
     req.flush({} as Modulo);
-  });
+    tick();
+  }));
 
-  it('excluirModulo() DELETEs e invalida o cache', () => {
+  it('excluirModulo() DELETEs e invalida o cache', fakeAsync(() => {
     service.modulos('p1').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
 
     service.excluirModulo('m1').subscribe();
-    const req = http.expectOne(`${BASE}/modulos/m1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/modulos/m1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
+    tick();
 
     service.modulos('p1').subscribe();
-    http.expectOne(r => r.url === `${BASE}/modulos`).flush({ items: [], totalItems: 0 });
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/modulos`)).flush({ items: [], totalItems: 0 });
+    tick();
+  }));
 });

@@ -6,6 +6,7 @@ import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
+  arvorePaginas as arvorePaginasPublicacaoSdk,
   buscar18 as buscarPublicacaoSdk,
   changelog as changelogPublicacaoSdk,
   diagnostico as diagnosticoPublicacaoSdk,
@@ -21,6 +22,7 @@ import type {
   ChangelogItemResponse,
   DownloadTokenResponse,
   Listar18Data,
+  PublicacaoPaginaSnapshotItem,
   PublicacaoResponse,
 } from '../../../api/generated/types.gen';
 import { ChangelogItem } from '../models/pagina.model';
@@ -224,7 +226,9 @@ export class PublicacaoService {
   }
 
   arvorePaginasPublicacao(id: string): Observable<PublicacaoPaginaSnapshot[]> {
-    return this.http.get<PublicacaoPaginaSnapshot[]>(`${this.base}/publicacoes/${id}/paginas`);
+    return defer(() =>
+      arvorePaginasPublicacaoSdk({ path: { id }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data.map(item => this.mapearPaginaSnapshot(item))));
   }
 
   private mapearPublicacao(item: PublicacaoResponse): Publicacao {
@@ -245,6 +249,19 @@ export class PublicacaoService {
       updatedAt: item.updatedAt,
       updatedBy: item.updatedBy,
     };
+  }
+
+  private mapearPaginaSnapshot(item: PublicacaoPaginaSnapshotItem): PublicacaoPaginaSnapshot {
+    const snapshot: PublicacaoPaginaSnapshot = {
+      id: item.id ?? '',
+      titulo: item.titulo ?? '',
+      ordem: item.ordem ?? 0,
+      nivel: item.nivel ?? 0,
+    };
+    if (item.parentId) snapshot.parentId = item.parentId;
+    if (item.codigoTela) snapshot.codigoTela = item.codigoTela;
+    if (item.slug) snapshot.slug = item.slug;
+    return snapshot;
   }
 
   private mapearChangelog(item: ChangelogItemResponse): ChangelogItem {

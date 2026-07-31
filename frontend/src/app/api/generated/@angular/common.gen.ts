@@ -44,6 +44,8 @@ import type {
   ArquivarResponse,
   ArquivarTemplateData,
   ArquivarTemplateResponse,
+  ArvorePaginasData,
+  ArvorePaginasResponse,
   AtualData,
   Atualizar10Data,
   Atualizar10Response,
@@ -2595,6 +2597,16 @@ export const excluirAnexoRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const arvorePaginasRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ArvorePaginasData, ThrowOnError>,
+): HttpRequest<ArvorePaginasResponse> =>
+  (options?.client ?? client).requestOptions<ArvorePaginasResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/{id}/paginas',
+    ...options,
+  });
+
 export const excluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<ExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -4321,4 +4333,12 @@ export const excluirAnexoResource = <ThrowOnError extends boolean = false>(
   httpResource<ExcluirAnexoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? excluirAnexoRequest(opts) : undefined;
+  });
+
+export const arvorePaginasResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ArvorePaginasData, ThrowOnError> | undefined,
+) =>
+  httpResource<ArvorePaginasResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? arvorePaginasRequest(opts) : undefined;
   });

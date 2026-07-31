@@ -8,29 +8,63 @@
     }
   </div>
 
-  @if (showDiff() && diffLinhas().length > 0) {
-    <div class="pf-diff">
-      @for (linha of diffLinhas(); track $index) {
-        <div
-          class="pf-diff-linha"
-          [class.pf-diff-linha--add]="linha.tipo === '+'"
-          [class.pf-diff-linha--rem]="linha.tipo === '-'"
-        >
-          <span class="pf-diff-sinal">{{ linha.tipo }}</span>
-          <span>
-            @for (tok of linha.tokens; track $index) {
-              @if (tok.tipo === '+') {
-                <mark class="pf-diff-mark pf-diff-mark--add">{{ tok.texto }}</mark>
-              } @else if (tok.tipo === '-') {
-                <mark class="pf-diff-mark pf-diff-mark--rem">{{ tok.texto }}</mark>
-              } @else {
-                <span>{{ tok.texto }}</span>
-              }
-            }
-          </span>
-        </div>
-      }
+  @if (showDiff() && (diffLinhas().length > 0 || conteudoAnterior() || conteudoAtual())) {
+    <div class="pf-diff-toolbar" role="group" aria-label="Modo de comparação">
+      <button
+        type="button"
+        class="pf-diff-mode-btn"
+        [class.pf-diff-mode-btn--active]="modoDiff() === 'unificado'"
+        [attr.aria-pressed]="modoDiff() === 'unificado'"
+        (click)="definirModoDiff('unificado')"
+      >
+        Unificado
+      </button>
+      <button
+        type="button"
+        class="pf-diff-mode-btn"
+        [class.pf-diff-mode-btn--active]="modoDiff() === 'lado-a-lado'"
+        [attr.aria-pressed]="modoDiff() === 'lado-a-lado'"
+        (click)="definirModoDiff('lado-a-lado')"
+      >
+        Lado a lado
+      </button>
     </div>
+
+    @if (modoDiff() === 'unificado' && diffLinhas().length > 0) {
+      <div class="pf-diff">
+        @for (linha of diffLinhas(); track $index) {
+          <div
+            class="pf-diff-linha"
+            [class.pf-diff-linha--add]="linha.tipo === '+'"
+            [class.pf-diff-linha--rem]="linha.tipo === '-'"
+          >
+            <span class="pf-diff-sinal">{{ linha.tipo }}</span>
+            <span>
+              @for (tok of linha.tokens; track $index) {
+                @if (tok.tipo === '+') {
+                  <mark class="pf-diff-mark pf-diff-mark--add">{{ tok.texto }}</mark>
+                } @else if (tok.tipo === '-') {
+                  <mark class="pf-diff-mark pf-diff-mark--rem">{{ tok.texto }}</mark>
+                } @else {
+                  <span>{{ tok.texto }}</span>
+                }
+              }
+            </span>
+          </div>
+        }
+      </div>
+    } @else if (modoDiff() === 'lado-a-lado') {
+      <div class="df-diff-side">
+        <article class="df-diff-side__pane">
+          <header class="df-diff-side__head">Versão anterior</header>
+          <div class="df-doc-content df-diff-side__content" [innerHTML]="conteudoAnterior() || '<p>Sem conteúdo.</p>'"></div>
+        </article>
+        <article class="df-diff-side__pane">
+          <header class="df-diff-side__head">Versão atual</header>
+          <div class="df-doc-content df-diff-side__content" [innerHTML]="conteudoAtual() || '<p>Sem conteúdo.</p>'"></div>
+        </article>
+      </div>
+    }
   }
 
   <table class="pf-rev-table">

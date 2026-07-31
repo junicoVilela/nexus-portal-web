@@ -153,16 +153,18 @@ describe('PublicacaoService', () => {
     tick();
   }));
 
-  it('arvorePaginasPublicacao() hits /publicacoes/:id/paginas', () => {
+  it('arvorePaginasPublicacao() hits /publicacoes/:id/paginas', fakeAsync(() => {
     let resultado: unknown;
     service.arvorePaginasPublicacao('p1').subscribe(items => (resultado = items));
-    http.expectOne(`${BASE}/publicacoes/p1/paginas`).flush([
+    tick();
+    http.expectOne(`${GENERATED_BASE}/publicacoes/p1/paginas`).flush([
       { id: 'pai', titulo: 'Operações', ordem: 1, nivel: 0 },
       { id: 'filho', parentId: 'pai', titulo: 'Lista', ordem: 2, nivel: 1 },
     ]);
+    tick();
     expect(resultado).toEqual([
       { id: 'pai', titulo: 'Operações', ordem: 1, nivel: 0 },
       { id: 'filho', parentId: 'pai', titulo: 'Lista', ordem: 2, nivel: 1 },
     ]);
-  });
+  }));
 });

@@ -172,4 +172,10 @@ describe('PaginaTemplatePickerComponent', () => {
     expect(fixture.componentInstance.templatesVisiveis()[0].id).toBe('faq-1');
     expect(localStorage.getItem('docflow:templates-favoritos')).toContain('faq-1');
   });
+
+  it('emite fechado ao pressionar Escape', () => {
+    const fechado = spyOn(fixture.componentInstance.fechado, 'emit');
+    fixture.componentInstance['fecharPorEscape'](new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(fechado).toHaveBeenCalled();
+  });
 });

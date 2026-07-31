@@ -19,6 +19,7 @@
       [value]="clienteFiltro"
       (input)="atualizarFiltroClientes($event)"
       placeholder="Buscar por nome ou slug..."
+      aria-label="Buscar clientes por nome ou slug"
     />
     <div class="clientes__filter-stats">
       <span class="clientes__stat">{{ totalClientes() }} clientes</span>
@@ -132,11 +133,13 @@
           [value]="paginaFiltro"
           (input)="paginaFiltro = eventValue($event)"
           placeholder="Filtrar páginas..."
+          aria-label="Filtrar páginas nos vínculos"
         />
         <select
           class="clientes__select"
           [value]="copiarOrigemClienteId"
           (change)="copiarOrigemClienteId = eventValue($event)"
+          aria-label="Copiar vínculos de outro cliente"
         >
           <option value="">Copiar vínculos de outro cliente...</option>
           @for (cliente of clientes(); track cliente.id) {

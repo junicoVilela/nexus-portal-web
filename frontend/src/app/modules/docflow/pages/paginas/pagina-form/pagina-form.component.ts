@@ -164,6 +164,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly revisoesSort = signal('numero');
   protected readonly revisoesDir = signal<SortDirection>('DESC');
   protected readonly diffLinhas = signal<DiffLinha[]>([]);
+  protected readonly diffConteudoAnterior = signal('');
+  protected readonly diffConteudoAtual = signal('');
   protected readonly rascunhoSalvoEm = signal<Date | null>(null);
   protected readonly templates = signal<PaginaTemplate[]>([]);
   protected readonly templateSelecionadoId = signal<string | null>(null);
@@ -1793,10 +1795,15 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.atualizarEstadoEditor();
     const lista = this.revisoes();
     if (this.showDiff() && lista.length >= 2) {
-      const anterior = lista[1].conteudoHtml || lista[1].titulo || '';
-      const atual = lista[0].conteudoHtml || lista[0].titulo || '';
-      const linhas = await diffLinhasPalavras(anterior, atual);
+      const htmlAnterior = lista[1].conteudoHtml ?? '';
+      const htmlAtual = lista[0].conteudoHtml ?? '';
+      this.diffConteudoAnterior.set(htmlAnterior);
+      this.diffConteudoAtual.set(htmlAtual);
+      const linhas = await diffLinhasPalavras(htmlAnterior || lista[1].titulo || '', htmlAtual || lista[0].titulo || '');
       this.diffLinhas.set(linhas);
+    } else {
+      this.diffConteudoAnterior.set('');
+      this.diffConteudoAtual.set('');
     }
   }
 

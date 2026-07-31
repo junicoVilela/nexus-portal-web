@@ -50,6 +50,8 @@ import type {
   ArquivarResponses,
   ArquivarTemplateData,
   ArquivarTemplateResponses,
+  ArvorePaginasData,
+  ArvorePaginasResponses,
   AtualData,
   Atualizar10Data,
   Atualizar10Responses,
@@ -2731,5 +2733,14 @@ export const excluirAnexo = <ThrowOnError extends boolean = true>(
   (options.client ?? client).delete<ExcluirAnexoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
+    ...options,
+  });
+
+export const arvorePaginas = <ThrowOnError extends boolean = true>(
+  options: Options<ArvorePaginasData, ThrowOnError>,
+): RequestResult<ArvorePaginasResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ArvorePaginasResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/paginas',
     ...options,
   });

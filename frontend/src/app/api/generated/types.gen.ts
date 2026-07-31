@@ -1337,6 +1337,16 @@ export type MeResponse = {
   permissoes?: Array<string>;
 };
 
+export type PublicacaoPaginaSnapshotItem = {
+  id: string;
+  parentId?: string;
+  titulo: string;
+  codigoTela?: string;
+  slug?: string;
+  ordem: number;
+  nivel: number;
+};
+
 export type ExcluirData = {
   body?: never;
   path: {
@@ -5341,3 +5351,21 @@ export type ExcluirAnexoResponses = {
 };
 
 export type ExcluirAnexoResponse = ExcluirAnexoResponses[keyof ExcluirAnexoResponses];
+
+export type ArvorePaginasData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/{id}/paginas';
+};
+
+export type ArvorePaginasResponses = {
+  /**
+   * OK
+   */
+  200: Array<PublicacaoPaginaSnapshotItem>;
+};
+
+export type ArvorePaginasResponse = ArvorePaginasResponses[keyof ArvorePaginasResponses];

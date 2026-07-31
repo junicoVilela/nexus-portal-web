@@ -29,6 +29,7 @@
       <input
         type="search"
         placeholder="Buscar modelo..."
+        aria-label="Buscar modelo"
         [value]="busca()"
         (input)="busca.set($any($event.target).value)"
       />

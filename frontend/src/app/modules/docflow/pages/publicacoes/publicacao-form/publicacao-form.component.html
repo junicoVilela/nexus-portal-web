@@ -27,8 +27,8 @@
     <ui-card padding="lg">
       <div class="df-form__grid">
         <div class="df-form__field df-form__field--4">
-          <label class="df-form__label">Cliente</label>
-          <select class="df-form__select" formControlName="clienteId" (change)="preview()">
+          <label class="df-form__label" for="pubf-cliente">Cliente</label>
+          <select id="pubf-cliente" class="df-form__select" formControlName="clienteId" (change)="preview()">
             <option value="">Selecione</option>
             @for (cliente of clientes(); track cliente.id) {
               <option [value]="cliente.id">{{ cliente.nome }}</option>
@@ -36,12 +36,12 @@
           </select>
         </div>
         <div class="df-form__field df-form__field--3">
-          <label class="df-form__label">Versão</label>
-          <input class="df-form__input" formControlName="versao" placeholder="2026.04" />
+          <label class="df-form__label" for="pubf-versao">Versão</label>
+          <input id="pubf-versao" class="df-form__input" formControlName="versao" placeholder="2026.04" />
         </div>
         <div class="df-form__field df-form__field--12">
-          <label class="df-form__label">Observação</label>
-          <textarea class="df-form__textarea" formControlName="observacao"></textarea>
+          <label class="df-form__label" for="pubf-observacao">Observação</label>
+          <textarea id="pubf-observacao" class="df-form__textarea" formControlName="observacao"></textarea>
         </div>
       </div>
     </ui-card>

@@ -94,9 +94,9 @@
 
             <article class="review-panel">
               <h3>Comentários</h3>
-              <label class="review-comment">
+              <label class="review-comment" for="revisao-comentario">
                 <span>Nova observação</span>
-                <textarea [(ngModel)]="comentario" rows="3" maxlength="280"></textarea>
+                <textarea id="revisao-comentario" [(ngModel)]="comentario" rows="3" maxlength="280"></textarea>
               </label>
               <ui-button size="sm" [disabled]="!comentario.trim()" [loading]="executandoAcao()" (clicked)="comentar()"
                 >Registrar comentário</ui-button
@@ -116,8 +116,32 @@
           </div>
 
           <article class="review-panel review-panel--diff">
-            <h3>Alterações da versão mais recente</h3>
-            @if (diff().length) {
+            <div class="review-diff-head">
+              <h3>Alterações da versão mais recente</h3>
+              @if (diff().length || diffConteudoAnterior() || diffConteudoAtual()) {
+                <div class="review-diff-mode" role="group" aria-label="Modo de comparação">
+                  <button
+                    type="button"
+                    class="review-diff-mode__btn"
+                    [class.review-diff-mode__btn--active]="modoDiff() === 'unificado'"
+                    [attr.aria-pressed]="modoDiff() === 'unificado'"
+                    (click)="definirModoDiff('unificado')"
+                  >
+                    Unificado
+                  </button>
+                  <button
+                    type="button"
+                    class="review-diff-mode__btn"
+                    [class.review-diff-mode__btn--active]="modoDiff() === 'lado-a-lado'"
+                    [attr.aria-pressed]="modoDiff() === 'lado-a-lado'"
+                    (click)="definirModoDiff('lado-a-lado')"
+                  >
+                    Lado a lado
+                  </button>
+                </div>
+              }
+            </div>
+            @if (modoDiff() === 'unificado' && diff().length) {
               <div class="review-diff">
                 @for (linha of diff(); track $index) {
                   <div [attr.data-type]="linha.tipo">
@@ -129,6 +153,23 @@
                     </code>
                   </div>
                 }
+              </div>
+            } @else if (modoDiff() === 'lado-a-lado' && (diffConteudoAnterior() || diffConteudoAtual())) {
+              <div class="df-diff-side">
+                <article class="df-diff-side__pane">
+                  <header class="df-diff-side__head">Versão anterior</header>
+                  <div
+                    class="df-doc-content df-diff-side__content"
+                    [innerHTML]="diffConteudoAnterior() || '<p>Sem conteúdo.</p>'"
+                  ></div>
+                </article>
+                <article class="df-diff-side__pane">
+                  <header class="df-diff-side__head">Versão atual</header>
+                  <div
+                    class="df-doc-content df-diff-side__content"
+                    [innerHTML]="diffConteudoAtual() || '<p>Sem conteúdo.</p>'"
+                  ></div>
+                </article>
               </div>
             } @else {
               <p class="review-empty">Ainda não há duas versões para comparar.</p>

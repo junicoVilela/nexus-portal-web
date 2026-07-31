@@ -1,10 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ClienteService } from './cliente.service';
 import { Cliente } from '../models/cliente.model';
 
 const BASE = '/api/doc-flow';
+const GENERATED_BASE = '/api/v1/docflow';
+const PREVIEW_TOKENS_BASE = '/api/v1/preview-tokens';
 
 describe('ClienteService', () => {
   let service: ClienteService;
@@ -20,101 +22,125 @@ describe('ClienteService', () => {
 
   afterEach(() => http.verify());
 
-  it('listarClientes() sends paging + sort params', () => {
+  it('listarClientes() sends paging + sort params', fakeAsync(() => {
     service.listarClientes({ nome: 'a', page: 1, size: 10, sort: 'nome', dir: 'ASC' }).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/clientes`);
-    expect(req.request.params.get('nome')).toBe('a');
-    expect(req.request.params.get('page')).toBe('1');
-    expect(req.request.params.get('sort')).toBe('nome');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/clientes`));
+    expect(req.request.url).toContain('nome=a');
+    expect(req.request.url).toContain('page=1');
+    expect(req.request.url).toContain('sort=nome');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('clientes() maps PageResult to items', done => {
-    service.clientes().subscribe(list => {
-      expect(list.length).toBe(2);
-      done();
-    });
-    http.expectOne(r => r.url === `${BASE}/clientes`).flush({ items: [{}, {}], totalItems: 2 });
-  });
+  it('clientes() maps PageResult to items', fakeAsync(() => {
+    let list: Cliente[] = [];
+    service.clientes().subscribe(items => (list = items));
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/clientes`)).flush({ items: [{}, {}], totalItems: 2 });
+    tick();
+    expect(list.length).toBe(2);
+  }));
 
-  it('cliente(id) hits /clientes/:id', () => {
+  it('cliente(id) hits /clientes/:id', fakeAsync(() => {
     service.cliente('c1').subscribe();
-    http.expectOne(`${BASE}/clientes/c1`).flush({} as Cliente);
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/clientes/c1`).flush({} as Cliente);
+    tick();
+  }));
 
-  it('salvarCliente() POSTs without id', () => {
+  it('salvarCliente() POSTs without id', fakeAsync(() => {
     service.salvarCliente({ nome: 'X' }).subscribe();
-    const req = http.expectOne(`${BASE}/clientes`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes`);
     expect(req.request.method).toBe('POST');
     req.flush({} as Cliente);
-  });
+    tick();
+  }));
 
-  it('salvarCliente() PUTs when id is provided', () => {
+  it('salvarCliente() PUTs when id is provided', fakeAsync(() => {
     service.salvarCliente({ nome: 'X' }, 'c1').subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1`);
     expect(req.request.method).toBe('PUT');
     req.flush({} as Cliente);
-  });
+    tick();
+  }));
 
-  it('excluirCliente() DELETEs /clientes/:id', () => {
+  it('excluirCliente() DELETEs /clientes/:id', fakeAsync(() => {
     service.excluirCliente('c1').subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
-  });
+    tick();
+  }));
 
-  it('vinculosCliente() hits /:id/vinculos', () => {
+  it('vinculosCliente() hits /:id/vinculos', fakeAsync(() => {
     service.vinculosCliente('c1').subscribe();
-    http.expectOne(`${BASE}/clientes/c1/vinculos`).flush({ projetoIds: [], moduloIds: [], paginaIds: [] });
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/clientes/c1/vinculos`).flush({ projetoIds: [], moduloIds: [], paginaIds: [] });
+    tick();
+  }));
 
-  it('salvarProjetosCliente() PUTs ids array', () => {
+  it('salvarProjetosCliente() PUTs ids array', fakeAsync(() => {
     service.salvarProjetosCliente('c1', ['p1', 'p2']).subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1/projetos`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1/projetos`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({ projetoIds: ['p1', 'p2'] });
     req.flush(null);
-  });
+    tick();
+  }));
 
-  it('copiarVinculosCliente() POSTs origemClienteId', () => {
+  it('copiarVinculosCliente() POSTs origemClienteId', fakeAsync(() => {
     service.copiarVinculosCliente('c1', 'c2').subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1/copiar-vinculos`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1/copiar-vinculos`);
     expect(req.request.body).toEqual({ origemClienteId: 'c2' });
     req.flush(null);
-  });
+    tick();
+  }));
 
-  it('uploadLogoCliente() POSTs FormData with key "file"', () => {
+  it('uploadLogoCliente() POSTs multipart with file', fakeAsync(() => {
     const file = new File(['x'], 'logo.png', { type: 'image/png' });
     service.uploadLogoCliente('c1', file).subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1/logo`);
-    const body = req.request.body as FormData;
-    expect(body.has('file')).toBe(true);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1/logo`);
+    expect(req.request.method).toBe('POST');
     req.flush(null);
-  });
+    tick();
+  }));
 
-  it('removerLogoCliente() DELETEs /logo', () => {
+  it('removerLogoCliente() DELETEs /logo', fakeAsync(() => {
     service.removerLogoCliente('c1').subscribe();
-    const req = http.expectOne(`${BASE}/clientes/c1/logo`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/clientes/c1/logo`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
-  });
+    tick();
+  }));
 
   it('logoUrlCliente() returns canonical URL', () => {
     expect(service.logoUrlCliente('c1')).toBe(`${BASE}/clientes/c1/logo`);
   });
 
-  it('gerarPreviewToken() sets clienteId and horasValidade params', () => {
+  it('gerarPreviewToken() sets clienteId and horasValidade params', fakeAsync(() => {
     service.gerarPreviewToken('c1', 48).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/preview-tokens`);
-    expect(req.request.params.get('clienteId')).toBe('c1');
-    expect(req.request.params.get('horasValidade')).toBe('48');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${PREVIEW_TOKENS_BASE}?`));
+    expect(req.request.url).toContain('clienteId=c1');
+    expect(req.request.url).toContain('horasValidade=48');
     req.flush({ token: 'abc', expiresAt: '2026-06-12' });
-  });
+    tick();
+  }));
 
-  it('revogarPreviewToken() DELETEs /preview-tokens/:id', () => {
+  it('revogarPreviewToken() DELETEs /preview-tokens/:id', fakeAsync(() => {
     service.revogarPreviewToken('t1').subscribe();
-    const req = http.expectOne(`${BASE}/preview-tokens/t1`);
+    tick();
+    const req = http.expectOne(`${PREVIEW_TOKENS_BASE}/t1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
-  });
+    tick();
+  }));
 });

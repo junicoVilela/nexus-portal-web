@@ -81,6 +81,7 @@
             #buscaInput
             type="search"
             placeholder="Buscar bloco por nome ou finalidade..."
+            aria-label="Buscar bloco por nome ou finalidade"
             [value]="busca()"
             (input)="busca.set(buscaInput.value)"
           />

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { PaginaRevisao } from '@modules/docflow/models/pagina.model';
 import { SortDirection } from '@shared/utils/query-state';
@@ -7,6 +7,8 @@ import { TablePaginationComponent } from '@shared/components/table-pagination/ta
 
 export type { DiffLinha, DiffToken } from '@modules/docflow/utils/diff.util';
 import type { DiffLinha } from '@modules/docflow/utils/diff.util';
+
+export type DiffModo = 'unificado' | 'lado-a-lado';
 
 @Component({
   selector: 'app-pagina-revisoes',
@@ -36,7 +38,11 @@ export class PaginaRevisoesComponent {
   readonly revisoesDir = input.required<SortDirection>();
   readonly showDiff = input.required<boolean>();
   readonly diffLinhas = input.required<DiffLinha[]>();
+  readonly conteudoAnterior = input('');
+  readonly conteudoAtual = input('');
   readonly nomeUsuario = input.required<(username?: string) => string>();
+
+  protected readonly modoDiff = signal<DiffModo>('unificado');
 
   readonly pageChange = output<number>();
   readonly pageSizeChange = output<number>();
@@ -50,5 +56,9 @@ export class PaginaRevisoesComponent {
 
   protected tipoLabel(tipo: PaginaRevisao['tipo']): string {
     return this.tipos[tipo];
+  }
+
+  protected definirModoDiff(modo: DiffModo): void {
+    this.modoDiff.set(modo);
   }
 }

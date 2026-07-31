@@ -236,8 +236,8 @@
           </div>
           <div class="df-form__field df-form__field--3">
             <span class="df-form__label">Disponibilidade</span>
-            <label class="df-form__check df-form__check--inline">
-              <input type="checkbox" formControlName="ativo" />
+            <label class="df-form__check df-form__check--inline" for="pagina-ativo">
+              <input id="pagina-ativo" type="checkbox" formControlName="ativo" />
               <span>Página ativa</span>
             </label>
           </div>
@@ -402,8 +402,10 @@
               <div class="pf-pane-head"><strong>Código-fonte</strong><small>HTML final da página.</small></div>
               <textarea
                 #conteudoHtmlInput
+                id="pagina-conteudo-html"
                 class="pf-textarea"
                 formControlName="conteudoHtml"
+                aria-label="Código-fonte HTML da página"
                 (keydown)="atalhoBlocoNoCodigo($event)"
               ></textarea>
             </section>
@@ -561,6 +563,8 @@
       [revisoesDir]="revisoesDir()"
       [showDiff]="showDiff()"
       [diffLinhas]="diffLinhas()"
+      [conteudoAnterior]="diffConteudoAnterior()"
+      [conteudoAtual]="diffConteudoAtual()"
       [nomeUsuario]="nomeUsuarioFn"
       (pageChange)="alterarPaginaRevisoes($event)"
       (pageSizeChange)="alterarTamanhoPaginaRevisoes($event)"

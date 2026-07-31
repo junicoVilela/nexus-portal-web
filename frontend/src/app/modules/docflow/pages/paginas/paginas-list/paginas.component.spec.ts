@@ -1,16 +1,19 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { Pagina } from '@modules/docflow/models/pagina.model';
+import { ModuloService } from '@modules/docflow/services/modulo.service';
+import { PaginaService } from '@modules/docflow/services/pagina.service';
+import { ProjetoService } from '@modules/docflow/services/projeto.service';
+import { ToastService } from '@shared/ui';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginasComponent } from './paginas.component';
 
 describe('PaginasComponent', () => {
   let fixture: ComponentFixture<PaginasComponent>;
-  let http: HttpTestingController;
   let router: Router;
+  let paginaService: jasmine.SpyObj<PaginaService>;
 
   const paginaBase = (overrides: Partial<Pagina> = {}): Pagina => ({
     id: 'p1',
@@ -29,49 +32,47 @@ describe('PaginasComponent', () => {
   });
 
   beforeEach(async () => {
+    paginaService = jasmine.createSpyObj<PaginaService>('PaginaService', [
+      'listarPaginas',
+      'reordenarPaginas',
+      'resumoPaginasPorStatusGlobal',
+    ]);
+    paginaService.listarPaginas.and.returnValue(
+      of({ items: [], page: 1, size: 10, totalItems: 0, totalPages: 0, first: true, last: true }),
+    );
+    paginaService.resumoPaginasPorStatusGlobal.and.returnValue(of({}));
+
     await TestBed.configureTestingModule({
       imports: [PaginasComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         provideRouter([]),
         lucideTestIcons,
         { provide: AuthService, useValue: { tem: () => () => true } },
+        { provide: ToastService, useValue: { success: jasmine.createSpy('success'), error: jasmine.createSpy('error') } },
+        { provide: ProjetoService, useValue: { projetos: () => of([]) } },
+        { provide: ModuloService, useValue: { modulos: () => of([]) } },
+        { provide: PaginaService, useValue: paginaService },
       ],
     }).compileComponents();
-    http = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
   });
 
-  afterEach(() => http.verify());
-
-  function flushBootstrap(): void {
-    const projetos = http.expectOne(r => r.url === '/api/doc-flow/projetos');
-    projetos.flush({ items: [], page: 1, size: 1000, totalItems: 0, totalPages: 0, first: true, last: true });
-    const modulos = http.expectOne(r => r.url === '/api/doc-flow/modulos');
-    modulos.flush({ items: [], page: 1, size: 1000, totalItems: 0, totalPages: 0, first: true, last: true });
-    const resumo = http.expectOne(r => r.url === '/api/doc-flow/paginas/resumo-por-status');
-    resumo.flush({});
-  }
-
   it('ordena paginasHierarquia com ancestral presente na lista', () => {
+    paginaService.listarPaginas.and.returnValue(
+      of({
+        items: [
+          paginaBase({ id: 'filho', titulo: 'Incluir', parentId: 'pai', ordem: 2 }),
+          paginaBase({ id: 'pai', titulo: 'Operações', codigoTela: 'OPS-001', ordem: 1 }),
+        ],
+        page: 1,
+        size: 10,
+        totalItems: 2,
+        totalPages: 1,
+        first: true,
+        last: true,
+      }),
+    );
     fixture = TestBed.createComponent(PaginasComponent);
-    fixture.detectChanges();
-    flushBootstrap();
-
-    const paginas = http.expectOne(r => r.url === '/api/doc-flow/paginas');
-    paginas.flush({
-      items: [
-        paginaBase({ id: 'filho', titulo: 'Incluir', parentId: 'pai', ordem: 2 }),
-        paginaBase({ id: 'pai', titulo: 'Operações', codigoTela: 'OPS-001', ordem: 1 }),
-      ],
-      page: 1,
-      size: 10,
-      totalItems: 2,
-      totalPages: 1,
-      first: true,
-      last: true,
-    });
     fixture.detectChanges();
 
     const hierarquia = fixture.componentInstance.paginasHierarquia();
@@ -83,17 +84,6 @@ describe('PaginasComponent', () => {
     const navigate = spyOn(router, 'navigate');
     fixture = TestBed.createComponent(PaginasComponent);
     fixture.detectChanges();
-    flushBootstrap();
-    const paginasReq = http.expectOne(r => r.url === '/api/doc-flow/paginas');
-    paginasReq.flush({
-      items: [],
-      page: 1,
-      size: 10,
-      totalItems: 0,
-      totalPages: 0,
-      first: true,
-      last: true,
-    });
 
     fixture.componentInstance.filtros.controls.moduloId.setValue('m1');
     fixture.componentInstance.paginas.set([
@@ -111,5 +101,22 @@ describe('PaginasComponent', () => {
     const args = navigate.calls.mostRecent().args;
     expect(args[1]?.queryParams?.['parentId']).toBe('indice');
     expect(args[1]?.queryParams?.['tipoPagina']).toBe('lista');
+  });
+
+  it('moverParaBaixo chama reordenarPaginas com ids trocados', () => {
+    fixture = TestBed.createComponent(PaginasComponent);
+    fixture.detectChanges();
+
+    paginaService.reordenarPaginas.and.returnValue(of(void 0));
+    const carregar = spyOn(fixture.componentInstance, 'carregar');
+
+    const primeira = paginaBase({ id: 'p1', ordem: 1 });
+    const segunda = paginaBase({ id: 'p2', titulo: 'Detalhe', codigoTela: 'DET-001', ordem: 2 });
+    fixture.componentInstance.paginas.set([primeira, segunda]);
+
+    fixture.componentInstance.moverParaBaixo(primeira);
+
+    expect(paginaService.reordenarPaginas).toHaveBeenCalledWith(['p2', 'p1']);
+    expect(carregar).toHaveBeenCalled();
   });
 });

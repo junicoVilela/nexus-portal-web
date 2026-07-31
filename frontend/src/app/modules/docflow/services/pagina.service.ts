@@ -7,18 +7,40 @@ import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
+  anexar as anexarPaginaSdk,
+  anexos as anexosPaginaSdk,
   aplicarTemplate,
+  aprovar as aprovarPaginaSdk,
+  arquivar as arquivarPaginaSdk,
   arquivarTemplate,
+  atualizar16 as atualizarPaginaSdk,
   atualizarTemplate,
+  autosave as autosavePaginaSdk,
+  buscar14 as buscarPaginaSdk,
+  criar15 as criarPaginaSdk,
   criarTemplate,
+  duplicar2 as duplicarPaginaSdk,
   duplicarTemplate,
+  enviarRevisao as enviarRevisaoPaginaSdk,
+  excluir11 as excluirPaginaSdk,
+  excluirAnexo as excluirAnexoPaginaSdk,
   excluirTemplate,
+  listar20 as listarPaginasSdk,
+  preview2 as previewPaginaHtmlSdk,
+  publicar1 as publicarPaginaSdk,
+  qualidade as qualidadePaginaSdk,
   reativarTemplate,
+  reordenar1 as reordenarPaginasSdk,
   restaurarVersaoTemplate,
+  resumoPorStatusGlobal as resumoPaginasPorStatusGlobalSdk,
+  revisoes as revisoesPaginaSdk,
+  salvarRascunho as salvarRascunhoPaginaSdk,
   templates,
   versoesTemplate,
 } from '../../../api/generated/sdk.gen';
 import type {
+  PaginaRequest,
+  PaginaResponse,
   PaginaTemplateAplicacaoResponse,
   PaginaTemplateResponse,
   PaginaTemplateVersaoResponse,
@@ -64,9 +86,9 @@ export class PaginaService {
       size?: number;
     } = {},
   ): Observable<PageResult<Pagina>> {
-    return this.http.get<PageResult<Pagina>>(`${this.base}/paginas`, {
-      params: buildQueryParams(filtros),
-    });
+    return defer(() =>
+      listarPaginasSdk({ query: filtros, injector: this.injector }),
+    ).pipe(map(resposta => this.mapearPageResult(resposta.data, filtros.size, item => this.mapearPagina(item))));
   }
 
   paginas(
@@ -83,7 +105,9 @@ export class PaginaService {
   }
 
   pagina(id: string): Observable<Pagina> {
-    return this.http.get<Pagina>(`${this.base}/paginas/${id}`);
+    return defer(() => buscarPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   templatesPagina(
@@ -252,49 +276,78 @@ export class PaginaService {
   }
 
   salvarPagina(payload: Partial<Pagina>, id?: string): Observable<Pagina> {
+    const body = payload as PaginaRequest;
     return id
-      ? this.http.put<Pagina>(`${this.base}/paginas/${id}`, payload)
-      : this.http.post<Pagina>(`${this.base}/paginas`, payload);
+      ? defer(() =>
+          atualizarPaginaSdk({ path: { id }, body, injector: this.injector }),
+        ).pipe(map(resposta => this.mapearPagina(resposta.data)))
+      : defer(() => criarPaginaSdk({ body, injector: this.injector })).pipe(
+          map(resposta => this.mapearPagina(resposta.data)),
+        );
   }
 
   excluirPagina(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/paginas/${id}`);
+    return defer(() => excluirPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(() => undefined),
+    );
   }
 
   autosavePagina(id: string, payload: Partial<Pagina>): Observable<Pagina> {
-    return this.http.put<Pagina>(`${this.base}/paginas/${id}/autosave`, payload);
+    return defer(() =>
+      autosavePaginaSdk({
+        path: { id },
+        body: payload as PaginaRequest,
+        injector: this.injector,
+      }),
+    ).pipe(map(resposta => this.mapearPagina(resposta.data)));
   }
 
   qualidadePagina(id: string): Observable<PaginaQualidade> {
-    return this.http.get<PaginaQualidade>(`${this.base}/paginas/${id}/qualidade`);
+    return defer(() => qualidadePaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => resposta.data as PaginaQualidade),
+    );
   }
 
   previewPaginaHtml(id: string): Observable<string> {
-    return this.http.get(`${this.base}/paginas/${id}/preview`, { responseType: 'text' });
+    return defer(() => previewPaginaHtmlSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => resposta.data),
+    );
   }
 
   salvarRascunho(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/salvar-rascunho`, {});
+    return defer(() => salvarRascunhoPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   publicarPagina(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/publicar`, {});
+    return defer(() => publicarPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   enviarRevisaoPagina(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/enviar-revisao`, {});
+    return defer(() => enviarRevisaoPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   aprovarPagina(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/aprovar`, {});
+    return defer(() => aprovarPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   arquivarPagina(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/arquivar`, {});
+    return defer(() => arquivarPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   duplicarPagina(id: string): Observable<Pagina> {
-    return this.http.post<Pagina>(`${this.base}/paginas/${id}/duplicar`, {});
+    return defer(() => duplicarPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearPagina(resposta.data)),
+    );
   }
 
   listarRevisoesPagina(
@@ -304,13 +357,23 @@ export class PaginaService {
     sort?: string,
     dir?: SortDirection,
   ): Observable<PageResult<PaginaRevisao>> {
-    return this.http.get<PageResult<PaginaRevisao>>(`${this.base}/paginas/${id}/revisoes`, {
-      params: buildQueryParams({ page, size, sort, dir }),
-    });
+    return defer(() =>
+      revisoesPaginaSdk({
+        path: { id },
+        query: { page, size, sort, dir },
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta =>
+        this.mapearPageResult(resposta.data as PageResult<PaginaRevisao>, size) as PageResult<PaginaRevisao>,
+      ),
+    );
   }
 
   anexosPagina(id: string): Observable<PaginaAnexo[]> {
-    return this.http.get<PaginaAnexo[]>(`${this.base}/paginas/${id}/anexos`);
+    return defer(() => anexosPaginaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => resposta.data as PaginaAnexo[]),
+    );
   }
 
   bibliotecaAnexos(busca = '', page = 1, size = 24): Observable<PageResult<PaginaAnexo>> {
@@ -324,13 +387,18 @@ export class PaginaService {
   }
 
   anexarPagina(id: string, file: File): Observable<PaginaAnexo> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<PaginaAnexo>(`${this.base}/paginas/${id}/anexos`, formData);
+    return defer(() =>
+      anexarPaginaSdk({ path: { id }, body: { file }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data as PaginaAnexo));
   }
 
   excluirAnexoPagina(paginaId: string, anexoId: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/paginas/${paginaId}/anexos/${anexoId}`);
+    return defer(() =>
+      excluirAnexoPaginaSdk({
+        path: { paginaId, anexoId },
+        injector: this.injector,
+      }),
+    ).pipe(map(() => undefined));
   }
 
   downloadAnexoUrl(anexo: PaginaAnexo): string {
@@ -342,10 +410,42 @@ export class PaginaService {
   }
 
   resumoPaginasPorStatusGlobal(): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(`${this.base}/paginas/resumo-por-status`);
+    return defer(() => resumoPaginasPorStatusGlobalSdk({ injector: this.injector })).pipe(
+      map(resposta => resposta.data),
+    );
   }
 
   reordenarPaginas(paginaIds: string[]): Observable<void> {
-    return this.http.post<void>(`${this.base}/paginas/reordenar`, { paginaIds });
+    return defer(() =>
+      reordenarPaginasSdk({ body: { paginaIds }, injector: this.injector }),
+    ).pipe(map(() => undefined));
+  }
+
+  private mapearPagina(resposta: PaginaResponse): Pagina {
+    return resposta as Pagina;
+  }
+
+  private mapearPageResult<TSource, TTarget>(
+    data: {
+      items?: TSource[];
+      totalItems?: number;
+      totalPages?: number;
+      page?: number;
+      size?: number;
+      first?: boolean;
+      last?: boolean;
+    },
+    defaultSize = 10,
+    mapItem: (item: TSource) => TTarget = item => item as unknown as TTarget,
+  ): PageResult<TTarget> {
+    return {
+      items: (data.items ?? []).map(mapItem),
+      totalItems: data.totalItems ?? 0,
+      totalPages: data.totalPages ?? 0,
+      page: data.page ?? 1,
+      size: data.size ?? defaultSize,
+      first: data.first ?? true,
+      last: data.last ?? true,
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, input, output, signal } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { PaginaTemplate } from '../../models/pagina.model';
 
@@ -141,5 +141,14 @@ export class PaginaTemplatePickerComponent {
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .trim();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  protected fecharPorEscape(event: KeyboardEvent): void {
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    const target = event.target;
+    if (target instanceof Element && target.closest('.block-library__param-panel[role="dialog"]')) return;
+    event.stopPropagation();
+    this.fechado.emit();
   }
 }

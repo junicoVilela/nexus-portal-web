@@ -18,6 +18,7 @@
       [value]="filtroNome"
       (input)="atualizarFiltro($event)"
       placeholder="Buscar por nome..."
+      aria-label="Buscar projetos por nome"
     />
     <span class="projetos__count">{{ totalProjetos() }} {{ totalProjetos() === 1 ? 'projeto' : 'projetos' }}</span>
   </div>

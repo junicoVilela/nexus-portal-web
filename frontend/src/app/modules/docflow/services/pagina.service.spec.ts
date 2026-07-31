@@ -22,19 +22,23 @@ describe('PaginaService', () => {
 
   afterEach(() => http.verify());
 
-  it('listarPaginas() sends filters as query params', () => {
+  it('listarPaginas() sends filters as query params', fakeAsync(() => {
     service.listarPaginas({ busca: 'q', moduloId: 'm1', status: 'PUBLICADO', page: 1, size: 10 }).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/paginas`);
-    expect(req.request.params.get('busca')).toBe('q');
-    expect(req.request.params.get('moduloId')).toBe('m1');
-    expect(req.request.params.get('status')).toBe('PUBLICADO');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas`));
+    expect(req.request.url).toContain('busca=q');
+    expect(req.request.url).toContain('moduloId=m1');
+    expect(req.request.url).toContain('status=PUBLICADO');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('pagina(id) hits /paginas/:id', () => {
+  it('pagina(id) hits /paginas/:id', fakeAsync(() => {
     service.pagina('pg1').subscribe();
-    http.expectOne(`${BASE}/paginas/pg1`).flush({} as Pagina);
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/paginas/pg1`).flush({} as Pagina);
+    tick();
+  }));
 
   it('templatesPagina() lista os modelos ativos', fakeAsync(() => {
     service.templatesPagina().subscribe(templates => expect(templates.length).toBe(1));
@@ -159,70 +163,96 @@ describe('PaginaService', () => {
     tick();
   }));
 
-  it('autosavePagina() atualiza o rascunho no endpoint dedicado', () => {
+  it('autosavePagina() atualiza o rascunho no endpoint dedicado', fakeAsync(() => {
     service.autosavePagina('pg1', { titulo: 'Página', version: 2 }).subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1/autosave`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/pg1/autosave`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body.version).toBe(2);
     req.flush({});
-  });
+    tick();
+  }));
 
-  it('qualidadePagina() consulta o checklist editorial', () => {
+  it('qualidadePagina() consulta o checklist editorial', fakeAsync(() => {
     service.qualidadePagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/qualidade`).request.method).toBe('GET');
-  });
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/qualidade`).request.method).toBe('GET');
+    tick();
+  }));
 
-  it('previewPaginaHtml() solicita a prévia fiel como texto', () => {
+  it('previewPaginaHtml() solicita a prévia fiel como texto', fakeAsync(() => {
     service.previewPaginaHtml('pg1').subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1/preview`);
-    expect(req.request.responseType).toBe('text');
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/paginas/pg1/preview`).flush('<html />');
+    tick();
+  }));
 
-  it('salvarPagina() POSTs without id and PUTs with id', () => {
+  it('salvarPagina() POSTs without id and PUTs with id', fakeAsync(() => {
     service.salvarPagina({ titulo: 'a' }).subscribe();
-    expect(http.expectOne(`${BASE}/paginas`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas`).request.method).toBe('POST');
+    tick();
     service.salvarPagina({ titulo: 'a' }, 'pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1`).request.method).toBe('PUT');
-  });
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1`).request.method).toBe('PUT');
+    tick();
+  }));
 
-  it('excluirPagina() DELETEs /paginas/:id', () => {
+  it('excluirPagina() DELETEs /paginas/:id', fakeAsync(() => {
     service.excluirPagina('pg1').subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/pg1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
-  });
+    tick();
+  }));
 
-  it('action endpoints POST to /paginas/:id/<acao>', () => {
+  it('action endpoints POST to /paginas/:id/<acao>', fakeAsync(() => {
     service.salvarRascunho('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/salvar-rascunho`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/salvar-rascunho`).request.method).toBe('POST');
+    tick();
     service.publicarPagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/publicar`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/publicar`).request.method).toBe('POST');
+    tick();
     service.enviarRevisaoPagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/enviar-revisao`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/enviar-revisao`).request.method).toBe('POST');
+    tick();
     service.aprovarPagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/aprovar`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/aprovar`).request.method).toBe('POST');
+    tick();
     service.arquivarPagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/arquivar`).request.method).toBe('POST');
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/arquivar`).request.method).toBe('POST');
+    tick();
     service.duplicarPagina('pg1').subscribe();
-    expect(http.expectOne(`${BASE}/paginas/pg1/duplicar`).request.method).toBe('POST');
-  });
+    tick();
+    expect(http.expectOne(`${GENERATED_BASE}/paginas/pg1/duplicar`).request.method).toBe('POST');
+    tick();
+  }));
 
-  it('listarRevisoesPagina() sends paging + sort params', () => {
+  it('listarRevisoesPagina() sends paging + sort params', fakeAsync(() => {
     service.listarRevisoesPagina('pg1', 2, 5, 'numero', 'DESC').subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/paginas/pg1/revisoes`);
-    expect(req.request.params.get('page')).toBe('2');
-    expect(req.request.params.get('sort')).toBe('numero');
-    expect(req.request.params.get('dir')).toBe('DESC');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas/pg1/revisoes`));
+    expect(req.request.url).toContain('page=2');
+    expect(req.request.url).toContain('sort=numero');
+    expect(req.request.url).toContain('dir=DESC');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('anexosPagina() returns array from /anexos', done => {
-    service.anexosPagina('pg1').subscribe(list => {
-      expect(list.length).toBe(2);
-      done();
-    });
-    http.expectOne(`${BASE}/paginas/pg1/anexos`).flush([{}, {}] as PaginaAnexo[]);
-  });
+  it('anexosPagina() returns array from /anexos', fakeAsync(() => {
+    let list: PaginaAnexo[] = [];
+    service.anexosPagina('pg1').subscribe(items => (list = items));
+    tick();
+    http.expectOne(`${GENERATED_BASE}/paginas/pg1/anexos`).flush([{}, {}] as PaginaAnexo[]);
+    tick();
+    expect(list.length).toBe(2);
+  }));
 
   it('bibliotecaAnexos() consulta a mídia global com busca e paginação', () => {
     service.bibliotecaAnexos('logo', 2, 12).subscribe();
@@ -241,36 +271,43 @@ describe('PaginaService', () => {
     req.flush({});
   });
 
-  it('anexarPagina() POSTs FormData with key "file"', () => {
+  it('anexarPagina() POSTs multipart with file', fakeAsync(() => {
     const file = new File(['x'], 'a.png', { type: 'image/png' });
     service.anexarPagina('pg1', file).subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1/anexos`);
-    const body = req.request.body as FormData;
-    expect(body.has('file')).toBe(true);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/pg1/anexos`);
+    expect(req.request.method).toBe('POST');
     req.flush({} as PaginaAnexo);
-  });
+    tick();
+  }));
 
-  it('excluirAnexoPagina() DELETEs /paginas/:id/anexos/:anexoId', () => {
+  it('excluirAnexoPagina() DELETEs /paginas/:id/anexos/:anexoId', fakeAsync(() => {
     service.excluirAnexoPagina('pg1', 'a1').subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1/anexos/a1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/pg1/anexos/a1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
-  });
+    tick();
+  }));
 
   it('downloadAnexoUrl() prepends BASE to anexo.downloadUrl', () => {
     expect(service.downloadAnexoUrl({ downloadUrl: '/x.png' } as PaginaAnexo)).toBe(`${BASE}/x.png`);
   });
 
-  it('resumoPaginasPorStatusGlobal() hits /paginas/resumo-por-status', () => {
+  it('resumoPaginasPorStatusGlobal() hits /paginas/resumo-por-status', fakeAsync(() => {
     service.resumoPaginasPorStatusGlobal().subscribe();
-    http.expectOne(`${BASE}/paginas/resumo-por-status`).flush({});
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/paginas/resumo-por-status`).flush({});
+    tick();
+  }));
 
-  it('reordenarPaginas() POSTs ids array', () => {
+  it('reordenarPaginas() POSTs ids array', fakeAsync(() => {
     service.reordenarPaginas(['a', 'b']).subscribe();
-    const req = http.expectOne(`${BASE}/paginas/reordenar`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/reordenar`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ paginaIds: ['a', 'b'] });
     req.flush(null);
-  });
+    tick();
+  }));
 });

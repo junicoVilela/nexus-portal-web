@@ -1,24 +1,46 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { Injectable, Injector } from '@angular/core';
+import { defer, map, Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
-import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
+import {
+  atualizar18 as atualizarClienteSdk,
+  buscar16 as buscarClienteSdk,
+  copiarVinculos as copiarVinculosClienteSdk,
+  criar17 as criarClienteSdk,
+  deleteLogo1 as removerLogoClienteSdk,
+  excluir13 as excluirClienteSdk,
+  gerarToken as gerarPreviewTokenSdk,
+  listar17 as listarPreviewTokensSdk,
+  listar22 as listarClientesSdk,
+  revogar2 as revogarPreviewTokenSdk,
+  uploadLogo1 as uploadLogoClienteSdk,
+  vincularModulos as vincularModulosClienteSdk,
+  vincularPaginas as vincularPaginasClienteSdk,
+  vincularProjetos as vincularProjetosClienteSdk,
+  vinculos as vinculosClienteSdk,
+} from '../../../api/generated/sdk.gen';
+import type {
+  ClienteRequest,
+  ClienteResponse,
+  PreviewTokenResponse,
+} from '../../../api/generated/types.gen';
 import { Cliente, PreviewToken } from '../models/cliente.model';
 
 @Injectable({ providedIn: 'root' })
 export class ClienteService {
   private readonly base = environment.apiUrl;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly injector: Injector) {}
 
   listarClientes(
     params: { nome?: string; sort?: string; dir?: SortDirection; page?: number; size?: number } = {},
   ): Observable<PageResult<Cliente>> {
-    return this.http.get<PageResult<Cliente>>(`${this.base}/clientes`, {
-      params: buildQueryParams(params),
-    });
+    return defer(() => listarClientesSdk({ query: params, injector: this.injector })).pipe(
+      map(resposta =>
+        this.mapearPageResult(resposta.data, params.size, item => this.mapearCliente(item)),
+      ),
+    );
   }
 
   clientes(): Observable<Cliente[]> {
@@ -26,53 +48,90 @@ export class ClienteService {
   }
 
   cliente(id: string): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.base}/clientes/${id}`);
+    return defer(() => buscarClienteSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => this.mapearCliente(resposta.data)),
+    );
   }
 
   salvarCliente(payload: Partial<Cliente>, id?: string): Observable<Cliente> {
+    const body = payload as ClienteRequest;
     return id
-      ? this.http.put<Cliente>(`${this.base}/clientes/${id}`, payload)
-      : this.http.post<Cliente>(`${this.base}/clientes`, payload);
+      ? defer(() =>
+          atualizarClienteSdk({ path: { id }, body, injector: this.injector }),
+        ).pipe(map(resposta => this.mapearCliente(resposta.data)))
+      : defer(() => criarClienteSdk({ body, injector: this.injector })).pipe(
+          map(resposta => this.mapearCliente(resposta.data)),
+        );
   }
 
   excluirCliente(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/clientes/${id}`);
+    return defer(() => excluirClienteSdk({ path: { id }, injector: this.injector })).pipe(
+      map(() => undefined),
+    );
   }
 
   vinculosCliente(
     id: string,
   ): Observable<{ projetoIds: string[]; moduloIds: string[]; paginaIds: string[] }> {
-    return this.http.get<{ projetoIds: string[]; moduloIds: string[]; paginaIds: string[] }>(
-      `${this.base}/clientes/${id}/vinculos`,
+    return defer(() => vinculosClienteSdk({ path: { id }, injector: this.injector })).pipe(
+      map(resposta => ({
+        projetoIds: resposta.data['projetoIds'] ?? [],
+        moduloIds: resposta.data['moduloIds'] ?? [],
+        paginaIds: resposta.data['paginaIds'] ?? [],
+      })),
     );
   }
 
   salvarProjetosCliente(id: string, projetoIds: string[]): Observable<void> {
-    return this.http.put<void>(`${this.base}/clientes/${id}/projetos`, { projetoIds });
+    return defer(() =>
+      vincularProjetosClienteSdk({
+        path: { id },
+        body: { projetoIds },
+        injector: this.injector,
+      }),
+    ).pipe(map(() => undefined));
   }
 
   salvarModulosCliente(id: string, moduloIds: string[]): Observable<void> {
-    return this.http.put<void>(`${this.base}/clientes/${id}/modulos`, { moduloIds });
+    return defer(() =>
+      vincularModulosClienteSdk({
+        path: { id },
+        body: { moduloIds },
+        injector: this.injector,
+      }),
+    ).pipe(map(() => undefined));
   }
 
   salvarPaginasCliente(id: string, paginaIds: string[]): Observable<void> {
-    return this.http.put<void>(`${this.base}/clientes/${id}/paginas`, { paginaIds });
+    return defer(() =>
+      vincularPaginasClienteSdk({
+        path: { id },
+        body: { paginaIds },
+        injector: this.injector,
+      }),
+    ).pipe(map(() => undefined));
   }
 
   copiarVinculosCliente(destinoClienteId: string, origemClienteId: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/clientes/${destinoClienteId}/copiar-vinculos`, {
-      origemClienteId,
-    });
+    return defer(() =>
+      copiarVinculosClienteSdk({
+        path: { id: destinoClienteId },
+        body: { origemClienteId },
+        injector: this.injector,
+      }),
+    ).pipe(map(() => undefined));
   }
 
   uploadLogoCliente(id: string, file: File): Observable<void> {
-    const fd = new FormData();
-    fd.append('file', file);
-    return this.http.post<void>(`${this.base}/clientes/${id}/logo`, fd);
+    return defer(() =>
+      uploadLogoClienteSdk({ path: { id }, body: { file }, injector: this.injector }),
+    ).pipe(map(() => undefined));
   }
 
   removerLogoCliente(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/clientes/${id}/logo`);
+    return defer(() => removerLogoClienteSdk({ path: { id }, injector: this.injector })).pipe(
+      map(() => undefined),
+    );
   }
 
   logoUrlCliente(id: string): string {
@@ -80,21 +139,66 @@ export class ClienteService {
   }
 
   gerarPreviewToken(clienteId: string, horasValidade = 72): Observable<PreviewToken> {
-    const params = new HttpParams().set('clienteId', clienteId).set('horasValidade', horasValidade);
-    return this.http.post<PreviewToken>(`${this.base}/preview-tokens`, null, { params });
+    return defer(() =>
+      gerarPreviewTokenSdk({
+        query: { clienteId, horasValidade },
+        injector: this.injector,
+      }),
+    ).pipe(map(resposta => this.mapearPreviewToken(resposta.data)));
   }
 
   listarPreviewTokens(clienteId: string): Observable<PreviewToken[]> {
-    return this.http.get<PreviewToken[]>(`${this.base}/preview-tokens`, {
-      params: new HttpParams().set('clienteId', clienteId),
-    });
+    return defer(() =>
+      listarPreviewTokensSdk({ query: { clienteId }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data.map(item => this.mapearPreviewToken(item))));
   }
 
   revogarPreviewToken(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/preview-tokens/${id}`);
+    return defer(() => revogarPreviewTokenSdk({ path: { id }, injector: this.injector })).pipe(
+      map(() => undefined),
+    );
   }
 
   previewPublicoUrl(token: string): string {
     return `${this.base}/preview/${token}`;
+  }
+
+  private mapearCliente(item: ClienteResponse): Cliente {
+    return item as Cliente;
+  }
+
+  private mapearPreviewToken(item: PreviewTokenResponse): PreviewToken {
+    return {
+      id: item.id ?? '',
+      clienteId: item.clienteId ?? '',
+      token: item.token ?? '',
+      expiresAt: item.expiresAt ?? '',
+      createdAt: item.createdAt ?? '',
+      createdBy: item.createdBy,
+    };
+  }
+
+  private mapearPageResult<TSource, TTarget>(
+    data: {
+      items?: TSource[];
+      totalItems?: number;
+      totalPages?: number;
+      page?: number;
+      size?: number;
+      first?: boolean;
+      last?: boolean;
+    },
+    defaultSize = 10,
+    mapItem: (item: TSource) => TTarget = item => item as unknown as TTarget,
+  ): PageResult<TTarget> {
+    return {
+      items: (data.items ?? []).map(mapItem),
+      totalItems: data.totalItems ?? 0,
+      totalPages: data.totalPages ?? 0,
+      page: data.page ?? 1,
+      size: data.size ?? defaultSize,
+      first: data.first ?? true,
+      last: data.last ?? true,
+    };
   }
 }

@@ -13,7 +13,7 @@
   </div>
 
   <div filters class="modulos__filters">
-    <select class="modulos__select" [value]="projetoId" (change)="selecionarProjeto($event)">
+    <select class="modulos__select" [value]="projetoId" (change)="selecionarProjeto($event)" aria-label="Selecionar projeto">
       <option value="">Selecione um projeto</option>
       @for (projeto of projetos(); track projeto.id) {
         <option [value]="projeto.id">{{ projeto.nome }}</option>
@@ -24,6 +24,7 @@
       [value]="filtroNome"
       (input)="atualizarFiltro($event)"
       placeholder="Filtrar por nome ou slug..."
+      aria-label="Filtrar módulos por nome ou slug"
       [disabled]="!projetoId"
     />
     @if (projetoId) {

@@ -1,10 +1,10 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ProjetoService } from './projeto.service';
 import { Projeto } from '../models/projeto.model';
 
-const BASE = '/api/doc-flow';
+const GENERATED_BASE = '/api/v1/docflow';
 
 describe('ProjetoService', () => {
   let service: ProjetoService;
@@ -20,57 +20,78 @@ describe('ProjetoService', () => {
 
   afterEach(() => http.verify());
 
-  it('listarProjetos() sends params', () => {
+  it('listarProjetos() sends params', fakeAsync(() => {
     service.listarProjetos({ nome: 'a', page: 2, size: 5 }).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/projetos`);
-    expect(req.request.params.get('page')).toBe('2');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`));
+    expect(req.request.url).toContain('page=2');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('projetos() caches and replays on second call', () => {
+  it('projetos() caches and replays on second call', fakeAsync(() => {
     service.projetos().subscribe();
-    const first = http.expectOne(r => r.url === `${BASE}/projetos`);
+    tick();
+    const first = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`));
     first.flush({ items: [{ id: 'p1' } as Projeto], totalItems: 1 });
+    tick();
 
     service.projetos().subscribe(items => expect(items[0].id).toBe('p1'));
-    http.expectNone(r => r.url === `${BASE}/projetos`);
-  });
+    tick();
+    http.expectNone(r => r.url.startsWith(`${GENERATED_BASE}/projetos`));
+  }));
 
-  it('projeto(id) hits /projetos/:id', () => {
+  it('projeto(id) hits /projetos/:id', fakeAsync(() => {
     service.projeto('p1').subscribe();
-    http.expectOne(`${BASE}/projetos/p1`).flush({} as Projeto);
-  });
+    tick();
+    http.expectOne(`${GENERATED_BASE}/projetos/p1`).flush({} as Projeto);
+    tick();
+  }));
 
-  it('salvarProjeto() POSTs without id and invalidates cache', () => {
+  it('salvarProjeto() POSTs without id and invalidates cache', fakeAsync(() => {
     service.projetos().subscribe();
-    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`)).flush({ items: [], totalItems: 0 });
+    tick();
 
     service.salvarProjeto({ nome: 'X' }).subscribe();
-    const req = http.expectOne(`${BASE}/projetos`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/projetos`);
     expect(req.request.method).toBe('POST');
     req.flush({} as Projeto);
+    tick();
 
     service.projetos().subscribe();
-    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`)).flush({ items: [], totalItems: 0 });
+    tick();
+  }));
 
-  it('salvarProjeto() PUTs when id is provided', () => {
+  it('salvarProjeto() PUTs when id is provided', fakeAsync(() => {
     service.salvarProjeto({ nome: 'X' }, 'p1').subscribe();
-    const req = http.expectOne(`${BASE}/projetos/p1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/projetos/p1`);
     expect(req.request.method).toBe('PUT');
     req.flush({} as Projeto);
-  });
+    tick();
+  }));
 
-  it('excluirProjeto() DELETEs e invalida o cache', () => {
+  it('excluirProjeto() DELETEs e invalida o cache', fakeAsync(() => {
     service.projetos().subscribe();
-    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`)).flush({ items: [], totalItems: 0 });
+    tick();
 
     service.excluirProjeto('p1').subscribe();
-    const req = http.expectOne(`${BASE}/projetos/p1`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/projetos/p1`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
+    tick();
 
     service.projetos().subscribe();
-    http.expectOne(r => r.url === `${BASE}/projetos`).flush({ items: [], totalItems: 0 });
-  });
+    tick();
+    http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/projetos`)).flush({ items: [], totalItems: 0 });
+    tick();
+  }));
 });

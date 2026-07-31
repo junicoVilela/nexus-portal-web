@@ -38,8 +38,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### A.5 Diff visual entre revisões
 
-- **Status**: ✅ diff do conteúdo HTML e identificação dos eventos editoriais entregues.
-- **Melhoria futura**: evoluir para comparação side-by-side ou inline rica.
+- **Status**: ✅ diff unificado (linha/palavra) e comparação **lado a lado** do HTML renderizado (`df-doc-content`) na central de revisão e no editor (`pagina-revisoes`).
 
 ### A.10 Segurança editorial
 
@@ -48,6 +47,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### A.6 Filtros salvos por usuário
 
+- **Status**: ✅ presets persistidos em `localStorage` via `<ui-filter-presets>` (escopo por lista).
 - **Impacto**: médio.
 - **Esforço**: M.
 - **Onde**: listas de páginas/clientes — persistir combinações de filtros em localStorage.
@@ -57,7 +57,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - **Impacto**: médio (power users).
 - **Esforço**: M.
 - Atalhos: `Ctrl+S` (salvar), `Ctrl+P` (publicar), `Esc` (fechar modal), `/` (foco busca).
-- **Status**: ✅ `Ctrl+S` / `Cmd+S` e `Ctrl+P` / `Cmd+P` no editor (publicar quando APROVADO); `/` na lista de páginas.
+- **Status**: ✅ `Ctrl+S` / `Cmd+S` e `Ctrl+P` / `Cmd+P` no editor (publicar quando APROVADO); `/` na lista de páginas; `Esc` fecha seletor de modelos e painéis aninhados (ex.: biblioteca de blocos).
 
 ### A.8 Modelos de página e criação sequencial
 
@@ -89,6 +89,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
   cliente Angular com `@hey-api/openapi-ts` via `npm run api:generate`.
 - `npm run api:check` detecta divergência depois da geração em CI.
 - O domínio de templates já usa o SDK gerado; a migração dos demais services é incremental.
+- Após gerar um pacote, o snapshot da árvore de páginas fica disponível em `GET /publicacoes/{id}/paginas`.
 
 ### B.2 Role guard nas rotas sensíveis
 
@@ -146,8 +147,9 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### D.2 Labels e aria em todos os inputs
 
-- **Status parcial**: filtros de modelos, estados de carregamento, botões de prévia e
-  campos críticos do editor revisados; manter auditoria progressiva nas demais telas.
+- **Status parcial**: filtros de modelos, estados de carregamento, botões de prévia,
+  campos críticos do editor, listas de clientes/projetos/módulos, formulário de publicação
+  e buscas da biblioteca de blocos revisados; manter auditoria progressiva nas demais telas.
 
 ### D.3 ARIA live regions para `flash` messages
 
@@ -168,6 +170,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 ### E.2 Component tests críticos
 
 - **Foco**: `pagina-form` (auto-save + canDeactivate + restauração), `paginas-list` (drag-drop + reorder), `publicacao-form` (preview + geração).
+- **Status parcial**: testes ampliados em `paginas-list` (reordenar via `moverParaCima`/`moverParaBaixo`), `publicacao-form` (preview ao selecionar cliente + navegação após gerar), `pagina-template-picker` (Escape) e revisões/diff.
 
 ### E.3 E2E com Playwright
 

@@ -8,6 +8,7 @@ import { AuthService } from '@core/auth/services/auth.service';
 import { Pagina, PaginaQualidade, PaginaRevisao } from '@modules/docflow/models/pagina.model';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { DiffLinha, diffLinhasPalavras } from '@modules/docflow/utils/diff.util';
+import type { DiffModo } from '@modules/docflow/components/pagina-revisoes/pagina-revisoes.component';
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
 import { ListPageComponent } from '@shared/layouts';
 import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
@@ -44,6 +45,9 @@ export class RevisoesComponent implements OnInit {
   protected readonly qualidade = signal<PaginaQualidade | null>(null);
   protected readonly revisoes = signal<PaginaRevisao[]>([]);
   protected readonly diff = signal<DiffLinha[]>([]);
+  protected readonly diffConteudoAnterior = signal('');
+  protected readonly diffConteudoAtual = signal('');
+  protected readonly modoDiff = signal<DiffModo>('unificado');
   protected comentario = '';
 
   protected readonly comentarios = computed(() => this.revisoes().filter(item => item.tipo === 'COMENTARIO'));
@@ -85,6 +89,9 @@ export class RevisoesComponent implements OnInit {
     this.qualidade.set(null);
     this.revisoes.set([]);
     this.diff.set([]);
+    this.diffConteudoAnterior.set('');
+    this.diffConteudoAtual.set('');
+    this.modoDiff.set('unificado');
     this.carregandoDetalhe.set(true);
     forkJoin({
       qualidade: this.paginaService.qualidadePagina(pagina.id),
@@ -98,11 +105,19 @@ export class RevisoesComponent implements OnInit {
           const atual = revisoes.items[0];
           const anterior = revisoes.items[1];
           if (atual && anterior) {
-            this.diff.set(await diffLinhasPalavras(anterior.conteudoHtml ?? '', atual.conteudoHtml ?? ''));
+            const htmlAnterior = anterior.conteudoHtml ?? '';
+            const htmlAtual = atual.conteudoHtml ?? '';
+            this.diffConteudoAnterior.set(htmlAnterior);
+            this.diffConteudoAtual.set(htmlAtual);
+            this.diff.set(await diffLinhasPalavras(htmlAnterior, htmlAtual));
           }
         },
         error: () => this.toast.error('Não foi possível carregar os dados editoriais da página.'),
       });
+  }
+
+  protected definirModoDiff(modo: DiffModo): void {
+    this.modoDiff.set(modo);
   }
 
   protected aprovar(): void {
