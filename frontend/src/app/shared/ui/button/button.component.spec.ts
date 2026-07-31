@@ -28,6 +28,18 @@ describe('ButtonComponent', () => {
     expect(btn.classList.contains('ui-btn--sm')).toBeTrue();
   });
 
+  it('applies menu and danger-soft variants used in dropdowns', () => {
+    fixture.componentRef.setInput('variant', 'menu');
+    fixture.detectChanges();
+    let btn: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(btn.classList.contains('ui-btn--menu')).toBeTrue();
+
+    fixture.componentRef.setInput('variant', 'danger-soft');
+    fixture.detectChanges();
+    btn = fixture.nativeElement.querySelector('button');
+    expect(btn.classList.contains('ui-btn--danger-soft')).toBeTrue();
+  });
+
   it('disables button and suppresses click when loading', () => {
     let clicks = 0;
     component.clicked.subscribe(() => clicks++);

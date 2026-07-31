@@ -115,7 +115,7 @@
           </td>
           <td class="paginas__td paginas__td--actions">
             <ng-container *appPermissao="'PAGINA:EDITAR'">
-              <ui-button variant="ghost" size="sm" (clicked)="editar(pagina)">Editar</ui-button>
+              <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(pagina)">Editar</ui-button>
               @if (pagina.status === 'RASCUNHO') {
                 <ui-button variant="secondary" size="sm" (clicked)="enviarRevisao(pagina)">Enviar revisão</ui-button>
               } @else if (pagina.status === 'EM_REVISAO') {
@@ -124,20 +124,22 @@
                 <ui-button variant="secondary" size="sm" (clicked)="publicar(pagina)">Publicar</ui-button>
               }
             </ng-container>
-            <details class="paginas__more-actions">
-              <summary>Mais ações</summary>
-              <div class="paginas__more-actions-menu">
+            <details class="ui-more-actions">
+              <summary class="ui-more-actions__trigger">Mais ações</summary>
+              <div class="ui-more-actions__menu" role="menu">
                 <ng-container *appPermissao="'PAGINA:EDITAR'">
-                  <ui-button variant="ghost" size="sm" icon="ArrowUp" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>
-                  <ui-button variant="ghost" size="sm" icon="ArrowDown" (clicked)="moverParaBaixo(pagina)">Mover abaixo</ui-button>
-                  <ui-button variant="danger" size="sm" (clicked)="arquivar(pagina)">Arquivar</ui-button>
+                  <ui-button variant="menu" size="sm" icon="ArrowUp" [fullWidth]="true" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>
+                  <ui-button variant="menu" size="sm" icon="ArrowDown" [fullWidth]="true" (clicked)="moverParaBaixo(pagina)">Mover abaixo</ui-button>
                 </ng-container>
-                <ui-button *appPermissao="'PAGINA:CRIAR'" variant="secondary" size="sm" (clicked)="duplicar(pagina)">Duplicar</ui-button>
+                <ui-button *appPermissao="'PAGINA:CRIAR'" variant="menu" size="sm" icon="Copy" [fullWidth]="true" (clicked)="duplicar(pagina)">Duplicar</ui-button>
+                <div class="ui-more-actions__sep" role="separator"></div>
+                <ui-button *appPermissao="'PAGINA:EDITAR'" variant="danger-soft" size="sm" icon="Archive" [fullWidth]="true" (clicked)="arquivar(pagina)">Arquivar</ui-button>
                 <ui-button
                   *appPermissao="'PAGINA:EXCLUIR'"
-                  variant="danger"
+                  variant="danger-soft"
                   size="sm"
                   icon="Trash2"
+                  [fullWidth]="true"
                   [disabled]="!!excluindoId()"
                   [loading]="excluindoId() === pagina.id"
                   (clicked)="excluir(pagina)"

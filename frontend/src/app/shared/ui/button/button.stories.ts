@@ -9,7 +9,10 @@ const meta: Meta<ButtonComponent> = {
   tags: ['autodocs'],
   decorators: [applicationConfig({ providers: [lucideIconsProvider] })],
   argTypes: {
-    variant: { control: 'select', options: ['primary', 'secondary', 'ghost', 'danger'] },
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'ghost', 'danger', 'menu', 'danger-soft'],
+    },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     icon: { control: 'text' },
     iconPosition: { control: 'select', options: ['leading', 'trailing'] },
@@ -40,6 +43,8 @@ export const Primary: Story = { args: { variant: 'primary', icon: 'Plus' } };
 export const Secondary: Story = { args: { variant: 'secondary', icon: 'Pencil' } };
 export const Ghost: Story = { args: { variant: 'ghost', icon: 'X' } };
 export const Danger: Story = { args: { variant: 'danger', icon: 'Trash2' } };
+export const Menu: Story = { args: { variant: 'menu', icon: 'Copy', fullWidth: true } };
+export const DangerSoft: Story = { args: { variant: 'danger-soft', icon: 'Trash2', fullWidth: true } };
 export const Loading: Story = { args: { variant: 'primary', loading: true } };
 export const Disabled: Story = { args: { variant: 'primary', disabled: true } };
 export const Small: Story = { args: { size: 'sm', icon: 'Check' } };

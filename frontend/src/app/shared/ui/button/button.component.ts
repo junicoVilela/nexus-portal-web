@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'menu' | 'danger-soft';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({
@@ -11,6 +11,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   templateUrl: './button.component.html',
   styleUrl: './button.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.ui-btn-host--full]': 'fullWidth()',
+  },
 })
 export class ButtonComponent {
   readonly variant = input<ButtonVariant>('primary');

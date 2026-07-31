@@ -1,0 +1,95 @@
+/* Dropdown padrão "Mais ações" (details/summary) — listas DocFlow e afins */
+.ui-more-actions {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.ui-more-actions__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  height: 30px;
+  padding: 0 10px;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: 600 12.5px/1 var(--font-body);
+  box-shadow: var(--shadow-xs);
+  transition:
+    background-color var(--motion-default) var(--ease-out),
+    border-color var(--motion-default) var(--ease-out),
+    color var(--motion-default) var(--ease-out),
+    box-shadow var(--motion-default) var(--ease-out);
+}
+
+.ui-more-actions__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.ui-more-actions__trigger::after {
+  content: '';
+  width: 0.45em;
+  height: 0.45em;
+  margin-top: -0.15em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.7;
+}
+
+.ui-more-actions__trigger:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.ui-more-actions[open] > .ui-more-actions__trigger {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.ui-more-actions[open] > .ui-more-actions__trigger::after {
+  margin-top: 0.15em;
+  transform: rotate(225deg);
+}
+
+.ui-more-actions__menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  min-width: 168px;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.ui-more-actions__menu > ui-button,
+.ui-more-actions__menu > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.ui-more-actions__sep {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--border);
+}
+
+/* Esconde separador órfão quando não há ações destrutivas abaixo */
+.ui-more-actions__sep:last-child {
+  display: none;
+}

@@ -72,51 +72,9 @@
 .pubs__td--actions {
   white-space: nowrap;
 }
-.pubs__more-actions {
-  position: relative;
-  display: inline-block;
+.pubs__td--actions ui-button + ui-button,
+.pubs__td--actions ui-button + .ui-more-actions {
   margin-left: 4px;
-}
-.pubs__more-actions summary {
-  display: inline-flex;
-  min-height: 30px;
-  align-items: center;
-  padding: 0 10px;
-  cursor: pointer;
-  list-style: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text-muted);
-  font: 600 12px/1 var(--font-body);
-}
-.pubs__more-actions summary::-webkit-details-marker {
-  display: none;
-}
-.pubs__more-actions summary::after {
-  margin-left: 6px;
-  content: '⌄';
-}
-.pubs__more-actions[open] summary {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.pubs__more-actions-menu {
-  position: absolute;
-  z-index: 5;
-  top: calc(100% + 6px);
-  right: 0;
-  display: grid;
-  min-width: 142px;
-  gap: 4px;
-  padding: 6px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
-}
-.pubs__more-actions-menu ui-button {
-  width: 100%;
 }
 .pubs__td--error-detail {
   background: var(--danger-soft);

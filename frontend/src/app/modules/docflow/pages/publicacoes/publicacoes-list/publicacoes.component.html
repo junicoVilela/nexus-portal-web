@@ -113,27 +113,31 @@
             <small class="pubs__filemeta">{{ item.quantidadeModulos }} módulos</small>
           </td>
           <td class="pubs__td pubs__td--actions">
-            <ui-button variant="ghost" size="sm" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
+            <ui-button variant="ghost" size="sm" icon="Eye" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
             @if (podeBaixar(item)) {
-              <ui-button variant="secondary" size="sm" (clicked)="baixar(item)">Baixar</ui-button>
+              <ui-button variant="secondary" size="sm" icon="Download" (clicked)="baixar(item)">Baixar</ui-button>
             }
-            <details class="pubs__more-actions">
-              <summary>Mais ações</summary>
-              <div class="pubs__more-actions-menu">
-                <ui-button variant="ghost" size="sm" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
+            <details class="ui-more-actions">
+              <summary class="ui-more-actions__trigger">Mais ações</summary>
+              <div class="ui-more-actions__menu" role="menu">
+                <ui-button variant="menu" size="sm" icon="Link" [fullWidth]="true" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
                 <ui-button
                   *appPermissao="'PUBLICACAO:EDITAR'"
-                  variant="secondary"
+                  variant="menu"
                   size="sm"
+                  icon="RefreshCw"
+                  [fullWidth]="true"
                   [disabled]="item.status === 'GERANDO'"
                   (clicked)="reprocessar(item)"
                   >Reprocessar</ui-button
                 >
+                <div class="ui-more-actions__sep" role="separator"></div>
                 <ui-button
                   *appPermissao="'PUBLICACAO:EXCLUIR'"
-                  variant="danger"
+                  variant="danger-soft"
                   size="sm"
                   icon="Trash2"
+                  [fullWidth]="true"
                   [disabled]="item.status === 'GERANDO' || !!excluindoId()"
                   [loading]="excluindoId() === item.id"
                   (clicked)="excluir(item)"

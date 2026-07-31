@@ -1,3 +1,13 @@
+:host {
+  display: inline-flex;
+  max-width: 100%;
+  vertical-align: middle;
+}
+:host(.ui-btn-host--full) {
+  display: flex;
+  width: 100%;
+}
+
 .ui-btn {
   display: inline-flex;
   align-items: center;
@@ -12,9 +22,13 @@
     background-color var(--motion-default) var(--ease-out),
     color var(--motion-default) var(--ease-out),
     box-shadow var(--motion-default) var(--ease-out),
+    border-color var(--motion-default) var(--ease-out),
     transform var(--motion-fast) var(--ease-out);
   white-space: nowrap;
   user-select: none;
+}
+:host(.ui-btn-host--full) .ui-btn {
+  width: 100%;
 }
 .ui-btn:disabled {
   opacity: 0.55;
@@ -59,27 +73,67 @@
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
 }
 .ui-btn--secondary:hover:not(:disabled) {
   background: var(--surface-2);
   border-color: var(--border-strong);
+  color: var(--text);
+  transform: translateY(-1px);
 }
 
 .ui-btn--ghost {
   background: transparent;
   color: var(--accent);
-  border: 1px solid var(--accent-soft);
+  border: 1px solid transparent;
 }
 .ui-btn--ghost:hover:not(:disabled) {
   background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .ui-btn--danger {
   background: var(--danger);
   color: #fff;
+  box-shadow: var(--shadow-xs);
 }
 .ui-btn--danger:hover:not(:disabled) {
-  filter: brightness(0.94);
+  background: color-mix(in srgb, var(--danger) 88%, #000);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Itens de dropdown / menus contextuais */
+.ui-btn--menu {
+  justify-content: flex-start;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid transparent;
+  font-weight: 500;
+  box-shadow: none;
+}
+.ui-btn--menu:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+.ui-btn--danger-soft {
+  justify-content: flex-start;
+  width: 100%;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid transparent;
+  font-weight: 500;
+  box-shadow: none;
+}
+.ui-btn--danger-soft:hover:not(:disabled) {
+  background: var(--danger-soft);
+  color: var(--danger);
+  transform: none;
+  box-shadow: none;
 }
 
 .ui-btn__icon {
