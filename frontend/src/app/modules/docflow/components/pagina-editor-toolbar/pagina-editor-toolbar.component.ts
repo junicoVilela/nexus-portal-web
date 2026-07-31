@@ -18,7 +18,10 @@ export class PaginaEditorToolbarComponent {
   readonly atalhosEstrutura = input.required<AtalhoEditor[]>();
   readonly atalhosBlocos = input.required<AtalhoEditor[]>();
   readonly modo = input.required<EditorModo>();
+  readonly podeTabela = input(false);
 
   readonly atalhoSelecionado = output<AtalhoEditor>();
   readonly modoChange = output<EditorModo>();
+  readonly adicionarLinhaTabela = output<void>();
+  readonly removerLinhaTabela = output<void>();
 }

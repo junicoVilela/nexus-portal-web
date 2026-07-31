@@ -843,6 +843,7 @@
   font-size: 14px;
   line-height: 1.65;
 }
+/* Estilos de .pf-table-chrome ficam em _doc-content.css (nós injetados no DOM). */
 .pf-preview-body {
   padding: 28px;
 }

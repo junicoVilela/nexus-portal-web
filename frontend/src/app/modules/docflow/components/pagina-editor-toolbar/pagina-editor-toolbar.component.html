@@ -16,6 +16,29 @@
     </div>
   </div>
   <div class="pf-toolbar-block">
+    <span class="pf-toolbar-label">Tabela</span>
+    <div class="pf-chips">
+      <button
+        type="button"
+        class="pf-chip pf-chip--accent"
+        [disabled]="!podeTabela()"
+        (click)="adicionarLinhaTabela.emit()"
+        title="Adicionar linha na tabela"
+      >
+        + Linha
+      </button>
+      <button
+        type="button"
+        class="pf-chip"
+        [disabled]="!podeTabela()"
+        (click)="removerLinhaTabela.emit()"
+        title="Remover linha da tabela"
+      >
+        − Linha
+      </button>
+    </div>
+  </div>
+  <div class="pf-toolbar-block">
     <span class="pf-toolbar-label">Visualização</span>
     <div class="pf-mode-switch">
       <button

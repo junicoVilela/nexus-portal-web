@@ -34,8 +34,22 @@
   color: var(--text);
   transition: background var(--motion-default);
 }
-.pf-chip:hover {
+.pf-chip:hover:not(:disabled) {
   background: var(--surface-2);
+}
+.pf-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pf-chip--accent {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+.pf-chip--accent:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
 }
 .pf-mode-switch {
   display: inline-flex;

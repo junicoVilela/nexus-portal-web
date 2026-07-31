@@ -15,9 +15,12 @@ describe('PaginaBlockLibraryComponent', () => {
     (fixture.nativeElement.querySelector('.block-library__toggle') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('.block-card').length).toBe(13);
+    expect(fixture.nativeElement.querySelectorAll('.block-card').length).toBe(15);
     expect(fixture.nativeElement.textContent).toContain('Objetivo de negócio');
     expect(fixture.nativeElement.textContent).toContain('Checklist de progresso');
+    expect(fixture.nativeElement.textContent).toContain('Elementos · tela toda');
+    expect(fixture.nativeElement.textContent).toContain('Elementos · meia tela');
+    expect(fixture.nativeElement.textContent).toContain('Elementos · 3 colunas');
   });
 
   it('filtra por categoria', () => {

@@ -37,7 +37,13 @@ const docInline: NodeSpec = {
   content: 'inline*',
   group: 'inline',
   inline: true,
-  parseDOM: [{ tag: 'span[class]', getAttrs: dom => ({ class: cssClass(dom) }) }],
+  parseDOM: [
+    {
+      tag: 'span[class]',
+      priority: 60,
+      getAttrs: dom => ({ class: cssClass(dom) }),
+    },
+  ],
   toDOM(node: ProseMirrorNode): DOMOutputSpec {
     return ['span', { class: node.attrs['class'] as string | null }, 0];
   },
@@ -73,14 +79,15 @@ const tableRow: NodeSpec = {
 };
 
 const tableHeader: NodeSpec = {
-  content: 'block+',
+  /* Um único parágrafo evita Enter criar blocos vazios (linhas altíssimas). */
+  content: 'paragraph',
   isolating: true,
   parseDOM: [{ tag: 'th' }],
   toDOM: () => ['th', 0],
 };
 
 const tableCell: NodeSpec = {
-  content: 'block+',
+  content: 'paragraph',
   isolating: true,
   parseDOM: [{ tag: 'td' }],
   toDOM: () => ['td', 0],

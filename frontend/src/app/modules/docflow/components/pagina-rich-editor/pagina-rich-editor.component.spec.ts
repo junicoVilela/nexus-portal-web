@@ -1,10 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
+import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginaRichEditorComponent } from './pagina-rich-editor.component';
 
 describe('PaginaRichEditorComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PaginaRichEditorComponent],
+      providers: [lucideTestIcons],
+    }).compileComponents();
+  });
+
   it('mantém a classe visual do conteúdo dentro do editor', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
     fixture.componentRef.setInput(
       'control',
@@ -21,36 +28,26 @@ describe('PaginaRichEditorComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('ngx-editor.df-doc-editor')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.df-table-tools')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.NgxEditor__Content .callout')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.NgxEditor__Content .table-wrap table th')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.NgxEditor__Content .steps > ol > li')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.NgxEditor__Content ul.checklist')).not.toBeNull();
   });
 
-  it('insere HTML usando os comandos da seleção atual do editor', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
+  it('insere HTML de bloco na seleção atual do editor', async () => {
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
-    fixture.componentRef.setInput('control', new FormControl('', { nonNullable: true }));
+    fixture.componentRef.setInput('control', new FormControl('<p>base</p>', { nonNullable: true }));
     fixture.detectChanges();
-    const insertHTML = jasmine.createSpy('insertHTML');
-    const commands = {
-      focus: () => commands,
-      insertHTML: (html: string) => {
-        insertHTML(html);
-        return commands;
-      },
-      exec: () => true,
-    };
+    await fixture.whenStable();
+
     const component = fixture.componentInstance;
-    component.editor = { commands, destroy: () => undefined } as never;
+    component.guardarSelecao();
+    component.inserirHtml('<div class="callout"><strong>Dica</strong><p>Orientação.</p></div>');
 
-    component.inserirHtml('<div class="callout">Dica</div>');
-
-    expect(insertHTML).toHaveBeenCalledWith('<div class="callout">Dica</div>');
+    expect(component.control().value).toContain('callout');
   });
-
   it('abre a biblioteca ao digitar barra em um parágrafo vazio', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
     fixture.componentRef.setInput('control', new FormControl('', { nonNullable: true }));
     fixture.detectChanges();
@@ -64,7 +61,6 @@ describe('PaginaRichEditorComponent', () => {
   });
 
   it('mantém a barra normal quando já existe texto antes do cursor', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
     fixture.componentRef.setInput('control', new FormControl('<p>https:</p>', { nonNullable: true }));
     fixture.detectChanges();
@@ -93,7 +89,6 @@ describe('PaginaRichEditorComponent', () => {
   });
 
   it('preserva os blocos visuais do portal de ajuda durante a edição', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
     fixture.componentRef.setInput(
       'control',
@@ -115,7 +110,6 @@ describe('PaginaRichEditorComponent', () => {
   });
 
   it('preserva jornada, lista de conteúdos e checklist de status', async () => {
-    await TestBed.configureTestingModule({ imports: [PaginaRichEditorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(PaginaRichEditorComponent);
     fixture.componentRef.setInput(
       'control',

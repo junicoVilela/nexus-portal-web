@@ -91,6 +91,16 @@
   text-underline-offset: 3px;
 }
 
+.df-doc-content code,
+.df-doc-editor .NgxEditor__Content code {
+  padding: 0.12em 0.4em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 600 0.84em/1.4 var(--font-mono, ui-monospace, monospace);
+}
+
 .df-doc-content .doc-intro,
 .df-doc-editor .NgxEditor__Content .doc-intro {
   margin: 0 0 28px;
@@ -156,6 +166,62 @@
   box-shadow: var(--shadow-sm);
 }
 
+/*
+ * Chrome +/− da prévia é injetado via DOM (fora do template Angular).
+ * Precisa viver no CSS global — estilos do componente não encapsulam nesses nós.
+ */
+.pf-table-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: var(--radius-sm, 6px);
+  background: color-mix(in srgb, var(--accent-soft) 75%, var(--surface));
+}
+
+.pf-table-chrome__label {
+  color: var(--accent);
+  font: 800 10px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pf-table-chrome__btn {
+  display: inline-flex;
+  min-height: 30px;
+  padding: 0 12px;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font: 700 12px/1 var(--font-body);
+  cursor: pointer;
+}
+
+.pf-table-chrome__btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.pf-table-chrome__btn--danger {
+  color: var(--danger, #c0392b);
+  border-color: color-mix(in srgb, var(--danger, #c0392b) 35%, var(--border));
+}
+
+.pf-table-chrome__btn--danger:hover {
+  background: var(--danger, #c0392b);
+  color: #fff;
+}
+
+.table-wrap > .pf-table-chrome {
+  margin: 10px 10px 0;
+}
+
 .df-doc-content table,
 .df-doc-editor .NgxEditor__Content table {
   width: 100%;
@@ -170,11 +236,43 @@
 .df-doc-content td,
 .df-doc-editor .NgxEditor__Content th,
 .df-doc-editor .NgxEditor__Content td {
-  padding: 13px 15px;
+  padding: 8px 12px;
   border: 0;
   border-bottom: 1px solid var(--border);
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+  line-height: 1.35;
+}
+
+/* Células do editor geram <p>; remove margem e colapsa parágrafos vazios (espaço enorme entre linhas). */
+.df-doc-content th > *,
+.df-doc-content td > *,
+.df-doc-editor .NgxEditor__Content th > *,
+.df-doc-editor .NgxEditor__Content td > * {
+  margin: 0;
+}
+
+.df-doc-content th p,
+.df-doc-content td p,
+.df-doc-editor .NgxEditor__Content th p,
+.df-doc-editor .NgxEditor__Content td p {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.df-doc-content th p:empty,
+.df-doc-content td p:empty,
+.df-doc-content th p:has(> br:only-child),
+.df-doc-content td p:has(> br:only-child),
+.df-doc-content th p:has(> br.ProseMirror-trailingBreak:only-child),
+.df-doc-content td p:has(> br.ProseMirror-trailingBreak:only-child),
+.df-doc-editor .NgxEditor__Content th p:empty,
+.df-doc-editor .NgxEditor__Content td p:empty,
+.df-doc-editor .NgxEditor__Content th p:has(> br:only-child),
+.df-doc-editor .NgxEditor__Content td p:has(> br:only-child),
+.df-doc-editor .NgxEditor__Content th p:has(> br.ProseMirror-trailingBreak:only-child),
+.df-doc-editor .NgxEditor__Content td p:has(> br.ProseMirror-trailingBreak:only-child) {
+  display: none;
 }
 
 .df-doc-content th,
@@ -493,18 +591,53 @@
   gap: 16px;
 }
 
+/*
+ * Layout da grade:
+ * --1 = 1 card tela toda · --half = 1 card meia largura · --2 = 2 cards · --3 = 3 cards
+ * O default sem modificador é 3 colunas — seletores :not() evitam que ele sobrescreva --1/--2/--half.
+ */
+.df-doc-content .content-grid:not([class*='content-grid--']),
+.df-doc-content .annotation-grid:not([class*='annotation-grid--']),
+.df-doc-content .content-grid--3,
+.df-doc-content .annotation-grid--3,
+.df-doc-content .screen-grid,
+.df-doc-editor .NgxEditor__Content .content-grid:not([class*='content-grid--']),
+.df-doc-editor .NgxEditor__Content .annotation-grid:not([class*='annotation-grid--']),
+.df-doc-editor .NgxEditor__Content .content-grid--3,
+.df-doc-editor .NgxEditor__Content .annotation-grid--3,
+.df-doc-editor .NgxEditor__Content .screen-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.df-doc-content .content-grid--1,
+.df-doc-content .annotation-grid--1,
+.df-doc-editor .NgxEditor__Content .content-grid--1,
+.df-doc-editor .NgxEditor__Content .annotation-grid--1 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .df-doc-content .content-grid--2,
-.df-doc-editor .NgxEditor__Content .content-grid--2 {
+.df-doc-content .annotation-grid--2,
+.df-doc-editor .NgxEditor__Content .content-grid--2,
+.df-doc-editor .NgxEditor__Content .annotation-grid--2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.df-doc-content .content-grid--3,
-.df-doc-content .annotation-grid,
-.df-doc-content .screen-grid,
-.df-doc-editor .NgxEditor__Content .content-grid--3,
-.df-doc-editor .NgxEditor__Content .annotation-grid,
-.df-doc-editor .NgxEditor__Content .screen-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Um único card ocupando só a metade esquerda da linha */
+.df-doc-content .content-grid--half,
+.df-doc-content .annotation-grid--half,
+.df-doc-editor .NgxEditor__Content .content-grid--half,
+.df-doc-editor .NgxEditor__Content .annotation-grid--half {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.df-doc-content .annotation-grid--half > .annotation-card:only-child,
+.df-doc-content .content-grid--half > .rule-card:only-child,
+.df-doc-content .content-grid--half > .topic-card:only-child,
+.df-doc-editor .NgxEditor__Content .annotation-grid--half > .annotation-card:only-child,
+.df-doc-editor .NgxEditor__Content .content-grid--half > .rule-card:only-child,
+.df-doc-editor .NgxEditor__Content .content-grid--half > .topic-card:only-child {
+  grid-column: 1 / 2;
 }
 
 .df-doc-content .annotation-grid,
@@ -522,6 +655,16 @@
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   counter-increment: annotation;
+}
+
+/* Sem modificador explícito, um único card ainda ocupa a largura total. */
+.df-doc-content .annotation-grid:not([class*='annotation-grid--']) > .annotation-card:only-child,
+.df-doc-content .content-grid:not([class*='content-grid--']) > .rule-card:only-child,
+.df-doc-content .content-grid:not([class*='content-grid--']) > .topic-card:only-child,
+.df-doc-editor .NgxEditor__Content .annotation-grid:not([class*='annotation-grid--']) > .annotation-card:only-child,
+.df-doc-editor .NgxEditor__Content .content-grid:not([class*='content-grid--']) > .rule-card:only-child,
+.df-doc-editor .NgxEditor__Content .content-grid:not([class*='content-grid--']) > .topic-card:only-child {
+  grid-column: 1 / -1;
 }
 
 .df-doc-content .annotation-card::before,
@@ -723,17 +866,61 @@
 .df-doc-editor .NgxEditor__Content .status-badge {
   display: inline-flex;
   padding: 3px 9px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 28%, var(--border));
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--text-muted);
   font-size: 0.72rem;
   font-weight: 800;
+  line-height: 1.2;
 }
 
+/* Sim / obrigatório / destaque azul */
 .df-doc-content .status-badge--required,
-.df-doc-editor .NgxEditor__Content .status-badge--required {
+.df-doc-content .status-badge--sim,
+.df-doc-editor .NgxEditor__Content .status-badge--required,
+.df-doc-editor .NgxEditor__Content .status-badge--sim {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+/* Ativo / ok / positivo */
+.df-doc-content .status-badge--ok,
+.df-doc-content .status-badge--ativo,
+.df-doc-editor .NgxEditor__Content .status-badge--ok,
+.df-doc-editor .NgxEditor__Content .status-badge--ativo {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Não / inativo / neutro negativo */
+.df-doc-content .status-badge--nao,
+.df-doc-content .status-badge--off,
+.df-doc-content .status-badge--inativo,
+.df-doc-editor .NgxEditor__Content .status-badge--nao,
+.df-doc-editor .NgxEditor__Content .status-badge--off,
+.df-doc-editor .NgxEditor__Content .status-badge--inativo {
+  border-color: color-mix(in srgb, var(--text-muted) 35%, var(--border));
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+/* Atenção / pendente */
+.df-doc-content .status-badge--warn,
+.df-doc-editor .NgxEditor__Content .status-badge--warn {
+  border-color: color-mix(in srgb, var(--warn) 45%, var(--border));
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+/* Erro / bloqueado */
+.df-doc-content .status-badge--danger,
+.df-doc-editor .NgxEditor__Content .status-badge--danger {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .df-doc-content .doc-intro--center,
@@ -1311,7 +1498,7 @@
 
 .df-doc-editor .NgxEditor__Content th p,
 .df-doc-editor .NgxEditor__Content td p {
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .df-doc-content pre,
@@ -1349,9 +1536,15 @@
     padding-right: 12px;
   }
 
+  .df-doc-content .content-grid--1,
   .df-doc-content .content-grid--2,
   .df-doc-content .content-grid--3,
+  .df-doc-content .content-grid--half,
   .df-doc-content .annotation-grid,
+  .df-doc-content .annotation-grid--1,
+  .df-doc-content .annotation-grid--2,
+  .df-doc-content .annotation-grid--3,
+  .df-doc-content .annotation-grid--half,
   .df-doc-content .screen-grid,
   .df-doc-content .flow-strip,
   .df-doc-content .triage-board,
@@ -1361,9 +1554,15 @@
   .df-doc-content .decision-board,
   .df-doc-content .condition-stack,
   .df-doc-content .spec-card__grid,
+  .df-doc-editor .NgxEditor__Content .content-grid--1,
   .df-doc-editor .NgxEditor__Content .content-grid--2,
   .df-doc-editor .NgxEditor__Content .content-grid--3,
+  .df-doc-editor .NgxEditor__Content .content-grid--half,
   .df-doc-editor .NgxEditor__Content .annotation-grid,
+  .df-doc-editor .NgxEditor__Content .annotation-grid--1,
+  .df-doc-editor .NgxEditor__Content .annotation-grid--2,
+  .df-doc-editor .NgxEditor__Content .annotation-grid--3,
+  .df-doc-editor .NgxEditor__Content .annotation-grid--half,
   .df-doc-editor .NgxEditor__Content .screen-grid,
   .df-doc-editor .NgxEditor__Content .flow-strip,
   .df-doc-editor .NgxEditor__Content .triage-board,
@@ -1374,6 +1573,15 @@
   .df-doc-editor .NgxEditor__Content .condition-stack,
   .df-doc-editor .NgxEditor__Content .spec-card__grid {
     grid-template-columns: 1fr;
+  }
+
+  .df-doc-content .annotation-grid--half > .annotation-card:only-child,
+  .df-doc-content .content-grid--half > .rule-card:only-child,
+  .df-doc-content .content-grid--half > .topic-card:only-child,
+  .df-doc-editor .NgxEditor__Content .annotation-grid--half > .annotation-card:only-child,
+  .df-doc-editor .NgxEditor__Content .content-grid--half > .rule-card:only-child,
+  .df-doc-editor .NgxEditor__Content .content-grid--half > .topic-card:only-child {
+    grid-column: auto;
   }
 
   .df-doc-content .dossier-strip > div,

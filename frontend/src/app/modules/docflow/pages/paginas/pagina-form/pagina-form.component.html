@@ -338,10 +338,16 @@
           [atalhosEstrutura]="atalhosEstrutura"
           [atalhosBlocos]="atalhosBlocos"
           [modo]="editorModo()"
+          [podeTabela]="temTabelaNoConteudo()"
           (atalhoSelecionado)="executarAtalho($event)"
           (modoChange)="definirEditorModo($event)"
+          (adicionarLinhaTabela)="adicionarLinhaTabela()"
+          (removerLinhaTabela)="removerLinhaTabela()"
         />
-        <app-pagina-block-library (blocoSelecionado)="inserirBloco($event)" />
+        <app-pagina-block-library
+          (mousedown)="preservarSelecaoEditor()"
+          (blocoSelecionado)="inserirBloco($event)"
+        />
         @if (!editId()) {
           <p class="pf-helper">
             Na primeira imagem, criaremos automaticamente um rascunho para armazenar o arquivo com segurança.
@@ -432,7 +438,12 @@
                         <p>{{ resumoPreview }}</p>
                       }
                     </header>
-                    <div class="pf-preview-body df-doc-content" [innerHTML]="conteudoPreview"></div>
+                    <div
+                      #previewBody
+                      class="pf-preview-body df-doc-content"
+                      [innerHTML]="conteudoPreview"
+                      (click)="aoClicarAcaoTabelaPreview($event)"
+                    ></div>
                   </article>
                 </div>
               }
