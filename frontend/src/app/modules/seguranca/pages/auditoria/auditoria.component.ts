@@ -55,10 +55,12 @@ export class AuditoriaComponent implements OnInit {
 
   carregar(): void {
     this.loading.set(true);
+    const usuario =
+      this.filtroUsuario ? (this.mapaUsuarios().get(this.filtroUsuario)?.login ?? undefined) : undefined;
     this.auditoriaService
       .listar({
         q: this.busca.trim() || undefined,
-        usuarioId: this.filtroUsuario || undefined,
+        usuario,
         acao: this.filtroAcao || undefined,
         resultado: this.filtroResultado || undefined,
         inicio: this.dataInicio || undefined,

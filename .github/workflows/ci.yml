@@ -43,6 +43,9 @@ jobs:
       - name: Build production bundle
         run: npm run build -- --configuration production
 
+      - name: Lighthouse CI (accessibility)
+        run: npm run lighthouse:ci
+
   e2e:
     name: E2E (Playwright + Chromium)
     runs-on: ubuntu-latest

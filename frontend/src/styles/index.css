@@ -17,6 +17,7 @@
 /* Componentes globais com escopo explícito */
 @import './components/_doc-content.css';
 @import './components/_more-actions.css';
+@import './components/_print.css';
 
 /* Tailwind theme — expose semantic tokens as utility classes */
 @theme inline {

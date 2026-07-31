@@ -21,6 +21,7 @@
     "api:check": "npm run api:generate && git diff --exit-code -- src/app/api/generated openapi/softon-portal-api.json",
     "e2e": "playwright test",
     "a11y:routes": "playwright test e2e/a11y.spec.ts",
+    "lighthouse:ci": "lhci autorun",
     "pree2e": "npm run audit:icons",
     "test-storybook": "test-storybook --url http://localhost:6006"
   },
@@ -68,6 +69,7 @@
     "@compodoc/compodoc": "^2.0.0",
     "@eslint/js": "^10.0.1",
     "@hey-api/openapi-ts": "0.99.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.60.0",
     "@storybook/addon-a11y": "^10.4.4",
     "@storybook/addon-docs": "^10.4.4",
@@ -88,6 +90,7 @@
     "lint-staged": "^17.0.7",
     "postcss": "^8.5.15",
     "prettier": "^3.8.4",
+    "serve": "^14.2.4",
     "source-map-explorer": "^2.5.3",
     "storybook": "^10.4.4",
     "typescript": "^5.9.0",

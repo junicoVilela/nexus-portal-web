@@ -1,13 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
-import { Dominio, DominioForm } from '../models/dominio.model';
-import { AuditoriaService } from './auditoria.service';
-import { MockStore } from './mock/mock-store.service';
-import { agora, novoId, simularErro, simularRequisicao } from './mock/in-memory-store';
-import { alterarStatusGenerico } from './internal/alterar-status.helper';
+import { Dominio } from '../models/dominio.model';
 
 export interface DominioFilter {
   q?: string;
@@ -29,8 +25,6 @@ interface BackendDominioResponse {
 @Injectable({ providedIn: 'root' })
 export class DominioService {
   private readonly http = inject(HttpClient);
-  private readonly store = inject(MockStore);
-  private readonly auditoria = inject(AuditoriaService);
   private readonly base = `${environment.rbacApiUrl}/catalogo/dominios`;
 
   listar(filter: DominioFilter = {}): Observable<PageResult<Dominio>> {
@@ -38,13 +32,7 @@ export class DominioService {
   }
 
   listarTodos(): Observable<Dominio[]> {
-    return this.http.get<BackendDominioResponse[]>(this.base).pipe(
-      map(list => list.map(d => this.mapear(d))),
-      tap(list => {
-        this.store.dominios.set(list);
-        this.store.persist('dominios');
-      }),
-    );
+    return this.http.get<BackendDominioResponse[]>(this.base).pipe(map(list => list.map(d => this.mapear(d))));
   }
 
   private aplicarFiltros(lista: Dominio[], filter: DominioFilter): Dominio[] {
@@ -71,58 +59,6 @@ export class DominioService {
       first: page === 1,
       last: start + size >= lista.length,
     };
-  }
-
-  // TODO(backend): expor mutações no CatalogoController — enquanto isso,
-  // a tela de matriz continua alterando o catálogo apenas em memória.
-  criar(form: DominioForm): Observable<Dominio> {
-    if (this.store.dominios().some(d => d.codigo === form.codigo)) {
-      return simularErro('Código já cadastrado', 409);
-    }
-    const d: Dominio = {
-      id: novoId(),
-      nome: form.nome,
-      codigo: form.codigo,
-      descricao: form.descricao ?? null,
-      ativo: form.ativo,
-      criadoEm: agora(),
-      atualizadoEm: null,
-    };
-    this.store.dominios.update(list => [d, ...list]);
-    this.store.persist('dominios');
-    this.auditoria.registrar({
-      acao: 'DOMINIO:CRIAR', dominio: 'SEGURANCA', funcionalidade: 'DOMINIO',
-      recursoTipo: 'dominio', recursoId: d.id, dadosNovos: { ...d },
-    });
-    return simularRequisicao(d);
-  }
-
-  atualizar(id: string, form: DominioForm): Observable<Dominio> {
-    const atual = this.store.dominios().find(d => d.id === id);
-    if (!atual) return simularErro('Domínio não encontrado', 404);
-    const atualizado: Dominio = {
-      ...atual,
-      ...form,
-      descricao: form.descricao ?? null,
-      atualizadoEm: agora(),
-    };
-    this.store.dominios.update(list => list.map(d => (d.id === id ? atualizado : d)));
-    this.store.persist('dominios');
-    this.auditoria.registrar({
-      acao: 'DOMINIO:EDITAR', dominio: 'SEGURANCA', funcionalidade: 'DOMINIO',
-      recursoTipo: 'dominio', recursoId: id,
-      dadosAnteriores: { ...atual }, dadosNovos: { ...atualizado },
-    });
-    return simularRequisicao(atualizado);
-  }
-
-  alterarStatus(id: string, ativo: boolean): Observable<Dominio> {
-    return alterarStatusGenerico<Dominio>(
-      this.store, this.auditoria,
-      { entidadeKey: 'dominios', msgNaoEncontrado: 'Domínio não encontrado',
-        funcionalidade: 'DOMINIO', recursoTipo: 'dominio' },
-      id, ativo,
-    );
   }
 
   private mapear(src: BackendDominioResponse): Dominio {

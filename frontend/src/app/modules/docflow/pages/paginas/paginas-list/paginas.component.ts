@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { finalize, forkJoin, of } from 'rxjs';
+import { finalize, forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
@@ -53,10 +53,11 @@ import { AuthService } from '@core/auth/services/auth.service';
   styleUrl: './paginas.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PaginasComponent implements OnInit {
+export class PaginasComponent implements OnInit, OnDestroy {
   private readonly toast = inject(ToastService);
   private readonly notifications = inject(NotificationService);
   private readonly auth = inject(AuthService);
+  private eventosSubscription?: Subscription;
   readonly podeEditarPagina = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   readonly projetos = signal<Projeto[]>([]);
   readonly todosModulos = signal<Modulo[]>([]);
@@ -182,6 +183,34 @@ export class PaginasComponent implements OnInit {
         });
       },
       error: () => this.toast.error('Erro ao carregar páginas.'),
+    });
+    this.eventosSubscription = this.paginaService.eventosPagina().subscribe({
+      next: evento => this.tratarEventoPagina(evento),
+      error: () => undefined,
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.eventosSubscription?.unsubscribe();
+  }
+
+  private tratarEventoPagina(evento: {
+    id: string;
+    titulo: string;
+    status: StatusPagina;
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
+    usuario?: string;
+  }): void {
+    this.carregar();
+    const usuarioAtual = this.auth.currentUser();
+    if (evento.usuario && usuarioAtual && evento.usuario === usuarioAtual) return;
+    const mensagens: Record<typeof evento.acao, string> = {
+      ENVIAR_REVISAO: `Página "${evento.titulo}" enviada para revisão`,
+      APROVAR: `Página "${evento.titulo}" aprovada`,
+      PUBLICAR: `Página "${evento.titulo}" publicada`,
+    };
+    this.notifications.add('info', mensagens[evento.acao], {
+      href: docFlowRouterCommands(['paginas', evento.id, 'editar']).join('/'),
     });
   }
 

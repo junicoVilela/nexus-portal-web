@@ -176,6 +176,10 @@
 .pubf__html-head {
   border-bottom: 1px solid var(--border);
   padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 .pubf__html-head h4 {
   font: 700 14px/1.2 var(--font-display);

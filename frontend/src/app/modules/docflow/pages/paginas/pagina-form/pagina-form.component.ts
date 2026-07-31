@@ -496,6 +496,10 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     });
   }
 
+  imprimirPreview(): void {
+    window.print();
+  }
+
   async abrirPreviewFiel(): Promise<void> {
     if (this.previewing()) return;
     if (this.form.invalid) {

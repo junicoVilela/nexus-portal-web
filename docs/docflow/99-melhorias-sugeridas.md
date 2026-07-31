@@ -143,7 +143,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 - **Status**: ✅ axe + Playwright em `/login`, `/doc-flow`, `/doc-flow/midias` (`npm run a11y:routes`).
 - A prévia contextual é validada contra WCAG 2 A/AA e o catálogo possui cenário mobile.
-- **Melhoria futura**: Lighthouse CI completo (performance/SEO) — requer `npx lighthouse` com app servida.
+- **Lighthouse CI**: ✅ `npm run lighthouse:ci` no workflow do frontend — 3 execuções em `/login` com `minScore` 0.85 (warn) para acessibilidade.
 
 ### D.2 Labels e aria em todos os inputs
 
@@ -208,13 +208,11 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### G.2 Print-friendly views
 
-- **Esforço**: M.
-- `@media print` para detalhe de página.
+- **Status**: ✅ `@media print` global (`_print.css`) oculta chrome (nav, toasts, editor de código) e preserva `.df-doc-content`, `.pf-preview-body`, `.pubf__html-content` e detalhe de publicação; botões `window.print()` em prévia de página, formulário de publicação e detalhe de publicação.
 
 ### G.3 Notificações em tempo real
 
-- **Esforço**: L.
-- WebSocket/SSE para "página X foi aprovada por Y".
+- **Status**: ✅ parcial — SSE de páginas (`GET /paginas/eventos`) em aprovar/publicar/enviar-revisão; frontend notifica em `paginas-list` e `revisoes` (ignora evento do próprio usuário quando `usuario` disponível). Publicações já tinham SSE (`/publicacoes/eventos`).
 
 ---
 

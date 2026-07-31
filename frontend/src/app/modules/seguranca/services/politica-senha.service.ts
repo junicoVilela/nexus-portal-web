@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PoliticaSenha, PoliticaSenhaForm, ResultadoValidacaoSenha } from '../models/politica-senha.model';
-import { MockStore } from './mock/mock-store.service';
+import { SEED } from './mock/seed';
 
 const REGEX_MAIUSCULA = /[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/;
 const REGEX_MINUSCULA = /[a-záàâãéêíóôõúç]/;
@@ -28,33 +28,25 @@ interface BackendPoliticaSenhaResponse {
 @Injectable({ providedIn: 'root' })
 export class PoliticaSenhaService {
   private readonly http = inject(HttpClient);
-  private readonly store = inject(MockStore);
   private readonly base = `${environment.rbacApiUrl}/politica-senha`;
+  private readonly cache = signal<PoliticaSenha>({ ...SEED.politicaSenha });
 
   atual(): Observable<PoliticaSenha> {
     return this.http.get<BackendPoliticaSenhaResponse>(this.base).pipe(
       map(p => this.mapear(p)),
-      // Popula MockStore como cache para atualSync() (usado por validators
-      // de form síncronos que não podem esperar HTTP).
-      tap(p => {
-        this.store.politicaSenha.set(p);
-        this.store.persist('politicaSenha');
-      }),
+      tap(p => this.cache.set(p)),
     );
   }
 
-  /** Acesso síncrono à última política conhecida (do MockStore/cache). */
+  /** Acesso síncrono à última política conhecida (cache em memória). */
   atualSync(): PoliticaSenha {
-    return this.store.politicaSenha();
+    return this.cache();
   }
 
   atualizar(form: PoliticaSenhaForm): Observable<PoliticaSenha> {
     return this.http.put<BackendPoliticaSenhaResponse>(this.base, form).pipe(
       map(p => this.mapear(p)),
-      tap(p => {
-        this.store.politicaSenha.set(p);
-        this.store.persist('politicaSenha');
-      }),
+      tap(p => this.cache.set(p)),
     );
   }
 
@@ -93,10 +85,9 @@ export class PoliticaSenhaService {
     // no-op
   }
 
-  contagemHistorico(usuarioId: string): { atual: number; limite: number } {
+  contagemHistorico(_usuarioId: string): { atual: number; limite: number } {
     const politica = this.atualSync();
-    const atual = this.store.historicoSenhas()[usuarioId]?.length ?? 0;
-    return { atual: Math.min(atual, politica.quantidadeHistorico), limite: politica.quantidadeHistorico };
+    return { atual: 0, limite: politica.quantidadeHistorico };
   }
 
   private mapear(src: BackendPoliticaSenhaResponse): PoliticaSenha {

@@ -1,11 +1,12 @@
 import { expect, test, Page } from '@playwright/test';
+import { instalarMocksSeguranca } from './helpers/seguranca-mock';
 
 /**
  * E2E do fluxo do módulo Segurança após login admin/admin.
  *
- * Não precisa de backend — services são 100% mockados em localStorage.
+ * Usa mocks de API (auth, RBAC e rotas mínimas do Doc Flow) via Playwright route.
  * Cobertura: login → navegação a 7 telas + ausência de proxy errors
- * (mock do ConfiguracaoService) + ícones registrados em runtime.
+ * (ConfiguracaoService) + ícones registrados em runtime.
  */
 
 const errosConsole: { ctx: string; msg: string }[] = [];
@@ -29,6 +30,7 @@ test.describe('Segurança — fluxo após login', () => {
   test.beforeEach(async ({ page }, info) => {
     errosConsole.length = 0;
     await instrumentar(page, info.title);
+    await instalarMocksSeguranca(page);
   });
 
   test.afterEach(async ({}, info) => {

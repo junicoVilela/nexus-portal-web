@@ -9,6 +9,7 @@ describe('GrupoService (HTTP)', () => {
   let service: GrupoService;
   let http: HttpTestingController;
   const base = `${environment.rbacApiUrl}/grupos`;
+  const permBase = `${environment.rbacApiUrl}/catalogo/permissoes`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,8 +21,20 @@ describe('GrupoService (HTTP)', () => {
 
   afterEach(() => http.verify());
 
-  it('listar() bate no /grupos com paginação e mapeia', async () => {
+  function flushPermissoes(): void {
+    http.expectOne(permBase).flush([
+      {
+        id: 'p1', funcionalidadeId: 'f1', funcionalidadeCodigo: 'USUARIO',
+        dominioCodigo: 'SEGURANCA', acao: 'LER', codigo: 'USUARIO:LER',
+        descricao: null, ativo: true,
+        createdAt: '2026-01-01T00:00:00Z', updatedAt: null,
+      },
+    ]);
+  }
+
+  it('listar() bate no /grupos com paginação e mapeia permissões', async () => {
     const promise = firstValueFrom(service.listar({ page: 2, size: 30, q: 'ed' }));
+    flushPermissoes();
     const req = http.expectOne(r => r.url === base);
     expect(req.request.params.get('page')).toBe('2');
     expect(req.request.params.get('size')).toBe('30');
@@ -30,7 +43,7 @@ describe('GrupoService (HTTP)', () => {
       items: [
         {
           id: 'g1', codigo: 'EDITOR', nome: 'Editores', descricao: null, ativo: true,
-          permissoes: [], totalUsuarios: 2,
+          permissoes: ['USUARIO:LER'], totalUsuarios: 2,
           createdAt: '2026-01-01T00:00:00Z', updatedAt: null, createdBy: 'seed', updatedBy: null,
         },
       ],
@@ -38,6 +51,7 @@ describe('GrupoService (HTTP)', () => {
     });
     const res = await promise;
     expect(res.items[0].codigo).toBe('EDITOR');
+    expect(res.items[0].permissaoIds).toEqual(['p1']);
     expect(res.items[0].totalUsuarios).toBe(2);
   });
 

@@ -242,6 +242,10 @@ export class PublicacaoDetalheComponent implements OnInit {
     void this.router.navigate(docFlowRouterCommands(['publicacoes']));
   }
 
+  imprimir(): void {
+    window.print();
+  }
+
   private montarHierarquiaSnapshot(
     lista: PublicacaoPaginaSnapshot[],
     changelogPorPagina: Map<string, ChangelogItem['tipoMudanca']>,

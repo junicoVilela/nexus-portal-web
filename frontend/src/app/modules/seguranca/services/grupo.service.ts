@@ -4,7 +4,6 @@ import { map, Observable, switchMap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { GrupoAcesso, GrupoAcessoForm } from '../models/grupo-acesso.model';
-import { MockStore } from './mock/mock-store.service';
 import { PermissaoService } from './permissao.service';
 
 export interface GrupoFilter {
@@ -32,16 +31,18 @@ interface BackendGrupoResponse {
 @Injectable({ providedIn: 'root' })
 export class GrupoService {
   private readonly http = inject(HttpClient);
-  private readonly store = inject(MockStore);
   private readonly permissaoService = inject(PermissaoService);
   private readonly base = `${environment.rbacApiUrl}/grupos`;
 
   listar(filter: GrupoFilter = {}): Observable<PageResult<GrupoAcesso>> {
-    let params = new HttpParams()
-      .set('page', String(filter.page ?? 1))
-      .set('size', String(filter.size ?? 20));
-    if (filter.q) params = params.set('nome', filter.q);
-    return this.http.get<PageResult<BackendGrupoResponse>>(this.base, { params }).pipe(
+    return this.permissaoService.listarTodos().pipe(
+      switchMap(() => {
+        let params = new HttpParams()
+          .set('page', String(filter.page ?? 1))
+          .set('size', String(filter.size ?? 20));
+        if (filter.q) params = params.set('nome', filter.q);
+        return this.http.get<PageResult<BackendGrupoResponse>>(this.base, { params });
+      }),
       map(res => ({
         ...res,
         items: res.items
@@ -61,7 +62,10 @@ export class GrupoService {
   }
 
   buscarPorId(id: string): Observable<GrupoAcesso> {
-    return this.http.get<BackendGrupoResponse>(`${this.base}/${id}`).pipe(map(g => this.mapear(g)));
+    return this.permissaoService.listarTodos().pipe(
+      switchMap(() => this.http.get<BackendGrupoResponse>(`${this.base}/${id}`)),
+      map(g => this.mapear(g)),
+    );
   }
 
   criar(form: GrupoAcessoForm): Observable<GrupoAcesso> {
@@ -94,7 +98,8 @@ export class GrupoService {
   vincularPermissoes(grupoId: string, permissaoIds: string[]): Observable<void> {
     return this.permissaoService.listarTodos().pipe(
       switchMap(permissoes => {
-        const codigos = permissoes.filter(p => permissaoIds.includes(p.id)).map(p => p.codigo);
+        const mapaIdParaCodigo = new Map(permissoes.map(p => [p.id, p.codigo]));
+        const codigos = permissaoIds.map(id => mapaIdParaCodigo.get(id)).filter((c): c is string => !!c);
         return this.http.put<void>(`${this.base}/${grupoId}/permissoes`, { permissoes: codigos });
       }),
     );
@@ -117,10 +122,7 @@ export class GrupoService {
       ativo: src.ativo,
       criadoEm: src.createdAt,
       atualizadoEm: src.updatedAt,
-      permissaoIds: this.store
-        .permissoes()
-        .filter(p => src.permissoes.includes(p.codigo))
-        .map(p => p.id),
+      permissaoIds: this.permissaoService.idsPorCodigos(src.permissoes),
       totalUsuarios: src.totalUsuarios,
     };
   }

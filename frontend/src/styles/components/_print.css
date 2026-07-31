@@ -1,0 +1,61 @@
+@media print {
+  .df-shell__side,
+  .shell,
+  .shell__rail,
+  .shell__nav,
+  .ui-page-header__actions,
+  .ui-toast-host,
+  .ui-notif,
+  .pf-code-pane,
+  .pf-pane-actions,
+  .pf-pane-head,
+  .pf-preview-topbar,
+  .pubf__preview-list,
+  .pubf__preview-head,
+  .pubf__html-head,
+  .pubf__diag-list,
+  .df-form__actions,
+  .pub-det__actions,
+  ui-tabs,
+  .paginas__toolbar,
+  .paginas__filters,
+  .paginas__bulk,
+  .revisoes__lista,
+  .revisoes__acoes {
+    display: none !important;
+  }
+
+  body,
+  .shell__main,
+  .df-shell__main,
+  .df-form,
+  .pf-preview-pane,
+  .pf-preview-manual,
+  .pubf__html-preview,
+  .pub-det__page-tree {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  .df-doc-content,
+  .pf-preview-body,
+  .pubf__html-content,
+  .pub-det__page-tree,
+  .pub-det__change-list {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  .pf-preview-body,
+  .pubf__html-content,
+  .df-doc-content {
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: '';
+  }
+}

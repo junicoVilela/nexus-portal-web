@@ -1,8 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, Subscription } from 'rxjs';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import { AuthService } from '@core/auth/services/auth.service';
 import { Pagina, PaginaQualidade, PaginaRevisao } from '@modules/docflow/models/pagina.model';
@@ -11,7 +11,7 @@ import { DiffLinha, diffLinhasPalavras } from '@modules/docflow/utils/diff.util'
 import type { DiffModo } from '@modules/docflow/components/pagina-revisoes/pagina-revisoes.component';
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, NotificationService, ToastService } from '@shared/ui';
 
 @Component({
   selector: 'app-revisoes',
@@ -28,11 +28,13 @@ import { BadgeComponent, ButtonComponent, ToastService } from '@shared/ui';
   styleUrl: './revisoes.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RevisoesComponent implements OnInit {
+export class RevisoesComponent implements OnInit, OnDestroy {
   private readonly paginaService = inject(PaginaService);
   private readonly toast = inject(ToastService);
+  private readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private eventosSubscription?: Subscription;
 
   protected readonly paginas = signal<Pagina[]>([]);
   protected readonly total = signal(0);
@@ -58,6 +60,33 @@ export class RevisoesComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregar();
+    this.eventosSubscription = this.paginaService.eventosPagina().subscribe({
+      next: evento => this.tratarEventoPagina(evento),
+      error: () => undefined,
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.eventosSubscription?.unsubscribe();
+  }
+
+  private tratarEventoPagina(evento: {
+    id: string;
+    titulo: string;
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
+    usuario?: string;
+  }): void {
+    this.carregar();
+    const usuarioAtual = this.auth.currentUser();
+    if (evento.usuario && usuarioAtual && evento.usuario === usuarioAtual) return;
+    const mensagens: Record<typeof evento.acao, string> = {
+      ENVIAR_REVISAO: `Nova página na fila: "${evento.titulo}"`,
+      APROVAR: `Página "${evento.titulo}" aprovada`,
+      PUBLICAR: `Página "${evento.titulo}" publicada`,
+    };
+    this.notifications.add('info', mensagens[evento.acao], {
+      href: docFlowRouterCommands(['paginas', evento.id, 'editar']).join('/'),
+    });
   }
 
   protected carregar(): void {

@@ -305,6 +305,25 @@ describe('PaginaService', () => {
     tick();
   }));
 
+  it('eventosPagina() abre stream SSE em /paginas/eventos', () => {
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve({
+        ok: true,
+        body: {
+          getReader: () => ({
+            read: () => Promise.resolve({ done: true, value: undefined }),
+          }),
+        },
+      } as Response),
+    );
+    const sub = service.eventosPagina().subscribe();
+    expect(fetchSpy).toHaveBeenCalledWith(
+      `${BASE}/paginas/eventos`,
+      jasmine.objectContaining({ signal: jasmine.any(AbortSignal) }),
+    );
+    sub.unsubscribe();
+  });
+
   it('reordenarPaginas() POSTs ids array', fakeAsync(() => {
     service.reordenarPaginas(['a', 'b']).subscribe();
     tick();

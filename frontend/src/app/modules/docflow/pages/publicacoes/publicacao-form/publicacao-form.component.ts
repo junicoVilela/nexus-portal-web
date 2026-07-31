@@ -153,6 +153,10 @@ export class PublicacaoFormComponent implements OnInit {
     this.selectedPaginaId.set(pagina.id);
   }
 
+  imprimirPreview(): void {
+    window.print();
+  }
+
   private errorMessage(error: unknown, fallback: string): string {
     if (!(error instanceof HttpErrorResponse)) return fallback;
     if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';

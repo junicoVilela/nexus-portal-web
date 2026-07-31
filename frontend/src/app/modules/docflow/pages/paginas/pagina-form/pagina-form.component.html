@@ -427,6 +427,15 @@
                     type="button"
                     size="sm"
                     variant="ghost"
+                    icon="Printer"
+                    (clicked)="imprimirPreview()"
+                  >
+                    Imprimir
+                  </ui-button>
+                  <ui-button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
                     [loading]="previewing()"
                     [disabled]="form.invalid || saving() || autosaveStatus() === 'saving'"
                     (clicked)="abrirPreviewFiel()"

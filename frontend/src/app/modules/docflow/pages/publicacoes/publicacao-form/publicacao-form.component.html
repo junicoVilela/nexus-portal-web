@@ -86,8 +86,13 @@
         <article class="pubf__html-preview">
           @if (paginaSelecionada()) {
             <header class="pubf__html-head">
-              <h4>{{ paginaSelecionada()!.titulo }}</h4>
-              <small>{{ paginaSelecionada()!.moduloNome }} · {{ paginaSelecionada()!.codigoTela }}</small>
+              <div>
+                <h4>{{ paginaSelecionada()!.titulo }}</h4>
+                <small>{{ paginaSelecionada()!.moduloNome }} · {{ paginaSelecionada()!.codigoTela }}</small>
+              </div>
+              <ui-button type="button" size="sm" variant="ghost" icon="Printer" (clicked)="imprimirPreview()">
+                Imprimir
+              </ui-button>
             </header>
             <div
               class="pubf__html-content df-doc-content"

@@ -69,6 +69,49 @@ export class PaginaService {
 
   constructor(private readonly injector: Injector) {}
 
+  eventosPagina(): Observable<{
+    id: string;
+    titulo: string;
+    status: StatusPagina;
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
+    usuario?: string;
+  }> {
+    return new Observable(observer => {
+      const controller = new AbortController();
+      const token = localStorage.getItem('doc-flow-jwt');
+      const authorization = token ? `Bearer ${token}` : null;
+      void fetch(`${this.base}/paginas/eventos`, {
+        signal: controller.signal,
+        headers: authorization ? { Authorization: authorization } : {},
+      })
+        .then(async response => {
+          if (!response.ok || !response.body) {
+            throw new Error(`Stream de páginas indisponível (${response.status}).`);
+          }
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          while (!controller.signal.aborted) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const eventos = buffer.split(/\r?\n\r?\n/);
+            buffer = eventos.pop() ?? '';
+            for (const evento of eventos) {
+              const tipo = evento.match(/^event:\s*(.+)$/m)?.[1];
+              const dados = evento.match(/^data:\s*(.+)$/m)?.[1];
+              if (tipo === 'pagina' && dados) observer.next(JSON.parse(dados));
+            }
+          }
+          if (!controller.signal.aborted) observer.complete();
+        })
+        .catch(error => {
+          if (!controller.signal.aborted) observer.error(error);
+        });
+      return () => controller.abort();
+    });
+  }
+
   listarPaginas(
     filtros: {
       busca?: string;
