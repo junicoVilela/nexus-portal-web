@@ -1,8 +1,21 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, catchError, of, tap } from 'rxjs';
-import { environment } from '@env/environment';
+import { Injectable, Injector, computed, inject, signal } from '@angular/core';
+import { defer, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+
 import { AJUDA_CONTEUDOS_PADRAO } from '../data/ajuda-defaults';
+import {
+  atualizarAjuda as atualizarAjudaSdk,
+  criarAjuda as criarAjudaSdk,
+  excluirAjuda as excluirAjudaSdk,
+  listarAjuda as listarAjudaSdk,
+  listarAjudaAdmin as listarAjudaAdminSdk,
+  metricasAjuda as metricasAjudaSdk,
+  registrarAjudaEvento as registrarAjudaEventoSdk,
+} from '../../../api/generated/sdk.gen';
+import type {
+  AjudaConteudoRequest as AjudaConteudoRequestSdk,
+  AjudaConteudoResponse,
+} from '../../../api/generated/types.gen';
 import {
   AjudaConteudo,
   AjudaConteudoRequest,
@@ -13,11 +26,11 @@ import {
 } from '../models/ajuda.model';
 
 const SESSION_KEY = 'docflow:ajuda:sessao';
+const SILENT_HEADERS = { 'X-Silent-Error': 'true' };
 
 @Injectable({ providedIn: 'root' })
 export class AjudaService {
-  private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/ajuda`;
+  private readonly injector = inject(Injector);
   private carregado = false;
 
   readonly conteudos = signal<AjudaConteudo[]>(AJUDA_CONTEUDOS_PADRAO);
@@ -76,9 +89,20 @@ export class AjudaService {
   carregar(forcar = false): void {
     if ((this.carregado && !forcar) || this.carregando()) return;
     this.carregando.set(true);
-    this.http
-      .get<AjudaConteudo[]>(`${this.base}/conteudos`, { headers: this.silencioso() })
-      .pipe(catchError(() => of(AJUDA_CONTEUDOS_PADRAO)))
+    defer(() =>
+      listarAjudaSdk({
+        injector: this.injector,
+        headers: SILENT_HEADERS,
+        throwOnError: false,
+      }),
+    )
+      .pipe(
+        map(resposta => {
+          if ('error' in resposta && resposta.error) return AJUDA_CONTEUDOS_PADRAO;
+          return (resposta.data ?? []).map(item => this.mapearConteudo(item));
+        }),
+        catchError(() => of(AJUDA_CONTEUDOS_PADRAO)),
+      )
       .subscribe(items => {
         this.conteudos.set(items.length ? items : AJUDA_CONTEUDOS_PADRAO);
         this.carregado = true;
@@ -117,38 +141,102 @@ export class AjudaService {
   }
 
   listarAdministracao(): Observable<AjudaConteudo[]> {
-    return this.http.get<AjudaConteudo[]>(`${this.base}/conteudos/admin`);
+    return defer(() => listarAjudaAdminSdk({ injector: this.injector })).pipe(
+      map(resposta => (resposta.data ?? []).map(item => this.mapearConteudo(item))),
+    );
   }
 
   criar(request: AjudaConteudoRequest): Observable<AjudaConteudo> {
-    return this.http
-      .post<AjudaConteudo>(`${this.base}/conteudos`, request)
-      .pipe(tap(() => this.carregar(true)));
+    return defer(() =>
+      criarAjudaSdk({ body: this.mapearConteudoRequest(request), injector: this.injector }),
+    ).pipe(
+      map(resposta => this.mapearConteudo(resposta.data)),
+      tap(() => this.carregar(true)),
+    );
   }
 
   atualizar(id: string, request: AjudaConteudoRequest): Observable<AjudaConteudo> {
-    return this.http
-      .put<AjudaConteudo>(`${this.base}/conteudos/${id}`, request)
-      .pipe(tap(() => this.carregar(true)));
+    return defer(() =>
+      atualizarAjudaSdk({
+        path: { id },
+        body: this.mapearConteudoRequest(request),
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta => this.mapearConteudo(resposta.data)),
+      tap(() => this.carregar(true)),
+    );
   }
 
   excluir(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/conteudos/${id}`).pipe(tap(() => this.carregar(true)));
+    return defer(() => excluirAjudaSdk({ path: { id }, injector: this.injector })).pipe(
+      map(() => undefined),
+      tap(() => this.carregar(true)),
+    );
   }
 
   metricas(): Observable<AjudaMetricas> {
-    return this.http.get<AjudaMetricas>(`${this.base}/metricas`);
+    return defer(() => metricasAjudaSdk({ injector: this.injector })).pipe(
+      map(resposta => resposta.data as AjudaMetricas),
+    );
   }
 
   registrarEvento(evento: AjudaEventoRequest): void {
-    this.http
-      .post<void>(
-        `${this.base}/eventos`,
-        { ...evento, sessaoId: evento.sessaoId ?? this.sessaoId() },
-        { headers: this.silencioso() },
-      )
+    defer(() =>
+      registrarAjudaEventoSdk({
+        body: { ...evento, sessaoId: evento.sessaoId ?? this.sessaoId() },
+        injector: this.injector,
+        headers: SILENT_HEADERS,
+        throwOnError: false,
+      }),
+    )
       .pipe(catchError(() => of(undefined)))
       .subscribe();
+  }
+
+  private mapearConteudoRequest(request: AjudaConteudoRequest): AjudaConteudoRequestSdk {
+    return {
+      codigo: request.codigo,
+      tipo: request.tipo,
+      jornadaCodigo: request.jornadaCodigo ?? undefined,
+      titulo: request.titulo,
+      resumo: request.resumo ?? undefined,
+      conteudo: request.conteudo ?? undefined,
+      rotaContexto: request.rotaContexto ?? undefined,
+      rotaAcao: request.rotaAcao ?? undefined,
+      rotuloAcao: request.rotuloAcao ?? undefined,
+      icone: request.icone ?? undefined,
+      seletorAlvo: request.seletorAlvo ?? undefined,
+      mediaTipo: request.mediaTipo,
+      mediaUrls: request.mediaUrls,
+      mediaAlt: request.mediaAlt ?? undefined,
+      ordem: request.ordem,
+      ativo: request.ativo,
+    };
+  }
+
+  private mapearConteudo(item: AjudaConteudoResponse): AjudaConteudo {
+    return {
+      id: item.id,
+      codigo: item.codigo ?? '',
+      tipo: item.tipo ?? 'FAQ',
+      jornadaCodigo: item.jornadaCodigo,
+      titulo: item.titulo ?? '',
+      resumo: item.resumo,
+      conteudo: item.conteudo,
+      rotaContexto: item.rotaContexto,
+      rotaAcao: item.rotaAcao,
+      rotuloAcao: item.rotuloAcao,
+      icone: item.icone,
+      seletorAlvo: item.seletorAlvo,
+      mediaTipo: item.mediaTipo ?? 'NENHUMA',
+      mediaUrls: item.mediaUrls ?? [],
+      mediaAlt: item.mediaAlt,
+      ordem: item.ordem ?? 0,
+      ativo: item.ativo ?? true,
+      updatedAt: item.updatedAt,
+      updatedBy: item.updatedBy,
+    };
   }
 
   private sessaoId(): string {
@@ -161,10 +249,6 @@ export class AjudaService {
     } catch {
       return 'sessao-indisponivel';
     }
-  }
-
-  private silencioso(): HttpHeaders {
-    return new HttpHeaders({ 'X-Silent-Error': 'true' });
   }
 }
 

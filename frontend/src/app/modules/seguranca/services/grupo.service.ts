@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { GrupoAcesso, GrupoAcessoForm } from '../models/grupo-acesso.model';
 import { MockStore } from './mock/mock-store.service';
+import { PermissaoService } from './permissao.service';
 
 export interface GrupoFilter {
   q?: string;
@@ -32,6 +33,7 @@ interface BackendGrupoResponse {
 export class GrupoService {
   private readonly http = inject(HttpClient);
   private readonly store = inject(MockStore);
+  private readonly permissaoService = inject(PermissaoService);
   private readonly base = `${environment.rbacApiUrl}/grupos`;
 
   listar(filter: GrupoFilter = {}): Observable<PageResult<GrupoAcesso>> {
@@ -88,18 +90,14 @@ export class GrupoService {
       .pipe(map(g => this.mapear(g)));
   }
 
-  /**
-   * Recebe IDs de permissão (formato da UI), traduz para códigos via
-   * MockStore.permissoes (enquanto PermissaoService for mock) e envia ao
-   * backend. Ao migrar PermissaoService para HTTP real, o mapa
-   * id → código passa a vir de lá.
-   */
+  /** Traduz IDs da UI para códigos do catálogo RBAC e envia ao backend. */
   vincularPermissoes(grupoId: string, permissaoIds: string[]): Observable<void> {
-    const codigos = this.store
-      .permissoes()
-      .filter(p => permissaoIds.includes(p.id))
-      .map(p => p.codigo);
-    return this.http.put<void>(`${this.base}/${grupoId}/permissoes`, { permissoes: codigos });
+    return this.permissaoService.listarTodos().pipe(
+      switchMap(permissoes => {
+        const codigos = permissoes.filter(p => permissaoIds.includes(p.id)).map(p => p.codigo);
+        return this.http.put<void>(`${this.base}/${grupoId}/permissoes`, { permissoes: codigos });
+      }),
+    );
   }
 
   listarMembros(grupoId: string): Observable<string[]> {

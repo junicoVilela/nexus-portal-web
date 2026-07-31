@@ -1347,6 +1347,126 @@ export type PublicacaoPaginaSnapshotItem = {
   nivel: number;
 };
 
+export type ReprocessarPublicacoesRequest = {
+  ids: Array<string>;
+};
+
+export type ReprocessamentoPublicacoesResponse = {
+  solicitadas?: number;
+  reprocessadas?: number;
+  ignoradas?: number;
+  publicacoes?: Array<PublicacaoResponse>;
+};
+
+export type ComentarioRevisaoRequest = {
+  comentario: string;
+};
+
+export type PageResponsePaginaAnexoResponse = {
+  items?: Array<PaginaAnexoResponse>;
+  page?: number;
+  size?: number;
+  totalItems?: number;
+  totalPages?: number;
+  first?: boolean;
+  last?: boolean;
+};
+
+export type DocFlowDashboardResponse = {
+  totalClientes?: number;
+  totalProjetos?: number;
+  totalModulos?: number;
+  totalPaginas?: number;
+  totalPublicacoes?: number;
+  paginasPendentes?: number;
+  paginasEmRevisao?: number;
+  publicacoesGerando?: number;
+  publicacoesComErro?: number;
+  clientesSemPublicacao?: number;
+  paginasSemResumo?: number;
+  paginasDesatualizadas?: number;
+  taxaSucessoPublicacoes?: number;
+  paginasPorStatus?: {
+    [key: string]: number;
+  };
+};
+
+export type AjudaConteudoResponse = {
+  id?: string;
+  codigo?: string;
+  tipo?: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
+  jornadaCodigo?: string;
+  titulo?: string;
+  resumo?: string;
+  conteudo?: string;
+  rotaContexto?: string;
+  rotaAcao?: string;
+  rotuloAcao?: string;
+  icone?: string;
+  seletorAlvo?: string;
+  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
+  mediaUrls?: Array<string>;
+  mediaAlt?: string;
+  ordem?: number;
+  ativo?: boolean;
+  updatedAt?: string;
+  updatedBy?: string;
+};
+
+export type AjudaConteudoRequest = {
+  codigo: string;
+  tipo: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
+  jornadaCodigo?: string;
+  titulo: string;
+  resumo?: string;
+  conteudo?: string;
+  rotaContexto?: string;
+  rotaAcao?: string;
+  rotuloAcao?: string;
+  icone?: string;
+  seletorAlvo?: string;
+  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
+  mediaUrls?: Array<string>;
+  mediaAlt?: string;
+  ordem?: number;
+  ativo?: boolean;
+};
+
+export type AjudaEventoRequest = {
+  tipo:
+    | 'BUSCA'
+    | 'BUSCA_SEM_RESULTADO'
+    | 'CONTEUDO_ABERTO'
+    | 'ETAPA_CONCLUIDA'
+    | 'TOUR_INICIADO'
+    | 'TOUR_CONCLUIDO'
+    | 'TOUR_ABANDONADO'
+    | 'ONBOARDING_CONCLUIDO';
+  conteudoCodigo?: string;
+  termo?: string;
+  rota?: string;
+  sessaoId?: string;
+  resultadoQuantidade?: number;
+};
+
+export type AjudaMetricaItemResponse = {
+  chave?: string;
+  rotulo?: string;
+  total?: number;
+};
+
+export type AjudaMetricasResponse = {
+  desde?: string;
+  totalEventos?: number;
+  buscas?: number;
+  buscasSemResultado?: number;
+  toursIniciados?: number;
+  toursConcluidos?: number;
+  taxaConclusaoTour?: number;
+  conteudosMaisAcessados?: Array<AjudaMetricaItemResponse>;
+  buscasFrequentes?: Array<AjudaMetricaItemResponse>;
+};
+
 export type ExcluirData = {
   body?: never;
   path: {
@@ -5369,3 +5489,192 @@ export type ArvorePaginasResponses = {
 };
 
 export type ArvorePaginasResponse = ArvorePaginasResponses[keyof ArvorePaginasResponses];
+
+export type ReprocessarLoteData = {
+  body: ReprocessarPublicacoesRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/reprocessar-lote';
+};
+
+export type ReprocessarLoteResponses = {
+  /**
+   * OK
+   */
+  200: ReprocessamentoPublicacoesResponse;
+};
+
+export type ReprocessarLoteResponse = ReprocessarLoteResponses[keyof ReprocessarLoteResponses];
+
+export type BibliotecaAnexosData = {
+  body?: never;
+  path?: never;
+  query?: {
+    busca?: string;
+    page?: number;
+    size?: number;
+  };
+  url: '/api/v1/docflow/paginas/anexos';
+};
+
+export type BibliotecaAnexosResponses = {
+  /**
+   * OK
+   */
+  200: PageResponsePaginaAnexoResponse;
+};
+
+export type BibliotecaAnexosResponse = BibliotecaAnexosResponses[keyof BibliotecaAnexosResponses];
+
+export type ComentarRevisaoData = {
+  body: ComentarioRevisaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios';
+};
+
+export type ComentarRevisaoResponses = {
+  /**
+   * OK
+   */
+  200: PaginaRevisaoResponse;
+};
+
+export type ComentarRevisaoResponse = ComentarRevisaoResponses[keyof ComentarRevisaoResponses];
+
+export type Resumo2Data = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/dashboard/resumo';
+};
+
+export type Resumo2Responses = {
+  /**
+   * OK
+   */
+  200: DocFlowDashboardResponse;
+};
+
+export type Resumo2Response = Resumo2Responses[keyof Resumo2Responses];
+
+export type ListarAjudaData = {
+  body?: never;
+  path?: never;
+  query?: {
+    busca?: string;
+    rota?: string;
+  };
+  url: '/api/v1/docflow/ajuda/conteudos';
+};
+
+export type ListarAjudaResponses = {
+  /**
+   * OK
+   */
+  200: Array<AjudaConteudoResponse>;
+};
+
+export type ListarAjudaResponse = ListarAjudaResponses[keyof ListarAjudaResponses];
+
+export type CriarAjudaData = {
+  body: AjudaConteudoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos';
+};
+
+export type CriarAjudaResponses = {
+  /**
+   * OK
+   */
+  201: AjudaConteudoResponse;
+};
+
+export type CriarAjudaResponse = CriarAjudaResponses[keyof CriarAjudaResponses];
+
+export type ListarAjudaAdminData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos/admin';
+};
+
+export type ListarAjudaAdminResponses = {
+  /**
+   * OK
+   */
+  200: Array<AjudaConteudoResponse>;
+};
+
+export type ListarAjudaAdminResponse = ListarAjudaAdminResponses[keyof ListarAjudaAdminResponses];
+
+export type ExcluirAjudaData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos/{id}';
+};
+
+export type ExcluirAjudaResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type ExcluirAjudaResponse = ExcluirAjudaResponses[keyof ExcluirAjudaResponses];
+
+export type AtualizarAjudaData = {
+  body: AjudaConteudoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos/{id}';
+};
+
+export type AtualizarAjudaResponses = {
+  /**
+   * OK
+   */
+  200: AjudaConteudoResponse;
+};
+
+export type AtualizarAjudaResponse = AtualizarAjudaResponses[keyof AtualizarAjudaResponses];
+
+export type RegistrarAjudaEventoData = {
+  body: AjudaEventoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/eventos';
+};
+
+export type RegistrarAjudaEventoResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type RegistrarAjudaEventoResponse = RegistrarAjudaEventoResponses[keyof RegistrarAjudaEventoResponses];
+
+export type MetricasAjudaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/metricas';
+};
+
+export type MetricasAjudaResponses = {
+  /**
+   * OK
+   */
+  200: AjudaMetricasResponse;
+};
+
+export type MetricasAjudaResponse = MetricasAjudaResponses[keyof MetricasAjudaResponses];

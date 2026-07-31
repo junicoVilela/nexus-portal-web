@@ -64,20 +64,20 @@
         <button type="button" (click)="cancelar()" aria-label="Fechar"><lucide-icon name="X" /></button>
       </header>
       <form [formGroup]="form" (ngSubmit)="salvar()">
-        <label>Código<input formControlName="codigo" placeholder="ARTIGO_EDITOR" /></label>
-        <label
-          >Tipo<select formControlName="tipo">
+        <label for="help-codigo">Código<input id="help-codigo" formControlName="codigo" placeholder="ARTIGO_EDITOR" /></label>
+        <label for="help-tipo"
+          >Tipo<select id="help-tipo" formControlName="tipo">
             @for (tipo of tipos; track tipo) {
               <option [value]="tipo">{{ tipo }}</option>
             }
           </select></label
         >
-        <label class="span-2">Título<input formControlName="titulo" /></label>
-        <label class="span-2">Resumo<textarea formControlName="resumo" rows="2"></textarea></label>
-        <label class="span-2">Conteúdo detalhado<textarea formControlName="conteudo" rows="4"></textarea></label>
+        <label class="span-2" for="help-titulo">Título<input id="help-titulo" formControlName="titulo" /></label>
+        <label class="span-2" for="help-resumo">Resumo<textarea id="help-resumo" formControlName="resumo" rows="2"></textarea></label>
+        <label class="span-2" for="help-conteudo">Conteúdo detalhado<textarea id="help-conteudo" formControlName="conteudo" rows="4"></textarea></label>
         @if (form.controls.tipo.value === 'ETAPA') {
-          <label
-            >Jornada vinculada<select formControlName="jornadaCodigo">
+          <label for="help-jornada"
+            >Jornada vinculada<select id="help-jornada" formControlName="jornadaCodigo">
               <option value="">Selecione uma jornada</option>
               @for (jornada of jornadas(); track jornada.codigo) {
                 <option [value]="jornada.codigo">{{ jornada.titulo }}</option>
@@ -85,27 +85,27 @@
             </select></label
           >
         }
-        <label>Ordem<input type="number" formControlName="ordem" /></label>
-        <label>Rota de contexto<input formControlName="rotaContexto" placeholder="/doc-flow/paginas" /></label>
-        <label>Rota da ação<input formControlName="rotaAcao" placeholder="/doc-flow/paginas/novo" /></label>
-        <label>Texto da ação<input formControlName="rotuloAcao" placeholder="Criar página" /></label>
-        <label>Ícone Lucide<input formControlName="icone" placeholder="BookOpen" /></label>
-        <label class="span-2"
-          >Seletor do alvo do tour<input formControlName="seletorAlvo" placeholder='[data-help-id="paginas"]'
+        <label for="help-ordem">Ordem<input id="help-ordem" type="number" formControlName="ordem" /></label>
+        <label for="help-rota-contexto">Rota de contexto<input id="help-rota-contexto" formControlName="rotaContexto" placeholder="/doc-flow/paginas" /></label>
+        <label for="help-rota-acao">Rota da ação<input id="help-rota-acao" formControlName="rotaAcao" placeholder="/doc-flow/paginas/novo" /></label>
+        <label for="help-rotulo-acao">Texto da ação<input id="help-rotulo-acao" formControlName="rotuloAcao" placeholder="Criar página" /></label>
+        <label for="help-icone">Ícone Lucide<input id="help-icone" formControlName="icone" placeholder="BookOpen" /></label>
+        <label class="span-2" for="help-seletor-alvo"
+          >Seletor do alvo do tour<input id="help-seletor-alvo" formControlName="seletorAlvo" placeholder='[data-help-id="paginas"]'
         /></label>
-        <label
-          >Tipo de mídia<select formControlName="mediaTipo">
+        <label for="help-media-tipo"
+          >Tipo de mídia<select id="help-media-tipo" formControlName="mediaTipo">
             @for (tipo of midias; track tipo) {
               <option [value]="tipo">{{ tipo }}</option>
             }
           </select></label
         >
-        <label>Descrição acessível<input formControlName="mediaAlt" /></label>
-        <label class="span-2"
+        <label for="help-media-alt">Descrição acessível<input id="help-media-alt" formControlName="mediaAlt" /></label>
+        <label class="span-2" for="help-media-urls"
           >URLs de mídia <small>Uma URL por linha. Aceita imagem, GIF, vídeo ou galeria.</small
-          ><textarea formControlName="mediaUrls" rows="3"></textarea>
+          ><textarea id="help-media-urls" formControlName="mediaUrls" rows="3"></textarea>
         </label>
-        <label class="help-active"><input type="checkbox" formControlName="ativo" /> Conteúdo ativo</label>
+        <label class="help-active" for="help-ativo"><input id="help-ativo" type="checkbox" formControlName="ativo" /> Conteúdo ativo</label>
         <footer>
           <button type="button" class="secondary" (click)="cancelar()">Cancelar</button
           ><button type="submit" [disabled]="salvando()">{{ salvando() ? 'Salvando…' : 'Salvar conteúdo' }}</button>

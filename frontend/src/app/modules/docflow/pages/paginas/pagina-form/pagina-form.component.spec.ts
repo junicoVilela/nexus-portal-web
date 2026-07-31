@@ -32,6 +32,20 @@ describe('PaginaFormComponent (smoke)', () => {
     expect(fixture.componentInstance.hasUnsavedChanges()).toBe(false);
   });
 
+  it('hasUnsavedChanges retorna true quando dirty e justSaved falso', () => {
+    const component = fixture.componentInstance;
+    component['dirty'] = true;
+    component['justSaved'] = false;
+    expect(component.hasUnsavedChanges()).toBe(true);
+  });
+
+  it('hasUnsavedChanges retorna false após salvar define justSaved', () => {
+    const component = fixture.componentInstance;
+    component['dirty'] = true;
+    component['justSaved'] = true;
+    expect(component.hasUnsavedChanges()).toBe(false);
+  });
+
   it('aplica um modelo ao conteúdo de uma página nova', async () => {
     const template: PaginaTemplate = {
       id: 't1',

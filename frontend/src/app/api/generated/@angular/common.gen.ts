@@ -83,6 +83,8 @@ import type {
   Atualizar8Response,
   Atualizar9Data,
   Atualizar9Response,
+  AtualizarAjudaData,
+  AtualizarAjudaResponse,
   AtualizarData,
   AtualizarRascunhoData,
   AtualizarRascunhoResponse,
@@ -94,6 +96,8 @@ import type {
   AutosaveResponse,
   BaixarAnexoData,
   BaixarAnexoResponse,
+  BibliotecaAnexosData,
+  BibliotecaAnexosResponse,
   Buscar10Data,
   Buscar10Response,
   Buscar11Data,
@@ -140,6 +144,8 @@ import type {
   CancelarResponse,
   ChangelogData,
   ChangelogResponse,
+  ComentarRevisaoData,
+  ComentarRevisaoResponse,
   ContratarData,
   ContratarResponse,
   CopiarVinculosData,
@@ -178,6 +184,8 @@ import type {
   Criar8Response,
   Criar9Data,
   Criar9Response,
+  CriarAjudaData,
+  CriarAjudaResponse,
   CriarData,
   CriarResponse,
   CriarTemplateData,
@@ -242,6 +250,8 @@ import type {
   Excluir8Response,
   Excluir9Data,
   Excluir9Response,
+  ExcluirAjudaData,
+  ExcluirAjudaResponse,
   ExcluirAnexoData,
   ExcluirAnexoResponse,
   ExcluirData,
@@ -326,6 +336,10 @@ import type {
   Listar8Response,
   Listar9Data,
   Listar9Response,
+  ListarAjudaAdminData,
+  ListarAjudaAdminResponse,
+  ListarAjudaData,
+  ListarAjudaResponse,
   ListarData,
   ListarGruposData,
   ListarGruposResponse,
@@ -338,6 +352,8 @@ import type {
   LoginResponse2,
   MeData,
   MeResponse2,
+  MetricasAjudaData,
+  MetricasAjudaResponse,
   PermissoesData,
   PermissoesResponse,
   Preview1Data,
@@ -363,6 +379,8 @@ import type {
   RecentesResponse,
   ReentregarData,
   ReentregarResponse,
+  RegistrarAjudaEventoData,
+  RegistrarAjudaEventoResponse,
   Remover1Data,
   Remover1Response,
   Remover2Data,
@@ -377,11 +395,15 @@ import type {
   ReordenarData,
   ReordenarResponse,
   ReprocessarData,
+  ReprocessarLoteData,
+  ReprocessarLoteResponse,
   ReprocessarResponse,
   RescindirData,
   RescindirResponse,
   RestaurarVersaoTemplateData,
   RestaurarVersaoTemplateResponse,
+  Resumo2Data,
+  Resumo2Response,
   ResumoData,
   ResumoPorStatusGlobalData,
   ResumoPorStatusGlobalResponse,
@@ -2607,6 +2629,116 @@ export const arvorePaginasRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const reprocessarLoteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReprocessarLoteData, ThrowOnError>,
+): HttpRequest<ReprocessarLoteResponse> =>
+  (options?.client ?? client).requestOptions<ReprocessarLoteResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
+    ...options,
+  });
+
+export const bibliotecaAnexosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<BibliotecaAnexosData, ThrowOnError>,
+): HttpRequest<BibliotecaAnexosResponse> =>
+  (options?.client ?? client).requestOptions<BibliotecaAnexosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/anexos',
+    ...options,
+  });
+
+export const comentarRevisaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ComentarRevisaoData, ThrowOnError>,
+): HttpRequest<ComentarRevisaoResponse> =>
+  (options?.client ?? client).requestOptions<ComentarRevisaoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
+    ...options,
+  });
+
+export const resumoRequest2 = <ThrowOnError extends boolean = false>(
+  options?: Options<Resumo2Data, ThrowOnError>,
+): HttpRequest<Resumo2Response> =>
+  (options?.client ?? client).requestOptions<Resumo2Response, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/dashboard/resumo',
+    ...options,
+  });
+
+export const listarAjudaRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ListarAjudaData, ThrowOnError>,
+): HttpRequest<ListarAjudaResponse> =>
+  (options?.client ?? client).requestOptions<ListarAjudaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+  });
+
+export const criarAjudaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<CriarAjudaData, ThrowOnError>,
+): HttpRequest<CriarAjudaResponse> =>
+  (options?.client ?? client).requestOptions<CriarAjudaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+  });
+
+export const listarAjudaAdminRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ListarAjudaAdminData, ThrowOnError>,
+): HttpRequest<ListarAjudaAdminResponse> =>
+  (options?.client ?? client).requestOptions<ListarAjudaAdminResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/conteudos/admin',
+    ...options,
+  });
+
+export const excluirAjudaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ExcluirAjudaData, ThrowOnError>,
+): HttpRequest<ExcluirAjudaResponse> =>
+  (options?.client ?? client).requestOptions<ExcluirAjudaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const atualizarAjudaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AtualizarAjudaData, ThrowOnError>,
+): HttpRequest<AtualizarAjudaResponse> =>
+  (options?.client ?? client).requestOptions<AtualizarAjudaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const registrarAjudaEventoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<RegistrarAjudaEventoData, ThrowOnError>,
+): HttpRequest<RegistrarAjudaEventoResponse> =>
+  (options?.client ?? client).requestOptions<RegistrarAjudaEventoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/ajuda/eventos',
+    ...options,
+  });
+
+export const metricasAjudaRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<MetricasAjudaData, ThrowOnError>,
+): HttpRequest<MetricasAjudaResponse> =>
+  (options?.client ?? client).requestOptions<MetricasAjudaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/metricas',
+    ...options,
+  });
+
 export const excluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<ExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -4341,4 +4473,92 @@ export const arvorePaginasResource = <ThrowOnError extends boolean = false>(
   httpResource<ArvorePaginasResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? arvorePaginasRequest(opts) : undefined;
+  });
+
+export const reprocessarLoteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReprocessarLoteData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReprocessarLoteResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? reprocessarLoteRequest(opts) : undefined;
+  });
+
+export const bibliotecaAnexosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<BibliotecaAnexosData, ThrowOnError> | undefined,
+) =>
+  httpResource<BibliotecaAnexosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? bibliotecaAnexosRequest(opts) : undefined;
+  });
+
+export const comentarRevisaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ComentarRevisaoData, ThrowOnError> | undefined,
+) =>
+  httpResource<ComentarRevisaoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? comentarRevisaoRequest(opts) : undefined;
+  });
+
+export const resumoResource2 = <ThrowOnError extends boolean = false>(
+  options?: () => Options<Resumo2Data, ThrowOnError> | undefined,
+) =>
+  httpResource<Resumo2Response>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? resumoRequest2(opts) : undefined;
+  });
+
+export const listarAjudaResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ListarAjudaData, ThrowOnError> | undefined,
+) =>
+  httpResource<ListarAjudaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? listarAjudaRequest(opts) : undefined;
+  });
+
+export const criarAjudaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<CriarAjudaData, ThrowOnError> | undefined,
+) =>
+  httpResource<CriarAjudaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? criarAjudaRequest(opts) : undefined;
+  });
+
+export const listarAjudaAdminResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ListarAjudaAdminData, ThrowOnError> | undefined,
+) =>
+  httpResource<ListarAjudaAdminResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? listarAjudaAdminRequest(opts) : undefined;
+  });
+
+export const excluirAjudaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ExcluirAjudaData, ThrowOnError> | undefined,
+) =>
+  httpResource<ExcluirAjudaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? excluirAjudaRequest(opts) : undefined;
+  });
+
+export const atualizarAjudaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AtualizarAjudaData, ThrowOnError> | undefined,
+) =>
+  httpResource<AtualizarAjudaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? atualizarAjudaRequest(opts) : undefined;
+  });
+
+export const registrarAjudaEventoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<RegistrarAjudaEventoData, ThrowOnError> | undefined,
+) =>
+  httpResource<RegistrarAjudaEventoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? registrarAjudaEventoRequest(opts) : undefined;
+  });
+
+export const metricasAjudaResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<MetricasAjudaData, ThrowOnError> | undefined,
+) =>
+  httpResource<MetricasAjudaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? metricasAjudaRequest(opts) : undefined;
   });

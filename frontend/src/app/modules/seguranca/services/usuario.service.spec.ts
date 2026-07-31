@@ -26,6 +26,9 @@ describe('UsuarioService (HTTP)', () => {
     nome: 'Admin',
     email: 'a@x.com',
     ativo: true,
+    bloqueado: false,
+    tentativasInvalidas: 0,
+    trocarSenhaProximoLogin: false,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: null,
     createdBy: 'seed',
@@ -86,5 +89,37 @@ describe('UsuarioService (HTTP)', () => {
     expect(req.request.body).toEqual({ novaSenha: 'nova' });
     req.flush(null);
     await promise;
+  });
+
+  it('bloquear() envia POST /bloqueio', async () => {
+    const promise = firstValueFrom(service.bloquear('u1', true));
+    const req = http.expectOne(`${base}/u1/bloqueio`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ bloqueado: true });
+    req.flush(backendUser({ bloqueado: true }));
+    const u = await promise;
+    expect(u.bloqueado).toBe(true);
+  });
+
+  it('vincularGrupos() envia PUT /grupos e mapeia ids retornados', async () => {
+    const promise = firstValueFrom(service.vincularGrupos('u1', ['g1', 'g2']));
+    const put = http.expectOne(`${base}/u1/grupos`);
+    expect(put.request.method).toBe('PUT');
+    expect(put.request.body).toEqual({ grupoIds: ['g1', 'g2'] });
+    put.flush(['g1', 'g2']);
+    const get = http.expectOne(`${base}/u1`);
+    get.flush(backendUser());
+    const u = await promise;
+    expect(u.grupoIds).toEqual(['g1', 'g2']);
+  });
+
+  it('buscarPorId() carrega grupos vinculados', async () => {
+    const promise = firstValueFrom(service.buscarPorId('u1'));
+    const usuario = http.expectOne(`${base}/u1`);
+    usuario.flush(backendUser());
+    const grupos = http.expectOne(`${base}/u1/grupos`);
+    grupos.flush(['g1']);
+    const u = await promise;
+    expect(u.grupoIds).toEqual(['g1']);
   });
 });

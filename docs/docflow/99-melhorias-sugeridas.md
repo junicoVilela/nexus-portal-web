@@ -102,7 +102,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - **Impacto**: médio.
 - **Esforço**: M-L.
 - **Stack**: `@ngrx/signals`.
-- **Decisão**: só se cache de listas começar a ser necessário em múltiplos lugares.
+- **Decisão**: **deferido** — cache com TTL nos services de leitura é suficiente; ainda não há dor de sincronização multi-tela.
 
 ### B.4 ErrorHandler global
 
@@ -141,9 +141,9 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### D.1 Auditoria Lighthouse a11y
 
-- **Status**: ✅ base automatizada entregue com axe + Playwright.
+- **Status**: ✅ axe + Playwright em `/login`, `/doc-flow`, `/doc-flow/midias` (`npm run a11y:routes`).
 - A prévia contextual é validada contra WCAG 2 A/AA e o catálogo possui cenário mobile.
-- **Melhoria futura**: adicionar Lighthouse CI e ampliar axe para todas as rotas autenticadas.
+- **Melhoria futura**: Lighthouse CI completo (performance/SEO) — requer `npx lighthouse` com app servida.
 
 ### D.2 Labels e aria em todos os inputs
 
@@ -194,8 +194,8 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### F.2 Storybook para `shared/ui`
 
-- **Esforço**: M.
-- Catálogo visual de componentes shared.
+- **Status**: ✅ entregue — catálogo `shared/ui` (26+ stories) e `DocFlow/PaginaStatusBadge`.
+- Páginas DocFlow não catalogadas (foco em componentes compartilhados).
 
 ---
 
@@ -204,7 +204,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 ### G.1 i18n
 
 - **Esforço**: L.
-- Não previsto no MVP.
+- **Decisão**: **deferido** fora do MVP — apenas `$localize` pontual em `error-state`; sem `ngx-translate`.
 
 ### G.2 Print-friendly views
 

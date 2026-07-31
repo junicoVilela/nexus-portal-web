@@ -1,16 +1,15 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
+import { Injectable, Injector } from '@angular/core';
+import { defer, map, Observable } from 'rxjs';
+import { resumo2 as resumoDashboardSdk } from '../../../api/generated/sdk.gen';
 import { DocFlowDashboardResumo } from '../models/dashboard.model';
 
 @Injectable({ providedIn: 'root' })
 export class DocFlowDashboardService {
-  private readonly base = `${environment.apiUrl}/dashboard`;
-
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly injector: Injector) {}
 
   resumo(): Observable<DocFlowDashboardResumo> {
-    return this.http.get<DocFlowDashboardResumo>(`${this.base}/resumo`);
+    return defer(() => resumoDashboardSdk({ injector: this.injector })).pipe(
+      map(resposta => resposta.data as DocFlowDashboardResumo),
+    );
   }
 }

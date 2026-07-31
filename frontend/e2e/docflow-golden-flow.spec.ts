@@ -247,6 +247,36 @@ async function instalarApiDocFlow(
       });
     }
 
+    if (method === 'GET' && path === '/api/doc-flow/dashboard/resumo') {
+      return responder({
+        totalClientes: estado.clientes.length,
+        totalProjetos: estado.projetos.length,
+        totalModulos: estado.modulos.length,
+        totalPaginas: estado.paginas.length,
+        totalPublicacoes: 0,
+        paginasPendentes: estado.paginas.filter(p => p.status === 'EM_REVISAO').length,
+        paginasEmRevisao: estado.paginas.filter(p => p.status === 'EM_REVISAO').length,
+        publicacoesGerando: 0,
+        publicacoesComErro: 0,
+        clientesSemPublicacao: estado.clientes.length > 0 ? estado.clientes.length : 0,
+        paginasSemResumo: 0,
+        paginasDesatualizadas: 0,
+        taxaSucessoPublicacoes: 100,
+        paginasPorStatus: estado.paginas.reduce<Record<string, number>>((acc, pagina) => {
+          acc[pagina.status] = (acc[pagina.status] ?? 0) + 1;
+          return acc;
+        }, {}),
+      });
+    }
+
+    if (method === 'GET' && path === '/api/doc-flow/publicacoes') {
+      return responder(resultadoPaginado([]));
+    }
+
+    if (method === 'GET' && path === '/api/doc-flow/paginas/anexos') {
+      return responder(resultadoPaginado([]));
+    }
+
     if (method === 'GET' && path === '/api/doc-flow/ajuda/conteudos') {
       return responder(estado.ajuda.filter(item => item.ativo));
     }
@@ -487,6 +517,24 @@ test.describe('DocFlow — fluxo de ouro', () => {
     await expect(page.locator('.df-dash__structure')).toContainText('Projetos');
     await expect(page.locator('.df-dash__structure')).toContainText('Módulos');
     await expect(page.locator('.df-dash__kpi-link').first()).toHaveAttribute('href', '/doc-flow/paginas');
+
+    const acessibilidade = await new AxeBuilder({ page })
+      .include('.df-dash')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(acessibilidade.violations).toEqual([]);
+  });
+
+  test('biblioteca de mídia atende WCAG A/AA', async ({ page }) => {
+    await instalarApiDocFlow(page);
+    await page.goto('/doc-flow/midias');
+    await page.waitForSelector('.media-filters');
+
+    const acessibilidade = await new AxeBuilder({ page })
+      .include('ui-list-page')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(acessibilidade.violations).toEqual([]);
   });
 
   test('cria a estrutura, pré-visualiza o modelo e publica a página', async ({ page }) => {

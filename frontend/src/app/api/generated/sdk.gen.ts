@@ -89,6 +89,8 @@ import type {
   Atualizar8Responses,
   Atualizar9Data,
   Atualizar9Responses,
+  AtualizarAjudaData,
+  AtualizarAjudaResponses,
   AtualizarData,
   AtualizarRascunhoData,
   AtualizarRascunhoResponses,
@@ -100,6 +102,8 @@ import type {
   AutosaveResponses,
   BaixarAnexoData,
   BaixarAnexoResponses,
+  BibliotecaAnexosData,
+  BibliotecaAnexosResponses,
   Buscar10Data,
   Buscar10Responses,
   Buscar11Data,
@@ -146,6 +150,8 @@ import type {
   CancelarResponses,
   ChangelogData,
   ChangelogResponses,
+  ComentarRevisaoData,
+  ComentarRevisaoResponses,
   ContratarData,
   ContratarResponses,
   CopiarVinculosData,
@@ -184,6 +190,8 @@ import type {
   Criar8Responses,
   Criar9Data,
   Criar9Responses,
+  CriarAjudaData,
+  CriarAjudaResponses,
   CriarData,
   CriarResponses,
   CriarTemplateData,
@@ -248,6 +256,8 @@ import type {
   Excluir8Responses,
   Excluir9Data,
   Excluir9Responses,
+  ExcluirAjudaData,
+  ExcluirAjudaResponses,
   ExcluirAnexoData,
   ExcluirAnexoResponses,
   ExcluirData,
@@ -332,6 +342,10 @@ import type {
   Listar8Responses,
   Listar9Data,
   Listar9Responses,
+  ListarAjudaAdminData,
+  ListarAjudaAdminResponses,
+  ListarAjudaData,
+  ListarAjudaResponses,
   ListarData,
   ListarGruposData,
   ListarGruposResponses,
@@ -344,6 +358,8 @@ import type {
   LoginResponses,
   MeData,
   MeResponses,
+  MetricasAjudaData,
+  MetricasAjudaResponses,
   PermissoesData,
   PermissoesResponses,
   Preview1Data,
@@ -370,6 +386,8 @@ import type {
   RecentesResponses,
   ReentregarData,
   ReentregarResponses,
+  RegistrarAjudaEventoData,
+  RegistrarAjudaEventoResponses,
   Remover1Data,
   Remover1Responses,
   Remover2Data,
@@ -385,11 +403,15 @@ import type {
   ReordenarData,
   ReordenarResponses,
   ReprocessarData,
+  ReprocessarLoteData,
+  ReprocessarLoteResponses,
   ReprocessarResponses,
   RescindirData,
   RescindirResponses,
   RestaurarVersaoTemplateData,
   RestaurarVersaoTemplateResponses,
+  Resumo2Data,
+  Resumo2Responses,
   ResumoData,
   ResumoPorStatusGlobalData,
   ResumoPorStatusGlobalResponses,
@@ -2742,5 +2764,124 @@ export const arvorePaginas = <ThrowOnError extends boolean = true>(
   (options.client ?? client).get<ArvorePaginasResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes/{id}/paginas',
+    ...options,
+  });
+
+export const reprocessarLote = <ThrowOnError extends boolean = true>(
+  options: Options<ReprocessarLoteData, ThrowOnError>,
+): RequestResult<ReprocessarLoteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReprocessarLoteResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const bibliotecaAnexos = <ThrowOnError extends boolean = true>(
+  options?: Options<BibliotecaAnexosData, ThrowOnError>,
+): RequestResult<BibliotecaAnexosResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<BibliotecaAnexosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/anexos',
+    ...options,
+  });
+
+export const comentarRevisao = <ThrowOnError extends boolean = true>(
+  options: Options<ComentarRevisaoData, ThrowOnError>,
+): RequestResult<ComentarRevisaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ComentarRevisaoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const resumo2 = <ThrowOnError extends boolean = true>(
+  options?: Options<Resumo2Data, ThrowOnError>,
+): RequestResult<Resumo2Responses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<Resumo2Responses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/dashboard/resumo',
+    ...options,
+  });
+
+export const listarAjuda = <ThrowOnError extends boolean = true>(
+  options?: Options<ListarAjudaData, ThrowOnError>,
+): RequestResult<ListarAjudaResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ListarAjudaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+  });
+
+export const criarAjuda = <ThrowOnError extends boolean = true>(
+  options: Options<CriarAjudaData, ThrowOnError>,
+): RequestResult<CriarAjudaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<CriarAjudaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const listarAjudaAdmin = <ThrowOnError extends boolean = true>(
+  options?: Options<ListarAjudaAdminData, ThrowOnError>,
+): RequestResult<ListarAjudaAdminResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ListarAjudaAdminResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/admin',
+    ...options,
+  });
+
+export const excluirAjuda = <ThrowOnError extends boolean = true>(
+  options: Options<ExcluirAjudaData, ThrowOnError>,
+): RequestResult<ExcluirAjudaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ExcluirAjudaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const atualizarAjuda = <ThrowOnError extends boolean = true>(
+  options: Options<AtualizarAjudaData, ThrowOnError>,
+): RequestResult<AtualizarAjudaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<AtualizarAjudaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const registrarAjudaEvento = <ThrowOnError extends boolean = true>(
+  options: Options<RegistrarAjudaEventoData, ThrowOnError>,
+): RequestResult<RegistrarAjudaEventoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<RegistrarAjudaEventoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/eventos',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const metricasAjuda = <ThrowOnError extends boolean = true>(
+  options?: Options<MetricasAjudaData, ThrowOnError>,
+): RequestResult<MetricasAjudaResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<MetricasAjudaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/metricas',
     ...options,
   });

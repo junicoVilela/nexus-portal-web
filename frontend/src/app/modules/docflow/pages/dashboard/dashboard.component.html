@@ -67,15 +67,15 @@
       </div>
     </div>
     <div class="df-dash__health-metrics">
-      <a routerLink="/doc-flow/paginas"
+      <a routerLink="/doc-flow/paginas" aria-label="Abrir páginas sem resumo"
         ><strong>{{ paginasSemResumo() }}</strong
         ><span>sem resumo</span></a
       >
-      <a routerLink="/doc-flow/paginas"
+      <a routerLink="/doc-flow/paginas" aria-label="Abrir páginas desatualizadas"
         ><strong>{{ paginasDesatualizadas() }}</strong
         ><span>desatualizadas</span></a
       >
-      <a routerLink="/doc-flow/publicacoes"
+      <a routerLink="/doc-flow/publicacoes" aria-label="Abrir publicações com taxa de sucesso"
         ><strong>{{ taxaSucessoPublicacoes() }}%</strong><span>sucesso nas publicações</span></a
       >
     </div>
@@ -112,13 +112,17 @@
       <table class="df-dash__table">
         <thead>
           <tr>
-            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('situacao')">
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('situacao')" aria-label="Ordenar por situação">
               Situação <span>{{ indicacaoOrdenacaoFila('situacao') }}</span>
             </th>
-            <th class="df-dash__th df-dash__th--sort df-dash__th--center" (click)="ordenarFila('quantidade')">
+            <th
+              class="df-dash__th df-dash__th--sort df-dash__th--center"
+              (click)="ordenarFila('quantidade')"
+              aria-label="Ordenar por quantidade"
+            >
               Qtd <span>{{ indicacaoOrdenacaoFila('quantidade') }}</span>
             </th>
-            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('acao')">
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('acao')" aria-label="Ordenar por ação recomendada">
               Ação recomendada <span>{{ indicacaoOrdenacaoFila('acao') }}</span>
             </th>
           </tr>
@@ -149,10 +153,14 @@
       <table class="df-dash__table">
         <thead>
           <tr>
-            <th class="df-dash__th df-dash__th--sort" (click)="ordenarStatus('status')">
+            <th class="df-dash__th df-dash__th--sort" (click)="ordenarStatus('status')" aria-label="Ordenar por status">
               Status <span>{{ indicacaoOrdenacaoStatus('status') }}</span>
             </th>
-            <th class="df-dash__th df-dash__th--sort df-dash__th--center" (click)="ordenarStatus('total')">
+            <th
+              class="df-dash__th df-dash__th--sort df-dash__th--center"
+              (click)="ordenarStatus('total')"
+              aria-label="Ordenar por total"
+            >
               Total <span>{{ indicacaoOrdenacaoStatus('total') }}</span>
             </th>
           </tr>
@@ -202,18 +210,18 @@
     <table class="df-dash__table">
       <thead>
         <tr>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('cliente.nome')">
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('cliente.nome')" aria-label="Ordenar por cliente">
             Cliente <span>{{ indicacaoOrdenacaoHistorico('cliente.nome') }}</span>
           </th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('versao')">
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('versao')" aria-label="Ordenar por versão">
             Versão <span>{{ indicacaoOrdenacaoHistorico('versao') }}</span>
           </th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('status')">
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('status')" aria-label="Ordenar por status">
             Status <span>{{ indicacaoOrdenacaoHistorico('status') }}</span>
           </th>
           <th class="df-dash__th df-dash__th--center">Páginas</th>
           <th class="df-dash__th df-dash__th--center">Módulos</th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('createdAt')">
+          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('createdAt')" aria-label="Ordenar por data">
             Data <span>{{ indicacaoOrdenacaoHistorico('createdAt') }}</span>
           </th>
         </tr>

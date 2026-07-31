@@ -1,16 +1,20 @@
-import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { computed, inject, Injectable, Injector, signal } from '@angular/core';
+import { defer, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
+import {
+  deleteLogo as deleteLogoSdk,
+  getLogo as getLogoSdk,
+  uploadLogo as uploadLogoSdk,
+} from '../../../api/generated/sdk.gen';
 
 /**
  * Logo global da empresa nos manuais — integrado com `EmpresaController`.
  */
 @Injectable({ providedIn: 'root' })
 export class ConfiguracaoService {
-  private readonly http = inject(HttpClient);
+  private readonly injector = inject(Injector);
   private readonly base = environment.apiUrl;
 
   private readonly logoDisponivel = signal(false);
@@ -21,40 +25,39 @@ export class ConfiguracaoService {
   );
 
   logoEmpresaExiste(): Observable<boolean> {
-    return this.http
-      .get(`${this.base}/empresa/logo`, { observe: 'response', responseType: 'blob' })
-      .pipe(
-        map(res => res.status === 200),
-        tap(existe => {
-          this.logoDisponivel.set(existe);
-          if (existe && this.cacheBust() === 0) {
-            this.cacheBust.set(Date.now());
-          }
-        }),
-        catchError(() => {
-          this.logoDisponivel.set(false);
-          return of(false);
-        }),
-      );
-  }
-
-  uploadLogoEmpresa(file: File): Observable<void> {
-    const form = new FormData();
-    form.append('file', file);
-    return this.http.post<void>(`${this.base}/empresa/logo`, form).pipe(
-      tap(() => {
-        this.logoDisponivel.set(true);
-        this.cacheBust.set(Date.now());
+    return defer(() => getLogoSdk({ injector: this.injector, throwOnError: false })).pipe(
+      map(resposta => {
+        const existe = !('error' in resposta && resposta.error) && !!resposta.data;
+        this.logoDisponivel.set(existe);
+        if (existe && this.cacheBust() === 0) {
+          this.cacheBust.set(Date.now());
+        }
+        return existe;
+      }),
+      catchError(() => {
+        this.logoDisponivel.set(false);
+        return of(false);
       }),
     );
   }
 
+  uploadLogoEmpresa(file: File): Observable<void> {
+    return defer(() => uploadLogoSdk({ body: { file }, injector: this.injector })).pipe(
+      tap(() => {
+        this.logoDisponivel.set(true);
+        this.cacheBust.set(Date.now());
+      }),
+      map(() => undefined),
+    );
+  }
+
   removerLogoEmpresa(): Observable<void> {
-    return this.http.delete<void>(`${this.base}/empresa/logo`).pipe(
+    return defer(() => deleteLogoSdk({ injector: this.injector })).pipe(
       tap(() => {
         this.logoDisponivel.set(false);
         this.cacheBust.set(0);
       }),
+      map(() => undefined),
     );
   }
 }

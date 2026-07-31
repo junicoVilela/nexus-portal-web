@@ -36,6 +36,7 @@ describe('PaginasComponent', () => {
       'listarPaginas',
       'reordenarPaginas',
       'resumoPaginasPorStatusGlobal',
+      'salvarPagina',
     ]);
     paginaService.listarPaginas.and.returnValue(
       of({ items: [], page: 1, size: 10, totalItems: 0, totalPages: 0, first: true, last: true }),
@@ -117,6 +118,65 @@ describe('PaginasComponent', () => {
     fixture.componentInstance.moverParaBaixo(primeira);
 
     expect(paginaService.reordenarPaginas).toHaveBeenCalledWith(['p2', 'p1']);
+    expect(carregar).toHaveBeenCalled();
+  });
+
+  it('moverComoFilha chama salvarPagina com parentId', () => {
+    fixture = TestBed.createComponent(PaginasComponent);
+    fixture.detectChanges();
+
+    paginaService.salvarPagina.and.returnValue(of(paginaBase()));
+    const carregar = spyOn(fixture.componentInstance, 'carregar');
+
+    const pai = paginaBase({ id: 'pai', ordem: 1 });
+    const filho = paginaBase({ id: 'filho', titulo: 'Incluir', codigoTela: 'INC-001', ordem: 2 });
+    fixture.componentInstance.paginas.set([pai, filho]);
+    fixture.componentInstance.iniciarArraste(filho);
+
+    const event = new DragEvent('drop');
+    fixture.componentInstance.moverComoFilha(event, pai);
+
+    expect(paginaService.salvarPagina).toHaveBeenCalledWith(
+      jasmine.objectContaining({ parentId: 'pai' }),
+      'filho',
+    );
+    expect(carregar).toHaveBeenCalled();
+  });
+
+  it('moverComoFilha entre módulos diferentes exibe toast e não salva', () => {
+    const toast = TestBed.inject(ToastService);
+    fixture = TestBed.createComponent(PaginasComponent);
+    fixture.detectChanges();
+
+    const pai = paginaBase({ id: 'pai', moduloId: 'm1' });
+    const filho = paginaBase({ id: 'filho', moduloId: 'm2', titulo: 'Outro módulo' });
+    fixture.componentInstance.paginas.set([pai, filho]);
+    fixture.componentInstance.iniciarArraste(filho);
+
+    fixture.componentInstance.moverComoFilha(new DragEvent('drop'), pai);
+
+    expect(paginaService.salvarPagina).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith('Arraste apenas entre páginas do mesmo módulo.');
+  });
+
+  it('moverParaRaiz chama salvarPagina sem parentId', () => {
+    fixture = TestBed.createComponent(PaginasComponent);
+    fixture.detectChanges();
+
+    paginaService.salvarPagina.and.returnValue(of(paginaBase()));
+    const carregar = spyOn(fixture.componentInstance, 'carregar');
+
+    const pai = paginaBase({ id: 'pai' });
+    const filho = paginaBase({ id: 'filho', parentId: 'pai', titulo: 'Subpágina' });
+    fixture.componentInstance.paginas.set([pai, filho]);
+    fixture.componentInstance.iniciarArraste(filho);
+
+    fixture.componentInstance.moverParaRaiz(new DragEvent('drop'));
+
+    expect(paginaService.salvarPagina).toHaveBeenCalledWith(
+      jasmine.objectContaining({ parentId: undefined }),
+      'filho',
+    );
     expect(carregar).toHaveBeenCalled();
   });
 });

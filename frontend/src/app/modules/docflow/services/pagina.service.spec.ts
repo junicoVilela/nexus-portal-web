@@ -254,22 +254,26 @@ describe('PaginaService', () => {
     expect(list.length).toBe(2);
   }));
 
-  it('bibliotecaAnexos() consulta a mídia global com busca e paginação', () => {
+  it('bibliotecaAnexos() consulta a mídia global com busca e paginação', fakeAsync(() => {
     service.bibliotecaAnexos('logo', 2, 12).subscribe();
-    const req = http.expectOne(r => r.url === `${BASE}/paginas/anexos`);
-    expect(req.request.params.get('busca')).toBe('logo');
-    expect(req.request.params.get('page')).toBe('2');
-    expect(req.request.params.get('size')).toBe('12');
+    tick();
+    const req = http.expectOne(r => r.url.startsWith(`${GENERATED_BASE}/paginas/anexos`));
+    expect(req.request.url).toContain('busca=logo');
+    expect(req.request.url).toContain('page=2');
+    expect(req.request.url).toContain('size=12');
     req.flush({ items: [], totalItems: 0 });
-  });
+    tick();
+  }));
 
-  it('comentarRevisaoPagina() registra comentário editorial', () => {
+  it('comentarRevisaoPagina() registra comentário editorial', fakeAsync(() => {
     service.comentarRevisaoPagina('pg1', 'Revisar o passo 2').subscribe();
-    const req = http.expectOne(`${BASE}/paginas/pg1/revisoes/comentarios`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/paginas/pg1/revisoes/comentarios`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ comentario: 'Revisar o passo 2' });
     req.flush({});
-  });
+    tick();
+  }));
 
   it('anexarPagina() POSTs multipart with file', fakeAsync(() => {
     const file = new File(['x'], 'a.png', { type: 'image/png' });

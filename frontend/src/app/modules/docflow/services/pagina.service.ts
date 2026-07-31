@@ -1,18 +1,18 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { defer, map, Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
-import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
   anexar as anexarPaginaSdk,
   anexos as anexosPaginaSdk,
+  bibliotecaAnexos as bibliotecaAnexosSdk,
   aplicarTemplate,
   aprovar as aprovarPaginaSdk,
   arquivar as arquivarPaginaSdk,
   arquivarTemplate,
+  comentarRevisao as comentarRevisaoSdk,
   atualizar16 as atualizarPaginaSdk,
   atualizarTemplate,
   autosave as autosavePaginaSdk,
@@ -67,10 +67,7 @@ export class PaginaService {
     { expiresAt: number; request: Observable<PaginaTemplate[]> }
   >();
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly injector: Injector,
-  ) {}
+  constructor(private readonly injector: Injector) {}
 
   listarPaginas(
     filtros: {
@@ -377,13 +374,19 @@ export class PaginaService {
   }
 
   bibliotecaAnexos(busca = '', page = 1, size = 24): Observable<PageResult<PaginaAnexo>> {
-    return this.http.get<PageResult<PaginaAnexo>>(`${this.base}/paginas/anexos`, {
-      params: buildQueryParams({ busca, page, size }),
-    });
+    return defer(() =>
+      bibliotecaAnexosSdk({ query: { busca, page, size }, injector: this.injector }),
+    ).pipe(
+      map(resposta =>
+        this.mapearPageResult(resposta.data, size, item => item as PaginaAnexo),
+      ),
+    );
   }
 
   comentarRevisaoPagina(id: string, comentario: string): Observable<PaginaRevisao> {
-    return this.http.post<PaginaRevisao>(`${this.base}/paginas/${id}/revisoes/comentarios`, { comentario });
+    return defer(() =>
+      comentarRevisaoSdk({ path: { id }, body: { comentario }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data as PaginaRevisao));
   }
 
   anexarPagina(id: string, file: File): Observable<PaginaAnexo> {

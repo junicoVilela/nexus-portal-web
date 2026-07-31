@@ -17,6 +17,7 @@ import {
   preview1 as previewPublicacaoSdk,
   previewHtml as previewPublicacaoHtmlSdk,
   reprocessar as reprocessarPublicacaoSdk,
+  reprocessarLote as reprocessarLoteSdk,
 } from '../../../api/generated/sdk.gen';
 import type {
   ChangelogItemResponse,
@@ -174,7 +175,16 @@ export class PublicacaoService {
   }
 
   reprocessarPublicacoes(ids: string[]): Observable<ReprocessamentoPublicacoes> {
-    return this.http.post<ReprocessamentoPublicacoes>(`${this.base}/publicacoes/reprocessar-lote`, { ids });
+    return defer(() =>
+      reprocessarLoteSdk({ body: { ids }, injector: this.injector }),
+    ).pipe(
+      map(resposta => ({
+        solicitadas: resposta.data.solicitadas ?? 0,
+        reprocessadas: resposta.data.reprocessadas ?? 0,
+        ignoradas: resposta.data.ignoradas ?? 0,
+        publicacoes: (resposta.data.publicacoes ?? []).map(item => this.mapearPublicacao(item)),
+      })),
+    );
   }
 
   excluirPublicacao(publicacaoId: string): Observable<void> {

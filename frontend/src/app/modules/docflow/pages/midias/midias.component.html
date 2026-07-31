@@ -10,9 +10,16 @@
   emptyIcon="ImageOff"
 >
   <div filters class="media-filters">
-    <label>
+    <label for="midias-busca">
       <span>Buscar imagem</span>
-      <input [(ngModel)]="busca" type="search" placeholder="Nome do arquivo" (keyup.enter)="pesquisar()" />
+      <input
+        id="midias-busca"
+        [(ngModel)]="busca"
+        type="search"
+        placeholder="Nome do arquivo"
+        aria-label="Buscar imagem por nome do arquivo"
+        (keyup.enter)="pesquisar()"
+      />
     </label>
     <ui-button variant="secondary" size="sm" icon="Search" (clicked)="pesquisar()">Buscar</ui-button>
     <span>{{ total() }} arquivo(s)</span>

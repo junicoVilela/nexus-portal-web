@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, switchMap } from 'rxjs';
 import { LucideAngularModule } from 'lucide-angular';
 import { GrupoAcesso } from '@modules/seguranca/models/grupo-acesso.model';
 import { Usuario } from '@modules/seguranca/models/usuario.model';
@@ -106,7 +106,13 @@ export class UsuarioFormComponent implements OnInit {
       grupoIds: raw.grupoIds,
       senha: raw.senha || undefined,
     };
-    const obs = id ? this.usuarioService.atualizar(id, payload) : this.usuarioService.criar(payload);
+    const obs = id
+      ? this.usuarioService.atualizar(id, payload).pipe(
+          switchMap(() => this.usuarioService.vincularGrupos(id, payload.grupoIds)),
+        )
+      : this.usuarioService.criar(payload).pipe(
+          switchMap(u => this.usuarioService.vincularGrupos(u.id, payload.grupoIds)),
+        );
     obs.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: () => {
         this.toast.success(id ? 'Usuário atualizado.' : 'Usuário cadastrado.');

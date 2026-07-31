@@ -94,13 +94,15 @@ describe('PublicacaoService', () => {
     tick();
   }));
 
-  it('reprocessarPublicacoes() POSTs ids to the bulk endpoint', () => {
+  it('reprocessarPublicacoes() POSTs ids to the bulk endpoint', fakeAsync(() => {
     service.reprocessarPublicacoes(['p1', 'p2']).subscribe();
-    const req = http.expectOne(`${BASE}/publicacoes/reprocessar-lote`);
+    tick();
+    const req = http.expectOne(`${GENERATED_BASE}/publicacoes/reprocessar-lote`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ ids: ['p1', 'p2'] });
     req.flush({ solicitadas: 2, reprocessadas: 2, ignoradas: 0, publicacoes: [] });
-  });
+    tick();
+  }));
 
   it('excluirPublicacao() DELETEs /publicacoes/:id', fakeAsync(() => {
     service.excluirPublicacao('p1').subscribe();
