@@ -347,6 +347,17 @@ export class PaginasComponent implements OnInit {
     });
   }
 
+  novaPorTipo(tipo: 'lista' | 'incluir' | 'indice'): void {
+    const { projetoId, moduloId } = this.filtros.getRawValue();
+    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
+      queryParams: compactQueryParams({
+        projetoId: projetoId || null,
+        moduloId: moduloId || null,
+        tipoPagina: tipo,
+      }),
+    });
+  }
+
   criarSubpagina(pagina: Pagina): void {
     this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
       queryParams: compactQueryParams({

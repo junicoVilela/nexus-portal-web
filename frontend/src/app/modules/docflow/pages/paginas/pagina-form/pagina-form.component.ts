@@ -69,7 +69,7 @@ import {
 import { PaginaMetaFieldsComponent } from '@modules/docflow/components/pagina-meta-fields';
 import { PaginaTemplatePickerComponent } from '@modules/docflow/components/pagina-template-picker';
 import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-status-badge';
-import { BlocoPagina, PaginaBlockLibraryComponent } from '@modules/docflow/components/pagina-block-library';
+import { BlocoPagina, PaginaBlockLibraryComponent, blocoPorId } from '@modules/docflow/components/pagina-block-library';
 import {
   PaginaSecaoVisual,
   PaginaSectionOrganizerComponent,
@@ -84,6 +84,10 @@ import {
   PaginaCreationStepId,
 } from '@modules/docflow/components/pagina-creation-progress/pagina-creation-progress.component';
 import { avaliarQualidadePagina } from '@modules/docflow/utils/pagina-quality.util';
+import {
+  aplicarPlaceholdersConteudo,
+  ContextoPlaceholdersPagina,
+} from '@modules/docflow/utils/pagina-placeholders.util';
 import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
@@ -189,6 +193,11 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly podeCriarTemplate = computed(() => this.auth.tem()('PAGINA:CRIAR'));
   protected readonly podeEditarTemplate = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   protected readonly podeExcluirTemplate = computed(() => this.auth.tem()('PAGINA:EXCLUIR'));
+  protected readonly temFilhosPagina = computed(() => {
+    const id = this.editId();
+    if (!id) return false;
+    return this.paginas().some(pagina => pagina.parentId === id);
+  });
   readonly atalhosEstrutura: AtalhoEditor[] = [
     { label: 'H1', action: () => this.inserirHtml('<h1>Título principal</h1>') },
     { label: 'H2', action: () => this.inserirHtml('<h2>Seção</h2>') },
@@ -353,6 +362,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         } else {
           this.mostrarTemplates.set(true);
           this.aplicarContextoInicial();
+          this.aplicarTipoPaginaInicial();
         }
         this.carregarTemplates();
         this.restaurarRascunho();
@@ -835,8 +845,29 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   inserirBloco(bloco: BlocoPagina): void {
-    this.inserirHtml(bloco.html);
+    const html = aplicarPlaceholdersConteudo(bloco.html, this.contextoPlaceholders());
+    this.inserirHtml(html);
     this.toast.success(`Bloco "${bloco.nome}" inserido.`);
+  }
+
+  atualizarSumarioFilhos(): void {
+    const id = this.editId();
+    if (!id) return;
+    const filhos = this.paginas()
+      .filter(pagina => pagina.parentId === id)
+      .sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo));
+    if (!filhos.length) {
+      this.toast.warn('Não há subpáginas para atualizar o índice.');
+      return;
+    }
+    const secaoHtml = this.montarSecaoGuiasDisponiveis(filhos);
+    const html = this.form.controls.conteudoHtml.value ?? '';
+    const proximo = this.substituirOuAdicionarSecaoGuias(html, secaoHtml);
+    this.form.controls.conteudoHtml.setValue(proximo);
+    if (this.editorModo() === 'rico' && this.richEditor) {
+      this.richEditor.aplicarHtml(proximo);
+    }
+    this.toast.success('Índice dos filhos atualizado.');
   }
 
   abrirBibliotecaPorAtalho(): void {
@@ -1199,24 +1230,24 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private resolverVariaveisPendentesLocalmente(): void {
     const html = this.form.controls.conteudoHtml.value;
     if (!html.includes('{{')) return;
-    const projeto = this.projetos().find(item => item.id === this.form.controls.projetoId.value);
-    const modulo = this.todosModulos().find(item => item.id === this.form.controls.moduloId.value);
-    const template = this.templates().find(item => item.id === this.templateSelecionadoId());
-    const valores: Record<string, string | undefined> = {
-      'cliente.nome': template?.clienteNome,
-      'projeto.nome': projeto?.nome,
-      'modulo.nome': modulo?.nome,
-      'pagina.titulo': this.form.controls.titulo.value.trim() || undefined,
-      'pagina.codigo': this.form.controls.codigoTela.value.trim() || undefined,
-      'data.atual': new Intl.DateTimeFormat('pt-BR').format(new Date()),
-    };
-    const resolvido = html.replace(/\{\{\s*([a-zA-Z0-9_.-]+)\s*}}/g, (token, chave: string) => {
-      const valor = valores[chave];
-      return valor ? this.escapeHtml(valor) : token;
-    });
+    const resolvido = aplicarPlaceholdersConteudo(html, this.contextoPlaceholders());
     if (resolvido !== html) {
       this.form.controls.conteudoHtml.setValue(resolvido);
     }
+  }
+
+  private contextoPlaceholders(): ContextoPlaceholdersPagina {
+    const projeto = this.projetos().find(item => item.id === this.form.controls.projetoId.value);
+    const modulo = this.todosModulos().find(item => item.id === this.form.controls.moduloId.value);
+    const template = this.templates().find(item => item.id === this.templateSelecionadoId());
+    return {
+      titulo: this.form.controls.titulo.value.trim() || null,
+      codigoTela: this.form.controls.codigoTela.value.trim() || null,
+      moduloNome: modulo?.nome ?? null,
+      projetoNome: projeto?.nome ?? null,
+      clienteNome: template?.clienteNome ?? null,
+      dataAtual: new Intl.DateTimeFormat('pt-BR').format(new Date()),
+    };
   }
 
   async excluirAnexo(anexo: PaginaAnexo): Promise<void> {
@@ -1549,6 +1580,81 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     const templateId = params.get('templateId');
     const template = this.templates().find(item => item.id === templateId);
     if (template) void this.selecionarTemplate(template);
+  }
+
+  private aplicarTipoPaginaInicial(): void {
+    const tipo = this.route.snapshot.queryParamMap.get('tipoPagina');
+    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'indice') return;
+
+    const config = {
+      lista: {
+        titulo: 'Lista de registros',
+        codigo: 'LISTA-001',
+        resumo: 'Consulta e listagem de registros com filtros, grade de resultados e ações da tela.',
+        kitId: 'kit-lista',
+      },
+      incluir: {
+        titulo: 'Incluir registro',
+        codigo: 'INCLUIR-001',
+        resumo: 'Formulário para inclusão de novos registros com campos obrigatórios e validações.',
+        kitId: 'kit-incluir',
+      },
+      indice: {
+        titulo: 'Operações',
+        codigo: 'OPS-001',
+        resumo: 'Índice das operações disponíveis neste módulo com links aos guias filhos.',
+        kitId: 'kit-indice',
+      },
+    }[tipo];
+
+    if (!this.form.controls.titulo.value.trim()) {
+      this.form.controls.titulo.setValue(config.titulo, { emitEvent: false });
+    }
+    if (!this.form.controls.codigoTela.value.trim()) {
+      this.form.controls.codigoTela.setValue(config.codigo, { emitEvent: false });
+    }
+    if ((this.form.controls.resumo.value?.trim().length ?? 0) < 30) {
+      this.form.controls.resumo.setValue(config.resumo, { emitEvent: false });
+    }
+
+    const kit = blocoPorId(config.kitId);
+    if (!kit) return;
+    const html = aplicarPlaceholdersConteudo(kit.html, this.contextoPlaceholders());
+    this.form.controls.conteudoHtml.setValue(html, { emitEvent: false });
+    this.mostrarTemplates.set(false);
+    this.irParaEtapa('conteudo');
+    this.toast.success('Estrutura inicial aplicada conforme o tipo de página.');
+  }
+
+  private montarSecaoGuiasDisponiveis(filhos: Pagina[]): string {
+    const items = filhos
+      .map((filho, index) => {
+        const resumo = (filho.resumo?.trim() || 'Sem resumo').slice(0, 80);
+        return (
+          `<article class="resource-item"><span class="number-badge">${index + 1}</span><span><strong>${this.escapeHtml(filho.titulo)}</strong><small>${this.escapeHtml(resumo)}</small></span>` +
+          `<span class="resource-item__meta">${this.escapeHtml(filho.codigoTela)}</span></article>`
+        );
+      })
+      .join('');
+    return `<section class="doc-section"><h2>Guias disponíveis</h2><div class="resource-list resource-list--large">${items}</div></section>`;
+  }
+
+  private substituirOuAdicionarSecaoGuias(html: string, secaoHtml: string): string {
+    if (!html.trim()) return secaoHtml;
+    const doc = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html');
+    const body = doc.body;
+    const existente = Array.from(body.querySelectorAll('section')).find(secao => {
+      const h2 = secao.querySelector('h2');
+      return h2?.textContent?.trim().toLowerCase() === 'guias disponíveis';
+    });
+    if (existente) {
+      const temp = new DOMParser().parseFromString(secaoHtml, 'text/html');
+      const nova = temp.body.firstElementChild;
+      if (nova) existente.replaceWith(nova);
+    } else {
+      body.insertAdjacentHTML('beforeend', secaoHtml);
+    }
+    return body.innerHTML;
   }
 
   private queryParamsEditor(): Record<string, string | number | null> {

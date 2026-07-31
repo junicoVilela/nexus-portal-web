@@ -81,3 +81,8 @@
   color: var(--text-muted);
   margin-top: 2px;
 }
+.paginas__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

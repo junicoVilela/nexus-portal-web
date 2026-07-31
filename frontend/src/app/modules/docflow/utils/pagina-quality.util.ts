@@ -27,6 +27,18 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
     .filter(({ imagem }) => !imagem.getAttribute('src')?.trim())
     .map(({ indice }) => indice);
 
+  const temScreenPlaceholder = document.querySelector('.screen-placeholder') !== null;
+  const temImagem = document.querySelector('img') !== null;
+  const temImagemEmFrame = document.querySelector('.screen-frame img') !== null;
+  const temSteps = document.querySelector('.steps') !== null || /passo a passo/i.test(texto);
+  const temResultCard = document.querySelector('.result-card') !== null;
+  const temChecklist = document.querySelector('.checklist') !== null;
+  const temPreRequisitos = /pré-requisitos/i.test(texto);
+  const codigosVerTambem = Array.from(document.querySelectorAll('[data-codigo-tela]'))
+    .map(elemento => elemento.getAttribute('data-codigo-tela')?.trim() ?? '')
+    .filter(valor => valor.length > 0);
+  const codigosVerTambemInvalidos = codigosVerTambem.filter(valor => !valor || /^CODIGO/i.test(valor));
+
   return [
     item('TITULO', 'Título definido', 'Informe um título claro para a página.', !!raw.titulo?.trim(), 'ERRO'),
     item(
@@ -103,6 +115,42 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
       'Conteúdo organizado em seções',
       'Use ao menos um título de seção para facilitar a leitura.',
       !!document.querySelector('h2, h3'),
+      'AVISO',
+    ),
+    item(
+      'CAPTURA',
+      'Captura de tela inserida',
+      temScreenPlaceholder && !temImagemEmFrame && !temImagem
+        ? 'Substitua o placeholder por uma captura real da tela.'
+        : 'Captura de tela presente ou sem placeholder pendente.',
+      !temScreenPlaceholder || temImagemEmFrame || temImagem,
+      'AVISO',
+    ),
+    item(
+      'RESULTADO',
+      'Resultado esperado documentado',
+      temSteps && !temResultCard
+        ? 'Inclua um bloco de resultado esperado após o passo a passo.'
+        : 'Resultado esperado presente ou passo a passo não utilizado.',
+      !temSteps || temResultCard,
+      'AVISO',
+    ),
+    item(
+      'VER_TAMBEM',
+      'Links “Ver também” com código válido',
+      codigosVerTambem.length && codigosVerTambemInvalidos.length
+        ? 'Substitua códigos genéricos ou vazios em data-codigo-tela.'
+        : 'Links “Ver também” com códigos válidos ou não utilizados.',
+      codigosVerTambem.length === 0 || codigosVerTambemInvalidos.length === 0,
+      'AVISO',
+    ),
+    item(
+      'PRE_REQS',
+      'Pré-requisitos documentados',
+      temSteps && !temChecklist && !temPreRequisitos
+        ? 'Inclua pré-requisitos ou checklist antes do passo a passo.'
+        : 'Pré-requisitos presentes ou passo a passo não utilizado.',
+      !temSteps || temChecklist || temPreRequisitos,
       'AVISO',
     ),
   ];

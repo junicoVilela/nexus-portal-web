@@ -14,7 +14,13 @@
     </div>
   }
 
-  <div actions>
+  <div actions class="paginas__actions">
+    <ui-more-actions *appPermissao="'PAGINA:CRIAR'" label="Nova por tipo">
+      <ui-button variant="menu" size="sm" icon="FileText" [fullWidth]="true" (clicked)="nova()">Página em branco</ui-button>
+      <ui-button variant="menu" size="sm" icon="List" [fullWidth]="true" (clicked)="novaPorTipo('lista')">Tipo lista</ui-button>
+      <ui-button variant="menu" size="sm" icon="FilePlus2" [fullWidth]="true" (clicked)="novaPorTipo('incluir')">Tipo inclusão</ui-button>
+      <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')">Tipo índice</ui-button>
+    </ui-more-actions>
     <ui-button *appPermissao="'PAGINA:CRIAR'" icon="Plus" (clicked)="nova()">Nova página</ui-button>
   </div>
 

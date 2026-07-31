@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostListener,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -18,10 +19,10 @@ import {
       class="ui-more-actions__trigger"
       [attr.aria-expanded]="aberto()"
       aria-haspopup="menu"
-      aria-label="Mais ações"
+      [attr.aria-label]="label()"
       (click)="alternar($event)"
     >
-      Mais ações
+      {{ label() }}
     </button>
     @if (aberto()) {
       <div #menu class="ui-more-actions__menu" role="menu" (click)="aoClicarMenu()">
@@ -42,6 +43,7 @@ export class MoreActionsComponent {
   private readonly triggerRef = viewChild<ElementRef<HTMLButtonElement>>('trigger');
   private readonly menuRef = viewChild<ElementRef<HTMLElement>>('menu');
 
+  readonly label = input('Mais ações');
   protected readonly aberto = signal(false);
 
   @HostListener('document:keydown', ['$event'])

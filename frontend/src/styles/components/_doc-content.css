@@ -414,6 +414,18 @@
   content: '!';
 }
 
+.df-doc-content .callout--danger,
+.df-doc-editor .NgxEditor__Content .callout--danger {
+  border-color: color-mix(in srgb, var(--danger) 34%, var(--border));
+  background: var(--danger-soft);
+}
+
+.df-doc-content .callout--danger::before,
+.df-doc-editor .NgxEditor__Content .callout--danger::before {
+  background: var(--danger);
+  content: '!';
+}
+
 .df-doc-content .callout p:last-child,
 .df-doc-content .warning p:last-child,
 .df-doc-editor .NgxEditor__Content .callout p:last-child,
