@@ -998,6 +998,317 @@
   content: '\2192';
 }
 
+/* Modelos DTEC com estruturas distintas: filtros, métricas, dossiê, especificação e catálogo. */
+.df-doc-content .criteria-table th:first-child,
+.df-doc-editor .NgxEditor__Content .criteria-table th:first-child {
+  width: 18%;
+}
+
+.df-doc-content .triage-board,
+.df-doc-editor .NgxEditor__Content .triage-board {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+}
+
+.df-doc-content .triage-panel,
+.df-doc-editor .NgxEditor__Content .triage-panel {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .triage-panel h3,
+.df-doc-editor .NgxEditor__Content .triage-panel h3 {
+  margin: 0 0 14px;
+}
+
+.df-doc-content .triage-panel--action,
+.df-doc-editor .NgxEditor__Content .triage-panel--action {
+  border-top: 3px solid var(--accent);
+  background: linear-gradient(180deg, var(--accent-soft), var(--surface) 42%);
+}
+
+.df-doc-content .metric-board,
+.df-doc-editor .NgxEditor__Content .metric-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.df-doc-content .metric-card,
+.df-doc-editor .NgxEditor__Content .metric-card {
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .metric-card__label,
+.df-doc-editor .NgxEditor__Content .metric-card__label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.df-doc-content .metric-card__value,
+.df-doc-editor .NgxEditor__Content .metric-card__value {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.df-doc-content .metric-card p,
+.df-doc-editor .NgxEditor__Content .metric-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.df-doc-content .pipeline-track,
+.df-doc-editor .NgxEditor__Content .pipeline-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-doc-content .pipeline-step,
+.df-doc-editor .NgxEditor__Content .pipeline-step {
+  position: relative;
+  margin: 0;
+  padding: 16px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.df-doc-content .pipeline-step strong,
+.df-doc-content .pipeline-step span,
+.df-doc-editor .NgxEditor__Content .pipeline-step strong,
+.df-doc-editor .NgxEditor__Content .pipeline-step span {
+  display: block;
+}
+
+.df-doc-content .pipeline-step span,
+.df-doc-editor .NgxEditor__Content .pipeline-step span {
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.df-doc-content .pipeline-step--ready,
+.df-doc-editor .NgxEditor__Content .pipeline-step--ready {
+  border-top: 3px solid var(--info);
+}
+
+.df-doc-content .pipeline-step--progress,
+.df-doc-editor .NgxEditor__Content .pipeline-step--progress {
+  border-top: 3px solid var(--warn);
+  background: var(--warn-soft);
+}
+
+.df-doc-content .pipeline-step--risk,
+.df-doc-editor .NgxEditor__Content .pipeline-step--risk {
+  border-top: 3px solid color-mix(in srgb, var(--warn) 70%, #a33);
+}
+
+.df-doc-content .dossier-strip,
+.df-doc-editor .NgxEditor__Content .dossier-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .dossier-strip > div,
+.df-doc-editor .NgxEditor__Content .dossier-strip > div {
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+}
+
+.df-doc-content .dossier-strip > div:last-child,
+.df-doc-editor .NgxEditor__Content .dossier-strip > div:last-child {
+  border-right: 0;
+}
+
+.df-doc-content .dossier-strip h3,
+.df-doc-editor .NgxEditor__Content .dossier-strip h3 {
+  margin: 0 0 6px;
+}
+
+.df-doc-content .dossier-strip p,
+.df-doc-editor .NgxEditor__Content .dossier-strip p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.df-doc-content .decision-board,
+.df-doc-editor .NgxEditor__Content .decision-board {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 16px;
+}
+
+.df-doc-content .evidence-panel,
+.df-doc-editor .NgxEditor__Content .evidence-panel {
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .evidence-panel h3,
+.df-doc-editor .NgxEditor__Content .evidence-panel h3 {
+  margin: 0 0 12px;
+}
+
+.df-doc-content .evidence-panel--decision,
+.df-doc-editor .NgxEditor__Content .evidence-panel--decision {
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  background: linear-gradient(160deg, var(--accent-soft), var(--surface) 55%);
+}
+
+.df-doc-content .evidence-panel .table-wrap,
+.df-doc-editor .NgxEditor__Content .evidence-panel .table-wrap {
+  margin: 0;
+}
+
+.df-doc-content .spec-card,
+.df-doc-editor .NgxEditor__Content .spec-card {
+  padding: 22px 24px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(90deg, var(--accent) 0 4px, transparent 4px),
+    var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .spec-card__meta,
+.df-doc-editor .NgxEditor__Content .spec-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.df-doc-content .spec-card h3,
+.df-doc-editor .NgxEditor__Content .spec-card h3 {
+  margin: 0 0 8px;
+}
+
+.df-doc-content .spec-card > p,
+.df-doc-editor .NgxEditor__Content .spec-card > p {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+}
+
+.df-doc-content .spec-card__grid,
+.df-doc-editor .NgxEditor__Content .spec-card__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.df-doc-content .spec-card__grid > div,
+.df-doc-editor .NgxEditor__Content .spec-card__grid > div {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-md) - 2px);
+  background: var(--surface-2);
+}
+
+.df-doc-content .spec-card__grid strong,
+.df-doc-content .spec-card__grid span,
+.df-doc-editor .NgxEditor__Content .spec-card__grid strong,
+.df-doc-editor .NgxEditor__Content .spec-card__grid span {
+  display: block;
+}
+
+.df-doc-content .spec-card__grid span,
+.df-doc-editor .NgxEditor__Content .spec-card__grid span {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.df-doc-content .condition-stack,
+.df-doc-editor .NgxEditor__Content .condition-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.df-doc-content .condition-block,
+.df-doc-editor .NgxEditor__Content .condition-block {
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.df-doc-content .condition-block__label,
+.df-doc-editor .NgxEditor__Content .condition-block__label {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.df-doc-content .condition-block--then .condition-block__label,
+.df-doc-editor .NgxEditor__Content .condition-block--then .condition-block__label {
+  background: var(--accent);
+  color: white;
+}
+
+.df-doc-content .condition-block h3,
+.df-doc-editor .NgxEditor__Content .condition-block h3 {
+  margin: 0 0 8px;
+}
+
+.df-doc-content .condition-block p,
+.df-doc-editor .NgxEditor__Content .condition-block p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.df-doc-content .dependency-list,
+.df-doc-editor .NgxEditor__Content .dependency-list {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
 .df-doc-editor .NgxEditor__Content th p,
 .df-doc-editor .NgxEditor__Content td p {
   margin-bottom: 0;
@@ -1043,12 +1354,37 @@
   .df-doc-content .annotation-grid,
   .df-doc-content .screen-grid,
   .df-doc-content .flow-strip,
+  .df-doc-content .triage-board,
+  .df-doc-content .metric-board,
+  .df-doc-content .pipeline-track,
+  .df-doc-content .dossier-strip,
+  .df-doc-content .decision-board,
+  .df-doc-content .condition-stack,
+  .df-doc-content .spec-card__grid,
   .df-doc-editor .NgxEditor__Content .content-grid--2,
   .df-doc-editor .NgxEditor__Content .content-grid--3,
   .df-doc-editor .NgxEditor__Content .annotation-grid,
   .df-doc-editor .NgxEditor__Content .screen-grid,
-  .df-doc-editor .NgxEditor__Content .flow-strip {
+  .df-doc-editor .NgxEditor__Content .flow-strip,
+  .df-doc-editor .NgxEditor__Content .triage-board,
+  .df-doc-editor .NgxEditor__Content .metric-board,
+  .df-doc-editor .NgxEditor__Content .pipeline-track,
+  .df-doc-editor .NgxEditor__Content .dossier-strip,
+  .df-doc-editor .NgxEditor__Content .decision-board,
+  .df-doc-editor .NgxEditor__Content .condition-stack,
+  .df-doc-editor .NgxEditor__Content .spec-card__grid {
     grid-template-columns: 1fr;
+  }
+
+  .df-doc-content .dossier-strip > div,
+  .df-doc-editor .NgxEditor__Content .dossier-strip > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .df-doc-content .dossier-strip > div:last-child,
+  .df-doc-editor .NgxEditor__Content .dossier-strip > div:last-child {
+    border-bottom: 0;
   }
 
   .df-doc-content .flow-strip li:not(:last-child)::after,

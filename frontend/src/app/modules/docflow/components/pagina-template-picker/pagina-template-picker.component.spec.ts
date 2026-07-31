@@ -45,6 +45,11 @@ describe('PaginaTemplatePickerComponent', () => {
     expect(component.visualDoTemplate('CATEGORIA_ARTIGOS')).toBe('category');
     expect(component.visualDoTemplate('PRIMEIROS_PASSOS')).toBe('onboarding');
     expect(component.visualDoTemplate('RELATORIO')).toBe('report');
+    expect(component.visualDoTemplate('LAB_FILTROS')).toBe('filters');
+    expect(component.visualDoTemplate('PAINEL_METRICAS')).toBe('metrics');
+    expect(component.visualDoTemplate('DOSSIE_DECISAO')).toBe('dossier');
+    expect(component.visualDoTemplate('ESPECIFICACAO_REGRA')).toBe('rulespec');
+    expect(component.visualDoTemplate('CATALOGO_PARAMETROS')).toBe('catalog');
   });
 
   it('emite o modelo selecionado', () => {

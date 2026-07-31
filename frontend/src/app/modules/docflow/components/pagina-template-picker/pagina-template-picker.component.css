@@ -390,7 +390,12 @@
 .template-mini__home,
 .template-mini__category,
 .template-mini__onboarding,
-.template-mini__report {
+.template-mini__report,
+.template-mini__filters,
+.template-mini__metrics,
+.template-mini__dossier,
+.template-mini__rulespec,
+.template-mini__catalog {
   display: none;
 }
 
@@ -596,6 +601,148 @@
   border-top: 4px solid #e57c28;
   border-radius: 5px;
   background: #fffaf5;
+}
+
+.template-mini--filters .template-mini__objective {
+  display: none;
+}
+
+.template-mini--filters .template-mini__filters {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.template-mini--filters .template-mini__filters i {
+  height: 18px;
+  border: 1px solid #cbd8e8;
+  border-radius: 999px;
+  background: white;
+}
+
+.template-mini--filters .template-mini__filters i:nth-child(1) {
+  width: 42%;
+  background: var(--accent);
+}
+
+.template-mini--filters .template-mini__filters i:nth-child(2) {
+  width: 28%;
+}
+
+.template-mini--filters .template-mini__filters i:nth-child(3) {
+  width: 34%;
+}
+
+.template-mini--filters .template-mini__filters i:nth-child(4) {
+  width: 48%;
+  height: 36px;
+  border-radius: 5px;
+  background: repeating-linear-gradient(180deg, white 0 10px, #eef3f9 10px 11px);
+}
+
+.template-mini--metrics .template-mini__objective {
+  display: none;
+}
+
+.template-mini--metrics .template-mini__metrics {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: grid;
+  height: 68px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.template-mini--metrics .template-mini__metrics i {
+  border: 1px solid #d5dfeb;
+  border-radius: 4px;
+  background: white;
+  box-shadow: inset 0 14px #dce9ff;
+}
+
+.template-mini--dossier .template-mini__objective {
+  display: none;
+}
+
+.template-mini--dossier .template-mini__dossier {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: grid;
+  height: 68px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid #cbd8e8;
+  border-radius: 5px;
+  background: white;
+}
+
+.template-mini--dossier .template-mini__dossier i {
+  border-right: 1px solid #e2e9f2;
+  background: linear-gradient(180deg, #eef4ff 0 18px, white 18px);
+}
+
+.template-mini--dossier .template-mini__dossier i:last-child {
+  border-right: 0;
+}
+
+.template-mini--rulespec .template-mini__objective {
+  display: none;
+}
+
+.template-mini--rulespec .template-mini__rulespec {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: grid;
+  height: 68px;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.template-mini--rulespec .template-mini__rulespec i {
+  border: 1px solid #d5dfeb;
+  border-radius: 5px;
+  background: white;
+}
+
+.template-mini--rulespec .template-mini__rulespec i:first-child {
+  box-shadow: inset 4px 0 var(--accent);
+}
+
+.template-mini--rulespec .template-mini__rulespec i:last-child {
+  background: #dce9ff;
+}
+
+.template-mini--catalog .template-mini__objective {
+  display: none;
+}
+
+.template-mini--catalog .template-mini__catalog {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: grid;
+  height: 68px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.template-mini--catalog .template-mini__catalog i {
+  border: 1px solid #d5dfeb;
+  border-radius: 5px;
+  background: white;
+  box-shadow: inset 0 0 0 1px transparent, inset 0 22px #edf3fb;
 }
 
 .template-mini--blank {
