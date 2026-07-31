@@ -122,8 +122,6 @@ Cada transição é um endpoint POST dedicado (`/paginas/:id/enviar-revisao`, `/
 - Testes unitários nos services principais e em componentes críticos.
 
 ### Pendente / integração
-- Tabs no detalhe da publicação (Visão Geral / Páginas / Changelog / Downloads).
-- UI de preview tokens (API no `ClienteService`, sem tela).
 - `ConfiguracaoService` → API real `/docflow/empresa/logo`.
 - Alinhar paths API (`/api/doc-flow` vs `/api/v1/docflow`) e auth (mock → JWT).
 - Telas admin grupos/usuários/auditoria (API existe; UI hoje no mock `seguranca`).

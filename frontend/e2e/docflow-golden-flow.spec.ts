@@ -38,6 +38,7 @@ interface EstadoDocFlow {
     moduloNome: string;
     projetoId: string;
     projetoNome: string;
+    parentId?: string;
     createdAt: string;
     updatedAt: string;
     createdBy: string;
@@ -393,7 +394,7 @@ async function instalarApiDocFlow(
       const projeto = estado.projetos.find(item => item.id === body['projetoId']);
       const modulo = estado.modulos.find(item => item.id === body['moduloId']);
       const pagina = {
-        id: 'pagina-1',
+        id: `pagina-${estado.paginas.length + 1}`,
         version: 1,
         titulo: String(body['titulo']),
         slug: String(body['slug'] || slug(String(body['titulo']))),
@@ -407,13 +408,21 @@ async function instalarApiDocFlow(
         moduloNome: modulo?.nome ?? '',
         projetoId: String(body['projetoId']),
         projetoNome: projeto?.nome ?? '',
+        parentId: body['parentId'] ? String(body['parentId']) : undefined,
         createdAt: AGORA,
         updatedAt: AGORA,
         createdBy: 'admin',
         updatedBy: 'admin',
       };
-      estado.paginas = [pagina];
+      estado.paginas.push(pagina);
       return responder(pagina, 201);
+    }
+
+    const paginaDetalhe = path.match(/^\/api\/doc-flow\/paginas\/([^/]+)$/);
+    if (method === 'GET' && paginaDetalhe && !paginaDetalhe[1].includes('/')) {
+      const pagina = estado.paginas.find(item => item.id === paginaDetalhe[1]);
+      if (!pagina) return responder({ message: 'Página não encontrada' }, 404);
+      return responder(pagina);
     }
 
     const paginaPersistencia = path.match(/^\/api\/doc-flow\/paginas\/([^/]+)(?:\/autosave)?$/);
@@ -429,6 +438,12 @@ async function instalarApiDocFlow(
         conteudoHtml: String(body['conteudoHtml'] ?? pagina.conteudoHtml),
         ordem: Number(body['ordem'] ?? pagina.ordem),
         ativo: body['ativo'] !== false,
+        parentId:
+          body['parentId'] !== undefined
+            ? body['parentId']
+              ? String(body['parentId'])
+              : undefined
+            : pagina.parentId,
         version: pagina.version + 1,
         updatedAt: AGORA,
       });
@@ -529,6 +544,38 @@ test.describe('DocFlow — fluxo de ouro', () => {
     await linha.getByRole('button', { name: 'Publicar' }).click();
     await expect(linha).toContainText('Publicado');
     expect(estado.paginas[0].status).toBe('PUBLICADO');
+  });
+
+  test('persiste parentId ao criar subpágina e ordena hierarquia na lista', async ({ page }) => {
+    const estado = await instalarApiDocFlow(page);
+
+    await page.goto('/doc-flow/projetos/novo');
+    await page.locator('input[formcontrolname="nome"]').fill('Portal Hierarquia');
+    await page.getByRole('button', { name: 'Salvar', exact: true }).click();
+
+    await page.goto('/doc-flow/modulos/novo');
+    await page.locator('input[formcontrolname="nome"]').fill('Operações');
+    await page.locator('select[formcontrolname="projetoId"]').selectOption('projeto-1');
+    await page.getByRole('button', { name: 'Salvar', exact: true }).click();
+
+    await page.goto('/doc-flow/paginas/novo?projetoId=projeto-1&moduloId=modulo-1');
+    await page.locator('input[formcontrolname="titulo"]').fill('Operações');
+    await page.locator('input[formcontrolname="codigoTela"]').fill('OPS-001');
+    await page.getByRole('button', { name: 'Salvar e voltar' }).click();
+    await expect(page).toHaveURL(/\/doc-flow\/paginas(?:\?.*)?$/);
+
+    await page.goto('/doc-flow/paginas/novo?projetoId=projeto-1&moduloId=modulo-1&parentId=pagina-1');
+    await page.locator('input[formcontrolname="titulo"]').fill('Lista de fornecedores');
+    await page.locator('input[formcontrolname="codigoTela"]').fill('OPS-LISTA');
+    await page.getByRole('button', { name: 'Salvar e voltar' }).click();
+
+    const filho = estado.paginas.find(item => item.titulo === 'Lista de fornecedores');
+    expect(filho?.parentId).toBe('pagina-1');
+
+    await page.goto('/doc-flow/paginas?moduloId=modulo-1');
+    const linhas = page.locator('tr').filter({ hasText: 'Operações' }).or(page.locator('tr').filter({ hasText: 'Lista de fornecedores' }));
+    await expect(linhas).toHaveCount(2);
+    await expect(page.locator('tr').filter({ hasText: 'Lista de fornecedores' })).toContainText('--');
   });
 
   test('bloqueia rota de criação e oculta ações sem permissão', async ({ page }) => {

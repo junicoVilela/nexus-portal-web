@@ -24,3 +24,13 @@ export interface ReprocessamentoPublicacoes {
   ignoradas: number;
   publicacoes: Publicacao[];
 }
+
+export interface PublicacaoPaginaSnapshot {
+  id: string;
+  parentId?: string | null;
+  titulo: string;
+  codigoTela?: string;
+  slug?: string;
+  ordem: number;
+  nivel: number;
+}

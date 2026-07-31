@@ -1,19 +1,40 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector } from '@angular/core';
+import { defer, map, Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
-import { Publicacao, ReprocessamentoPublicacoes } from '../models/publicacao.model';
-import { Pagina } from '../models/pagina.model';
+import {
+  buscar18 as buscarPublicacaoSdk,
+  changelog as changelogPublicacaoSdk,
+  diagnostico as diagnosticoPublicacaoSdk,
+  emitirTokenDownload as emitirTokenDownloadSdk,
+  excluir14 as excluirPublicacaoSdk,
+  gerar as gerarPublicacaoSdk,
+  listar18 as listarPublicacoesSdk,
+  preview1 as previewPublicacaoSdk,
+  previewHtml as previewPublicacaoHtmlSdk,
+  reprocessar as reprocessarPublicacaoSdk,
+} from '../../../api/generated/sdk.gen';
+import type {
+  ChangelogItemResponse,
+  DownloadTokenResponse,
+  Listar18Data,
+  PublicacaoResponse,
+} from '../../../api/generated/types.gen';
 import { ChangelogItem } from '../models/pagina.model';
+import { Pagina } from '../models/pagina.model';
+import { Publicacao, PublicacaoPaginaSnapshot, ReprocessamentoPublicacoes } from '../models/publicacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class PublicacaoService {
   private readonly base = environment.apiUrl;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly injector: Injector,
+  ) {}
 
   eventosPublicacao(): Observable<{
     id: string;
@@ -67,9 +88,29 @@ export class PublicacaoService {
       size?: number;
     } = {},
   ): Observable<PageResult<Publicacao>> {
-    return this.http.get<PageResult<Publicacao>>(`${this.base}/publicacoes`, {
-      params: buildQueryParams(params),
-    });
+    return defer(() =>
+      listarPublicacoesSdk({
+        query: {
+          clienteId: params.clienteId,
+          sort: params.sort,
+          dir: params.dir,
+          page: params.page,
+          size: params.size,
+          ...(params.status ? { status: params.status } : {}),
+        } as Listar18Data['query'],
+        injector: this.injector,
+      }),
+    ).pipe(
+      map(resposta => ({
+        items: (resposta.data.items ?? []).map(item => this.mapearPublicacao(item)),
+        totalItems: resposta.data.totalItems ?? 0,
+        totalPages: resposta.data.totalPages ?? 0,
+        page: resposta.data.page ?? 1,
+        size: resposta.data.size ?? params.size ?? 10,
+        first: resposta.data.first ?? true,
+        last: resposta.data.last ?? true,
+      })),
+    );
   }
 
   publicacoes(clienteId?: string): Observable<Publicacao[]> {
@@ -77,29 +118,41 @@ export class PublicacaoService {
   }
 
   publicacaoPorId(publicacaoId: string): Observable<Publicacao> {
-    return this.http.get<Publicacao>(`${this.base}/publicacoes/${publicacaoId}`);
+    return defer(() =>
+      buscarPublicacaoSdk({ path: { id: publicacaoId }, injector: this.injector }),
+    ).pipe(map(resposta => this.mapearPublicacao(resposta.data)));
   }
 
   previewPublicacao(clienteId: string): Observable<Pagina[]> {
-    return this.http.get<Pagina[]>(`${this.base}/publicacoes/preview`, {
-      params: new HttpParams().set('clienteId', clienteId),
-    });
+    return defer(() =>
+      previewPublicacaoSdk({ query: { clienteId }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data as Pagina[]));
   }
 
   previewPublicacaoHtml(clienteId: string, versao?: string): Observable<string> {
-    let params = new HttpParams().set('clienteId', clienteId);
-    if (versao) params = params.set('versao', versao);
-    return this.http.get(`${this.base}/publicacoes/preview-html`, { params, responseType: 'text' });
+    return defer(() =>
+      previewPublicacaoHtmlSdk({
+        query: { clienteId, versao },
+        injector: this.injector,
+      }),
+    ).pipe(map(resposta => resposta.data));
   }
 
   diagnosticoPublicacao(
     clienteId: string,
   ): Observable<{ severidade: string; mensagem: string; paginaId?: string; paginaTitulo?: string }[]> {
-    return this.http.get<
-      { severidade: string; mensagem: string; paginaId?: string; paginaTitulo?: string }[]
-    >(`${this.base}/publicacoes/diagnostico`, {
-      params: new HttpParams().set('clienteId', clienteId),
-    });
+    return defer(() =>
+      diagnosticoPublicacaoSdk({ query: { clienteId }, injector: this.injector }),
+    ).pipe(
+      map(resposta =>
+        resposta.data.map(item => ({
+          severidade: item.severidade ?? '',
+          mensagem: item.mensagem ?? '',
+          paginaId: item.paginaId,
+          paginaTitulo: item.paginaTitulo,
+        })),
+      ),
+    );
   }
 
   gerarPublicacao(payload: {
@@ -107,11 +160,15 @@ export class PublicacaoService {
     versao: string;
     observacao?: string;
   }): Observable<Publicacao> {
-    return this.http.post<Publicacao>(`${this.base}/publicacoes`, payload);
+    return defer(() =>
+      gerarPublicacaoSdk({ body: payload, injector: this.injector }),
+    ).pipe(map(resposta => this.mapearPublicacao(resposta.data)));
   }
 
   reprocessarPublicacao(publicacaoId: string): Observable<Publicacao> {
-    return this.http.post<Publicacao>(`${this.base}/publicacoes/${publicacaoId}/reprocessar`, {});
+    return defer(() =>
+      reprocessarPublicacaoSdk({ path: { id: publicacaoId }, injector: this.injector }),
+    ).pipe(map(resposta => this.mapearPublicacao(resposta.data)));
   }
 
   reprocessarPublicacoes(ids: string[]): Observable<ReprocessamentoPublicacoes> {
@@ -119,7 +176,9 @@ export class PublicacaoService {
   }
 
   excluirPublicacao(publicacaoId: string): Observable<void> {
-    return this.http.delete<void>(`${this.base}/publicacoes/${publicacaoId}`);
+    return defer(() =>
+      excluirPublicacaoSdk({ path: { id: publicacaoId }, injector: this.injector }),
+    ).pipe(map(() => undefined));
   }
 
   baixarPublicacao(publicacaoId: string): Observable<Blob> {
@@ -135,9 +194,9 @@ export class PublicacaoService {
   tokenDownloadPacote(
     publicacaoId: string,
   ): Observable<{ token: string; validadeSegundos: number; urlPath: string }> {
-    return this.http.get<{ token: string; validadeSegundos: number; urlPath: string }>(
-      `${this.base}/publicacoes/${publicacaoId}/download-token`,
-    );
+    return defer(() =>
+      emitirTokenDownloadSdk({ path: { id: publicacaoId }, injector: this.injector }),
+    ).pipe(map(resposta => this.mapearTokenDownload(resposta.data)));
   }
 
   montarUrlDownloadPacotePublico(
@@ -159,6 +218,54 @@ export class PublicacaoService {
   }
 
   changelogPublicacao(publicacaoId: string): Observable<ChangelogItem[]> {
-    return this.http.get<ChangelogItem[]>(`${this.base}/publicacoes/${publicacaoId}/changelog`);
+    return defer(() =>
+      changelogPublicacaoSdk({ path: { id: publicacaoId }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data.map(item => this.mapearChangelog(item))));
+  }
+
+  arvorePaginasPublicacao(id: string): Observable<PublicacaoPaginaSnapshot[]> {
+    return this.http.get<PublicacaoPaginaSnapshot[]>(`${this.base}/publicacoes/${id}/paginas`);
+  }
+
+  private mapearPublicacao(item: PublicacaoResponse): Publicacao {
+    return {
+      id: item.id ?? '',
+      clienteId: item.clienteId ?? '',
+      clienteNome: item.clienteNome ?? '',
+      versao: item.versao ?? '',
+      status: item.status ?? 'GERANDO',
+      quantidadePaginas: item.quantidadePaginas ?? 0,
+      quantidadeModulos: item.quantidadeModulos ?? 0,
+      arquivoZipNome: item.arquivoZipNome,
+      hashPacote: item.hashPacote,
+      observacao: item.observacao,
+      relatorioValidacao: item.relatorioValidacao,
+      createdAt: item.createdAt ?? '',
+      createdBy: item.createdBy ?? '',
+      updatedAt: item.updatedAt,
+      updatedBy: item.updatedBy,
+    };
+  }
+
+  private mapearChangelog(item: ChangelogItemResponse): ChangelogItem {
+    return {
+      id: item.id ?? '',
+      paginaId: item.paginaId,
+      paginaTitulo: item.paginaTitulo ?? '',
+      tipoMudanca: item.tipoMudanca as ChangelogItem['tipoMudanca'],
+      createdAt: item.createdAt ?? '',
+    };
+  }
+
+  private mapearTokenDownload(item: DownloadTokenResponse): {
+    token: string;
+    validadeSegundos: number;
+    urlPath: string;
+  } {
+    return {
+      token: item.token ?? '',
+      validadeSegundos: item.validadeSegundos ?? 0,
+      urlPath: item.urlPath ?? `${this.base}/public/publicacoes/download`,
+    };
   }
 }

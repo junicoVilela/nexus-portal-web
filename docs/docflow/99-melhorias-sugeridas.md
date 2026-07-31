@@ -28,9 +28,9 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### A.3 Tabs no detalhe da publicação
 
-- **Impacto**: alto.
-- **Esforço**: M.
-- **Onde**: `publicacao-detalhe` ganha abas (Visão Geral / Páginas incluídas / Changelog / Downloads).
+- **Status**: ✅ entregue.
+- **Onde**: `publicacao-detalhe` com abas Visão Geral / Páginas / Changelog / Downloads.
+- A aba Páginas usa snapshot `GET /publicacoes/{id}/paginas` (fallback: changelog plano).
 
 ### A.4 Polling/SSE para publicações `GERANDO`
 
@@ -57,7 +57,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - **Impacto**: médio (power users).
 - **Esforço**: M.
 - Atalhos: `Ctrl+S` (salvar), `Ctrl+P` (publicar), `Esc` (fechar modal), `/` (foco busca).
-- **Status parcial**: ✅ `Ctrl+S` / `Cmd+S` entregue no editor de página.
+- **Status**: ✅ `Ctrl+S` / `Cmd+S` e `Ctrl+P` / `Cmd+P` no editor (publicar quando APROVADO); `/` na lista de páginas.
 
 ### A.8 Modelos de página e criação sequencial
 
@@ -72,6 +72,11 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 - **Status**: ✅ entregue.
 - A primeira imagem cria um rascunho persistido antes do upload; não usa mais Base64.
+
+### A.11 Preview tokens na lista de clientes
+
+- **Status**: ✅ entregue no painel de vínculos (`clientes-list`): gerar token (72h), listar, copiar URL e revogar.
+- Permissões: `PUBLICACAO:LER` (listar) e `PUBLICACAO:EDITAR` (gerar/revogar).
 
 ---
 

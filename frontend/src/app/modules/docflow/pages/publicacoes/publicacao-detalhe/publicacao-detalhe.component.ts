@@ -5,8 +5,8 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
-import { Publicacao } from '@modules/docflow/models/publicacao.model';
-import { ChangelogItem, Pagina } from '@modules/docflow/models/pagina.model';
+import { Publicacao, PublicacaoPaginaSnapshot } from '@modules/docflow/models/publicacao.model';
+import { ChangelogItem } from '@modules/docflow/models/pagina.model';
 import {
   PageHeaderComponent,
   ButtonComponent,
@@ -58,7 +58,7 @@ export class PublicacaoDetalheComponent implements OnInit {
   protected id = '';
   protected readonly publicacao = signal<Publicacao | undefined>(undefined);
   protected readonly changelog = signal<ChangelogItem[]>([]);
-  protected readonly paginasPreview = signal<Pagina[]>([]);
+  protected readonly snapshotPaginas = signal<PublicacaoPaginaSnapshot[]>([]);
   protected readonly relatorioJson = signal<Record<string, unknown> | null>(null);
   protected readonly excluindo = signal(false);
   protected readonly baixandoZip = signal(false);
@@ -85,14 +85,14 @@ export class PublicacaoDetalheComponent implements OnInit {
   });
 
   protected readonly paginasArvore = computed<PaginaArvoreItem[]>(() => {
-    const preview = this.paginasPreview();
+    const snapshot = this.snapshotPaginas();
     const changelogPorPagina = new Map<string, ChangelogItem['tipoMudanca']>();
     for (const item of this.changelog()) {
       if (item.paginaId) changelogPorPagina.set(item.paginaId, item.tipoMudanca);
     }
 
-    if (preview.length) {
-      return this.montarHierarquiaPaginas(preview, changelogPorPagina);
+    if (snapshot.length) {
+      return this.montarHierarquiaSnapshot(snapshot, changelogPorPagina);
     }
 
     return this.paginasUnicas().map(item => ({
@@ -131,15 +131,15 @@ export class PublicacaoDetalheComponent implements OnInit {
     forkJoin({
       publicacao: this.publicacaoService.publicacaoPorId(this.id),
       changelog: this.publicacaoService.changelogPublicacao(this.id).pipe(catchError(() => of([]))),
+      snapshot: this.publicacaoService
+        .arvorePaginasPublicacao(this.id)
+        .pipe(catchError(() => of([] as PublicacaoPaginaSnapshot[]))),
     }).subscribe({
-      next: ({ publicacao, changelog }) => {
+      next: ({ publicacao, changelog, snapshot }) => {
         this.publicacao.set(publicacao);
         this.relatorioJson.set(this.tryParse(publicacao.relatorioValidacao));
         this.changelog.set(changelog);
-        this.publicacaoService
-          .previewPublicacao(publicacao.clienteId)
-          .pipe(catchError(() => of([] as Pagina[])))
-          .subscribe(paginas => this.paginasPreview.set(paginas));
+        this.snapshotPaginas.set(snapshot);
       },
       error: () => this.toast.error('Não foi possível carregar a publicação.'),
     });
@@ -242,11 +242,11 @@ export class PublicacaoDetalheComponent implements OnInit {
     void this.router.navigate(docFlowRouterCommands(['publicacoes']));
   }
 
-  private montarHierarquiaPaginas(
-    lista: Pagina[],
+  private montarHierarquiaSnapshot(
+    lista: PublicacaoPaginaSnapshot[],
     changelogPorPagina: Map<string, ChangelogItem['tipoMudanca']>,
   ): PaginaArvoreItem[] {
-    const filhos = new Map<string, Pagina[]>();
+    const filhos = new Map<string, PublicacaoPaginaSnapshot[]>();
     const ids = new Set(lista.map(pagina => pagina.id));
     lista.forEach(pagina => {
       if (pagina.parentId) {
@@ -258,7 +258,7 @@ export class PublicacaoDetalheComponent implements OnInit {
       .filter(pagina => !pagina.parentId || !ids.has(pagina.parentId))
       .sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo));
     const ordenadas: PaginaArvoreItem[] = [];
-    const append = (pagina: Pagina, nivel: number) => {
+    const append = (pagina: PublicacaoPaginaSnapshot, nivel: number) => {
       ordenadas.push({
         id: pagina.id,
         titulo: pagina.titulo,

@@ -85,6 +85,12 @@ import {
 } from '@modules/docflow/components/pagina-creation-progress/pagina-creation-progress.component';
 import { avaliarQualidadePagina } from '@modules/docflow/utils/pagina-quality.util';
 import {
+  contarItensIndiceGuias,
+  montarSecaoGuiasDisponiveis,
+  sincronizarIndicePai,
+  substituirOuAdicionarSecaoGuias,
+} from '@modules/docflow/utils/pagina-indice.util';
+import {
   aplicarPlaceholdersConteudo,
   ContextoPlaceholdersPagina,
 } from '@modules/docflow/utils/pagina-placeholders.util';
@@ -267,7 +273,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     const form = this.formValue();
     const id = this.editId();
     const filhosCount = id ? this.paginas().filter(pagina => pagina.parentId === id).length : undefined;
-    const indiceItemCount = this.contarItensIndiceGuias(form.conteudoHtml);
+    const indiceItemCount = contarItensIndiceGuias(form.conteudoHtml);
     return avaliarQualidadePagina({ ...form, filhosCount, indiceItemCount });
   });
 
@@ -468,7 +474,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         this.autosaveServidorEm.set(new Date());
         this.conflitoMensagem.set(null);
         if (pagina.parentId) {
-          this.sincronizarIndicePai(pagina.parentId);
+          sincronizarIndicePai(this.paginaService, this.toast, pagina.parentId);
         }
         if (destino === 'lista') {
           this.router.navigate(docFlowRouterCommands(['paginas']));
@@ -575,9 +581,45 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   @HostListener('document:keydown', ['$event'])
   protected salvarPorAtalho(event: KeyboardEvent): void {
-    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 's') return;
-    event.preventDefault();
-    this.salvar('continuar');
+    if (!(event.ctrlKey || event.metaKey)) return;
+    const key = event.key.toLowerCase();
+    if (key === 's') {
+      event.preventDefault();
+      this.salvar('continuar');
+      return;
+    }
+    if (key === 'p') {
+      if (!this.podePublicarPorAtalho()) return;
+      event.preventDefault();
+      this.publicarPaginaEditor();
+    }
+  }
+
+  private podePublicarPorAtalho(): boolean {
+    const id = this.editId();
+    const pagina = this.paginaAtual();
+    return !!id && !!pagina && pagina.status === 'APROVADO' && !this.saving();
+  }
+
+  publicarPaginaEditor(): void {
+    if (!this.podePublicarPorAtalho()) return;
+    const id = this.editId()!;
+    if (!this.aptoParaRevisao()) {
+      this.toast.warn('Corrija os itens de qualidade antes de publicar.');
+      return;
+    }
+    this.saving.set(true);
+    this.paginaService.publicarPagina(id).subscribe({
+      next: atualizada => {
+        this.paginaAtual.set(atualizada);
+        this.saving.set(false);
+        this.toast.success('Página publicada.');
+      },
+      error: () => {
+        this.saving.set(false);
+        this.toast.error('Erro ao publicar página.');
+      },
+    });
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -867,9 +909,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.toast.warn('Não há subpáginas para atualizar o índice.');
       return;
     }
-    const secaoHtml = this.montarSecaoGuiasDisponiveis(filhos);
+    const secaoHtml = montarSecaoGuiasDisponiveis(filhos);
     const html = this.form.controls.conteudoHtml.value ?? '';
-    const proximo = this.substituirOuAdicionarSecaoGuias(html, secaoHtml);
+    const proximo = substituirOuAdicionarSecaoGuias(html, secaoHtml);
     this.form.controls.conteudoHtml.setValue(proximo);
     if (this.editorModo() === 'rico' && this.richEditor) {
       this.richEditor.aplicarHtml(proximo);
@@ -1637,92 +1679,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.mostrarTemplates.set(false);
     this.irParaEtapa('conteudo');
     this.toast.success('Estrutura inicial aplicada conforme o tipo de página.');
-  }
-
-  private montarSecaoGuiasDisponiveis(filhos: Pagina[]): string {
-    const items = filhos
-      .map((filho, index) => {
-        const resumo = (filho.resumo?.trim() || 'Sem resumo').slice(0, 80);
-        return (
-          `<article class="resource-item"><span class="number-badge">${index + 1}</span><span><strong>${this.escapeHtml(filho.titulo)}</strong><small>${this.escapeHtml(resumo)}</small></span>` +
-          `<span class="resource-item__meta">${this.escapeHtml(filho.codigoTela)}</span></article>`
-        );
-      })
-      .join('');
-    return `<section class="doc-section"><h2>Guias disponíveis</h2><div class="resource-list resource-list--large">${items}</div></section>`;
-  }
-
-  private substituirOuAdicionarSecaoGuias(html: string, secaoHtml: string): string {
-    if (!html.trim()) return secaoHtml;
-    const doc = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html');
-    const body = doc.body;
-    const existente = Array.from(body.querySelectorAll('section')).find(secao => {
-      const h2 = secao.querySelector('h2');
-      return h2?.textContent?.trim().toLowerCase() === 'guias disponíveis';
-    });
-    if (existente) {
-      const temp = new DOMParser().parseFromString(secaoHtml, 'text/html');
-      const nova = temp.body.firstElementChild;
-      if (nova) existente.replaceWith(nova);
-    } else {
-      body.insertAdjacentHTML('beforeend', secaoHtml);
-    }
-    return body.innerHTML;
-  }
-
-  private contarItensIndiceGuias(conteudoHtml?: string | null): number | undefined {
-    if (!conteudoHtml?.trim()) return undefined;
-    const doc = new DOMParser().parseFromString(`<body>${conteudoHtml}</body>`, 'text/html');
-    const secao = Array.from(doc.body.querySelectorAll('section')).find(item => {
-      const h2 = item.querySelector('h2');
-      return h2?.textContent?.trim().toLowerCase() === 'guias disponíveis';
-    });
-    if (!secao) return undefined;
-    return secao.querySelectorAll('.resource-item').length;
-  }
-
-  private temSecaoGuiasDisponiveis(html: string): boolean {
-    return this.contarItensIndiceGuias(html) !== undefined;
-  }
-
-  private sincronizarIndicePai(parentId: string): void {
-    this.paginaService.pagina(parentId).subscribe({
-      next: parent => {
-        if (!this.temSecaoGuiasDisponiveis(parent.conteudoHtml ?? '')) return;
-        this.paginaService.paginas({ moduloId: parent.moduloId }).subscribe({
-          next: siblings => {
-            const filhos = siblings
-              .filter(pagina => pagina.parentId === parentId)
-              .sort((a, b) => a.ordem - b.ordem || a.titulo.localeCompare(b.titulo));
-            const secaoHtml = this.montarSecaoGuiasDisponiveis(filhos);
-            const novoHtml = this.substituirOuAdicionarSecaoGuias(parent.conteudoHtml ?? '', secaoHtml);
-            if (novoHtml === parent.conteudoHtml) return;
-            this.paginaService
-              .salvarPagina(
-                {
-                  titulo: parent.titulo,
-                  slug: parent.slug,
-                  codigoTela: parent.codigoTela,
-                  resumo: parent.resumo,
-                  conteudoHtml: novoHtml,
-                  ordem: parent.ordem,
-                  ativo: parent.ativo,
-                  moduloId: parent.moduloId,
-                  parentId: parent.parentId,
-                  version: parent.version,
-                },
-                parent.id,
-              )
-              .subscribe({
-                next: () => this.toast.success('Índice de guias do pai atualizado.'),
-                error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
-              });
-          },
-          error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
-        });
-      },
-      error: () => this.toast.warn('Não foi possível atualizar o índice do pai.'),
-    });
   }
 
   private queryParamsEditor(): Record<string, string | number | null> {

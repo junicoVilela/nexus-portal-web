@@ -159,6 +159,61 @@
         <ui-button variant="ghost" size="sm" (clicked)="limparPaginas()">Limpar páginas</ui-button>
       </div>
 
+      <ui-card class="clientes__preview-card">
+        <div class="clientes__preview-head">
+          <div>
+            <h4 class="clientes__vinculos-col-title">Prévia pública</h4>
+            <p class="clientes__vinculos-note">Links temporários para o cliente visualizar o manual antes da publicação.</p>
+          </div>
+          <ui-button
+            *appPermissao="'PUBLICACAO:EDITAR'"
+            size="sm"
+            icon="KeyRound"
+            [loading]="generatingPreviewToken()"
+            (clicked)="gerarPreviewToken()"
+            >Gerar token (72h)</ui-button
+          >
+        </div>
+        @if (loadingPreviewTokens()) {
+          <div class="clientes__preview-loading">Carregando tokens...</div>
+        } @else if (previewTokens().length === 0) {
+          <div class="clientes__preview-empty">Nenhum token ativo para este cliente.</div>
+        } @else {
+          <div class="clientes__preview-list">
+            @for (token of previewTokens(); track token.id) {
+              <div class="clientes__preview-row">
+                <div class="clientes__preview-meta">
+                  <ui-badge [tone]="previewTokenAtivo(token) ? 'success' : 'neutral'" [dot]="true">
+                    {{ previewTokenAtivo(token) ? 'Ativo' : 'Expirado' }}
+                  </ui-badge>
+                  <span>Criado {{ token.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span>Expira {{ token.expiresAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  @if (token.createdBy) {
+                    <span>por {{ token.createdBy }}</span>
+                  }
+                </div>
+                <div class="clientes__preview-actions">
+                  <ui-button variant="ghost" size="sm" icon="Copy" (clicked)="copiarPreviewUrl(token)"
+                    >Copiar URL</ui-button
+                  >
+                  <ui-button
+                    *appPermissao="'PUBLICACAO:EDITAR'"
+                    variant="danger"
+                    size="sm"
+                    icon="Ban"
+                    [disabled]="!!revogandoPreviewTokenId()"
+                    [loading]="revogandoPreviewTokenId() === token.id"
+                    (clicked)="revogarPreviewToken(token)"
+                    >Revogar</ui-button
+                  >
+                </div>
+                <code class="clientes__preview-url">{{ previewPublicoUrl(token) }}</code>
+              </div>
+            }
+          </div>
+        }
+      </ui-card>
+
       <div class="clientes__vinculos-grid">
         <section class="clientes__vinculos-col">
           <h4 class="clientes__vinculos-col-title">Projetos liberados</h4>

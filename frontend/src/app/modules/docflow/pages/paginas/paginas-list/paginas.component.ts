@@ -313,9 +313,13 @@ export class PaginasComponent implements OnInit {
 
   async excluir(pagina: Pagina): Promise<void> {
     if (this.excluindoId()) return;
+    const comFilhos = this.temFilhosNaLista(pagina.id);
+    const message = comFilhos
+      ? `A página "${pagina.titulo}", suas revisões, anexos e subpáginas vinculadas nesta lista serão excluídos permanentemente.`
+      : `A página "${pagina.titulo}", suas revisões e anexos serão excluídos permanentemente. Se houver subpáginas fora desta lista, elas também serão excluídas.`;
     const ok = await this.confirmService.confirm({
       title: 'Excluir página?',
-      message: `A página "${pagina.titulo}", suas revisões e anexos serão excluídos permanentemente. Subpáginas precisam ser removidas antes.`,
+      message,
       acceptLabel: 'Excluir página',
       variant: 'danger',
       icon: 'Trash2',

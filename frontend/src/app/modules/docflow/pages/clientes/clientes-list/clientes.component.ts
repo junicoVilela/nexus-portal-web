@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin, of } from 'rxjs';
@@ -7,7 +8,7 @@ import { ModuloService } from '@modules/docflow/services/modulo.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
-import { Cliente } from '@modules/docflow/models/cliente.model';
+import { Cliente, PreviewToken } from '@modules/docflow/models/cliente.model';
 import { Modulo } from '@modules/docflow/models/modulo.model';
 import { Pagina } from '@modules/docflow/models/pagina.model';
 import { Projeto } from '@modules/docflow/models/projeto.model';
@@ -21,18 +22,20 @@ import {
 } from '@shared/utils/query-state';
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
-import { BadgeComponent, ButtonComponent, ConfirmService, ToastService } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, CardComponent, ConfirmService, ToastService } from '@shared/ui';
 import { PermissaoDirective } from '@modules/seguranca/directives';
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
   imports: [
+    DatePipe,
     AuditStampComponent,
     TablePaginationComponent,
     ListPageComponent,
     ButtonComponent,
     BadgeComponent,
+    CardComponent,
     PermissaoDirective,
   ],
   templateUrl: './clientes.component.html',
@@ -66,6 +69,10 @@ export class ClientesComponent implements OnInit {
   protected paginasLoaded = false;
   protected readonly savingVinculos = signal(false);
   protected readonly excluindoId = signal<string | null>(null);
+  protected readonly previewTokens = signal<PreviewToken[]>([]);
+  protected readonly loadingPreviewTokens = signal(false);
+  protected readonly generatingPreviewToken = signal(false);
+  protected readonly revogandoPreviewTokenId = signal<string | null>(null);
 
   protected readonly modulosDisponiveis = computed<Modulo[]>(() => {
     const ids = this.projetoIds();
@@ -212,6 +219,7 @@ export class ClientesComponent implements OnInit {
           this.projetoIds.set(new Set(vinculos.projetoIds));
           this.moduloIds.set(new Set(vinculos.moduloIds));
           this.paginaIds.set(new Set(vinculos.paginaIds));
+          this.carregarPreviewTokens(cliente.id);
         },
         error: error => {
           if (this.clienteVinculos()?.id === cliente.id) {
@@ -327,6 +335,7 @@ export class ClientesComponent implements OnInit {
     this.projetoIds.set(new Set());
     this.moduloIds.set(new Set());
     this.paginaIds.set(new Set());
+    this.previewTokens.set([]);
     this.paginaFiltro = '';
     this.copiarOrigemClienteId = '';
     this.loadingVinculos.set(false);
@@ -400,6 +409,80 @@ export class ClientesComponent implements OnInit {
 
   eventValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
+  }
+
+  carregarPreviewTokens(clienteId: string): void {
+    this.loadingPreviewTokens.set(true);
+    this.clienteService.listarPreviewTokens(clienteId).subscribe({
+      next: tokens => {
+        if (this.clienteVinculos()?.id !== clienteId) return;
+        this.previewTokens.set(tokens);
+        this.loadingPreviewTokens.set(false);
+      },
+      error: error => {
+        if (this.clienteVinculos()?.id === clienteId) {
+          this.loadingPreviewTokens.set(false);
+          this.toast.error(this.errorMessage(error, 'Erro ao carregar tokens de prévia.'));
+        }
+      },
+    });
+  }
+
+  gerarPreviewToken(): void {
+    const cliente = this.clienteVinculos();
+    if (!cliente || this.generatingPreviewToken()) return;
+    this.generatingPreviewToken.set(true);
+    this.clienteService.gerarPreviewToken(cliente.id, 72).subscribe({
+      next: token => {
+        this.generatingPreviewToken.set(false);
+        this.previewTokens.update(lista => [token, ...lista]);
+        this.toast.success('Token de prévia gerado (válido por 72 horas).');
+      },
+      error: error => {
+        this.generatingPreviewToken.set(false);
+        this.toast.error(this.errorMessage(error, 'Erro ao gerar token de prévia.'));
+      },
+    });
+  }
+
+  copiarPreviewUrl(token: PreviewToken): void {
+    const url = this.clienteService.previewPublicoUrl(token.token);
+    navigator.clipboard
+      .writeText(url)
+      .then(() => this.toast.success('URL pública de prévia copiada.'))
+      .catch(() => this.toast.error('Não foi possível copiar a URL.'));
+  }
+
+  async revogarPreviewToken(token: PreviewToken): Promise<void> {
+    if (this.revogandoPreviewTokenId()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Revogar token?',
+      message: 'O link público de prévia deixará de funcionar imediatamente.',
+      acceptLabel: 'Revogar',
+      variant: 'danger',
+      icon: 'Ban',
+    });
+    if (!confirmado) return;
+    this.revogandoPreviewTokenId.set(token.id);
+    this.clienteService
+      .revogarPreviewToken(token.id)
+      .pipe(finalize(() => this.revogandoPreviewTokenId.set(null)))
+      .subscribe({
+        next: () => {
+          this.previewTokens.update(lista => lista.filter(item => item.id !== token.id));
+          this.toast.success('Token revogado.');
+        },
+        error: error => this.toast.error(this.errorMessage(error, 'Erro ao revogar token.')),
+      });
+  }
+
+  previewTokenAtivo(token: PreviewToken): boolean {
+    if (!token.expiresAt) return false;
+    return new Date(token.expiresAt).getTime() > Date.now();
+  }
+
+  previewPublicoUrl(token: PreviewToken): string {
+    return this.clienteService.previewPublicoUrl(token.token);
   }
 
   private errorMessage(error: unknown, fallback: string): string {

@@ -88,9 +88,9 @@ Ver `06-editor-paginas.md` para detalhes (editor HTML, atalhos, anexos, auto-sav
 ### Detalhe (`publicacao-detalhe/`)
 **Rota**: `/doc-flow/publicacoes/:id/detalhe`
 
-- Visão geral + changelog + downloads (ZIP/PDF/token).
+- Abas: Visão geral, Páginas (snapshot hierárquico via `GET /publicacoes/{id}/paginas`), Changelog e Downloads.
+- Fallback da aba Páginas: lista plana derivada do changelog quando o snapshot está vazio.
 - Exclusão protegida por confirmação; publicações em geração não podem ser apagadas.
-- TODO: virar tabs (Visão Geral / Páginas incluídas / Changelog / Downloads) — ver `99`.
 
 ---
 
