@@ -124,4 +124,20 @@ describe('avaliarQualidadePagina', () => {
 
     expect(itens.find(item => item.codigo === 'INDICE_FILHOS')?.ok).toBe(true);
   });
+
+  it('relaxa regra de conteúdo mínimo em páginas de menu/índice', () => {
+    const conteudoMenu =
+      '<section class="doc-intro"><h2>Menu</h2><p>Pasta de navegação com links para subpáginas.</p></section>' +
+      '<section class="doc-section"><h2>Guias disponíveis</h2><div class="resource-list"></div></section>';
+
+    const itens = avaliarQualidadePagina({
+      titulo: 'Menu',
+      codigoTela: 'MENU-001',
+      projetoId: 'p1',
+      moduloId: 'm1',
+      conteudoHtml: conteudoMenu,
+    });
+
+    expect(itens.find(item => item.codigo === 'CONTEUDO')?.ok).toBe(true);
+  });
 });

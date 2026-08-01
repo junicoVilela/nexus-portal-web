@@ -13,6 +13,11 @@ const okJson = contentType => ({
   content: { '*/*': { schema: contentType } },
 });
 
+const okSse = contentType => ({
+  description: 'Server-Sent Events stream',
+  content: { 'text/event-stream': { schema: contentType } },
+});
+
 const ref = name => ({ $ref: `#/components/schemas/${name}` });
 
 const pageResponse = itemSchema => ({
@@ -52,7 +57,37 @@ const tipoAjudaEvento = {
   ],
 };
 
+const acaoPaginaEvento = {
+  type: 'string',
+  enum: ['ENVIAR_REVISAO', 'APROVAR', 'PUBLICAR', 'ARQUIVAR', 'DEVOLVER'],
+};
+
 const newSchemas = {
+  PaginaEventoResponse: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      titulo: { type: 'string' },
+      status: {
+        type: 'string',
+        enum: ['RASCUNHO', 'EM_REVISAO', 'APROVADO', 'PUBLICADO', 'ARQUIVADO'],
+      },
+      acao: acaoPaginaEvento,
+      usuario: { type: 'string' },
+    },
+  },
+  PublicacaoEventoResponse: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+      clienteId: { type: 'string', format: 'uuid' },
+      status: {
+        type: 'string',
+        enum: ['GERANDO', 'SUCESSO', 'ERRO'],
+      },
+      versao: { type: 'string' },
+    },
+  },
   ReprocessarPublicacoesRequest: {
     type: 'object',
     required: ['ids'],
@@ -194,6 +229,24 @@ const newSchemas = {
 };
 
 const newPaths = {
+  '/api/v1/docflow/paginas/eventos': {
+    get: {
+      tags: ['pagina-controller'],
+      operationId: 'eventosPagina',
+      responses: {
+        200: okSse(ref('PaginaEventoResponse')),
+      },
+    },
+  },
+  '/api/v1/docflow/publicacoes/eventos': {
+    get: {
+      tags: ['publicacao-controller'],
+      operationId: 'eventosPublicacao',
+      responses: {
+        200: okSse(ref('PublicacaoEventoResponse')),
+      },
+    },
+  },
   '/api/v1/docflow/publicacoes/reprocessar-lote': {
     post: {
       tags: ['publicacao-controller'],

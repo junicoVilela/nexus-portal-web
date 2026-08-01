@@ -1,4 +1,5 @@
 import { PaginaQualidadeItem } from '../models/pagina.model';
+import { contarItensIndiceGuias } from './pagina-indice.util';
 
 export interface PaginaQualityInput {
   titulo?: string | null;
@@ -41,6 +42,10 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
     .filter(valor => valor.length > 0);
   const codigosVerTambemInvalidos = codigosVerTambem.filter(valor => !valor || /^CODIGO/i.test(valor));
 
+  // Páginas de menu/índice têm conteúdo mais enxuto; o backend ainda persiste como página normal.
+  const parecePaginaIndice = contarItensIndiceGuias(raw.conteudoHtml) !== undefined;
+  const minimoConteudo = parecePaginaIndice ? 40 : 80;
+
   return [
     item('TITULO', 'Título definido', 'Informe um título claro para a página.', !!raw.titulo?.trim(), 'ERRO'),
     item(
@@ -60,8 +65,10 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
     item(
       'CONTEUDO',
       'Conteúdo desenvolvido',
-      'A página precisa ter pelo menos 80 caracteres de conteúdo útil.',
-      texto.length >= 80,
+      parecePaginaIndice
+        ? 'A página de menu precisa ter pelo menos 40 caracteres de conteúdo útil.'
+        : 'A página precisa ter pelo menos 80 caracteres de conteúdo útil.',
+      texto.length >= minimoConteudo,
       'ERRO',
     ),
     item(

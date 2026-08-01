@@ -70,19 +70,44 @@
   <table class="pf-rev-table">
     <thead>
       <tr>
-        <th class="pf-th pf-th--sort" (click)="sortChange.emit('numero')">
+        <th
+          class="pf-th pf-th--sort"
+          (click)="sortChange.emit('numero')"
+          aria-label="Ordenar por número"
+          [attr.aria-sort]="ariaOrdenacao('numero')"
+        >
           # <span>{{ indicacao('numero') }}</span>
         </th>
-        <th class="pf-th pf-th--sort" (click)="sortChange.emit('status')">
+        <th
+          class="pf-th pf-th--sort"
+          (click)="sortChange.emit('status')"
+          aria-label="Ordenar por status"
+          [attr.aria-sort]="ariaOrdenacao('status')"
+        >
           Status <span>{{ indicacao('status') }}</span>
         </th>
-        <th class="pf-th pf-th--sort" (click)="sortChange.emit('tipo')">
+        <th
+          class="pf-th pf-th--sort"
+          (click)="sortChange.emit('tipo')"
+          aria-label="Ordenar por evento"
+          [attr.aria-sort]="ariaOrdenacao('tipo')"
+        >
           Evento <span>{{ indicacao('tipo') }}</span>
         </th>
-        <th class="pf-th pf-th--sort" (click)="sortChange.emit('createdAt')">
+        <th
+          class="pf-th pf-th--sort"
+          (click)="sortChange.emit('createdAt')"
+          aria-label="Ordenar por data"
+          [attr.aria-sort]="ariaOrdenacao('createdAt')"
+        >
           Data <span>{{ indicacao('createdAt') }}</span>
         </th>
-        <th class="pf-th pf-th--sort" (click)="sortChange.emit('createdBy')">
+        <th
+          class="pf-th pf-th--sort"
+          (click)="sortChange.emit('createdBy')"
+          aria-label="Ordenar por usuário"
+          [attr.aria-sort]="ariaOrdenacao('createdBy')"
+        >
           Usuário <span>{{ indicacao('createdBy') }}</span>
         </th>
       </tr>

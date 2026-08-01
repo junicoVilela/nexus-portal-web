@@ -279,6 +279,22 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     return avaliarQualidadePagina({ ...form, filhosCount, indiceItemCount });
   });
 
+  protected readonly subtituloCabecalho = computed(() => {
+    const atual = this.paginaAtual();
+    if (atual) {
+      return (
+        'Criado por ' +
+        this.nomeUsuario(atual.createdBy) +
+        ' · Atualizado por ' +
+        this.nomeUsuario(atual.updatedBy || atual.createdBy)
+      );
+    }
+    const parentId = this.formValue().parentId?.trim();
+    if (!parentId) return null;
+    const parent = this.paginas().find(pagina => pagina.id === parentId);
+    return parent ? `Subpágina de ${parent.titulo}` : 'Nova subpágina';
+  });
+
   protected readonly qualidadeConcluidos = computed(
     () => this.qualidadeItens().filter(item => item.ok).length,
   );
@@ -1639,7 +1655,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   private aplicarTipoPaginaInicial(): void {
     const tipo = this.route.snapshot.queryParamMap.get('tipoPagina');
-    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice') return;
+    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice' && tipo !== 'menu') return;
 
     const config = {
       lista: {
@@ -1665,6 +1681,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         codigo: 'OPS-001',
         resumo: 'Índice das operações disponíveis neste módulo com links aos guias filhos.',
         kitId: 'kit-indice',
+      },
+      menu: {
+        titulo: 'Menu',
+        codigo: 'MENU-001',
+        resumo: 'Pasta de navegação com links para as subpáginas desta seção.',
+        kitId: 'kit-menu',
       },
     }[tipo];
 

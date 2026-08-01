@@ -3,7 +3,21 @@ import { inject, Injectable, signal } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { PoliticaSenha, PoliticaSenhaForm, ResultadoValidacaoSenha } from '../models/politica-senha.model';
-import { SEED } from './mock/seed';
+
+const DEFAULT_POLITICA_SENHA: PoliticaSenha = {
+  id: 'politica-padrao',
+  tamanhoMinimo: 4,
+  exigirMaiuscula: false,
+  exigirMinuscula: false,
+  exigirNumero: false,
+  exigirEspecial: false,
+  expiraSenhaDias: null,
+  quantidadeHistorico: 3,
+  maxTentativasInvalidas: 5,
+  ativo: true,
+  criadoEm: '',
+  atualizadoEm: null,
+};
 
 const REGEX_MAIUSCULA = /[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/;
 const REGEX_MINUSCULA = /[a-záàâãéêíóôõúç]/;
@@ -29,7 +43,7 @@ interface BackendPoliticaSenhaResponse {
 export class PoliticaSenhaService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.rbacApiUrl}/politica-senha`;
-  private readonly cache = signal<PoliticaSenha>({ ...SEED.politicaSenha });
+  private readonly cache = signal<PoliticaSenha>({ ...DEFAULT_POLITICA_SENHA });
 
   atual(): Observable<PoliticaSenha> {
     return this.http.get<BackendPoliticaSenhaResponse>(this.base).pipe(

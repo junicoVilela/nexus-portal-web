@@ -5,4 +5,3 @@ export * from './funcionalidade.service';
 export * from './grupo.service';
 export * from './permissao.service';
 export * from './usuario.service';
-export * from './mock/mock-store.service';

@@ -2,22 +2,20 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { MockStore } from './mock/mock-store.service';
 import { PoliticaSenhaService } from './politica-senha.service';
 import { UsuarioService } from './usuario.service';
+
+const ADMIN_USER_ID = 'usuario-admin';
 
 describe('PoliticaSenhaService', () => {
   let service: PoliticaSenhaService;
   let usuarios: UsuarioService;
-  let store: MockStore;
   let http: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    store = TestBed.inject(MockStore);
-    store.reset();
     service = TestBed.inject(PoliticaSenhaService);
     usuarios = TestBed.inject(UsuarioService);
     http = TestBed.inject(HttpTestingController);
@@ -51,18 +49,18 @@ describe('PoliticaSenhaService', () => {
   });
 
   it('propaga rejeição do backend para senha reutilizada', async () => {
-    const promise = firstValueFrom(usuarios.resetarSenha(store.ADMIN_USER_ID, 'primeira'));
+    const promise = firstValueFrom(usuarios.resetarSenha(ADMIN_USER_ID, 'primeira'));
     http
-      .expectOne(`/api/v1/rbac/usuarios/${store.ADMIN_USER_ID}/alterar-senha`)
+      .expectOne(`/api/v1/rbac/usuarios/${ADMIN_USER_ID}/alterar-senha`)
       .flush({ message: 'Senha já utilizada.' }, { status: 409, statusText: 'Conflict' });
 
     await expectAsync(promise).toBeRejected();
   });
 
   it('propaga rejeição do backend para senha que viola a política', async () => {
-    const promise = firstValueFrom(usuarios.resetarSenha(store.ADMIN_USER_ID, 'abc'));
+    const promise = firstValueFrom(usuarios.resetarSenha(ADMIN_USER_ID, 'abc'));
     http
-      .expectOne(`/api/v1/rbac/usuarios/${store.ADMIN_USER_ID}/alterar-senha`)
+      .expectOne(`/api/v1/rbac/usuarios/${ADMIN_USER_ID}/alterar-senha`)
       .flush({ message: 'Senha fora da política.' }, { status: 400, statusText: 'Bad Request' });
 
     await expectAsync(promise).toBeRejected();

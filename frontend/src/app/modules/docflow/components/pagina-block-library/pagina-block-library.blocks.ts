@@ -399,6 +399,16 @@ export const BLOCOS_PAGINA: readonly BlocoPagina[] = [
       '<section class="doc-section"><h2>Guias disponíveis</h2><div class="resource-list resource-list--large"><article class="resource-item"><span class="number-badge">1</span><span><strong>Lista / Consulta</strong><small>Localize e acompanhe registros existentes.</small></span><span class="resource-item__meta">consulta · {{CODIGO_TELA}}</span></article><article class="resource-item"><span class="number-badge">2</span><span><strong>Incluir</strong><small>Registre uma nova operação no sistema.</small></span><span class="resource-item__meta">inclusão</span></article></div></section>' +
       '<section class="doc-section"><div class="content-grid content-grid--2"><article class="rule-card"><h2>Quando usar cada guia</h2><ol class="rank-list"><li>Use a lista para localizar registros</li><li>Use a inclusão para criar um novo</li><li>Valide permissões antes de operar</li></ol></article><article class="rule-card"><h2>Fluxo recomendado</h2><div class="content-grid content-grid--2"><article class="topic-card"><span class="topic-card__icon">1</span><h3>Consultar</h3><p>Refine pelos filtros.</p></article><article class="topic-card"><span class="topic-card__icon">2</span><h3>Incluir</h3><p>Registre e confirme.</p></article></div></article></div></section>',
   },
+  {
+    id: 'kit-menu',
+    nome: 'Kit · Menu / pasta',
+    descricao: 'Intro leve + seção vazia de guias — pasta de navegação para subpáginas.',
+    categoria: 'Kits',
+    visual: 'kit',
+    html:
+      '<section class="doc-intro"><span class="doc-kicker">{{MODULO}} · Menu</span><h2>{{TITULO}}</h2><p>Pasta de navegação com links para as subpáginas desta seção.</p></section>' +
+      '<section class="doc-section"><h2>Guias disponíveis</h2><div class="resource-list resource-list--large"></div></section>',
+  },
 ] as const;
 
 export function blocoPorId(id: string): BlocoPagina | undefined {

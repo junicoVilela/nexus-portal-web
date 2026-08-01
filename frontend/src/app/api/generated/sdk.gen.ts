@@ -6,6 +6,7 @@ import {
   formDataBodySerializer,
   type Options as Options2,
   type RequestResult,
+  type ServerSentEventsResult,
   type TDataShape,
 } from './client';
 import { client } from './client.gen';
@@ -226,6 +227,12 @@ import type {
   EmitirTokenDownloadResponses,
   EnviarRevisaoData,
   EnviarRevisaoResponses,
+  EventosPaginaData,
+  EventosPaginaResponse,
+  EventosPaginaResponses,
+  EventosPublicacaoData,
+  EventosPublicacaoResponse,
+  EventosPublicacaoResponses,
   Excluir10Data,
   Excluir10Responses,
   Excluir11Data,
@@ -2883,5 +2890,23 @@ export const metricasAjuda = <ThrowOnError extends boolean = true>(
   (options?.client ?? client).get<MetricasAjudaResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/ajuda/metricas',
+    ...options,
+  });
+
+export const eventosPagina = <ThrowOnError extends boolean = true>(
+  options?: Options<EventosPaginaData, ThrowOnError, EventosPaginaResponse>,
+): Promise<ServerSentEventsResult<EventosPaginaResponses>> =>
+  (options?.client ?? client).sse.get<EventosPaginaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/eventos',
+    ...options,
+  });
+
+export const eventosPublicacao = <ThrowOnError extends boolean = true>(
+  options?: Options<EventosPublicacaoData, ThrowOnError, EventosPublicacaoResponse>,
+): Promise<ServerSentEventsResult<EventosPublicacaoResponses>> =>
+  (options?.client ?? client).sse.get<EventosPublicacaoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/eventos',
     ...options,
   });

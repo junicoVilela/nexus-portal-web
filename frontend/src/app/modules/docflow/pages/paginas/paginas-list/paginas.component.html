@@ -21,6 +21,7 @@
       <ui-button variant="menu" size="sm" icon="FilePlus2" [fullWidth]="true" (clicked)="novaPorTipo('incluir')">Tipo inclusão</ui-button>
       <ui-button variant="menu" size="sm" icon="Pencil" [fullWidth]="true" (clicked)="novaPorTipo('editar')">Tipo edição</ui-button>
       <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')">Tipo índice</ui-button>
+      <ui-button variant="menu" size="sm" icon="FolderOpen" [fullWidth]="true" (clicked)="novaPorTipo('menu')">Menu / pasta</ui-button>
     </ui-more-actions>
     <ui-button *appPermissao="'PAGINA:CRIAR'" icon="Plus" (clicked)="nova()">Nova página</ui-button>
   </div>
@@ -63,7 +64,7 @@
     <ui-button variant="danger" size="sm" icon="Archive" (clicked)="arquivarSelecionadas()">Arquivar</ui-button>
   </ui-bulk-action-bar>
 
-  <table class="paginas__table">
+  <table class="paginas__table" aria-label="Lista de páginas">
     <thead>
       <tr>
         <th class="paginas__th paginas__th--check">
@@ -74,22 +75,52 @@
             aria-label="Selecionar todas"
           />
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('ordem')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('ordem')"
+          aria-label="Ordenar por ordem"
+          [attr.aria-sort]="ariaOrdenacao('ordem')"
+        >
           Ordem <span>{{ indicacaoOrdenacao('ordem') }}</span>
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('titulo')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('titulo')"
+          aria-label="Ordenar por título"
+          [attr.aria-sort]="ariaOrdenacao('titulo')"
+        >
           Título <span>{{ indicacaoOrdenacao('titulo') }}</span>
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('modulo.projeto.nome')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('modulo.projeto.nome')"
+          aria-label="Ordenar por projeto"
+          [attr.aria-sort]="ariaOrdenacao('modulo.projeto.nome')"
+        >
           Projeto <span>{{ indicacaoOrdenacao('modulo.projeto.nome') }}</span>
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('modulo.nome')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('modulo.nome')"
+          aria-label="Ordenar por módulo"
+          [attr.aria-sort]="ariaOrdenacao('modulo.nome')"
+        >
           Módulo <span>{{ indicacaoOrdenacao('modulo.nome') }}</span>
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('codigoTela')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('codigoTela')"
+          aria-label="Ordenar por código"
+          [attr.aria-sort]="ariaOrdenacao('codigoTela')"
+        >
           Código <span>{{ indicacaoOrdenacao('codigoTela') }}</span>
         </th>
-        <th class="paginas__th paginas__th--sort" (click)="ordenar('status')">
+        <th
+          class="paginas__th paginas__th--sort"
+          (click)="ordenar('status')"
+          aria-label="Ordenar por status"
+          [attr.aria-sort]="ariaOrdenacao('status')"
+        >
           Status <span>{{ indicacaoOrdenacao('status') }}</span>
         </th>
         <th class="paginas__th">Criado por</th>
@@ -120,7 +151,10 @@
           <td class="paginas__td">{{ pagina.ordem }}</td>
           <td class="paginas__td">
             <strong class="paginas__indent" [style.padding-left.px]="nivel(pagina) * 20">
-              <span class="paginas__drag-handle">⋮⋮</span>{{ pagina.titulo }}
+              @if (podeEditarPagina()) {
+                <span class="paginas__drag-handle" aria-label="Arrastar para reordenar" role="img">⋮⋮</span>
+              }
+              {{ pagina.titulo }}
             </strong>
             <small class="paginas__slug">{{ pagina.slug }}</small>
           </td>
@@ -148,6 +182,15 @@
                 <ui-button variant="secondary" size="sm" (clicked)="publicar(pagina)">Publicar</ui-button>
               }
             </ng-container>
+            <ui-button
+              *appPermissao="'PAGINA:CRIAR'"
+              variant="ghost"
+              size="sm"
+              icon="FilePlus2"
+              title="Nova subpágina"
+              (clicked)="criarSubpagina(pagina)"
+              >Nova subpágina</ui-button
+            >
             <ui-more-actions>
               <ng-container *appPermissao="'PAGINA:EDITAR'">
                 <ui-button variant="menu" size="sm" icon="ArrowUp" [fullWidth]="true" (clicked)="moverParaCima(pagina)">Mover acima</ui-button>

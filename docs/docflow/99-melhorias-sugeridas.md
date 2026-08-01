@@ -67,6 +67,8 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 - Evoluído com criação e administração de modelos personalizados por projeto ou cliente.
 - Evoluído com variáveis contextuais, visibilidade por escopo, edição, duplicação,
   arquivamento, restauração e versionamento com rastreabilidade de uso.
+- Hierarquia: botão visível **Nova subpágina**, subtítulo no form com pai, e tipo
+  **Menu / pasta** (`tipoPagina=menu` + kit-menu) no frontend (backend ainda trata como página HTML).
 
 ### A.9 Imagem na primeira edição
 
@@ -147,9 +149,10 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### D.2 Labels e aria em todos os inputs
 
-- **Status parcial**: filtros de modelos, estados de carregamento, botões de prévia,
-  campos críticos do editor, listas de clientes/projetos/módulos, formulário de publicação
-  e buscas da biblioteca de blocos revisados; manter auditoria progressiva nas demais telas.
+- **Status**: ✅ evoluído — headers ordenáveis com `aria-label`/`aria-sort` (páginas,
+  publicações, clientes, revisões), `aria-pressed` nos modos do editor, tabela de páginas
+  e handle de drag nomeados; E2E axe também cobre `/doc-flow/paginas` e `/doc-flow/publicacoes`.
+  Manter auditoria pontual em telas novas.
 
 ### D.3 ARIA live regions para `flash` messages
 
@@ -170,7 +173,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 ### E.2 Component tests críticos
 
 - **Foco**: `pagina-form` (auto-save + canDeactivate + restauração), `paginas-list` (drag-drop + reorder), `publicacao-form` (preview + geração).
-- **Status parcial**: testes ampliados em `paginas-list` (reordenar via `moverParaCima`/`moverParaBaixo`), `publicacao-form` (preview ao selecionar cliente + navegação após gerar), `pagina-template-picker` (Escape) e revisões/diff.
+- **Status**: ✅ `pagina-form` cobre canDeactivate, autosave/debounce, restauração de rascunho local, `parentId` e `tipoPagina=menu`; listas/publicação/revisões já tinham cobertura ampliada.
 
 ### E.3 E2E com Playwright
 
@@ -212,7 +215,7 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ### G.3 Notificações em tempo real
 
-- **Status**: ✅ parcial — SSE de páginas (`GET /paginas/eventos`) em aprovar/publicar/enviar-revisão; frontend notifica em `paginas-list` e `revisoes` (ignora evento do próprio usuário quando `usuario` disponível). Publicações já tinham SSE (`/publicacoes/eventos`).
+- **Status**: ✅ — SSE de páginas (`GET /paginas/eventos`) em enviar-revisão/aprovar/publicar/**arquivar/devolver**; frontend notifica em `paginas-list` e `revisoes` (ignora evento do próprio usuário quando `usuario` disponível). Publicações já tinham SSE (`/publicacoes/eventos`). Ambos documentados no snapshot OpenAPI (`text/event-stream`).
 
 ---
 

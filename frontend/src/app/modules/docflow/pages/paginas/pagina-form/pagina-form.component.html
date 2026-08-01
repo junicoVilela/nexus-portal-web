@@ -1,14 +1,7 @@
 <div class="df-form">
   <ui-page-header
     [title]="editId() ? 'Editar página' : 'Nova página'"
-    [subtitle]="
-      paginaAtual()
-        ? 'Criado por ' +
-          nomeUsuario(paginaAtual()!.createdBy) +
-          ' · Atualizado por ' +
-          nomeUsuario(paginaAtual()!.updatedBy || paginaAtual()!.createdBy)
-        : null
-    "
+    [subtitle]="subtituloCabecalho()"
     icon="FileText"
   />
 

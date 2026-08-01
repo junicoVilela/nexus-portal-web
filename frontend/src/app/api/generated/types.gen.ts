@@ -1467,6 +1467,21 @@ export type AjudaMetricasResponse = {
   buscasFrequentes?: Array<AjudaMetricaItemResponse>;
 };
 
+export type PaginaEventoResponse = {
+  id?: string;
+  titulo?: string;
+  status?: 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO' | 'ARQUIVADO';
+  acao?: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER';
+  usuario?: string;
+};
+
+export type PublicacaoEventoResponse = {
+  id?: string;
+  clienteId?: string;
+  status?: 'GERANDO' | 'SUCESSO' | 'ERRO';
+  versao?: string;
+};
+
 export type ExcluirData = {
   body?: never;
   path: {
@@ -5678,3 +5693,35 @@ export type MetricasAjudaResponses = {
 };
 
 export type MetricasAjudaResponse = MetricasAjudaResponses[keyof MetricasAjudaResponses];
+
+export type EventosPaginaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/eventos';
+};
+
+export type EventosPaginaResponses = {
+  /**
+   * Server-Sent Events stream
+   */
+  200: PaginaEventoResponse;
+};
+
+export type EventosPaginaResponse = EventosPaginaResponses[keyof EventosPaginaResponses];
+
+export type EventosPublicacaoData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/eventos';
+};
+
+export type EventosPublicacaoResponses = {
+  /**
+   * Server-Sent Events stream
+   */
+  200: PublicacaoEventoResponse;
+};
+
+export type EventosPublicacaoResponse = EventosPublicacaoResponses[keyof EventosPublicacaoResponses];

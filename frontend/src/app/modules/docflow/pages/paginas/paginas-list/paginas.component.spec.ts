@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, EMPTY } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { Pagina } from '@modules/docflow/models/pagina.model';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
@@ -37,11 +37,13 @@ describe('PaginasComponent', () => {
       'reordenarPaginas',
       'resumoPaginasPorStatusGlobal',
       'salvarPagina',
+      'eventosPagina',
     ]);
     paginaService.listarPaginas.and.returnValue(
       of({ items: [], page: 1, size: 10, totalItems: 0, totalPages: 0, first: true, last: true }),
     );
     paginaService.resumoPaginasPorStatusGlobal.and.returnValue(of({}));
+    paginaService.eventosPagina.and.returnValue(EMPTY);
 
     await TestBed.configureTestingModule({
       imports: [PaginasComponent],

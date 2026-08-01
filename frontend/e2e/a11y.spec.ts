@@ -27,6 +27,20 @@ test.describe('A11y', () => {
     await analisarA11y(page, 'ui-list-page');
   });
 
+  test('/doc-flow/paginas atende WCAG A/AA com mock autenticado', async ({ page }) => {
+    await instalarMocksDocFlowA11y(page);
+    await page.goto('/doc-flow/paginas');
+    await page.waitForSelector('ui-list-page');
+    await analisarA11y(page, 'ui-list-page');
+  });
+
+  test('/doc-flow/publicacoes atende WCAG A/AA com mock autenticado', async ({ page }) => {
+    await instalarMocksDocFlowA11y(page);
+    await page.goto('/doc-flow/publicacoes');
+    await page.waitForSelector('ui-list-page');
+    await analisarA11y(page, 'ui-list-page', '.pubs__stats');
+  });
+
   test('manifest e favicon respondem com headers corretos', async ({ request }) => {
     const manifest = await request.get('/manifest.webmanifest');
     expect(manifest.headers()['content-type']).toContain('manifest+json');

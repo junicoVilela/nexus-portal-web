@@ -54,6 +54,11 @@ export class PaginaRevisoesComponent {
     return this.revisoesDir() === 'ASC' ? '↑' : '↓';
   }
 
+  protected ariaOrdenacao(campo: string): 'ascending' | 'descending' | 'none' {
+    if (this.revisoesSort() !== campo) return 'none';
+    return this.revisoesDir() === 'ASC' ? 'ascending' : 'descending';
+  }
+
   protected tipoLabel(tipo: PaginaRevisao['tipo']): string {
     return this.tipos[tipo];
   }

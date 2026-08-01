@@ -34,16 +34,36 @@
   <table class="clientes__table">
     <thead>
       <tr>
-        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('nome')">
+        <th
+          class="clientes__th clientes__th--sort"
+          (click)="ordenarClientes('nome')"
+          aria-label="Ordenar por cliente"
+          [attr.aria-sort]="ariaOrdenacao('nome')"
+        >
           Cliente <span>{{ indicacaoOrdenacao('nome') }}</span>
         </th>
-        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('ativo')">
+        <th
+          class="clientes__th clientes__th--sort"
+          (click)="ordenarClientes('ativo')"
+          aria-label="Ordenar por status"
+          [attr.aria-sort]="ariaOrdenacao('ativo')"
+        >
           Status <span>{{ indicacaoOrdenacao('ativo') }}</span>
         </th>
-        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('createdAt')">
+        <th
+          class="clientes__th clientes__th--sort"
+          (click)="ordenarClientes('createdAt')"
+          aria-label="Ordenar por data de criação"
+          [attr.aria-sort]="ariaOrdenacao('createdAt')"
+        >
           Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
         </th>
-        <th class="clientes__th clientes__th--sort" (click)="ordenarClientes('updatedAt')">
+        <th
+          class="clientes__th clientes__th--sort"
+          (click)="ordenarClientes('updatedAt')"
+          aria-label="Ordenar por data de atualização"
+          [attr.aria-sort]="ariaOrdenacao('updatedAt')"
+        >
           Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
         </th>
         <th class="clientes__th clientes__th--right">Ações</th>

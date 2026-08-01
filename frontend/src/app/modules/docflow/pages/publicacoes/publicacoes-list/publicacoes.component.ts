@@ -270,6 +270,11 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
     return this.publicacaoDir === 'ASC' ? '↑' : '↓';
   }
 
+  ariaOrdenacao(campo: string): 'ascending' | 'descending' | 'none' {
+    if (this.publicacaoSort !== campo) return 'none';
+    return this.publicacaoDir === 'ASC' ? 'ascending' : 'descending';
+  }
+
   private errorMessage(error: unknown, fallback: string): string {
     if (!(error instanceof HttpErrorResponse)) return fallback;
     if (error.status === 403) return 'Seu usuário não tem permissão para executar esta ação.';

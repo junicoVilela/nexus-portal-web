@@ -1,12 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginaFormComponent } from './pagina-form.component';
 import { Pagina, PaginaTemplate } from '../../../models/pagina.model';
+import { Modulo } from '../../../models/modulo.model';
+import { Projeto } from '../../../models/projeto.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
+import { canDeactivateGuard } from '@shared/guards';
+import { TIMINGS } from '@core/config/timings';
 
 describe('PaginaFormComponent (smoke)', () => {
   let fixture: ComponentFixture<PaginaFormComponent>;
@@ -381,6 +385,230 @@ describe('PaginaFormComponent (smoke)', () => {
     expect(component['form'].controls.titulo.value).toBe('Editar registro');
     expect(component['form'].controls.codigoTela.value).toBe('EDITAR-001');
     expect(component['form'].controls.conteudoHtml.value).toContain('Campos editáveis');
+  });
+
+  it('aplica estrutura inicial do tipo menu', () => {
+    const component = fixture.componentInstance;
+    spyOn(component['route'].snapshot.queryParamMap, 'get').and.callFake((key: string) =>
+      key === 'tipoPagina' ? 'menu' : null,
+    );
+    component['aplicarTipoPaginaInicial']();
+    expect(component['form'].controls.titulo.value).toBe('Menu');
+    expect(component['form'].controls.codigoTela.value).toBe('MENU-001');
+    expect(component['form'].controls.conteudoHtml.value).toContain('Guias disponíveis');
+  });
+
+  it('exibe subtítulo de subpágina quando parentId está definido', () => {
+    const component = fixture.componentInstance;
+    component['paginas'].set([
+      paginaRascunho(),
+      { ...paginaRascunho(), id: 'pai-1', titulo: 'Operações' },
+    ]);
+    component['form'].controls.parentId.setValue('pai-1');
+    expect(component['subtituloCabecalho']()).toBe('Subpágina de Operações');
+  });
+
+  describe('canDeactivate', () => {
+    it('permite sair quando o formulário está limpo', async () => {
+      const component = fixture.componentInstance;
+      const confirmar = spyOn(component['confirmService'], 'confirm');
+
+      const podeSair = await TestBed.runInInjectionContext(() =>
+        Promise.resolve(canDeactivateGuard(component, null as never, null as never, null as never)),
+      );
+
+      expect(podeSair).toBe(true);
+      expect(confirmar).not.toHaveBeenCalled();
+    });
+
+    it('bloqueia a saída quando o usuário cancela com alterações pendentes', async () => {
+      const component = fixture.componentInstance;
+      component['dirty'] = true;
+      component['justSaved'] = false;
+      spyOn(component['confirmService'], 'confirm').and.resolveTo(false);
+
+      const podeSair = await TestBed.runInInjectionContext(() =>
+        Promise.resolve(canDeactivateGuard(component, null as never, null as never, null as never)),
+      );
+
+      expect(podeSair).toBe(false);
+      expect(component['confirmService'].confirm).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          title: 'Sair sem salvar?',
+          acceptLabel: 'Sair sem salvar',
+          rejectLabel: 'Continuar editando',
+        }),
+      );
+    });
+
+    it('permite sair quando o usuário confirma descarte das alterações', async () => {
+      const component = fixture.componentInstance;
+      component['dirty'] = true;
+      component['justSaved'] = false;
+      spyOn(component['confirmService'], 'confirm').and.resolveTo(true);
+
+      const podeSair = await TestBed.runInInjectionContext(() =>
+        Promise.resolve(canDeactivateGuard(component, null as never, null as never, null as never)),
+      );
+
+      expect(podeSair).toBe(true);
+    });
+  });
+
+  describe('autosave', () => {
+    it('envia salvarPagina no autosave de página nova válida', () => {
+      const component = fixture.componentInstance;
+      const pagina = paginaRascunho();
+      component['form'].patchValue(
+        {
+          titulo: pagina.titulo,
+          codigoTela: pagina.codigoTela,
+          moduloId: pagina.moduloId,
+          projetoId: pagina.projetoId,
+        },
+        { emitEvent: false },
+      );
+      const salvar = spyOn(component['paginaService'], 'salvarPagina').and.returnValue(of(pagina));
+
+      component['autosalvarServidor']();
+
+      expect(salvar).toHaveBeenCalledWith(jasmine.objectContaining({ titulo: pagina.titulo }));
+      expect(component['autosaveStatus']()).toBe('saved');
+    });
+
+    it('não envia autosave quando o formulário está inválido', () => {
+      const component = fixture.componentInstance;
+      const salvar = spyOn(component['paginaService'], 'salvarPagina');
+      const autosave = spyOn(component['paginaService'], 'autosavePagina');
+
+      component['autosalvarServidor']();
+
+      expect(salvar).not.toHaveBeenCalled();
+      expect(autosave).not.toHaveBeenCalled();
+      expect(component['autosaveStatus']()).toBe('idle');
+    });
+
+    it('salva rascunho local e dispara autosave após debounce', fakeAsync(() => {
+      const component = fixture.componentInstance;
+      const savedAt = new Date();
+      spyOn(component['paginaDraftService'], 'salvar').and.returnValue(savedAt);
+      const autosalvar = spyOn(
+        component as unknown as { autosalvarServidor(): void },
+        'autosalvarServidor',
+      );
+
+      component['inicializarAutoSave']();
+      component['form'].controls.titulo.setValue('Título alterado');
+      tick(TIMINGS.autosaveDebounceMs);
+
+      expect(component['paginaDraftService'].salvar).toHaveBeenCalledWith(
+        'docflow:pagina-form:novo',
+        jasmine.objectContaining({ titulo: 'Título alterado' }),
+      );
+      expect(component['dirty']).toBe(true);
+      expect(component['rascunhoSalvoEm']()).toBe(savedAt);
+      expect(autosalvar).toHaveBeenCalled();
+    }));
+  });
+
+  describe('restauração de rascunho local', () => {
+    it('restaura valores do localStorage e notifica o usuário', () => {
+      const component = fixture.componentInstance;
+      const savedAt = new Date();
+      const draftValue = {
+        titulo: 'Do rascunho',
+        codigoTela: 'DRAFT-001',
+        projetoId: 'projeto-1',
+        moduloId: 'modulo-1',
+        conteudoHtml: '<p>Conteúdo salvo localmente</p>',
+      };
+      spyOn(component['paginaDraftService'], 'carregar').and.returnValue({
+        value: draftValue,
+        savedAt,
+      });
+      const toast = spyOn(component['toast'], 'success');
+
+      component['restaurarRascunho']();
+
+      expect(component['form'].controls.titulo.value).toBe('Do rascunho');
+      expect(component['form'].controls.conteudoHtml.value).toBe('<p>Conteúdo salvo localmente</p>');
+      expect(component['rascunhoSalvoEm']()).toBe(savedAt);
+      expect(toast).toHaveBeenCalledWith('Rascunho local restaurado.');
+    });
+
+    it('ignora restauração quando não há snapshot local', () => {
+      const component = fixture.componentInstance;
+      spyOn(component['paginaDraftService'], 'carregar').and.returnValue(null);
+      const toast = spyOn(component['toast'], 'success');
+      component['form'].controls.titulo.setValue('Original', { emitEvent: false });
+
+      component['restaurarRascunho']();
+
+      expect(component['form'].controls.titulo.value).toBe('Original');
+      expect(component['rascunhoSalvoEm']()).toBeNull();
+      expect(toast).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('contexto inicial via query', () => {
+    it('aplica parentId da query e exibe subtítulo da página pai', () => {
+      const component = fixture.componentInstance;
+      const projeto: Projeto = {
+        id: 'projeto-1',
+        nome: 'Portal',
+        slug: 'portal',
+        ativo: true,
+      };
+      const modulo: Modulo = {
+        id: 'modulo-1',
+        nome: 'Cadastros',
+        slug: 'cadastros',
+        ordem: 1,
+        ativo: true,
+        projetoId: projeto.id,
+        projetoNome: projeto.nome,
+      };
+      const pai: Pagina = { ...paginaRascunho(), id: 'pai-1', titulo: 'Menu principal', parentId: undefined };
+      component['projetos'].set([projeto]);
+      component['todosModulos'].set([modulo]);
+      component['modulos'].set([modulo]);
+      component['paginas'].set([pai]);
+      spyOn(component['route'].snapshot.queryParamMap, 'get').and.callFake((key: string) => {
+        if (key === 'projetoId') return projeto.id;
+        if (key === 'moduloId') return modulo.id;
+        if (key === 'parentId') return pai.id;
+        return null;
+      });
+
+      component['aplicarContextoInicial']();
+
+      expect(component['form'].controls.parentId.value).toBe('pai-1');
+      expect(component['form'].controls.projetoId.value).toBe('projeto-1');
+      expect(component['form'].controls.moduloId.value).toBe('modulo-1');
+      // formValue (toSignal) só atualiza com emitEvent; após sync manual o subtítulo reflete o pai.
+      component['form'].patchValue({ parentId: 'pai-1' });
+      expect(component['subtituloCabecalho']()).toBe('Subpágina de Menu principal');
+    });
+  });
+
+  describe('tipoPagina=menu', () => {
+    it('aplica kit-menu e avança para a etapa de conteúdo', () => {
+      const component = fixture.componentInstance;
+      const toast = spyOn(component['toast'], 'success');
+      spyOn(component['route'].snapshot.queryParamMap, 'get').and.callFake((key: string) =>
+        key === 'tipoPagina' ? 'menu' : null,
+      );
+
+      component['aplicarTipoPaginaInicial']();
+
+      expect(component['form'].controls.titulo.value).toBe('Menu');
+      expect(component['form'].controls.codigoTela.value).toBe('MENU-001');
+      expect(component['form'].controls.conteudoHtml.value).toContain('Guias disponíveis');
+      expect(component['form'].controls.conteudoHtml.value).toContain('resource-list');
+      expect(component['mostrarTemplates']()).toBe(false);
+      expect(component['etapaAtiva']()).toBe('conteudo');
+      expect(toast).toHaveBeenCalledWith('Estrutura inicial aplicada conforme o tipo de página.');
+    });
   });
 });
 

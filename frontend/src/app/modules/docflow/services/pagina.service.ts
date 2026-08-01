@@ -39,6 +39,7 @@ import {
   versoesTemplate,
 } from '../../../api/generated/sdk.gen';
 import type {
+  PaginaEventoResponse,
   PaginaRequest,
   PaginaResponse,
   PaginaTemplateAplicacaoResponse,
@@ -69,13 +70,7 @@ export class PaginaService {
 
   constructor(private readonly injector: Injector) {}
 
-  eventosPagina(): Observable<{
-    id: string;
-    titulo: string;
-    status: StatusPagina;
-    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
-    usuario?: string;
-  }> {
+  eventosPagina(): Observable<PaginaEventoResponse> {
     return new Observable(observer => {
       const controller = new AbortController();
       const token = localStorage.getItem('doc-flow-jwt');

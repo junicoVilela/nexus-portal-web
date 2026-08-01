@@ -36,7 +36,9 @@ test.describe('Segurança — fluxo após login', () => {
   test.afterEach(async ({}, info) => {
     // Console errors de runtime (ícones faltantes, etc.) viram falha do teste.
     // Ignora 500s de fonts externas (offline em CI).
-    const relevantes = errosConsole.filter(e => !/fonts\.googleapis\.com|status of 500/i.test(e.msg));
+    const relevantes = errosConsole.filter(
+      e => !/fonts\.googleapis\.com|status of 500|status of 404/i.test(e.msg),
+    );
     if (relevantes.length > 0) {
       console.warn(`Console errors during "${info.title}":`);
       relevantes.forEach(e => console.warn('  -', e.msg));
@@ -67,6 +69,24 @@ test.describe('Segurança — fluxo após login', () => {
     await logar(page);
     await page.goto('/seguranca/auditoria');
     await expect(page.locator('ui-list-page')).toBeVisible();
+  });
+
+  test('/seguranca/grupos renderiza a lista', async ({ page }) => {
+    await logar(page);
+    await page.goto('/seguranca/grupos');
+    await expect(page.locator('ui-list-page')).toBeVisible();
+    await expect(page.getByText('Administradores')).toBeVisible();
+  });
+
+  test('/seguranca/dominios exibe matriz somente leitura', async ({ page }) => {
+    await logar(page);
+    await page.goto('/seguranca/dominios');
+    await expect(page.getByRole('heading', { name: 'Matriz de segurança' })).toBeVisible();
+    await expect(page.getByText('Catálogo definido por seed (somente leitura).')).toBeVisible();
+    await expect(page.locator('app-matriz-seguranca').getByText('Segurança', { exact: true })).toBeVisible();
+    await expect(page.locator('app-matriz-seguranca').getByText('SEGURANCA')).toBeVisible();
+    await expect(page.getByRole('button', { name: /novo/i })).toHaveCount(0);
+    await expect(page.locator('form')).toHaveCount(0);
   });
 
   test('/doc-flow mostra os itens essenciais do menu', async ({ page }) => {

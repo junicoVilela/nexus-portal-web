@@ -19,9 +19,13 @@
 
   <div filters class="pubs__filters">
     <span class="pubs__count">{{ totalPublicacoes() }} publicações</span>
-    <label class="pubs__status-filter">
+    <label class="pubs__status-filter" for="pubs-status-filter">
       <span>Status</span>
-      <select [value]="statusFiltro()" (change)="alterarFiltroStatus($any($event.target).value)">
+      <select
+        id="pubs-status-filter"
+        [value]="statusFiltro()"
+        (change)="alterarFiltroStatus($any($event.target).value)"
+      >
         <option value="">Todos</option>
         <option value="GERANDO">Em andamento</option>
         <option value="SUCESSO">Concluídas</option>
@@ -60,20 +64,45 @@
   <table class="pubs__table">
     <thead>
       <tr>
-        <th class="pubs__th pubs__th--sort" (click)="ordenar('cliente.nome')">
+        <th
+          class="pubs__th pubs__th--sort"
+          (click)="ordenar('cliente.nome')"
+          aria-label="Ordenar por cliente"
+          [attr.aria-sort]="ariaOrdenacao('cliente.nome')"
+        >
           Cliente <span>{{ indicacaoOrdenacao('cliente.nome') }}</span>
         </th>
-        <th class="pubs__th pubs__th--sort" (click)="ordenar('versao')">
+        <th
+          class="pubs__th pubs__th--sort"
+          (click)="ordenar('versao')"
+          aria-label="Ordenar por versão"
+          [attr.aria-sort]="ariaOrdenacao('versao')"
+        >
           Versão <span>{{ indicacaoOrdenacao('versao') }}</span>
         </th>
-        <th class="pubs__th pubs__th--sort" (click)="ordenar('status')">
+        <th
+          class="pubs__th pubs__th--sort"
+          (click)="ordenar('status')"
+          aria-label="Ordenar por status"
+          [attr.aria-sort]="ariaOrdenacao('status')"
+        >
           Status <span>{{ indicacaoOrdenacao('status') }}</span>
         </th>
         <th class="pubs__th">Páginas</th>
-        <th class="pubs__th pubs__th--sort" (click)="ordenar('createdAt')">
+        <th
+          class="pubs__th pubs__th--sort"
+          (click)="ordenar('createdAt')"
+          aria-label="Ordenar por data de criação"
+          [attr.aria-sort]="ariaOrdenacao('createdAt')"
+        >
           Criação <span>{{ indicacaoOrdenacao('createdAt') }}</span>
         </th>
-        <th class="pubs__th pubs__th--sort" (click)="ordenar('updatedAt')">
+        <th
+          class="pubs__th pubs__th--sort"
+          (click)="ordenar('updatedAt')"
+          aria-label="Ordenar por data de atualização"
+          [attr.aria-sort]="ariaOrdenacao('updatedAt')"
+        >
           Atualização <span>{{ indicacaoOrdenacao('updatedAt') }}</span>
         </th>
         <th class="pubs__th">Arquivo</th>

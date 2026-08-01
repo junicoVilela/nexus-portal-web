@@ -29,11 +29,12 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.detectChanges();
 
     const cards = [...fixture.nativeElement.querySelectorAll('.block-card')] as HTMLElement[];
-    expect(cards.length).toBe(4);
+    expect(cards.length).toBe(5);
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de lista');
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de inclusão');
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de edição');
     expect(fixture.nativeElement.textContent).toContain('Kit · Índice de operações');
+    expect(fixture.nativeElement.textContent).toContain('Kit · Menu / pasta');
   });
 
   it('filtra por categoria Navegação', () => {
@@ -152,6 +153,7 @@ describe('PaginaBlockLibraryComponent', () => {
     expect(ids).toContain('kit-incluir');
     expect(ids).toContain('kit-editar');
     expect(ids).toContain('kit-indice');
+    expect(ids).toContain('kit-menu');
     expect(ids).toContain('callout-erro');
     expect(ids).toContain('ver-tambem');
   });

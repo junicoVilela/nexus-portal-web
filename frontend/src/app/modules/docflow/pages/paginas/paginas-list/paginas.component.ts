@@ -185,7 +185,19 @@ export class PaginasComponent implements OnInit, OnDestroy {
       error: () => this.toast.error('Erro ao carregar páginas.'),
     });
     this.eventosSubscription = this.paginaService.eventosPagina().subscribe({
-      next: evento => this.tratarEventoPagina(evento),
+      next: evento => {
+        if (!evento.id || !evento.titulo || !evento.status || !evento.acao) {
+          this.carregar();
+          return;
+        }
+        this.tratarEventoPagina({
+          id: evento.id,
+          titulo: evento.titulo,
+          status: evento.status,
+          acao: evento.acao,
+          usuario: evento.usuario,
+        });
+      },
       error: () => undefined,
     });
   }
@@ -198,7 +210,7 @@ export class PaginasComponent implements OnInit, OnDestroy {
     id: string;
     titulo: string;
     status: StatusPagina;
-    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER';
     usuario?: string;
   }): void {
     this.carregar();
@@ -208,6 +220,8 @@ export class PaginasComponent implements OnInit, OnDestroy {
       ENVIAR_REVISAO: `Página "${evento.titulo}" enviada para revisão`,
       APROVAR: `Página "${evento.titulo}" aprovada`,
       PUBLICAR: `Página "${evento.titulo}" publicada`,
+      ARQUIVAR: `Página "${evento.titulo}" arquivada`,
+      DEVOLVER: `Página "${evento.titulo}" devolvida para rascunho`,
     };
     this.notifications.add('info', mensagens[evento.acao], {
       href: docFlowRouterCommands(['paginas', evento.id, 'editar']).join('/'),
@@ -392,7 +406,7 @@ export class PaginasComponent implements OnInit, OnDestroy {
     });
   }
 
-  novaPorTipo(tipo: 'lista' | 'incluir' | 'editar' | 'indice'): void {
+  novaPorTipo(tipo: 'lista' | 'incluir' | 'editar' | 'indice' | 'menu'): void {
     const { projetoId, moduloId } = this.filtros.getRawValue();
     const parentId =
       moduloId && (tipo === 'lista' || tipo === 'incluir' || tipo === 'editar')
@@ -676,6 +690,11 @@ export class PaginasComponent implements OnInit, OnDestroy {
     return this.paginaDir === 'ASC' ? '↑' : '↓';
   }
 
+  ariaOrdenacao(campo: string): 'ascending' | 'descending' | 'none' {
+    if (this.paginaSort !== campo) return 'none';
+    return this.paginaDir === 'ASC' ? 'ascending' : 'descending';
+  }
+
   paginaLabel(pagina: Pagina): string {
     return `${'-- '.repeat(this.nivel(pagina))}${pagina.titulo}`;
   }
@@ -763,7 +782,9 @@ export class PaginasComponent implements OnInit, OnDestroy {
         pagina.moduloId === moduloId &&
         !pagina.parentId &&
         (/^operações$/i.test(pagina.titulo) ||
-          /^(OPS|EXEMPLO-OPS)/i.test(pagina.codigoTela) ||
+          /^(OPS|EXEMPLO-OPS|DF-PAGINAS|DF-ESTRUTURA|DF-REVISAO|DF-PUB|DF-REF|DF-CENTRAL)/i.test(
+            pagina.codigoTela,
+          ) ||
           (pagina.conteudoHtml?.includes('Guias disponíveis') ?? false)),
     );
     return candidato?.id;

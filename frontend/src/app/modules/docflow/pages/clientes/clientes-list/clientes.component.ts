@@ -396,6 +396,11 @@ export class ClientesComponent implements OnInit {
     return this.clienteDir === 'ASC' ? '↑' : '↓';
   }
 
+  ariaOrdenacao(campo: string): 'ascending' | 'descending' | 'none' {
+    if (this.clienteSort !== campo) return 'none';
+    return this.clienteDir === 'ASC' ? 'ascending' : 'descending';
+  }
+
   alterarPaginaClientes(page: number): void {
     this.clientesPage.set(page);
     this.atualizarUrlClientes();

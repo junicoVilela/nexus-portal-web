@@ -220,6 +220,10 @@ import type {
   EmitirTokenDownloadResponse,
   EnviarRevisaoData,
   EnviarRevisaoResponse,
+  EventosPaginaData,
+  EventosPaginaResponse,
+  EventosPublicacaoData,
+  EventosPublicacaoResponse,
   Excluir10Data,
   Excluir10Response,
   Excluir11Data,
@@ -2739,6 +2743,26 @@ export const metricasAjudaRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const eventosPaginaRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<EventosPaginaData, ThrowOnError>,
+): HttpRequest<EventosPaginaResponse> =>
+  (options?.client ?? client).requestOptions<EventosPaginaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/eventos',
+    ...options,
+  });
+
+export const eventosPublicacaoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<EventosPublicacaoData, ThrowOnError>,
+): HttpRequest<EventosPublicacaoResponse> =>
+  (options?.client ?? client).requestOptions<EventosPublicacaoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/eventos',
+    ...options,
+  });
+
 export const excluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<ExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -4561,4 +4585,20 @@ export const metricasAjudaResource = <ThrowOnError extends boolean = false>(
   httpResource<MetricasAjudaResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? metricasAjudaRequest(opts) : undefined;
+  });
+
+export const eventosPaginaResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<EventosPaginaData, ThrowOnError> | undefined,
+) =>
+  httpResource<EventosPaginaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? eventosPaginaRequest(opts) : undefined;
+  });
+
+export const eventosPublicacaoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<EventosPublicacaoData, ThrowOnError> | undefined,
+) =>
+  httpResource<EventosPublicacaoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? eventosPublicacaoRequest(opts) : undefined;
   });

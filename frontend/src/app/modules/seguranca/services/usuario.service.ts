@@ -1,10 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, switchMap, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 import { PageResult } from '@shared/models/page-result.model';
 import { Usuario, UsuarioForm } from '../models/usuario.model';
-import { simularErro } from './mock/in-memory-store';
 
 export interface UsuarioFilter {
   q?: string;
@@ -59,7 +58,7 @@ export class UsuarioService {
 
   criar(form: UsuarioForm): Observable<Usuario> {
     if (!form.senha) {
-      return simularErro('Senha obrigatória ao criar usuário.', 400);
+      return throwError(() => ({ status: 400, message: 'Senha obrigatória ao criar usuário.' }));
     }
     return this.http
       .post<BackendUsuarioResponse>(this.base, {

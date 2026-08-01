@@ -1,5 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, Page, Route, test } from '@playwright/test';
+import {
+  TODAS_PERMISSOES,
+  authMePayload,
+  e2eJwtToken,
+  resultadoPaginado,
+} from './helpers/docflow-api-fixtures';
 
 type StatusPagina = 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO';
 
@@ -67,32 +73,6 @@ interface AjudaConteudoE2E {
   ordem: number;
   ativo: boolean;
 }
-
-const TODAS_PERMISSOES = [
-  'CLIENTE:LER',
-  'CLIENTE:CRIAR',
-  'CLIENTE:EDITAR',
-  'CLIENTE:EXCLUIR',
-  'PROJETO:LER',
-  'PROJETO:CRIAR',
-  'PROJETO:EDITAR',
-  'PROJETO:EXCLUIR',
-  'MODULO:LER',
-  'MODULO:CRIAR',
-  'MODULO:EDITAR',
-  'MODULO:EXCLUIR',
-  'PAGINA:LER',
-  'PAGINA:CRIAR',
-  'PAGINA:EDITAR',
-  'PAGINA:EXCLUIR',
-  'PUBLICACAO:LER',
-  'PUBLICACAO:CRIAR',
-  'PUBLICACAO:EXCLUIR',
-  'AJUDA:LER',
-  'AJUDA:CRIAR',
-  'AJUDA:EDITAR',
-  'AJUDA:EXCLUIR',
-];
 
 const AGORA = '2026-07-18T15:00:00Z';
 const TEMPLATE = {
@@ -187,10 +167,6 @@ const AJUDA_CONTEUDOS: AjudaConteudoE2E[] = [
   },
 ];
 
-function resultadoPaginado<T>(items: T[]) {
-  return { items, totalItems: items.length, totalPages: items.length ? 1 : 0, page: 1, size: 1000 };
-}
-
 function slug(valor: string): string {
   return valor
     .normalize('NFD')
@@ -216,16 +192,13 @@ async function instalarApiDocFlow(
     ajuda: structuredClone(AJUDA_CONTEUDOS),
     ajudaEventos: [],
   };
-  const payloadToken = Buffer.from(JSON.stringify({ sub: 'admin', exp: 4_102_444_800 })).toString(
-    'base64url',
-  );
   await page.addInitScript(
     ({ token }) => {
       localStorage.clear();
       localStorage.setItem('doc-flow-jwt', token);
       localStorage.setItem('doc-flow-username', 'admin');
     },
-    { token: `e30.${payloadToken}.assinatura-e2e` },
+    { token: e2eJwtToken() },
   );
 
   await page.context().route('**/api/**', async route => {
@@ -237,14 +210,7 @@ async function instalarApiDocFlow(
       route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 
     if (method === 'GET' && path === '/api/v1/auth/me') {
-      return responder({
-        id: 'usuario-admin',
-        username: 'admin',
-        nome: 'Administrador E2E',
-        email: 'admin@softon.test',
-        grupos: [{ id: 'grupo-admin', codigo: 'ADMIN', nome: 'Administradores' }],
-        permissoes,
-      });
+      return responder(authMePayload(permissoes));
     }
 
     if (method === 'GET' && path === '/api/doc-flow/dashboard/resumo') {
@@ -270,11 +236,11 @@ async function instalarApiDocFlow(
     }
 
     if (method === 'GET' && path === '/api/doc-flow/publicacoes') {
-      return responder(resultadoPaginado([]));
+      return responder(resultadoPaginado([], { size: 1000 }));
     }
 
     if (method === 'GET' && path === '/api/doc-flow/paginas/anexos') {
-      return responder(resultadoPaginado([]));
+      return responder(resultadoPaginado([], { size: 1000 }));
     }
 
     if (method === 'GET' && path === '/api/doc-flow/ajuda/conteudos') {
@@ -320,7 +286,7 @@ async function instalarApiDocFlow(
     }
 
     if (path === '/api/doc-flow/clientes' && method === 'GET')
-      return responder(resultadoPaginado(estado.clientes));
+      return responder(resultadoPaginado(estado.clientes, { size: 1000 }));
     if (path === '/api/doc-flow/clientes' && method === 'POST') {
       const body = await jsonDaRota(route);
       const cliente: RegistroBase = {
@@ -338,7 +304,7 @@ async function instalarApiDocFlow(
     }
 
     if (path === '/api/doc-flow/projetos' && method === 'GET')
-      return responder(resultadoPaginado(estado.projetos));
+      return responder(resultadoPaginado(estado.projetos, { size: 1000 }));
     if (path === '/api/doc-flow/projetos' && method === 'POST') {
       const body = await jsonDaRota(route);
       const projeto = {
@@ -359,7 +325,7 @@ async function instalarApiDocFlow(
     if (path === '/api/doc-flow/modulos' && method === 'GET') {
       const projetoId = url.searchParams.get('projetoId');
       const items = projetoId ? estado.modulos.filter(item => item.projetoId === projetoId) : estado.modulos;
-      return responder(resultadoPaginado(items));
+      return responder(resultadoPaginado(items, { size: 1000 }));
     }
     if (path === '/api/doc-flow/modulos' && method === 'POST') {
       const body = await jsonDaRota(route);
@@ -418,7 +384,7 @@ async function instalarApiDocFlow(
       );
     }
     if (path === '/api/doc-flow/paginas' && method === 'GET')
-      return responder(resultadoPaginado(estado.paginas));
+      return responder(resultadoPaginado(estado.paginas, { size: 1000 }));
     if (path === '/api/doc-flow/paginas' && method === 'POST') {
       const body = await jsonDaRota(route);
       const projeto = estado.projetos.find(item => item.id === body['projetoId']);
@@ -481,7 +447,7 @@ async function instalarApiDocFlow(
     }
 
     if (method === 'GET' && /^\/api\/doc-flow\/paginas\/[^/]+\/revisoes$/.test(path)) {
-      return responder(resultadoPaginado([]));
+      return responder(resultadoPaginado([], { size: 1000 }));
     }
 
     const transicao = path.match(/^\/api\/doc-flow\/paginas\/([^/]+)\/(enviar-revisao|aprovar|publicar)$/);

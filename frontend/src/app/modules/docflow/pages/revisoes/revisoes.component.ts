@@ -61,7 +61,18 @@ export class RevisoesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.carregar();
     this.eventosSubscription = this.paginaService.eventosPagina().subscribe({
-      next: evento => this.tratarEventoPagina(evento),
+      next: evento => {
+        if (!evento.id || !evento.titulo || !evento.acao) {
+          this.carregar();
+          return;
+        }
+        this.tratarEventoPagina({
+          id: evento.id,
+          titulo: evento.titulo,
+          acao: evento.acao,
+          usuario: evento.usuario,
+        });
+      },
       error: () => undefined,
     });
   }
@@ -73,7 +84,7 @@ export class RevisoesComponent implements OnInit, OnDestroy {
   private tratarEventoPagina(evento: {
     id: string;
     titulo: string;
-    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR';
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER';
     usuario?: string;
   }): void {
     this.carregar();
@@ -83,6 +94,8 @@ export class RevisoesComponent implements OnInit, OnDestroy {
       ENVIAR_REVISAO: `Nova página na fila: "${evento.titulo}"`,
       APROVAR: `Página "${evento.titulo}" aprovada`,
       PUBLICAR: `Página "${evento.titulo}" publicada`,
+      ARQUIVAR: `Página "${evento.titulo}" arquivada`,
+      DEVOLVER: `Página "${evento.titulo}" devolvida para rascunho`,
     };
     this.notifications.add('info', mensagens[evento.acao], {
       href: docFlowRouterCommands(['paginas', evento.id, 'editar']).join('/'),
