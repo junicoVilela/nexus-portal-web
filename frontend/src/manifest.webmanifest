@@ -1,8 +1,8 @@
 {
   "name": "Nexus Portal",
   "short_name": "Nexus",
-  "theme_color": "#2563eb",
-  "background_color": "#ffffff",
+  "theme_color": "#0f1c2e",
+  "background_color": "#f4f7fa",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",

@@ -6,6 +6,13 @@ import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 import { ButtonComponent, InputComponent } from '@shared/ui';
 
+export interface LoginProduct {
+  readonly id: string;
+  readonly name: string;
+  readonly blurb: string;
+  readonly icon: string;
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -27,6 +34,15 @@ export class LoginComponent {
   });
 
   protected readonly year = new Date().getFullYear();
+
+  protected readonly products: readonly LoginProduct[] = [
+    {
+      id: 'docflow',
+      name: 'DocFlow',
+      blurb: 'Manuais versionados por cliente',
+      icon: 'FileText',
+    },
+  ];
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.loading()) {
