@@ -31,7 +31,7 @@ import {
 } from '@shared/ui';
 import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-status-badge';
 import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-filters';
-import { PermissaoDirective } from '@modules/seguranca/directives';
+import { PermissaoDirective } from '@modules/identity-access/directives';
 import { AuthService } from '@core/auth/services/auth.service';
 
 @Component({

@@ -1,9 +1,9 @@
 # Release Orchestrator — Documentação Frontend (por tela)
 
-Documentação do módulo **Release Orchestrator** do `softon-portal-web`, organizada **uma tela por arquivo**.
+Documentação do módulo **Release Orchestrator** do `nexus-portal-web`, organizada **uma tela por arquivo**.
 
-- **Código**: `softon-portal-web/frontend/src/app/modules/release-orchestrator/`
-- **Backend (API, modelo, regras)**: [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md) — referência única do backend.
+- **Código**: `nexus-portal-web/frontend/src/app/modules/release-orchestrator/`
+- **Backend (API, modelo, regras)**: [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md) — referência única do backend.
 
 ## Escopo desta pasta
 
@@ -40,7 +40,7 @@ Documentação do módulo **Release Orchestrator** do `softon-portal-web`, organ
 |---|---|---|
 | 11 | Índice de telas + mapa para specs API | [11-indice-entregas-orchestrator.md](11-indice-entregas-orchestrator.md) |
 
-Specs detalhadas de cada tela futura permanecem em [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md) (`02`–`28`). Novos arquivos `12+` nesta pasta serão criados conforme as telas forem implementadas.
+Specs detalhadas de cada tela futura permanecem em [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md) (`02`–`28`). Novos arquivos `12+` nesta pasta serão criados conforme as telas forem implementadas.
 
 ## Stack
 
@@ -55,10 +55,10 @@ Angular standalone + Signals + `OnPush`, Reactive Forms, RxJS 7, `lucide-angular
 
 ## Documentação relacionada
 
-- [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md) — **referência única do backend** (clientes, entregas, delta, pacote, GitHub/Jenkins, MD→PDF, modelo de dados, OpenAPI, testes, deploy).
-- [`softon-portal-api/docs/jornadas/`](../../../softon-portal-api/docs/jornadas/README.md) — Jornadas de uso (c cenário ACME, GitHub/Jenkins/delta).
-- [`39-entregaveis-cicd-repositorios.md`](../../../softon-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) — Jenkinsfile e assets nos repos de produto.
-- [`40-guia-versao-tag.md`](../../../softon-portal-api/docs/release-orchestrator/40-guia-versao-tag.md) — versionamento e tags.
-- [`softon-portal-api/docs/ROADMAP.md`](../../../softon-portal-api/docs/ROADMAP.md) — roadmap consolidado.
+- [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md) — **referência única do backend** (clientes, entregas, delta, pacote, GitHub/Jenkins, MD→PDF, modelo de dados, OpenAPI, testes, deploy).
+- [`nexus-portal-api/docs/jornadas/`](../../../nexus-portal-api/docs/jornadas/README.md) — Jornadas de uso (c cenário ACME, GitHub/Jenkins/delta).
+- [`39-entregaveis-cicd-repositorios.md`](../../../nexus-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) — Jenkinsfile e assets nos repos de produto.
+- [`40-guia-versao-tag.md`](../../../nexus-portal-api/docs/release-orchestrator/40-guia-versao-tag.md) — versionamento e tags.
+- [`nexus-portal-api/docs/ROADMAP.md`](../../../nexus-portal-api/docs/ROADMAP.md) — roadmap consolidado.
 
 > **Histórico**: esta doc substitui as antigas specs por camada (00-08, 99), que estavam desatualizadas (nomes `Rh*`/`Hub*`, DnD/PDF/bulk como "futuros"). O conteúdo antigo permanece recuperável pelo histórico do git.

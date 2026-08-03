@@ -2,11 +2,11 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import { AuthApiService } from '@modules/seguranca/services/auth-api.service';
-import type { UsuarioAutenticado } from '@modules/seguranca/models/auth.model';
+import { AuthApiService } from '@modules/identity-access/services/auth-api.service';
+import type { UsuarioAutenticado } from '@modules/identity-access/models/auth.model';
 import { tokenValido } from '../utils/jwt-claims';
 
-const AUTH_CHANGED_EVENT = 'softon-hub-auth-changed';
+const AUTH_CHANGED_EVENT = 'nexus-hub-auth-changed';
 const TOKEN_KEY = 'doc-flow-jwt';
 const REFRESH_KEY = 'doc-flow-refresh';
 const USERNAME_KEY = 'doc-flow-username';

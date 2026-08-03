@@ -11,7 +11,7 @@ describe('PaginaTemplateSaveComponent', () => {
       { id: 'projeto-1', nome: 'Portal', slug: 'portal', ativo: true },
     ]);
     fixture.componentRef.setInput('clientes', [
-      { id: 'cliente-1', nome: 'Softon', slug: 'softon', ativo: true },
+      { id: 'cliente-1', nome: 'Nexus', slug: 'nexus', ativo: true },
     ]);
     fixture.componentRef.setInput('projetoIdInicial', 'projeto-1');
     fixture.detectChanges();
@@ -43,12 +43,12 @@ describe('PaginaTemplateSaveComponent', () => {
   it('permite trocar o escopo para cliente', () => {
     const emitSpy = spyOn(fixture.componentInstance.confirmado, 'emit');
     fixture.componentInstance.definirEscopo('CLIENTE');
-    fixture.componentInstance.form.patchValue({ nome: 'Modelo Softon', clienteId: 'cliente-1' });
+    fixture.componentInstance.form.patchValue({ nome: 'Modelo Nexus', clienteId: 'cliente-1' });
 
     fixture.componentInstance.salvar();
 
     expect(emitSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({ nome: 'Modelo Softon', clienteId: 'cliente-1', projetoId: undefined }),
+      jasmine.objectContaining({ nome: 'Modelo Nexus', clienteId: 'cliente-1', projetoId: undefined }),
     );
   });
 

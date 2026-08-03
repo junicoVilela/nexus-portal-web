@@ -1,6 +1,6 @@
 # Prompt - Criar Módulo Frontend
 
-Crie um novo módulo Angular seguindo o padrão do Softon Portal Web.
+Crie um novo módulo Angular seguindo o padrão do Nexus Portal Web.
 
 ## Localização
 

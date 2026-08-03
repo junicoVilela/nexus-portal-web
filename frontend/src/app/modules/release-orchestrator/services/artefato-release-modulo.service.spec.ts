@@ -34,7 +34,7 @@ describe('ArtefatoReleaseModuloService', () => {
   });
 
   it('upload() envia FormData com file + observacao', () => {
-    const file = new File([new Uint8Array([1, 2, 3])], 'dtec.war', {
+    const file = new File([new Uint8Array([1, 2, 3])], 'nexus.war', {
       type: 'application/octet-stream',
     });
     service.upload(RELEASE_ID, MODULO_ID, file, 'primeira tentativa').subscribe();

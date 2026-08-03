@@ -108,13 +108,13 @@ test.describe('Release Orchestrator — telas após login', () => {
  * remover o skip e implementar os passos abaixo.
  */
 test.describe('Release Orchestrator — jornada feliz ACME (skip pendente)', () => {
-  test.skip(true, 'Aguarda seed determinístico do backend (ACME + DTEC-LD + release 1.5.0)');
+  test.skip(true, 'Aguarda seed determinístico do backend (ACME + NEXUS-LD + release 1.5.0)');
 
   test('release PUBLICADA → wizard → entrega CONCLUIDA → download PDF', async () => {
-    // 1. Pré-requisito: ACME + DTEC-LD + release 1.5.0 PUBLICADA + artefatos
+    // 1. Pré-requisito: ACME + NEXUS-LD + release 1.5.0 PUBLICADA + artefatos
     //    uploadados (ou GitHub configurado). Preparado via fixture backend.
     // 2. Login admin
-    // 3. Agenda → planejar nova próxima entrega ACME DTEC-LD 1.5.0 PROD
+    // 3. Agenda → planejar nova próxima entrega ACME NEXUS-LD 1.5.0 PROD
     // 4. Mudar status para AGENDADA → botão "Gerar" → wizard pré-preenchido
     // 5. Avançar até passo 5 → Calcular preview → Gerar pacote
     // 6. Detalhe entrega → polling até status CONCLUIDA

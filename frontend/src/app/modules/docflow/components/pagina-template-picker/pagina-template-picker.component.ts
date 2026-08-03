@@ -99,11 +99,11 @@ export class PaginaTemplatePickerComponent {
     if (codigo === 'DICIONARIO_CAMPOS') return 'dictionary';
     if (codigo === 'FAQ') return 'faq';
     if (codigo === 'SOLUCAO_PROBLEMAS') return 'troubleshooting';
-    if (codigo === 'LAB_FILTROS' || codigo === 'DTEC_ALERTAS') return 'filters';
-    if (codigo === 'PAINEL_METRICAS' || codigo === 'DTEC_SIMULACAO') return 'metrics';
-    if (codigo === 'DOSSIE_DECISAO' || codigo === 'DTEC_ANALISE_CLIENTE') return 'dossier';
-    if (codigo === 'ESPECIFICACAO_REGRA' || codigo === 'DTEC_REGRAS') return 'rulespec';
-    if (codigo === 'CATALOGO_PARAMETROS' || codigo === 'DTEC_PARAMETROS') return 'catalog';
+    if (codigo === 'LAB_FILTROS') return 'filters';
+    if (codigo === 'PAINEL_METRICAS') return 'metrics';
+    if (codigo === 'DOSSIE_DECISAO') return 'dossier';
+    if (codigo === 'ESPECIFICACAO_REGRA') return 'rulespec';
+    if (codigo === 'CATALOGO_PARAMETROS') return 'catalog';
     return 'screen';
   }
 

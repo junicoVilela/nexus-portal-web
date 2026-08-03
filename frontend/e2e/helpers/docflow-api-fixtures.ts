@@ -89,7 +89,7 @@ export const USUARIO_ADMIN = {
   id: 'usuario-admin',
   username: 'admin',
   nome: 'Administrador E2E',
-  email: 'admin@softon.test',
+  email: 'admin@nexus.test',
   ativo: true,
   bloqueado: false,
   tentativasInvalidas: 0,

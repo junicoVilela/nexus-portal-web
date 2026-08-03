@@ -1,6 +1,6 @@
 # 00 — Visão Geral (Frontend)
 
-Documentação do módulo **DocFlow** no projeto `softon-portal-web`. **Foco frontend** — para backend, ver `softon-portal-api/docs/doc-flow/`.
+Documentação do módulo **DocFlow** no projeto `nexus-portal-web`. **Foco frontend** — para backend, ver `nexus-portal-api/docs/doc-flow/`.
 
 ---
 
@@ -13,7 +13,7 @@ UI Angular para criação, edição, organização e publicação de **documenta
 ## 2. Onde vive no código
 
 ```text
-softon-portal-web/frontend/src/app/modules/docflow/
+nexus-portal-web/frontend/src/app/modules/docflow/
 ├── docflow.routes.ts                 ← DOCFLOW_ROUTES
 ├── shell/
 │   └── docflow-shell.component.ts    ← DocflowShellComponent (sidebar + outlet)
@@ -127,13 +127,13 @@ Cada transição é um endpoint POST dedicado (`/paginas/:id/enviar-revisao`, `/
 - Telas admin grupos/usuários/auditoria (API existe; UI hoje no mock `seguranca`).
 - E2E do fluxo editorial completo.
 
-Ver `99-melhorias-sugeridas.md` e [`softon-portal-api/docs/doc-flow/README.md`](../../../softon-portal-api/docs/doc-flow/README.md) § Integração.
+Ver `99-melhorias-sugeridas.md` e [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md) § Integração.
 
 ---
 
 ## 7. Cross-references
 
-- [`softon-portal-api/docs/doc-flow/README.md`](../../../softon-portal-api/docs/doc-flow/README.md) — Backend (API, gaps de integração).
-- [`softon-portal-api/docs/jornadas/00-cenario-feliz-acme.md`](../../../softon-portal-api/docs/jornadas/00-cenario-feliz-acme.md) — Jornada integrada manual + release.
-- `softon-portal-web/.ai/modules/docflow.md` — Spec resumida do módulo para IA.
-- `softon-portal-web/docs/release-orchestrator/` — Doc do módulo Release Orchestrator (irmão).
+- [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md) — Backend (API, gaps de integração).
+- [`nexus-portal-api/docs/jornadas/00-cenario-feliz-acme.md`](../../../nexus-portal-api/docs/jornadas/00-cenario-feliz-acme.md) — Jornada integrada manual + release.
+- `nexus-portal-web/.ai/modules/docflow.md` — Spec resumida do módulo para IA.
+- `nexus-portal-web/docs/release-orchestrator/` — Doc do módulo Release Orchestrator (irmão).

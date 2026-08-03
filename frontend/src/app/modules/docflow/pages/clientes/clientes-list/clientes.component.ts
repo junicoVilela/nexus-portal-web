@@ -23,7 +23,7 @@ import {
 import { carregarFiltros, salvarFiltros } from '@shared/utils/persisted-filters';
 import { ListPageComponent } from '@shared/layouts';
 import { BadgeComponent, ButtonComponent, CardComponent, ConfirmService, ToastService } from '@shared/ui';
-import { PermissaoDirective } from '@modules/seguranca/directives';
+import { PermissaoDirective } from '@modules/identity-access/directives';
 
 @Component({
   selector: 'app-clientes',

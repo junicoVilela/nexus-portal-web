@@ -7,11 +7,11 @@ Identidade e autorização do portal: login/sessão, JWT, guards e diretivas de 
 A implementação é dividida em duas regiões do código:
 
 - `core/auth/` — infraestrutura global (login, JWT, guards e interceptor)
-- `modules/seguranca/` — gestão (usuários, grupos, matriz de permissões, escopo de acesso)
+- `modules/identity-access/` — gestão (usuários, grupos, matriz de permissões, escopo de acesso)
 
 > A tela de configurações (upload do logo) é uma feature operacional do DocFlow em `modules/docflow/pages/configuracoes/`. Veja `.ai/modules/configuracoes.md`.
 
-> A documentação detalhada do módulo de gestão está em [`.ai/modules/seguranca.md`](seguranca.md).
+> A documentação detalhada do módulo de gestão está em [`.ai/modules/identity-access.md`](seguranca.md).
 
 ## Infraestrutura — `core/auth/`
 
@@ -29,14 +29,14 @@ src/app/core/auth/
 └── auth.routes.ts             ← AUTH_ROUTES
 ```
 
-`AuthService` foi refit para consumir `AuthApiService` (do `modules/seguranca/services/`) em vez de `HttpClient` direto. Quando o backend chegar, basta trocar `AuthApiService`.
+`AuthService` foi refit para consumir `AuthApiService` (do `modules/identity-access/services/`) em vez de `HttpClient` direto. Quando o backend chegar, basta trocar `AuthApiService`.
 
-## Gestão — `modules/seguranca/`
+## Gestão — `modules/identity-access/`
 
 Resumo (detalhes em [`seguranca.md`](seguranca.md)):
 
 ```text
-src/app/modules/seguranca/
+src/app/modules/identity-access/
 ├── models/                    ← 8 entidades
 ├── services/                  ← 7 services + mock store
 │   ├── auth-api.service.ts    ← login/me/refresh/alterarSenhaPropria (mock JWT 1h)
@@ -64,7 +64,7 @@ src/app/modules/seguranca/
 
 ```text
 /login                                        → core/auth (fora do shell, guestGuard)
-/seguranca                                    → modules/seguranca (home com cards)
+/seguranca                                    → modules/identity-access (home com cards)
 /seguranca/usuarios[/novo|/:id/editar]        → permissaoGuard USUARIO:LER|CRIAR|EDITAR
 /seguranca/grupos[/novo|/:id/editar|/:id/permissoes]
                                               → permissaoGuard GRUPO_ACESSO:LER|CRIAR|EDITAR|VINCULAR_PERMISSAO
@@ -137,7 +137,7 @@ Reativa via `effect()`: re-renderiza quando `auth.me()` muda.
 
 ## Implementado
 
-Stories SOFTON-AUTH 001-034. Telas reais entregues:
+Stories NEXUS-AUTH 001-034. Telas reais entregues:
 
 - 029: Tela de login (`core/auth/pages/login/`)
 - 030: Controle de rotas protegidas (`permissaoGuard`, `*appPermissao`, filtro de menu)
@@ -173,10 +173,10 @@ login: admin
 senha: admin
 ```
 
-Grupo ADMIN com todas as permissões. Definido em `modules/seguranca/services/mock/seed.ts`.
+Grupo ADMIN com todas as permissões. Definido em `modules/identity-access/services/mock/seed.ts`.
 
 ## Referências
 
-- Specs completas: `/home/junico-home/Documentos/softon-auth-stories-md/` (34 histórias + modelo de banco + permissões iniciais)
+- Specs completas: `/home/junico-home/Documentos/nexus-auth-stories-md/` (34 histórias + modelo de banco + permissões iniciais)
 - Detalhes do módulo de gestão: [`seguranca.md`](seguranca.md)
 - Configurações operacionais (movidas): [`configuracoes.md`](configuracoes.md)

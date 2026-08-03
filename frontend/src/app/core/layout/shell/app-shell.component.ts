@@ -222,7 +222,7 @@ export class AppShellComponent implements OnInit {
       'release-orchestrator': { label: 'Release Orchestrator', icon: 'Tag' },
       seguranca: { label: 'Segurança', icon: 'Shield' },
     };
-    return workspaces[firstSegment ?? ''] ?? { label: 'Softon Portal', icon: 'House' };
+    return workspaces[firstSegment ?? ''] ?? { label: 'Nexus Portal', icon: 'House' };
   }
 
   private hasFullHeightModuleNav(url: string): boolean {

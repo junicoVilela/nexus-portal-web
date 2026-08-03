@@ -1202,7 +1202,7 @@
   content: '\2192';
 }
 
-/* Modelos DTEC com estruturas distintas: filtros, métricas, dossiê, especificação e catálogo. */
+/* Modelos de template com estruturas distintas: filtros, métricas, dossiê, especificação e catálogo. */
 .df-doc-content .criteria-table th:first-child,
 .df-doc-editor .NgxEditor__Content .criteria-table th:first-child {
   width: 18%;

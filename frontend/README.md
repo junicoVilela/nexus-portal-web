@@ -1,6 +1,6 @@
-# Softon Portal Web — Frontend
+# Nexus Portal Web — Frontend
 
-Frontend Angular 21+ do portal interno corporativo da Softon.
+Frontend Angular 21+ do portal interno corporativo da Nexus.
 
 ## Stack
 
@@ -18,7 +18,7 @@ Frontend Angular 21+ do portal interno corporativo da Softon.
 ## Pré-requisitos
 
 - Node 20+ e npm 10+
-- Backend `softon-portal-api` rodando em `http://localhost:8080` (ou ajustar `proxy.conf.json`).
+- Backend `nexus-portal-api` rodando em `http://localhost:8080` (ou ajustar `proxy.conf.json`).
 
 ## Executar no IntelliJ
 
@@ -34,7 +34,7 @@ IntelliJ ou com `npm start` no terminal). A aplicação ficará disponível em
 |---|---|
 | `npm install --legacy-peer-deps` | Instala dependências |
 | `npm start` | Dev server em `http://localhost:4200` com proxy para `/api/...` |
-| `npm run build` | Build de produção em `dist/softon-portal-web/browser/` |
+| `npm run build` | Build de produção em `dist/nexus-portal-web/browser/` |
 | `npm test` | Testes unitários (single-run, ChromeHeadless) |
 | `npm run lint` | ESLint em `src/**/*.{ts,html}` |
 | `npm run lint:fix` | ESLint com auto-fix |
@@ -99,7 +99,7 @@ Specs por módulo: `.ai/modules/*.md`.
 - Manifest em `src/manifest.webmanifest`, ícone em `src/assets/icons/icon.svg`
 - Configuração de cache em `ngsw-config.json`
 - Service worker é registrado apenas em build de **produção** (`provideServiceWorker` com `enabled: !isDevMode()`)
-- Para testar localmente: `npm run build` + `npx http-server dist/softon-portal-web/browser`
+- Para testar localmente: `npm run build` + `npx http-server dist/nexus-portal-web/browser`
 
 ## Bundle (referência)
 

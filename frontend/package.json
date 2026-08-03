@@ -1,5 +1,5 @@
 {
-  "name": "softon-portal-web",
+  "name": "nexus-portal-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,12 +13,12 @@
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\"",
     "prepare": "husky",
-    "storybook": "ng run softon-portal-web:storybook",
-    "build-storybook": "ng run softon-portal-web:build-storybook",
+    "storybook": "ng run nexus-portal-web:storybook",
+    "build-storybook": "ng run nexus-portal-web:build-storybook",
     "extract-i18n": "ng extract-i18n",
-    "analyze": "ng build --source-map && source-map-explorer dist/softon-portal-web/browser/*.js",
+    "analyze": "ng build --source-map && source-map-explorer dist/nexus-portal-web/browser/*.js",
     "api:generate": "openapi-ts && prettier --write \"src/app/api/generated/**/*.ts\"",
-    "api:check": "npm run api:generate && git diff --exit-code -- src/app/api/generated openapi/softon-portal-api.json",
+    "api:check": "npm run api:generate && git diff --exit-code -- src/app/api/generated openapi/nexus-portal-api.json",
     "e2e": "playwright test",
     "a11y:routes": "playwright test e2e/a11y.spec.ts",
     "lighthouse:ci": "lhci autorun",

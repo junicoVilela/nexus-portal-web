@@ -22,12 +22,12 @@ test.describe('Smoke', () => {
     const res = await request.get('/manifest.webmanifest');
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.name).toBe('Softon Portal');
+    expect(body.name).toBe('Nexus Portal');
     expect(body.theme_color).toBe('#2563eb');
   });
 
-  test('título da página é Softon Portal', async ({ page }) => {
+  test('título da página é Nexus Portal', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/Softon/i);
+    await expect(page).toHaveTitle(/Nexus/i);
   });
 });

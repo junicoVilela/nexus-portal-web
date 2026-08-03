@@ -1,9 +1,9 @@
 ---
-description: Padrões do projeto Softon Portal Web
+description: Padrões do projeto Nexus Portal Web
 alwaysApply: true
 ---
 
-# Softon Portal Web
+# Nexus Portal Web
 
 Frontend Angular 21+ / TypeScript / PrimeNG.
 

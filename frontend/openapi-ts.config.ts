@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: './openapi/softon-portal-api.json',
+  input: './openapi/nexus-portal-api.json',
   output: {
     path: 'src/app/api/generated',
     clean: true,

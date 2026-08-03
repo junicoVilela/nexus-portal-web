@@ -1,8 +1,8 @@
 # Release Orchestrator
 
-Este README documenta somente o módulo **Release Orchestrator** do Softon Portal Web.
+Este README documenta somente o módulo **Release Orchestrator** do Nexus Portal Web.
 
-O Release Orchestrator é o módulo responsável por centralizar o ciclo de vida das releases dos produtos da Softon. Ele organiza, registra, revisa, publica e comunica mudanças de versão, funcionando como uma ponte entre desenvolvimento, suporte, operação e áreas que precisam entender o que mudou em cada sistema.
+O Release Orchestrator é o módulo responsável por centralizar o ciclo de vida das releases dos produtos da Nexus. Ele organiza, registra, revisa, publica e comunica mudanças de versão, funcionando como uma ponte entre desenvolvimento, suporte, operação e áreas que precisam entender o que mudou em cada sistema.
 
 Na aplicação Angular, o módulo fica em:
 
@@ -84,12 +84,12 @@ O Release Orchestrator é dividido em áreas internas acessadas pelo menu própr
 
 Antes de registrar uma release, o módulo precisa conhecer os produtos que recebem versões.
 
-Um produto representa um sistema, plataforma ou solução da Softon. Ele possui nome, sigla, descrição, cor visual, responsável e estado ativo/inativo.
+Um produto representa um sistema, plataforma ou solução da Nexus. Ele possui nome, sigla, descrição, cor visual, responsável e estado ativo/inativo.
 
 Exemplo conceitual:
 
 ```text
-Produto: Portal Softon
+Produto: Portal Nexus
 Sigla: PORTAL
 Cor: #2563eb
 Ativo: Sim

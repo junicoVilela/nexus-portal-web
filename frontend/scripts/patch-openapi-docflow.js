@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Safely merges missing DocFlow paths and schemas into openapi/softon-portal-api.json.
+ * Safely merges missing DocFlow paths and schemas into openapi/nexus-portal-api.json.
  */
 const fs = require('fs');
 const path = require('path');
 
-const specPath = path.join(__dirname, '..', 'openapi', 'softon-portal-api.json');
+const specPath = path.join(__dirname, '..', 'openapi', 'nexus-portal-api.json');
 const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 
 const okJson = contentType => ({

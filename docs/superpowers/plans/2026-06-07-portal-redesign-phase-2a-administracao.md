@@ -1,4 +1,4 @@
-# Softon Portal Web — Phase 2a Implementation Plan
+# Nexus Portal Web — Phase 2a Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -2060,9 +2060,9 @@ export class UsuariosComponent implements OnInit {
       <h3 class="usuarios__form-title">Novo acesso</h3>
       <p class="usuarios__form-sub">Cadastre usuários internos com perfil editorial ou administrativo.</p>
       <div class="usuarios__form-grid">
-        <ui-input label="Username" formControlName="username" placeholder="usuario.softon" />
+        <ui-input label="Username" formControlName="username" placeholder="usuario.nexus" />
         <ui-input label="Nome" formControlName="nome" placeholder="Nome completo" />
-        <ui-input label="E-mail" type="email" formControlName="email" placeholder="email@softon.com.br" />
+        <ui-input label="E-mail" type="email" formControlName="email" placeholder="email@nexus.com.br" />
         <ui-input label="Senha" type="password" formControlName="password" placeholder="••••••••" />
         <ui-select label="Função" [options]="roleOptions" formControlName="roles" />
       </div>

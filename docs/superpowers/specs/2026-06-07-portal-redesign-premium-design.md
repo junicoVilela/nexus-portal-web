@@ -1,14 +1,14 @@
-# Softon Portal Web — Premium Redesign
+# Nexus Portal Web — Premium Redesign
 
 **Status:** Aprovado para implementação
 **Data:** 2026-06-07
-**Escopo:** Redesign visual + sistema de design do Softon Portal Web (frontend Angular 21+).
+**Escopo:** Redesign visual + sistema de design do Nexus Portal Web (frontend Angular 21+).
 
 ---
 
 ## 1. Contexto e objetivo
 
-O Softon Portal Web é o portal interno corporativo da Softon. Tem login, shell global (sidebar escura + topbar), home com cards de módulos, e quatro módulos com sub-shells: DocFlow, Release Orchestrator, Administração e Dashboard. A camada visual atual usa Inter + escala azul/slate + PrimeNG e funciona, mas tem aparência de SaaS genérico.
+O Nexus Portal Web é o portal interno corporativo da Nexus. Tem login, shell global (sidebar escura + topbar), home com cards de módulos, e quatro módulos com sub-shells: DocFlow, Release Orchestrator, Administração e Dashboard. A camada visual atual usa Inter + escala azul/slate + PrimeNG e funciona, mas tem aparência de SaaS genérico.
 
 O objetivo deste redesign é elevar o portal para o padrão visual de produtos como Linear, Vercel e Stripe, mantendo a densidade de informação que um portal corporativo exige.
 
@@ -129,7 +129,7 @@ semânticos      → --surface, --text, --accent, --border (refs lógicas)
 componente      → --btn-primary-bg, --card-border (opcional)
 ```
 
-Componentes consomem **apenas** semânticos. Primitivos ficam isolados em `styles/tokens/_primitives.css`. Mudar a marca da Softon = ajustar uma linha em primitivos.
+Componentes consomem **apenas** semânticos. Primitivos ficam isolados em `styles/tokens/_primitives.css`. Mudar a marca da Nexus = ajustar uma linha em primitivos.
 
 ### 4.2 Theming
 

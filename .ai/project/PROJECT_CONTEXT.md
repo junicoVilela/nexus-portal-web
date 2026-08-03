@@ -2,18 +2,18 @@
 
 ## Nome do projeto
 
-Softon Portal Web
+Nexus Portal Web
 
 ## Objetivo
 
-Frontend web do portal interno corporativo da Softon.
+Frontend web do portal interno corporativo da Nexus.
 
 Portal unificado: login próprio, home com cards de acesso, e módulos independentes por feature.
 
 ## Localização da aplicação Angular
 
 ```text
-softon-portal-web/frontend/   ← raiz do projeto Angular
+nexus-portal-web/frontend/   ← raiz do projeto Angular
 ```
 
 ## Framework
@@ -60,7 +60,7 @@ Interface corporativa, limpa, responsiva e objetiva.
 ## Backend
 
 ```text
-softon-portal-api
+nexus-portal-api
 ```
 
 Prefixos:

@@ -2,23 +2,23 @@
 
 ## Status
 
-**Implementado dentro de `modules/seguranca/` (SOFTON-AUTH-031).**
+**Implementado dentro de `modules/identity-access/` (NEXUS-AUTH-031).**
 
 Usuários fazem parte do módulo guarda-chuva de identidade e acesso (segurança), não são um módulo Angular separado.
 
 Veja também:
-- [`.ai/modules/seguranca.md`](seguranca.md) — documentação completa do módulo
+- [`.ai/modules/identity-access.md`](seguranca.md) — documentação completa do módulo
 - [`.ai/modules/auth.md`](auth.md) — infraestrutura de autenticação
 
 ## Localização atual
 
 ```text
-src/app/modules/seguranca/pages/usuarios/
+src/app/modules/identity-access/pages/usuarios/
 ├── usuarios-list/usuarios-list.component.ts
 └── usuario-form/usuario-form.component.ts
 
-src/app/modules/seguranca/services/usuario.service.ts
-src/app/modules/seguranca/models/usuario.model.ts
+src/app/modules/identity-access/services/usuario.service.ts
+src/app/modules/identity-access/models/usuario.model.ts
 ```
 
 ## Rotas
@@ -29,7 +29,7 @@ src/app/modules/seguranca/models/usuario.model.ts
 /seguranca/usuarios/:id/editar       → UsuarioFormComponent   (USUARIO:EDITAR)
 ```
 
-Definidas em `modules/seguranca/seguranca.routes.ts`. Todas com `permissaoGuard`.
+Definidas em `modules/identity-access/identity-access.routes.ts`. Todas com `permissaoGuard`.
 
 ## Implementado
 

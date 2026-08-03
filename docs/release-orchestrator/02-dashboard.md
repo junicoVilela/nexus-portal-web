@@ -64,7 +64,7 @@ Visão geral: 4 KPIs por status + tabela de releases recentes + card placeholder
 
 ## Backend consumido
 
-`GET /releases` (paginação/filtros). Ver a doc do backend em [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md).
+`GET /releases` (paginação/filtros). Ver a doc do backend em [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md).
 
 ## Observações
 

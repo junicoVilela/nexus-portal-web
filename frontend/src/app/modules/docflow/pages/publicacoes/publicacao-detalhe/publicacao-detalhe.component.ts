@@ -17,7 +17,7 @@ import {
   TabItem,
   TabsComponent,
 } from '@shared/ui';
-import { PermissaoDirective } from '@modules/seguranca/directives';
+import { PermissaoDirective } from '@modules/identity-access/directives';
 
 type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'downloads';
 

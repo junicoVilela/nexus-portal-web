@@ -3,7 +3,7 @@
 A especificação funcional completa do sistema (telas, modelo de dados, decisões técnicas, backlog) vive no repositório do backend:
 
 ```text
-softon-portal-api/docs/release-orchestrator/
+nexus-portal-api/docs/release-orchestrator/
 ```
 
 Comece por `00-visao-geral-fluxo-integrado.md` e leia em ordem numérica. Padrões gerais de tela (estados, filtros, auditoria, responsividade) estão em `99-padroes-tela.md`.

@@ -1,4 +1,4 @@
-# Softon Portal Web — Phase 1 Foundation Implementation Plan
+# Nexus Portal Web — Phase 1 Foundation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -192,7 +192,7 @@ Replace the `<head>` block with:
 ```html
 <head>
   <meta charset="utf-8">
-  <title>Softon Portal</title>
+  <title>Nexus Portal</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2359,7 +2359,7 @@ export class AppShellComponent implements OnInit {
     <a class="shell__brand" routerLink="/">
       <span class="shell__brand-mark">S</span>
       <span class="shell__brand-text">
-        <span class="shell__brand-name">Softon Portal</span>
+        <span class="shell__brand-name">Nexus Portal</span>
         <span class="shell__brand-tag">Intranet</span>
       </span>
     </a>
@@ -2699,7 +2699,7 @@ export class LoginComponent {
     <div class="login__aside-bg" aria-hidden="true"></div>
     <a class="login__aside-brand" href="/">
       <span class="login__brand-mark">S</span>
-      <span class="login__brand-name">Softon Portal</span>
+      <span class="login__brand-name">Nexus Portal</span>
     </a>
     <div class="login__aside-content">
       <h1>O dia da equipe começa aqui.</h1>
@@ -2710,7 +2710,7 @@ export class LoginComponent {
         <li><lucide-icon name="Check" /> Acesso unificado por SSO interno</li>
       </ul>
     </div>
-    <div class="login__aside-footer">© Softon · {{ year }}</div>
+    <div class="login__aside-footer">© Nexus · {{ year }}</div>
   </aside>
 
   <section class="login__form-area">
@@ -2726,7 +2726,7 @@ export class LoginComponent {
         <ui-input
           label="E-mail"
           type="email"
-          placeholder="voce@softon.com.br"
+          placeholder="voce@nexus.com.br"
           autocomplete="email"
           leadingIcon="User"
           [error]="emailError()"

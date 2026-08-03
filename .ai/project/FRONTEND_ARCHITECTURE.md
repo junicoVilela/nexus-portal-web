@@ -3,7 +3,7 @@
 ## Estrutura atual
 
 ```text
-softon-portal-web/
+nexus-portal-web/
 ├── frontend/               ← raiz da aplicação Angular
 │   └── src/app/
 │       ├── core/

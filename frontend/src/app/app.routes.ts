@@ -25,7 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'seguranca',
-        loadChildren: () => import('./modules/seguranca/seguranca.routes').then(m => m.SEGURANCA_ROUTES),
+        loadChildren: () => import('./modules/identity-access/identity-access.routes').then(m => m.IDENTITY_ACCESS_ROUTES),
       },
       {
         path: 'release-orchestrator',

@@ -1,6 +1,6 @@
-# AGENTS.md - Softon Portal Web
+# AGENTS.md - Nexus Portal Web
 
-Frontend do **Softon Portal Web** — Angular 21+ / TypeScript / PrimeNG.
+Frontend do **Nexus Portal Web** — Angular 21+ / TypeScript / PrimeNG.
 
 A aplicação Angular fica em `frontend/`.
 

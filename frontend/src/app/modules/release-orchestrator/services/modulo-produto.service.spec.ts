@@ -30,10 +30,10 @@ describe('ModuloProdutoService', () => {
 
   it('criar() POSTa o body completo (codigo + tipo + nome)', () => {
     service
-      .criar(PRODUTO_ID, { nome: 'Portal', codigo: 'dtec-portal', tipo: 'WEB' })
+      .criar(PRODUTO_ID, { nome: 'Portal', codigo: 'nexus-portal', tipo: 'WEB' })
       .subscribe();
     const req = http.expectOne(r => r.method === 'POST' && r.url === BASE);
-    expect(req.request.body).toEqual({ nome: 'Portal', codigo: 'dtec-portal', tipo: 'WEB' });
+    expect(req.request.body).toEqual({ nome: 'Portal', codigo: 'nexus-portal', tipo: 'WEB' });
     req.flush({});
   });
 

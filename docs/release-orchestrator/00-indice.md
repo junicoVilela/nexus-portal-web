@@ -1,8 +1,8 @@
 # Telas do módulo Release Orchestrator (Frontend)
 
-Documentação **uma tela por arquivo** do módulo `softon-portal-web/frontend/src/app/modules/release-orchestrator/`. Foco frontend. Para a API consumida (modelo de dados, endpoints, regras), ver a doc do backend em [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md).
+Documentação **uma tela por arquivo** do módulo `nexus-portal-web/frontend/src/app/modules/release-orchestrator/`. Foco frontend. Para a API consumida (modelo de dados, endpoints, regras), ver a doc do backend em [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md).
 
-**Jornadas de uso** (fluxo end-to-end, GitHub/Jenkins): [`softon-portal-api/docs/jornadas/`](../../../softon-portal-api/docs/jornadas/README.md).
+**Jornadas de uso** (fluxo end-to-end, GitHub/Jenkins): [`nexus-portal-api/docs/jornadas/`](../../../nexus-portal-api/docs/jornadas/README.md).
 
 ## Stack
 
@@ -58,6 +58,6 @@ Documentação **uma tela por arquivo** do módulo `softon-portal-web/frontend/s
 
 ## Rotas futuras (Fase 1 — entregas)
 
-Não existem no código ainda. Mapa completo em [11-indice-entregas-orchestrator.md](11-indice-entregas-orchestrator.md) e specs API `02`–`28` em [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md).
+Não existem no código ainda. Mapa completo em [11-indice-entregas-orchestrator.md](11-indice-entregas-orchestrator.md) e specs API `02`–`28` em [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md).
 
-CI/CD nos repositórios de produto (Jenkinsfile, tags): specs API [`39`](../../../softon-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) e [`40`](../../../softon-portal-api/docs/release-orchestrator/40-guia-versao-tag.md). Resumo narrativo: [`jornadas/01-github-jenkins-delta`](../../../softon-portal-api/docs/jornadas/01-github-jenkins-delta.md).
+CI/CD nos repositórios de produto (Jenkinsfile, tags): specs API [`39`](../../../nexus-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) e [`40`](../../../nexus-portal-api/docs/release-orchestrator/40-guia-versao-tag.md). Resumo narrativo: [`jornadas/01-github-jenkins-delta`](../../../nexus-portal-api/docs/jornadas/01-github-jenkins-delta.md).

@@ -8,7 +8,7 @@ module.exports = {
         chromeFlags: '--headless --no-sandbox --disable-dev-shm-usage',
         onlyCategories: ['accessibility', 'performance'],
       },
-      startServerCommand: 'npx serve -s dist/softon-portal-web/browser -l 4200',
+      startServerCommand: 'npx serve -s dist/nexus-portal-web/browser -l 4200',
       startServerReadyPattern: 'Accepting connections',
       startServerReadyTimeout: 120000,
     },

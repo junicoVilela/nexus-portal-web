@@ -24,7 +24,7 @@ export class RfGuiaComponent {
     {
       id: 0,
       titulo: 'Bem-vindo ao Release Orchestrator',
-      resumo: 'Centralize versões, mudanças e publicações dos produtos da Softon em um único fluxo.',
+      resumo: 'Centralize versões, mudanças e publicações dos produtos da Nexus em um único fluxo.',
       icon: 'pi-sparkles',
       dicas: [
         'Use este guia como referência na primeira vez ou quando precisar treinar alguém.',
@@ -55,7 +55,7 @@ export class RfGuiaComponent {
       dicas: [
         'Cada produto tem nome, sigla única e cor para identificação visual nas listagens.',
         'Produtos inativos não impedem releases antigas, mas evite usá-los em novos registros.',
-        'A sigla aparece nos badges das tabelas (ex.: BASA, DTEC).',
+        'A sigla aparece nos badges das tabelas (ex.: BASA, Nexus).',
       ],
       rota: ['/release-orchestrator', 'produtos'],
       acaoLabel: 'Gerenciar produtos',

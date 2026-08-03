@@ -1,10 +1,10 @@
 # DocFlow — Especificação Frontend
 
-Documentação do módulo **DocFlow** do projeto `softon-portal-web`. **Foco frontend.**
+Documentação do módulo **DocFlow** do projeto `nexus-portal-web`. **Foco frontend.**
 
-Para backend (modelo de dados, endpoints, regras de negócio), ver [`softon-portal-api/docs/doc-flow/README.md`](../../../softon-portal-api/docs/doc-flow/README.md).
+Para backend (modelo de dados, endpoints, regras de negócio), ver [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md).
 
-Jornada integrada (manual + entrega técnica): [`softon-portal-api/docs/jornadas/00-cenario-feliz-acme.md`](../../../softon-portal-api/docs/jornadas/00-cenario-feliz-acme.md).
+Jornada integrada (manual + entrega técnica): [`nexus-portal-api/docs/jornadas/00-cenario-feliz-acme.md`](../../../nexus-portal-api/docs/jornadas/00-cenario-feliz-acme.md).
 
 ## Como ler
 
@@ -28,7 +28,7 @@ Jornada integrada (manual + entrega técnica): [`softon-portal-api/docs/jornadas
 ## Localização no repositório
 
 ```text
-softon-portal-web/
+nexus-portal-web/
 ├── frontend/
 │   └── src/app/modules/docflow/   ← código do módulo
 └── docs/docflow/                  ← esta documentação
@@ -49,7 +49,7 @@ softon-portal-web/
 
 ## Cross-references
 
-- [`softon-portal-api/docs/doc-flow/README.md`](../../../softon-portal-api/docs/doc-flow/README.md) — Backend.
-- [`softon-portal-api/docs/jornadas/`](../../../softon-portal-api/docs/jornadas/README.md) — Jornadas de uso.
-- `softon-portal-web/.ai/modules/docflow.md` — Spec resumida do módulo para IA.
-- `softon-portal-web/docs/release-orchestrator/` — Doc do módulo irmão Release Orchestrator.
+- [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md) — Backend.
+- [`nexus-portal-api/docs/jornadas/`](../../../nexus-portal-api/docs/jornadas/README.md) — Jornadas de uso.
+- `nexus-portal-web/.ai/modules/docflow.md` — Spec resumida do módulo para IA.
+- `nexus-portal-web/docs/release-orchestrator/` — Doc do módulo irmão Release Orchestrator.

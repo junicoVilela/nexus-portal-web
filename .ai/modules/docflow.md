@@ -37,7 +37,7 @@ As rotas e ações sensíveis usam permissões RBAC `DOMINIO:ACAO`. Exceções d
 por `GlobalErrorHandler`; erros HTTP passam pelos interceptors e pelo host global de toast.
 Projetos, módulos e templates usam cache leve com TTL e invalidação após mutações.
 
-O contrato do backend está versionado em `frontend/openapi/softon-portal-api.json` e gera o
+O contrato do backend está versionado em `frontend/openapi/nexus-portal-api.json` e gera o
 cliente Angular em `frontend/src/app/api/generated/` por `npm run api:generate`. O fluxo E2E
 `e2e/docflow-golden-flow.spec.ts` cobre criação estrutural, prévia, workflow editorial,
 permissões, axe/WCAG e layout mobile sem depender de backend real.

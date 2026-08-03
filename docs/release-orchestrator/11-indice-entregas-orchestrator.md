@@ -2,7 +2,7 @@
 
 > **Estado**: 📋 Especificado no backend — **sem implementação no frontend** ainda.  
 > **Código atual**: apenas gestão de releases (`/release-orchestrator/*`).  
-> **Specs completas**: [`softon-portal-api/docs/release-orchestrator/`](../../../softon-portal-api/docs/release-orchestrator/README.md).
+> **Specs completas**: [`nexus-portal-api/docs/release-orchestrator/`](../../../nexus-portal-api/docs/release-orchestrator/README.md).
 
 ---
 
@@ -10,7 +10,7 @@
 
 Este índice mapeia as telas do **orchestrator de entregas a clientes** (Fase 1) para as specs da API e rotas sugeridas. Quando cada tela for implementada, criar arquivo dedicado nesta pasta (ex.: `12-clientes-lista.md`).
 
-**Rotas previstas** (prefixo `/release-orchestrator/orchestrator/` ou conforme [`30-rotas-angular-sugeridas.md`](../../../softon-portal-api/docs/release-orchestrator/30-rotas-angular-sugeridas.md)):
+**Rotas previstas** (prefixo `/release-orchestrator/orchestrator/` ou conforme [`30-rotas-angular-sugeridas.md`](../../../nexus-portal-api/docs/release-orchestrator/30-rotas-angular-sugeridas.md)):
 
 ---
 
@@ -50,8 +50,8 @@ Trabalho nos **repositórios de produto** — não gera tela no portal na Fase 2
 
 | Tópico | Spec API |
 |---|---|
-| Jenkinsfile, assets GitHub, checklist por módulo | [`39-entregaveis-cicd-repositorios.md`](../../../softon-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) |
-| Guia versão/tag | [`40-guia-versao-tag.md`](../../../softon-portal-api/docs/release-orchestrator/40-guia-versao-tag.md) |
+| Jenkinsfile, assets GitHub, checklist por módulo | [`39-entregaveis-cicd-repositorios.md`](../../../nexus-portal-api/docs/release-orchestrator/39-entregaveis-cicd-repositorios.md) |
+| Guia versão/tag | [`40-guia-versao-tag.md`](../../../nexus-portal-api/docs/release-orchestrator/40-guia-versao-tag.md) |
 
 Campos GitHub/Jenkins no formulário de produto: spec `09` + ROADMAP F2.9.
 
@@ -61,7 +61,7 @@ Campos GitHub/Jenkins no formulário de produto: spec `09` + ROADMAP F2.9.
 
 | Símbolo | Significado |
 |---|---|
-| ✅ | Implementado no `softon-portal-web` |
+| ✅ | Implementado no `nexus-portal-web` |
 | 📋 | Especificado; aguardando implementação |
 | 🔧 | Nos repositórios de produto, não no portal |
 
@@ -71,4 +71,4 @@ Campos GitHub/Jenkins no formulário de produto: spec `09` + ROADMAP F2.9.
 
 - [README](README.md) — telas já implementadas (releases).
 - [00-indice.md](00-indice.md) — rotas e enums do código atual.
-- [`ROADMAP`](../../../softon-portal-api/docs/ROADMAP.md) — Fase 0, 1 e 2.
+- [`ROADMAP`](../../../nexus-portal-api/docs/ROADMAP.md) — Fase 0, 1 e 2.

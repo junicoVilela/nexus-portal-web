@@ -113,7 +113,7 @@ describe('PaginaTemplatePickerComponent', () => {
         id: 'cliente-template',
         personalizado: true,
         clienteId: 'cliente-1',
-        clienteNome: 'Softon',
+        clienteNome: 'Nexus',
       },
     ]);
 

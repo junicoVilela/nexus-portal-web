@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { canDeactivateGuard } from '@shared/guards';
-import { permissaoGuard } from '@modules/seguranca/guards';
+import { permissaoGuard } from '@modules/identity-access/guards';
 
 export const DOCFLOW_ROUTES: Routes = [
   {

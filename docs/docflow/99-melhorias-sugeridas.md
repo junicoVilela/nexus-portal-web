@@ -1,6 +1,6 @@
 # 99 — Melhorias Sugeridas (Frontend DocFlow)
 
-Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `softon-portal-api/docs/doc-flow/99-melhorias-sugeridas.md` se existir.
+Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `nexus-portal-api/docs/doc-flow/99-melhorias-sugeridas.md` se existir.
 
 > Categorias: A. UX | B. Arquitetura | C. Performance | D. Acessibilidade | E. Testes | F. Tooling | G. Outros
 
@@ -235,6 +235,6 @@ Backlog específico do **frontend** do módulo `docflow`. Para backend, ver `sof
 
 ## Cross-reference
 
-- `softon-portal-web/docs/release-orchestrator/README.md` — documentação do módulo irmão (frontend).
-- [`softon-portal-api/docs/doc-flow/README.md`](../../../softon-portal-api/docs/doc-flow/README.md) — backend DocFlow.
-- [`softon-portal-api/docs/jornadas/README.md`](../../../softon-portal-api/docs/jornadas/README.md) — jornadas de uso.
+- `nexus-portal-web/docs/release-orchestrator/README.md` — documentação do módulo irmão (frontend).
+- [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md) — backend DocFlow.
+- [`nexus-portal-api/docs/jornadas/README.md`](../../../nexus-portal-api/docs/jornadas/README.md) — jornadas de uso.

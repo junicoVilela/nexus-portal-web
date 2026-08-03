@@ -2,7 +2,7 @@
 
 ## API base
 
-O frontend consome o backend `softon-portal-api`.
+O frontend consome o backend `nexus-portal-api`.
 
 Existem **dois prefixos**, configurados em `src/environments/environment.ts`:
 
@@ -98,7 +98,7 @@ export class ReleaseService {
 ```
 
 IDs do release-orchestrator são UUID (string), não number.
-Endpoints disponíveis: consulte `softon-portal-api/docs/release-orchestrator/37-contratos-openapi.md`.
+Endpoints disponíveis: consulte `nexus-portal-api/docs/release-orchestrator/37-contratos-openapi.md`.
 
 ## Models
 

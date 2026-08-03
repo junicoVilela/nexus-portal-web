@@ -1,7 +1,7 @@
 # Cliente da API
 
 `generated/` é produzido automaticamente a partir de
-`openapi/softon-portal-api.json`. Não edite os arquivos gerados manualmente.
+`openapi/nexus-portal-api.json`. Não edite os arquivos gerados manualmente.
 
 ```bash
 npm run api:generate
@@ -18,22 +18,22 @@ Com o backend local em execução:
 
 ```bash
 curl --fail http://localhost:8080/v3/api-docs \
-  --output openapi/softon-portal-api.json
+  --output openapi/nexus-portal-api.json
 npm run api:generate
 ```
 
 ## Geração via Maven (opcional)
 
-O módulo `softon-portal-api/application` declara o
+O módulo `nexus-portal-api/application` declara o
 `springdoc-openapi-maven-plugin` para exportar a spec quando a aplicação está
 rodando (o plugin consulta `http://localhost:8080/v3/api-docs`).
 
 ```bash
 # 1) Subir a API (ex.: profile dev)
-cd softon-portal-api && ./mvnw -pl application spring-boot:run -Dspring-boot.run.profiles=dev
+cd nexus-portal-api && ./mvnw -pl application spring-boot:run -Dspring-boot.run.profiles=dev
 
 # 2) Em outro terminal, gerar openapi.yaml em application/docs/api/
-cd softon-portal-api && ./mvnw -pl application org.springdoc:springdoc-openapi-maven-plugin:generate
+cd nexus-portal-api && ./mvnw -pl application org.springdoc:springdoc-openapi-maven-plugin:generate
 ```
 
 O goal não está ligado ao ciclo `mvn test` — CI continua verde. Para o frontend,

@@ -1,6 +1,6 @@
 # Exemplo — Estrutura de Módulo Frontend
 
-Estrutura padrão de um módulo do Softon Portal Web. **Módulos de negócio vivem em `src/app/modules/`**, não em `features/`. A infraestrutura global (auth, layout, config) fica em `src/app/core/`, e código reutilizável em `src/app/shared/`.
+Estrutura padrão de um módulo do Nexus Portal Web. **Módulos de negócio vivem em `src/app/modules/`**, não em `features/`. A infraestrutura global (auth, layout, config) fica em `src/app/core/`, e código reutilizável em `src/app/shared/`.
 
 ## Módulo simples (uma área coesa)
 

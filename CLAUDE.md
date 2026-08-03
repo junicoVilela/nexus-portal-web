@@ -1,6 +1,6 @@
-# CLAUDE.md - Softon Portal Web
+# CLAUDE.md - Nexus Portal Web
 
-Frontend do **Softon Portal Web** — Angular 21+ / TypeScript / Tailwind / componentes próprios em `shared/ui` / ícones Lucide.
+Frontend do **Nexus Portal Web** — Angular 21+ / TypeScript / Tailwind / componentes próprios em `shared/ui` / ícones Lucide.
 
 A aplicação Angular fica em `frontend/`.
 
