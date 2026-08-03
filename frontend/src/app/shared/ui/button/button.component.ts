@@ -1,7 +1,24 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'menu' | 'danger-soft';
+/**
+ * Variantes do sistema de botões:
+ * - primary: índigo sólido — CTA (Nova, Salvar, Gerar) — máx. 1 por bloco
+ * - secondary: soft índigo — Editar, Baixar, filtrar, ações de linha
+ * - ghost: quiet slate — Voltar, Cancelar, Limpar, Imprimir
+ * - danger: vermelho — Excluir / destrutiva
+ * - menu / danger-soft: itens de dropdown
+ * - amber / neutral: aliases de secondary / ghost (compat)
+ */
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'amber'
+  | 'neutral'
+  | 'danger'
+  | 'menu'
+  | 'danger-soft';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({

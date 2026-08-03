@@ -26,6 +26,28 @@
   gap: 8px;
 }
 
+/* Grupos de ação do page-header / list-page (content projection) */
+[actions] {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+
+/* Mistura ui-button + ui-more-actions sem gap do flex pai */
+ui-button + ui-more-actions,
+ui-more-actions + ui-button,
+ui-more-actions + ui-more-actions {
+  margin-inline-start: 12px;
+}
+[actions] ui-button + ui-more-actions,
+[actions] ui-more-actions + ui-button,
+[actions] ui-more-actions + ui-more-actions,
+[actions] ui-button + ui-button {
+  margin-inline-start: 0;
+}
+
 /* Superfície contextual usada pelos cabeçalhos de páginas e detalhes. */
 .u-context-surface {
   position: relative;
@@ -69,9 +91,15 @@
   z-index: 5;
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 8px;
   padding: var(--space-3) 0;
   background: linear-gradient(to bottom, transparent, var(--bg) 28%);
+}
+.ui-form-actions ui-button + ui-button {
+  margin-inline-start: 0;
 }
 
 /* Controles do fluxo guiado do editor Doc Flow ficam globais para não inflar o bundle lazy do editor. */

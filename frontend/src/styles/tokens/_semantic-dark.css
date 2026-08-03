@@ -16,6 +16,48 @@
   --accent-ring: rgba(129, 140, 248, 0.25);
   --accent-grad: linear-gradient(135deg, var(--violet-600), var(--cyan-500));
 
+  --btn-primary-bg: var(--indigo-500);
+  --btn-primary-bg-hover: var(--indigo-400);
+  --btn-primary-text: #ffffff;
+  --btn-primary-ring: rgba(129, 140, 248, 0.4);
+
+  --btn-secondary-bg: rgba(99, 102, 241, 0.18);
+  --btn-secondary-bg-hover: rgba(99, 102, 241, 0.28);
+  --btn-secondary-border: rgba(165, 180, 252, 0.4);
+  --btn-secondary-text: var(--indigo-200);
+  --btn-secondary-ring: rgba(129, 140, 248, 0.3);
+
+  --btn-ghost-bg: rgba(255, 255, 255, 0.06);
+  --btn-ghost-bg-hover: rgba(255, 255, 255, 0.1);
+  --btn-ghost-border: rgba(255, 255, 255, 0.12);
+  --btn-ghost-text: #c7ccd8;
+  --btn-ghost-ring: rgba(199, 204, 216, 0.25);
+
+  --btn-amber-bg: var(--btn-secondary-bg);
+  --btn-amber-bg-hover: var(--btn-secondary-bg-hover);
+  --btn-amber-border: var(--btn-secondary-border);
+  --btn-amber-text: var(--btn-secondary-text);
+  --btn-amber-ring: var(--btn-secondary-ring);
+
+  --btn-neutral-bg: var(--btn-ghost-bg);
+  --btn-neutral-bg-hover: var(--btn-ghost-bg-hover);
+  --btn-neutral-border: var(--btn-ghost-border);
+  --btn-neutral-text: var(--btn-ghost-text);
+  --btn-neutral-ring: var(--btn-ghost-ring);
+
+  --btn-danger-bg: var(--red-500);
+  --btn-danger-bg-hover: var(--red-300);
+  --btn-danger-text: #ffffff;
+  --btn-danger-ring: rgba(252, 165, 165, 0.4);
+
+  --btn-menu-bg: rgba(99, 102, 241, 0.32);
+  --btn-menu-bg-hover: rgba(99, 102, 241, 0.48);
+  --btn-menu-text: #e0e7ff;
+
+  --btn-danger-soft-bg: rgba(239, 68, 68, 0.36);
+  --btn-danger-soft-bg-hover: rgba(239, 68, 68, 0.5);
+  --btn-danger-soft-text: var(--red-300);
+
   --success: var(--green-300);
   --success-soft: rgba(110, 231, 183, 0.12);
   --warn: var(--amber-300);

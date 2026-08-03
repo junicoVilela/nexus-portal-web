@@ -54,7 +54,7 @@
           <ui-button variant="secondary" icon="X" [loading]="cancelando()" (clicked)="cancelar()">Cancelar</ui-button>
         }
         @if (e.status === 'CONCLUIDA') {
-          <ui-button icon="Download" [loading]="baixandoZip()" (clicked)="baixarPacote()">Baixar pacote</ui-button>
+          <ui-button variant="secondary" icon="Download" [loading]="baixandoZip()" (clicked)="baixarPacote()">Baixar pacote</ui-button>
           <ui-button variant="secondary" icon="FileText" [loading]="baixandoDoc()" (clicked)="baixarDocumento()"
             >Documento (PDF)</ui-button
           >

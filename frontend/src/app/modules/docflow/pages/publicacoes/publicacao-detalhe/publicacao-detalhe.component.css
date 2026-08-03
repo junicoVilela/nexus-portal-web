@@ -99,16 +99,36 @@
 }
 .pub-det__actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-top: 20px;
+}
+.pub-det__actions > ui-button:first-child {
+  margin-inline-start: 0;
+}
+.pub-det__actions > :last-child:not(:first-child) {
+  margin-left: auto;
 }
 .pub-det__downloads {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  column-gap: 12px;
+  row-gap: 10px;
   margin-bottom: 12px;
 }
+/* Evita margem extra do :host + :host quando o flex já separa */
+.pub-det__downloads ui-button + ui-button {
+  margin-inline-start: 0;
+}
+.pub-det__hint {
+  margin: 10px 0 0;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
 .pub-det__filemeta {
   font: 400 12.5px/1.5 var(--font-body);
   color: var(--text-muted);

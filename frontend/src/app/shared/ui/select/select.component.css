@@ -8,6 +8,7 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 .ui-select__field {
   position: relative;
@@ -15,17 +16,27 @@
   align-items: center;
   border-radius: var(--radius);
   background: var(--surface);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
   transition:
     border-color var(--motion-default) var(--ease-out),
-    box-shadow var(--motion-default) var(--ease-out);
+    box-shadow var(--motion-default) var(--ease-out),
+    background-color var(--motion-default) var(--ease-out);
+}
+.ui-select__field:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
 }
 .ui-select__field:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-ring);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-ring);
 }
 .ui-select__field--error {
   border-color: var(--danger);
+}
+.ui-select__field--error:focus-within {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 28%, transparent);
 }
 .ui-select__field select {
   appearance: none;
@@ -39,14 +50,26 @@
   font: 500 13.5px/1.4 var(--font-body);
   color: var(--text);
   cursor: pointer;
+  min-width: 0;
+}
+.ui-select__field select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 .ui-select__chev {
   position: absolute;
   right: 10px;
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   color: var(--text-muted);
   pointer-events: none;
+  transition:
+    color var(--motion-fast) var(--ease-out),
+    transform var(--motion-default) var(--ease-out);
+}
+.ui-select__field:focus-within .ui-select__chev {
+  color: var(--accent);
+  transform: rotate(180deg);
 }
 .ui-select__hint {
   font-size: 11.5px;

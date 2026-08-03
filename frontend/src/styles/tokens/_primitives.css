@@ -16,10 +16,14 @@
   --cyan-300: #67e8f9;
   --cyan-400: #22d3ee;
   --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
 
-  /* Violet (gradient signature) */
+  /* Violet (gradient + secondary buttons) */
   --violet-500: #8b5cf6;
   --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
 
   /* Neutrals (slate-ish) */
   --neutral-0: #ffffff;
@@ -49,7 +53,10 @@
   --red-300: #fca5a5;
   --red-500: #ef4444;
   --red-700: #b91c1c;
+  --blue-400: #60a5fa;
   --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
 
   /* Spacing scale */
   --space-1: 4px;

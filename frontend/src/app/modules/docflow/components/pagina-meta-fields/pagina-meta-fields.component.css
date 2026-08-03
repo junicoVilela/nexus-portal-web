@@ -18,12 +18,20 @@
   height: 36px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background-color: var(--surface);
   color: var(--text);
-  font: 400 13.5px var(--font-body);
+  font: 500 13.5px var(--font-body);
   outline: none;
   cursor: pointer;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: var(--dropdown-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  padding-right: 34px;
+  box-shadow: var(--shadow-xs);
 }
 .df-form__select:focus {
   border-color: var(--accent);

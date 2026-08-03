@@ -68,6 +68,15 @@
 }
 .projetos__td--actions {
   text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+.projetos__td--actions ui-button + ui-button {
+  margin-inline-start: 0;
 }
 .projetos__row:hover .projetos__td {
   background: var(--surface-2);

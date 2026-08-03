@@ -15,6 +15,15 @@
   min-width: 180px;
   cursor: pointer;
   transition: border-color var(--motion-default);
+
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: var(--dropdown-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  padding-right: 34px;
+  box-shadow: var(--shadow-xs);
 }
 .modulos__select:focus {
   border-color: var(--accent);
@@ -96,6 +105,15 @@
 }
 .modulos__td--actions {
   text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+.modulos__td--actions ui-button + ui-button {
+  margin-inline-start: 0;
 }
 .modulos__row:hover .modulos__td {
   background: var(--surface-2);

@@ -23,6 +23,15 @@
   color: var(--text-primary);
   font-size: 13px;
   min-width: 150px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: var(--dropdown-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  padding-right: 34px;
+  box-shadow: var(--shadow-xs);
 }
 
 .pe-list__clear {

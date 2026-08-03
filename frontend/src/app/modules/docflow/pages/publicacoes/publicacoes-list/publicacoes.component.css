@@ -22,12 +22,20 @@
 }
 .pubs__status-filter select {
   height: 32px;
-  padding: 0 30px 0 9px;
+  padding: 0 34px 0 10px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  background-image: var(--dropdown-chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  box-shadow: var(--shadow-xs);
   color: var(--text);
   font: 500 12px var(--font-body);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
 .pubs__table {

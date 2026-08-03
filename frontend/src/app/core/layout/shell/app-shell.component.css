@@ -209,40 +209,31 @@
   position: absolute;
   left: calc(100% + 10px);
   bottom: 0;
-  min-width: 240px;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  padding: 6px;
-  box-shadow: var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.4));
+  min-width: 248px;
+  background: var(--dropdown-bg, var(--surface));
+  border: 1px solid var(--dropdown-border, var(--border-strong));
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  box-shadow: var(--dropdown-shadow, var(--shadow-lg));
   z-index: 60;
-  animation: shell-pop 120ms var(--ease-out);
+  transform-origin: bottom left;
+  animation: ui-dropdown-in var(--motion-default) var(--ease-out);
 }
 [data-theme='dark'] .shell__user-menu {
-  background: rgba(20, 24, 40, 0.96);
-  backdrop-filter: blur(20px);
-}
-@keyframes shell-pop {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  backdrop-filter: blur(18px);
 }
 .shell__user-menu-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
+  padding: 10px 10px 12px;
 }
 .shell__user-menu-info {
   min-width: 0;
 }
 .shell__user-menu-name {
   font: 600 13px/1.2 var(--font-body);
+  letter-spacing: -0.01em;
   color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -255,36 +246,56 @@
 }
 .shell__user-menu-sep {
   height: 1px;
-  background: var(--border);
-  margin: 4px 0;
+  background: color-mix(in srgb, var(--border) 88%, transparent);
+  margin: 4px 4px 6px;
 }
 .shell__user-menu-item {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 34px;
   padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  border: 0;
+  border-radius: var(--dropdown-item-radius, var(--radius-sm));
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text);
   font: 500 13px/1 var(--font-body);
+  letter-spacing: -0.01em;
   cursor: pointer;
   text-align: left;
-  transition: background var(--motion-default) var(--ease-out);
+  transition:
+    background var(--motion-default) var(--ease-out),
+    color var(--motion-default) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
 }
 .shell__user-menu-item:hover {
-  background: var(--surface-2);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.shell__user-menu-item:focus-visible {
+  outline: 0;
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 0 0 2px var(--accent-ring);
 }
 .shell__user-menu-item lucide-icon {
   width: 15px;
   height: 15px;
   color: var(--text-muted);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+.shell__user-menu-item:hover lucide-icon {
+  color: var(--accent);
 }
 .shell__user-menu-item--danger {
   color: var(--danger);
 }
-.shell__user-menu-item--danger lucide-icon {
+.shell__user-menu-item--danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.shell__user-menu-item--danger lucide-icon,
+.shell__user-menu-item--danger:hover lucide-icon {
   color: var(--danger);
 }
 

@@ -16,6 +16,56 @@
   --accent-text: var(--neutral-0);
   --accent-ring: rgba(79, 70, 229, 0.18);
 
+  /*
+   * Sistema de botões:
+   * primary   → índigo sólido (CTA: Nova, Salvar, Gerar)
+   * secondary → soft/outline índigo (Editar, Baixar, filtrar, ações de linha)
+   * ghost     → quiet slate (Voltar, Cancelar, Limpar, Imprimir)
+   * danger    → vermelho (Excluir)
+   * amber/neutral → aliases de secondary/ghost (compat)
+   */
+  --btn-primary-bg: var(--indigo-600);
+  --btn-primary-bg-hover: var(--indigo-700);
+  --btn-primary-text: #ffffff;
+  --btn-primary-ring: rgba(79, 70, 229, 0.28);
+
+  --btn-secondary-bg: var(--indigo-50);
+  --btn-secondary-bg-hover: var(--indigo-100);
+  --btn-secondary-border: var(--indigo-200);
+  --btn-secondary-text: var(--indigo-700);
+  --btn-secondary-ring: rgba(79, 70, 229, 0.22);
+
+  --btn-ghost-bg: var(--neutral-100);
+  --btn-ghost-bg-hover: var(--neutral-200);
+  --btn-ghost-border: var(--neutral-200);
+  --btn-ghost-text: var(--neutral-700);
+  --btn-ghost-ring: rgba(55, 65, 81, 0.2);
+
+  --btn-amber-bg: var(--btn-secondary-bg);
+  --btn-amber-bg-hover: var(--btn-secondary-bg-hover);
+  --btn-amber-border: var(--btn-secondary-border);
+  --btn-amber-text: var(--btn-secondary-text);
+  --btn-amber-ring: var(--btn-secondary-ring);
+
+  --btn-neutral-bg: var(--btn-ghost-bg);
+  --btn-neutral-bg-hover: var(--btn-ghost-bg-hover);
+  --btn-neutral-border: var(--btn-ghost-border);
+  --btn-neutral-text: var(--btn-ghost-text);
+  --btn-neutral-ring: var(--btn-ghost-ring);
+
+  --btn-danger-bg: var(--red-500);
+  --btn-danger-bg-hover: var(--red-700);
+  --btn-danger-text: #ffffff;
+  --btn-danger-ring: rgba(239, 68, 68, 0.32);
+
+  --btn-menu-bg: var(--indigo-100);
+  --btn-menu-bg-hover: var(--indigo-200);
+  --btn-menu-text: var(--indigo-800);
+
+  --btn-danger-soft-bg: #fecaca;
+  --btn-danger-soft-bg-hover: #fca5a5;
+  --btn-danger-soft-text: var(--red-700);
+
   --success: var(--green-500);
   --success-soft: #ecfdf5;
   --warn: var(--amber-500);

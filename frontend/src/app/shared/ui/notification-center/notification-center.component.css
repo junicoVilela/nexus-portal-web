@@ -56,12 +56,17 @@
   max-height: 480px;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--dropdown-bg, var(--surface));
+  border: 1px solid var(--dropdown-border, var(--border));
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--dropdown-shadow, var(--shadow-lg));
   z-index: 60;
   overflow: hidden;
+  transform-origin: top right;
+  animation: ui-dropdown-in var(--motion-default) var(--ease-out);
+}
+[data-theme='dark'] .ui-notif__panel {
+  backdrop-filter: blur(16px);
 }
 .ui-notif__head {
   display: flex;

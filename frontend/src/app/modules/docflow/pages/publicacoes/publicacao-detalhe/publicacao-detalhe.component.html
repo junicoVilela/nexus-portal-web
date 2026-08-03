@@ -22,11 +22,10 @@
           [loading]="baixandoPdf()"
           (clicked)="baixarPdf()"
         >
-          Baixar PDF
+          Baixar PDF do manual
         </ui-button>
       }
       <ui-button variant="ghost" size="sm" icon="Printer" (clicked)="imprimir()">Imprimir</ui-button>
-      <ui-button variant="ghost" size="sm" icon="ArrowLeft" (clicked)="voltar()">Voltar</ui-button>
     </div>
   </ui-page-header>
 
@@ -133,12 +132,15 @@
                 Baixar pacote ZIP
               </ui-button>
               <ui-button variant="secondary" icon="FileText" [loading]="baixandoPdf()" (clicked)="baixarPdf()">
-                Baixar PDF
+                Baixar PDF do manual
               </ui-button>
               <ui-button variant="secondary" icon="Link" (clicked)="copiarLink()">
                 Copiar link público temporário (download ZIP sem login)
               </ui-button>
             </div>
+            <p class="pub-det__hint">
+              O PDF é gerado sob demanda como manual de negócio: capa, índice por módulo e capturas reduzidas.
+            </p>
             <p class="pub-det__filemeta">
               Arquivo: <strong>{{ publicacao()!.arquivoZipNome }}</strong>
             </p>
@@ -150,6 +152,7 @@
     }
 
     <div class="pub-det__actions">
+      <ui-button variant="ghost" size="sm" icon="ArrowLeft" (clicked)="voltar()">Voltar</ui-button>
       <ui-button
         *appPermissao="'PUBLICACAO:EXCLUIR'"
         variant="danger"
@@ -165,5 +168,8 @@
     <ui-card padding="md">
       <p class="pub-det__empty">Carregando…</p>
     </ui-card>
+    <div class="pub-det__actions">
+      <ui-button variant="ghost" size="sm" icon="ArrowLeft" (clicked)="voltar()">Voltar</ui-button>
+    </div>
   }
 </div>

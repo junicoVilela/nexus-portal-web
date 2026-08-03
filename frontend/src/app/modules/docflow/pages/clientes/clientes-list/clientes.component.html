@@ -90,10 +90,11 @@
           </td>
           <td class="clientes__td clientes__td--actions">
             <ng-container *appPermissao="'CLIENTE:EDITAR'">
-              <ui-button variant="ghost" size="sm" icon="Pencil" (clicked)="editar(cliente)">Editar</ui-button>
+              <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(cliente)">Editar</ui-button>
               <ui-button
                 variant="secondary"
                 size="sm"
+                icon="Link"
                 [loading]="loadingVinculos() && clienteVinculos()?.id === cliente.id"
                 (clicked)="abrirVinculos(cliente)"
                 >Vínculos</ui-button

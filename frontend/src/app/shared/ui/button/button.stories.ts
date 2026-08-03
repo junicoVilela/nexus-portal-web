@@ -11,7 +11,7 @@ const meta: Meta<ButtonComponent> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'ghost', 'danger', 'menu', 'danger-soft'],
+      options: ['primary', 'secondary', 'ghost', 'amber', 'neutral', 'danger', 'menu', 'danger-soft'],
     },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     icon: { control: 'text' },
@@ -41,7 +41,15 @@ type Story = StoryObj<ButtonComponent>;
 
 export const Primary: Story = { args: { variant: 'primary', icon: 'Plus' } };
 export const Secondary: Story = { args: { variant: 'secondary', icon: 'Pencil' } };
-export const Ghost: Story = { args: { variant: 'ghost', icon: 'X' } };
+export const Ghost: Story = { args: { variant: 'ghost', icon: 'Eye' } };
+export const AmberAlias: Story = {
+  args: { variant: 'amber', icon: 'Download' },
+  parameters: { docs: { description: { story: 'Alias de secondary (compat).' } } },
+};
+export const NeutralAlias: Story = {
+  args: { variant: 'neutral', icon: 'ArrowLeft' },
+  parameters: { docs: { description: { story: 'Alias de ghost (compat).' } } },
+};
 export const Danger: Story = { args: { variant: 'danger', icon: 'Trash2' } };
 export const Menu: Story = { args: { variant: 'menu', icon: 'Copy', fullWidth: true } };
 export const DangerSoft: Story = { args: { variant: 'danger-soft', icon: 'Trash2', fullWidth: true } };

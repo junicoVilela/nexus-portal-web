@@ -142,12 +142,20 @@
             <small class="pubs__filemeta">{{ item.quantidadeModulos }} módulos</small>
           </td>
           <td class="pubs__td pubs__td--actions">
-            <ui-button variant="ghost" size="sm" icon="Eye" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
+            <ui-button variant="secondary" size="sm" icon="Eye" (clicked)="abrirDetalhe(item)">Detalhe</ui-button>
             @if (podeBaixar(item)) {
               <ui-button variant="secondary" size="sm" icon="Download" (clicked)="baixar(item)">Baixar</ui-button>
             }
-            <ui-more-actions>
-              <ui-button variant="menu" size="sm" icon="Link" [fullWidth]="true" [disabled]="!podeBaixar(item)" (clicked)="copiarLinkPublicoZip(item)">Link público</ui-button>
+            <ui-more-actions [compact]="true" label="Mais ações">
+              <ui-button
+                variant="menu"
+                size="sm"
+                icon="Link"
+                [fullWidth]="true"
+                [disabled]="!podeBaixar(item)"
+                (clicked)="copiarLinkPublicoZip(item)"
+                >Link público</ui-button
+              >
               <ui-button
                 *appPermissao="'PUBLICACAO:EDITAR'"
                 variant="menu"

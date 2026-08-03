@@ -65,9 +65,23 @@
 .ui-page-header__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
   flex-shrink: 0;
+}
+/*
+ * O wrapper [actions] é conteúdo projetado (encapsulation do pai) —
+ * ::ng-deep garante o flex/gap de verdade entre os botões.
+ */
+:host ::ng-deep [actions] {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+:host ::ng-deep [actions] ui-button + ui-button {
+  margin-inline-start: 0;
 }
 .ui-page-header__actions:empty {
   display: none;
