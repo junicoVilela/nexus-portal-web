@@ -23,6 +23,11 @@
       <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')">Tipo índice</ui-button>
       <ui-button variant="menu" size="sm" icon="FolderOpen" [fullWidth]="true" (clicked)="novaPorTipo('menu')">Menu / pasta</ui-button>
     </ui-more-actions>
+    @if (aiDisponivel()) {
+      <ui-button *appPermissao="'PAGINA:CRIAR'" variant="secondary" icon="Sparkles" (clicked)="novaComIa()">
+        Criar com IA
+      </ui-button>
+    }
     <ui-button *appPermissao="'PAGINA:CRIAR'" icon="Plus" (clicked)="nova()">Nova página</ui-button>
   </div>
 

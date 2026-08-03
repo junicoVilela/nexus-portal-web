@@ -13,6 +13,8 @@ import {
   Shield,
   User,
   Settings,
+  Construction,
+  Sparkles,
 } from 'lucide-angular';
 
 import { HomeComponent } from './home.component';
@@ -37,6 +39,8 @@ describe('HomeComponent', () => {
             Shield,
             User,
             Settings,
+            Construction,
+            Sparkles,
           }),
         ),
       ],
@@ -52,11 +56,11 @@ describe('HomeComponent', () => {
 
   it('renders all registered modules', () => {
     const text = fixture.nativeElement.textContent;
-    expect(text).toContain('Doc Flow');
-    expect(text).toContain('Release Orchestrator');
+    expect(text).toContain('DocFlow');
+    expect(text).toContain('Nexus AI');
     expect(text).toContain('Conteúdo estruturado');
-    expect(text).toContain('Rastreabilidade');
-    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(2);
+    expect(text).toContain('Briefing → rascunho');
+    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(3);
   });
 
   it('renders the KPI strip with all 4 labels', () => {

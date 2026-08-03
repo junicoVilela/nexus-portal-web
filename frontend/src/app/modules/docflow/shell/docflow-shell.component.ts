@@ -102,37 +102,37 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.palette.registerMany('doc-flow', [
-      { id: 'df:dashboard', label: 'Doc Flow — Dashboard', group: 'Doc Flow', route: '/doc-flow' },
-      { id: 'df:clientes', label: 'Doc Flow — Clientes', group: 'Doc Flow', route: '/doc-flow/clientes' },
-      { id: 'df:projetos', label: 'Doc Flow — Projetos', group: 'Doc Flow', route: '/doc-flow/projetos' },
-      { id: 'df:modulos', label: 'Doc Flow — Módulos', group: 'Doc Flow', route: '/doc-flow/modulos' },
-      { id: 'df:paginas', label: 'Doc Flow — Páginas', group: 'Doc Flow', route: '/doc-flow/paginas' },
+      { id: 'df:dashboard', label: 'DocFlow — Dashboard', group: 'DocFlow', route: '/doc-flow' },
+      { id: 'df:clientes', label: 'DocFlow — Clientes', group: 'DocFlow', route: '/doc-flow/clientes' },
+      { id: 'df:projetos', label: 'DocFlow — Projetos', group: 'DocFlow', route: '/doc-flow/projetos' },
+      { id: 'df:modulos', label: 'DocFlow — Módulos', group: 'DocFlow', route: '/doc-flow/modulos' },
+      { id: 'df:paginas', label: 'DocFlow — Páginas', group: 'DocFlow', route: '/doc-flow/paginas' },
       {
         id: 'df:revisoes',
-        label: 'Doc Flow — Central de revisão',
-        group: 'Doc Flow',
+        label: 'DocFlow — Central de revisão',
+        group: 'DocFlow',
         route: '/doc-flow/revisoes',
       },
       {
         id: 'df:midias',
-        label: 'Doc Flow — Biblioteca de mídia',
-        group: 'Doc Flow',
+        label: 'DocFlow — Biblioteca de mídia',
+        group: 'DocFlow',
         route: '/doc-flow/midias',
       },
       {
         id: 'df:publicacoes',
-        label: 'Doc Flow — Publicações',
-        group: 'Doc Flow',
+        label: 'DocFlow — Publicações',
+        group: 'DocFlow',
         route: '/doc-flow/publicacoes',
       },
-      { id: 'df:busca', label: 'Doc Flow — Busca global', group: 'Doc Flow', route: '/doc-flow/busca' },
+      { id: 'df:busca', label: 'DocFlow — Busca global', group: 'DocFlow', route: '/doc-flow/busca' },
       {
         id: 'df:configuracoes',
-        label: 'Doc Flow — Configurações',
-        group: 'Doc Flow',
+        label: 'DocFlow — Configurações',
+        group: 'DocFlow',
         route: '/doc-flow/configuracoes',
       },
-      { id: 'df:ajuda', label: 'Doc Flow — Central de ajuda', group: 'Doc Flow', route: '/doc-flow/ajuda' },
+      { id: 'df:ajuda', label: 'DocFlow — Central de ajuda', group: 'DocFlow', route: '/doc-flow/ajuda' },
     ]);
   }
 

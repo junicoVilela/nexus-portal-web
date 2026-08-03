@@ -33,6 +33,7 @@ import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-s
 import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-filters';
 import { PermissaoDirective } from '@modules/identity-access/directives';
 import { AuthService } from '@core/auth/services/auth.service';
+import { AiFeatureService } from '@modules/ai/services/ai-feature.service';
 
 @Component({
   selector: 'app-paginas',
@@ -57,6 +58,8 @@ export class PaginasComponent implements OnInit, OnDestroy {
   private readonly toast = inject(ToastService);
   private readonly notifications = inject(NotificationService);
   private readonly auth = inject(AuthService);
+  private readonly aiFeature = inject(AiFeatureService);
+  readonly aiDisponivel = this.aiFeature.disponivel;
   private eventosSubscription?: Subscription;
   readonly podeEditarPagina = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   readonly projetos = signal<Projeto[]>([]);
@@ -139,6 +142,7 @@ export class PaginasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.aiFeature.ensureLoaded();
     forkJoin({
       projetos: this.projetoService.projetos(),
       modulos: this.moduloService.modulos(),
@@ -402,6 +406,18 @@ export class PaginasComponent implements OnInit, OnDestroy {
       queryParams: compactQueryParams({
         projetoId: projetoId || null,
         moduloId: moduloId || null,
+      }),
+    });
+  }
+
+  /** CTA S3 — abre wizard IA (via `?origem=ia` no form, que redireciona ao assistente). */
+  novaComIa(): void {
+    const { projetoId, moduloId } = this.filtros.getRawValue();
+    this.router.navigate(docFlowRouterCommands(['paginas', 'novo']), {
+      queryParams: compactQueryParams({
+        projetoId: projetoId || null,
+        moduloId: moduloId || null,
+        origem: 'ia',
       }),
     });
   }

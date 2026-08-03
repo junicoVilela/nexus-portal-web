@@ -1,0 +1,44 @@
+.em-construcao {
+  min-height: min(70vh, 640px);
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 4vw, 48px);
+}
+
+.em-construcao__panel {
+  max-width: 420px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.em-construcao__icon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  color: var(--text-muted, #5b6b7c);
+  background: color-mix(in srgb, var(--text-muted, #5b6b7c) 12%, transparent);
+  margin-bottom: 4px;
+}
+
+.em-construcao__panel h1 {
+  margin: 0;
+  font: 700 1.75rem/1.15 var(--font-display, inherit);
+  letter-spacing: -0.03em;
+  color: var(--text, inherit);
+}
+
+.em-construcao__panel p {
+  margin: 0 0 8px;
+  font: 500 0.98rem/1.5 var(--font-body, inherit);
+  color: var(--text-muted, #5b6b7c);
+}
+
+.em-construcao__cta {
+  text-decoration: none;
+  color: inherit;
+}

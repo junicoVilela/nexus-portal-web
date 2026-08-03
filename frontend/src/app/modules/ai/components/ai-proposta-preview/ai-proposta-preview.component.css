@@ -1,0 +1,120 @@
+.ai-proposta {
+  display: grid;
+  gap: 1rem;
+}
+
+.ai-proposta__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ai-proposta__header h2,
+.ai-proposta h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.ai-proposta h3 {
+  font-size: 0.9rem;
+  color: var(--color-muted, var(--text-secondary));
+  margin-bottom: 0.5rem;
+}
+
+.ai-proposta__meta {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.ai-proposta__meta dt {
+  font-size: 0.75rem;
+  color: var(--color-muted, var(--text-secondary));
+}
+
+.ai-proposta__meta dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.ai-proposta__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.ai-proposta__preview {
+  max-height: 28rem;
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid var(--color-border, var(--border));
+  border-radius: 0.65rem;
+  background: var(--color-surface, var(--bg-card));
+}
+
+.ai-proposta__checklist {
+  border: 1px solid var(--color-border, var(--border));
+  border-radius: 0.65rem;
+  padding: 0.85rem;
+  background: color-mix(in oklab, var(--color-surface, var(--bg-card)) 92%, transparent);
+}
+
+.ai-proposta__checklist ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ai-proposta__checklist li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+}
+
+.ai-proposta__checklist li p {
+  margin: 0.15rem 0 0;
+  color: var(--color-muted, var(--text-secondary));
+  line-height: 1.35;
+}
+
+.ai-proposta__check {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: color-mix(in oklab, #b42318 16%, transparent);
+  color: #b42318;
+}
+
+.ai-proposta__checklist li[data-ok='true'] .ai-proposta__check {
+  background: color-mix(in oklab, #12b76a 18%, transparent);
+  color: #027a48;
+}
+
+.ai-proposta__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted, var(--text-secondary));
+}
+
+.ai-proposta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 840px) {
+  .ai-proposta__body {
+    grid-template-columns: 1fr;
+  }
+}

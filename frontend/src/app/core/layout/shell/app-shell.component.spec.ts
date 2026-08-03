@@ -9,6 +9,7 @@ import {
   FileText,
   Tag,
   Shield,
+  Construction,
   Search,
   Bell,
   Sun,
@@ -31,6 +32,7 @@ import {
   Upload,
   Trash2,
   ImageOff,
+  Sparkles,
 } from 'lucide-angular';
 
 import { AppShellComponent } from './app-shell.component';
@@ -55,6 +57,7 @@ describe('AppShellComponent', () => {
             FileText,
             Tag,
             Shield,
+            Construction,
             Search,
             Bell,
             Sun,
@@ -77,6 +80,7 @@ describe('AppShellComponent', () => {
             Upload,
             Trash2,
             ImageOff,
+            Sparkles,
           }),
         ),
       ],
@@ -103,30 +107,22 @@ describe('AppShellComponent', () => {
     expect(theme.theme()).toBe(before);
   });
 
-  it('ativa o menu no topo no Doc Flow e no Release Orchestrator', async () => {
+  it('ativa o menu no topo no Doc Flow e marca Em construção no workspace', async () => {
     const router = TestBed.inject(Router);
 
     await router.navigateByUrl('/doc-flow/clientes');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.shell').classList).toContain('shell--module-nav-top');
     expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
-      'Doc Flow',
+      'DocFlow',
     );
     expect(fixture.nativeElement.querySelector('.shell__crumb').textContent.trim()).toBe('Clientes');
 
-    await router.navigateByUrl('/release-orchestrator');
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.shell').classList).toContain('shell--module-nav-top');
-    expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
-      'Release Orchestrator',
-    );
-    expect(fixture.nativeElement.querySelector('.shell__crumb').textContent.trim()).toBe('Visão geral');
-
-    await router.navigateByUrl('/seguranca');
+    await router.navigateByUrl('/em-construcao');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.shell').classList).not.toContain('shell--module-nav-top');
     expect(fixture.nativeElement.querySelector('.shell__workspace strong').textContent.trim()).toBe(
-      'Segurança',
+      'Em construção',
     );
   });
 });

@@ -1,7 +1,7 @@
 <div class="help-page">
   <ui-page-header
     title="Central de ajuda"
-    subtitle="Aprenda o Doc Flow por jornadas curtas e avance no seu ritmo."
+    subtitle="Aprenda o DocFlow por jornadas curtas e avance no seu ritmo."
     icon="HelpCircle"
   >
     @if (auth.tem()('AJUDA:EDITAR')) {
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="help-flow" aria-label="Fluxo resumido do Doc Flow">
+    <div class="help-flow" aria-label="Fluxo resumido do DocFlow">
       @for (item of ['Cliente', 'Projeto', 'Módulo', 'Página', 'Revisão', 'Publicação']; track item; let i = $index) {
         <span
           ><small>{{ i + 1 }}</small

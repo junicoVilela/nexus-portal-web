@@ -24,29 +24,15 @@ export const routes: Routes = [
         loadChildren: () => import('./modules/docflow/docflow.routes').then(m => m.DOCFLOW_ROUTES),
       },
       {
-        path: 'seguranca',
-        loadChildren: () => import('./modules/identity-access/identity-access.routes').then(m => m.IDENTITY_ACCESS_ROUTES),
+        path: 'ai',
+        loadChildren: () => import('./modules/ai/ai.routes').then(m => m.AI_ROUTES),
       },
-      {
-        path: 'release-orchestrator',
-        loadChildren: () =>
-          import('./modules/release-orchestrator/release-orchestrator.routes').then(m => m.RELEASE_ORCHESTRATOR_ROUTES),
-      },
+      // Temporário: módulos ocultos apontam para página "Em construção"
+      { path: 'seguranca', redirectTo: '/em-construcao', pathMatch: 'prefix' },
+      { path: 'release-orchestrator', redirectTo: '/em-construcao', pathMatch: 'prefix' },
       // Redirects de compatibilidade
-      { path: 'administracao', redirectTo: 'seguranca', pathMatch: 'full' },
-      { path: 'administracao/usuarios', redirectTo: 'seguranca/usuarios', pathMatch: 'full' },
-      { path: 'administracao/grupos', redirectTo: 'seguranca/grupos', pathMatch: 'full' },
-      {
-        path: 'administracao/permissoes',
-        redirectTo: 'seguranca/dominios',
-        pathMatch: 'full',
-      },
-      {
-        path: 'administracao/configuracoes',
-        redirectTo: 'doc-flow/configuracoes',
-        pathMatch: 'full',
-      },
-      { path: 'usuarios', redirectTo: 'seguranca/usuarios', pathMatch: 'full' },
+      { path: 'administracao', redirectTo: '/em-construcao', pathMatch: 'prefix' },
+      { path: 'usuarios', redirectTo: '/em-construcao', pathMatch: 'full' },
       { path: 'configuracoes', redirectTo: 'doc-flow/configuracoes', pathMatch: 'full' },
       { path: 'sistema/configuracoes', redirectTo: 'doc-flow/configuracoes', pathMatch: 'full' },
     ],

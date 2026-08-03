@@ -17,7 +17,8 @@ const PRIME_TO_LUCIDE: Record<string, string> = {
   'pi-tag': 'Tag',
   'pi-shield': 'Shield',
   'pi-users': 'User',
-  'pi-cog': 'Settings',
+  'pi-cog': 'Construction',
+  'pi-sparkles': 'Sparkles',
 };
 
 function toLucide(primeIcon: string): string {

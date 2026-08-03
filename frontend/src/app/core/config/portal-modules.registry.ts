@@ -15,7 +15,7 @@ export interface PortalModule {
 export const PORTAL_MODULES: readonly PortalModule[] = [
   {
     id: 'doc-flow',
-    label: 'Doc Flow',
+    label: 'DocFlow',
     icon: 'pi-book',
     route: '/doc-flow',
     description: 'Gestão de manuais por cliente — módulos, páginas e publicações.',
@@ -23,12 +23,21 @@ export const PORTAL_MODULES: readonly PortalModule[] = [
     available: true,
   },
   {
-    id: 'release-orchestrator',
-    label: 'Release Orchestrator',
-    icon: 'pi-tag',
-    route: '/release-orchestrator',
-    description: 'Gestão de releases, entregas a clientes, delta de artefatos e pacotes.',
-    highlights: ['Releases centralizadas', 'Controle de entregas', 'Rastreabilidade'],
+    id: 'ai',
+    label: 'Nexus AI',
+    icon: 'pi-sparkles',
+    route: '/ai',
+    description: 'Assistente de IA para criar e ajustar páginas do DocFlow.',
+    highlights: ['Briefing → rascunho', 'Módulo isolado', 'Pronto para extrair'],
     available: true,
+  },
+  {
+    id: 'em-construcao',
+    label: 'Em construção',
+    icon: 'pi-cog',
+    route: '/em-construcao',
+    description: 'Módulos adicionais em preparação. Em breve no portal.',
+    highlights: ['Novidades em breve'],
+    available: false,
   },
 ] as const;

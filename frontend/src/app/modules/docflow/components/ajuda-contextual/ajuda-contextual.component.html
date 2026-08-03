@@ -1,7 +1,7 @@
 @if (mostrarBoasVindas() && !aberto() && tourIndex() === null) {
   <aside class="context-welcome" aria-label="Primeiros passos">
     <span class="context-welcome__icon"><lucide-icon name="Sparkles" /></span>
-    <div><strong>Primeira vez no Doc Flow?</strong><small>Conclua o guia inicial no seu ritmo.</small></div>
+    <div><strong>Primeira vez no DocFlow?</strong><small>Conclua o guia inicial no seu ritmo.</small></div>
     <button type="button" (click)="abrir('onboarding')">Começar</button>
     <button type="button" class="context-welcome__close" (click)="fechar()" aria-label="Fechar">
       <lucide-icon name="X" />
@@ -72,9 +72,9 @@
       @if (aba() === 'contexto') {
         <section class="context-intro">
           <span>GUIA CONTEXTUAL</span>
-          <h2>{{ contextuais()[0]?.titulo || 'Orientação do Doc Flow' }}</h2>
+          <h2>{{ contextuais()[0]?.titulo || 'Orientação do DocFlow' }}</h2>
           <p>{{ contextuais()[0]?.resumo || 'Use a Central de Ajuda para acompanhar o fluxo completo.' }}</p>
-          <button type="button" (click)="iniciarTour()"><lucide-icon name="Play" /> Fazer tour pelo Doc Flow</button>
+          <button type="button" (click)="iniciarTour()"><lucide-icon name="Play" /> Fazer tour pelo DocFlow</button>
         </section>
 
         <div class="context-list">

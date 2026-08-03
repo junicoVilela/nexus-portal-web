@@ -80,12 +80,9 @@ export class AppShellComponent implements OnInit {
       label: 'Módulos',
       items: [
         { label: 'DocFlow', icon: 'FileText', route: '/doc-flow' },
-        { label: 'Release Orchestrator', icon: 'Tag', route: '/release-orchestrator' },
+        { label: 'Nexus AI', icon: 'Sparkles', route: '/ai', permissao: 'PAGINA:LER' },
+        { label: 'Em construção', icon: 'Construction', route: '/em-construcao' },
       ],
-    },
-    {
-      label: 'Segurança',
-      items: [{ label: 'Segurança', icon: 'Shield', route: '/seguranca', permissao: 'USUARIO:LER' }],
     },
   ];
 
@@ -104,13 +101,13 @@ export class AppShellComponent implements OnInit {
     this.palette.registerMany('shell', [
       { id: 'nav-home', label: 'Ir para Início', group: 'Navegação', route: '/' },
       { id: 'nav-doc', label: 'Ir para DocFlow', group: 'Navegação', route: '/doc-flow' },
+      { id: 'nav-ai', label: 'Ir para Nexus AI', group: 'Navegação', route: '/ai' },
       {
-        id: 'nav-rel',
-        label: 'Ir para Release Orchestrator',
+        id: 'nav-wip',
+        label: 'Ir para Em construção',
         group: 'Navegação',
-        route: '/release-orchestrator',
+        route: '/em-construcao',
       },
-      { id: 'nav-seg', label: 'Ir para Segurança', group: 'Navegação', route: '/seguranca' },
       { id: 'theme', label: 'Alternar tema', group: 'Preferências', action: () => this.theme.toggle() },
       ...(Object.entries(ACCENT_PRESETS) as [AccentPreset, { label: string }][]).map(([id, p]) => ({
         id: `accent-${id}`,
@@ -218,15 +215,15 @@ export class AppShellComponent implements OnInit {
   private deriveWorkspace(url: string): { label: string; icon: string } {
     const firstSegment = url.split(/[?#]/)[0]?.split('/').filter(Boolean)[0];
     const workspaces: Record<string, { label: string; icon: string }> = {
-      'doc-flow': { label: 'Doc Flow', icon: 'FileText' },
-      'release-orchestrator': { label: 'Release Orchestrator', icon: 'Tag' },
-      seguranca: { label: 'Segurança', icon: 'Shield' },
+      'doc-flow': { label: 'DocFlow', icon: 'FileText' },
+      ai: { label: 'Nexus AI', icon: 'Sparkles' },
+      'em-construcao': { label: 'Em construção', icon: 'Construction' },
     };
     return workspaces[firstSegment ?? ''] ?? { label: 'Nexus Portal', icon: 'House' };
   }
 
   private hasFullHeightModuleNav(url: string): boolean {
     const path = url.split(/[?#]/)[0] ?? '';
-    return path.startsWith('/doc-flow') || path.startsWith('/release-orchestrator');
+    return path.startsWith('/doc-flow') || path.startsWith('/ai');
   }
 }

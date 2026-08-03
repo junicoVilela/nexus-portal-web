@@ -356,6 +356,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   ngOnInit(): void {
     this.editId.set(this.route.snapshot.paramMap.get('id') ?? undefined);
+    if (!this.editId() && this.redirecionarAssistenteSeOrigemIa()) {
+      return;
+    }
     this.route.queryParamMap.subscribe(params => {
       const modo = params.get('modo');
       const diff = params.get('diff');
@@ -394,6 +397,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         }
         this.carregarTemplates();
         this.restaurarRascunho();
+        if (!pagina) {
+          this.aplicarPropostaAiSePresente();
+        }
         this.inicializarResolucaoVariaveis();
         this.inicializarAutoSave();
         if (this.rascunhoSalvoEm()) this.autosalvarServidor();
@@ -1651,6 +1657,78 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     const templateId = params.get('templateId');
     const template = this.templates().find(item => item.id === templateId);
     if (template) void this.selecionarTemplate(template);
+  }
+
+  /**
+   * `?origem=ia` (CTA lista) → wizard `/ai/assistente`.
+   * Se já houver `history.state` com proposta, permanece no form.
+   */
+  private redirecionarAssistenteSeOrigemIa(): boolean {
+    const origem = this.route.snapshot.queryParamMap.get('origem');
+    if (origem !== 'ia' && origem !== 'ai') return false;
+
+    const state =
+      this.router.getCurrentNavigation()?.extras.state ??
+      (typeof history !== 'undefined' ? history.state : null);
+    if (state?.['origem'] === 'ai' && state?.['proposta']) return false;
+
+    const qp = this.route.snapshot.queryParamMap;
+    void this.router.navigate(['/ai/assistente'], {
+      replaceUrl: true,
+      queryParams: compactQueryParams({
+        projetoId: qp.get('projetoId'),
+        moduloId: qp.get('moduloId'),
+        parentId: qp.get('parentId'),
+        templateId: qp.get('templateId'),
+      }),
+    });
+    return true;
+  }
+
+  /** Hidrata o form a partir do assistente Nexus AI (`router.navigate` com state). */
+  private aplicarPropostaAiSePresente(): void {
+    const state = this.router.getCurrentNavigation()?.extras.state
+      ?? (typeof history !== 'undefined' ? history.state : null);
+    const proposta = state?.['proposta'] as
+      | {
+          titulo?: string;
+          slug?: string;
+          codigoTela?: string;
+          resumo?: string | null;
+          conteudoHtml?: string;
+          templateOrigemId?: string | null;
+          templateOrigemVersao?: number | null;
+          moduloId?: string | null;
+        }
+      | undefined;
+    if (!proposta || state?.['origem'] !== 'ai') return;
+
+    this.mostrarTemplates.set(false);
+    this.form.patchValue({
+      titulo: proposta.titulo ?? '',
+      slug: proposta.slug ?? '',
+      codigoTela: proposta.codigoTela ?? '',
+      resumo: proposta.resumo ?? '',
+      conteudoHtml: proposta.conteudoHtml ?? '',
+    });
+    if (proposta.moduloId && this.modulos().some(m => m.id === proposta.moduloId)) {
+      const modulo = this.modulos().find(m => m.id === proposta.moduloId);
+      if (modulo) {
+        this.form.controls.projetoId.setValue(modulo.projetoId, { emitEvent: false });
+        this.atualizarModulosPorProjeto();
+        this.form.controls.moduloId.setValue(modulo.id, { emitEvent: false });
+      }
+    }
+    if (proposta.templateOrigemId) {
+      this.templateOrigemId.set(proposta.templateOrigemId);
+      this.templateOrigemVersao.set(proposta.templateOrigemVersao ?? undefined);
+      this.templateSelecionadoId.set(proposta.templateOrigemId);
+    }
+    // Qualidade recalcula via `formValue`/`qualidadeItens`; marca dirty para canDeactivate.
+    this.dirty = true;
+    this.justSaved = false;
+    this.form.markAsDirty();
+    this.toast.success('Proposta da IA aplicada no editor. Revise antes de salvar.');
   }
 
   private aplicarTipoPaginaInicial(): void {

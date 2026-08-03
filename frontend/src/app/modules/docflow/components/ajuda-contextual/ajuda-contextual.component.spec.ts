@@ -21,7 +21,7 @@ describe('AjudaContextualComponent', () => {
   });
 
   it('oferece onboarding na primeira entrada', () => {
-    expect(fixture.nativeElement.textContent).toContain('Primeira vez no Doc Flow?');
+    expect(fixture.nativeElement.textContent).toContain('Primeira vez no DocFlow?');
     fixture.componentInstance['abrir']('onboarding');
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Cadastrar um cliente');

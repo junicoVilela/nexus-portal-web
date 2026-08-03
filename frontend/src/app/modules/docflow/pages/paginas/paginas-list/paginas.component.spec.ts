@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, EMPTY } from 'rxjs';
@@ -8,12 +9,14 @@ import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ToastService } from '@shared/ui';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
+import { AiFeatureService } from '@modules/ai/services/ai-feature.service';
 import { PaginasComponent } from './paginas.component';
 
 describe('PaginasComponent', () => {
   let fixture: ComponentFixture<PaginasComponent>;
   let router: Router;
   let paginaService: jasmine.SpyObj<PaginaService>;
+  const aiDisponivel = signal(true);
 
   const paginaBase = (overrides: Partial<Pagina> = {}): Pagina => ({
     id: 'p1',
@@ -55,9 +58,18 @@ describe('PaginasComponent', () => {
         { provide: ProjetoService, useValue: { projetos: () => of([]) } },
         { provide: ModuloService, useValue: { modulos: () => of([]) } },
         { provide: PaginaService, useValue: paginaService },
+        {
+          provide: AiFeatureService,
+          useValue: {
+            disponivel: aiDisponivel,
+            ready: signal(true),
+            ensureLoaded: () => undefined,
+          },
+        },
       ],
     }).compileComponents();
     router = TestBed.inject(Router);
+    aiDisponivel.set(true);
   });
 
   it('ordena paginasHierarquia com ancestral presente na lista', () => {
@@ -81,6 +93,21 @@ describe('PaginasComponent', () => {
     const hierarquia = fixture.componentInstance.paginasHierarquia();
     expect(hierarquia.map(p => p.id)).toEqual(['pai', 'filho']);
     expect(fixture.componentInstance.nivel(hierarquia[1]!)).toBe(1);
+  });
+
+  it('novaComIa navega com origem=ia', () => {
+    const navigate = spyOn(router, 'navigate');
+    fixture = TestBed.createComponent(PaginasComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.filtros.controls.projetoId.setValue('proj1');
+    fixture.componentInstance.filtros.controls.moduloId.setValue('m1');
+    fixture.componentInstance.novaComIa();
+
+    expect(navigate).toHaveBeenCalled();
+    const args = navigate.calls.mostRecent().args;
+    expect(args[1]?.queryParams?.['origem']).toBe('ia');
+    expect(args[1]?.queryParams?.['moduloId']).toBe('m1');
   });
 
   it('novaPorTipo passa parentId da página índice quando módulo filtrado', () => {

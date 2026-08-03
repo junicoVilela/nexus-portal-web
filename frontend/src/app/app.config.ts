@@ -151,6 +151,7 @@ import {
   Sparkles,
   CircleHelp,
   Compass,
+  Construction,
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -313,6 +314,7 @@ export const appConfig: ApplicationConfig = {
         Sparkles,
         CircleHelp,
         Compass,
+        Construction,
       }),
     ),
   ],
