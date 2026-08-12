@@ -6,6 +6,7 @@ import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
+import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
 import { PaginaService } from '../../services/pagina.service';
 import { AiAssistenteComponent } from './ai-assistente.component';
 
@@ -40,6 +41,35 @@ describe('AiAssistenteComponent', () => {
             disponivel: signal(true),
             ready: signal(true),
             ensureLoaded: () => undefined,
+          },
+        },
+        {
+          provide: PaginaBlueprintService,
+          useValue: {
+            listar: () =>
+              of([
+                {
+                  id: 'funcionalidade-geral',
+                  nome: 'Funcionalidade geral',
+                  descricao: 'Estrutura para funcionalidade.',
+                  tipoConteudo: 'FUNCIONALIDADE',
+                  versao: 1,
+                  status: 'PUBLICADO',
+                  minimoComponentes: 3,
+                  maximoComponentes: 7,
+                  templatesCompativeis: ['FUNCIONALIDADE'],
+                  secoes: [
+                    {
+                      slot: 'abertura',
+                      componenteId: 'introducao',
+                      necessidade: 'OBRIGATORIA',
+                      repetivel: false,
+                      maximoInstancias: 1,
+                      alternativas: [],
+                    },
+                  ],
+                },
+              ]),
           },
         },
         {
@@ -198,6 +228,16 @@ describe('AiAssistenteComponent', () => {
 
     const payload = ai.criarSessao.calls.mostRecent().args[0] as { templateId?: string };
     expect(payload.templateId).toBe('t1');
+  });
+
+  it('explica o blueprint associado ao modelo escolhido', () => {
+    const cmp = fixture.componentInstance;
+
+    cmp['form'].patchValue({ templateId: 't1' });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Funcionalidade geral');
+    expect(fixture.nativeElement.textContent).toContain('componente-base');
   });
 
   it('pede confirmação quando a recomendação tem baixa confiança', fakeAsync(() => {

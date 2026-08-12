@@ -89,6 +89,11 @@
                     {{ (sugestao.confianca * 100).toFixed(0) }}% de confiança ·
                     {{ sugestao.motivo }}
                   </p>
+                  @if (blueprintSugerido(); as blueprint) {
+                    <p>
+                      Estrutura editorial: <strong>{{ blueprint.nome }}</strong> · {{ resumoBlueprint(blueprint) }}
+                    </p>
+                  }
                   @if (exigeConfirmacaoTemplate()) {
                     <div class="wiz__template-options">
                       @for (candidato of recomendacaoTemplate()?.candidatos ?? []; track candidato.templateId) {
@@ -124,6 +129,9 @@
                 </select>
                 @if (templateSelecionado(); as tpl) {
                   <p class="wiz__field-hint">Forçado: {{ tpl.nome }}. A identificação automática fica desligada.</p>
+                  @if (blueprintSugerido(); as blueprint) {
+                    <p class="wiz__field-hint">Composição: {{ blueprint.nome }} · {{ resumoBlueprint(blueprint) }}.</p>
+                  }
                 }
               </div>
             </details>
@@ -214,6 +222,12 @@
             <p class="wiz__field-hint">
               Modelo da biblioteca usado: <strong>{{ modelo.nome }}</strong> ({{ modelo.codigo }})
             </p>
+            @if (blueprintUsado(); as blueprint) {
+              <p class="wiz__field-hint">
+                Blueprint: <strong>{{ blueprint.nome }}</strong> v{{ blueprint.versao }} ·
+                {{ resumoBlueprint(blueprint) }}.
+              </p>
+            }
           }
 
           @if (gerando() && !proposta()) {

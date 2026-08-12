@@ -1645,6 +1645,35 @@ export type AiStatusResponse = {
   mensagem?: string;
 };
 
+export type PaginaBibliotecaResponse = {
+  id?: string;
+  schemaVersion?: number;
+  componentes?: Array<PaginaBlocoResponse>;
+  blueprints?: Array<PaginaBlueprintResponse>;
+};
+
+export type PaginaBlueprintResponse = {
+  id?: string;
+  nome?: string;
+  descricao?: string;
+  tipoConteudo?: string;
+  versao?: number;
+  status?: string;
+  minimoComponentes?: number;
+  maximoComponentes?: number;
+  templatesCompativeis?: Array<string>;
+  secoes?: Array<PaginaBlueprintSecaoResponse>;
+};
+
+export type PaginaBlueprintSecaoResponse = {
+  slot?: string;
+  componenteId?: string;
+  necessidade?: string;
+  repetivel?: boolean;
+  maximoInstancias?: number;
+  alternativas?: Array<string>;
+};
+
 export type ExcluirData = {
   body?: never;
   path: {
@@ -6060,3 +6089,35 @@ export type PropostaResponses = {
 };
 
 export type PropostaResponse = PropostaResponses[keyof PropostaResponses];
+
+export type BlueprintsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/blueprints';
+};
+
+export type BlueprintsResponses = {
+  /**
+   * OK
+   */
+  200: Array<PaginaBlueprintResponse>;
+};
+
+export type BlueprintsResponse = BlueprintsResponses[keyof BlueprintsResponses];
+
+export type BibliotecaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/biblioteca';
+};
+
+export type BibliotecaResponses = {
+  /**
+   * OK
+   */
+  200: PaginaBibliotecaResponse;
+};
+
+export type BibliotecaResponse = BibliotecaResponses[keyof BibliotecaResponses];

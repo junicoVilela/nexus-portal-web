@@ -107,8 +107,12 @@ import type {
   BaixarAnexoResponses,
   BibliotecaAnexosData,
   BibliotecaAnexosResponses,
+  BibliotecaData,
+  BibliotecaResponses,
   BlocosData,
   BlocosResponses,
+  BlueprintsData,
+  BlueprintsResponses,
   Buscar10Data,
   Buscar10Responses,
   Buscar11Data,
@@ -3034,5 +3038,23 @@ export const proposta = <ThrowOnError extends boolean = true>(
   (options.client ?? client).get<PropostaResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
+export const blueprints = <ThrowOnError extends boolean = true>(
+  options?: Options<BlueprintsData, ThrowOnError>,
+): RequestResult<BlueprintsResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<BlueprintsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/blueprints',
+    ...options,
+  });
+
+export const biblioteca = <ThrowOnError extends boolean = true>(
+  options?: Options<BibliotecaData, ThrowOnError>,
+): RequestResult<BibliotecaResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<BibliotecaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/biblioteca',
     ...options,
   });

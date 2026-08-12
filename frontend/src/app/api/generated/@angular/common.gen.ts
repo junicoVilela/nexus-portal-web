@@ -100,8 +100,12 @@ import type {
   BaixarAnexoResponse,
   BibliotecaAnexosData,
   BibliotecaAnexosResponse,
+  BibliotecaData,
+  BibliotecaResponse,
   BlocosData,
   BlocosResponse,
+  BlueprintsData,
+  BlueprintsResponse,
   Buscar10Data,
   Buscar10Response,
   Buscar11Data,
@@ -2883,6 +2887,26 @@ export const propostaRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const blueprintsRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<BlueprintsData, ThrowOnError>,
+): HttpRequest<BlueprintsResponse> =>
+  (options?.client ?? client).requestOptions<BlueprintsResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/blueprints',
+    ...options,
+  });
+
+export const bibliotecaRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<BibliotecaData, ThrowOnError>,
+): HttpRequest<BibliotecaResponse> =>
+  (options?.client ?? client).requestOptions<BibliotecaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/biblioteca',
+    ...options,
+  });
+
 export const excluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<ExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -4801,4 +4825,20 @@ export const propostaResource = <ThrowOnError extends boolean = false>(
   httpResource<PropostaResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? propostaRequest(opts) : undefined;
+  });
+
+export const blueprintsResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<BlueprintsData, ThrowOnError> | undefined,
+) =>
+  httpResource<BlueprintsResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? blueprintsRequest(opts) : undefined;
+  });
+
+export const bibliotecaResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<BibliotecaData, ThrowOnError> | undefined,
+) =>
+  httpResource<BibliotecaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? bibliotecaRequest(opts) : undefined;
   });

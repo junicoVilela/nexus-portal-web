@@ -41,6 +41,8 @@ API base: `environment.aiApiUrl` (`/api/ai` → proxy → `/api/v1/ai`).
 - O usuário sempre pode forçar um modelo em **Avançado**.
 - A biblioteca do editor consulta `GET /api/doc-flow/paginas/blocos`; não existe mais catálogo
   HTML duplicado no bundle Angular.
+- O assistente consulta `GET /api/v1/docflow/paginas/blueprints` e apresenta a composição ligada
+  ao modelo: componentes-base e opcionais selecionados conforme o conteúdo.
 - Se a API estiver desatualizada ou indisponível, a biblioteca mostra um erro operacional em vez
   de “Nenhum bloco encontrado”.
 

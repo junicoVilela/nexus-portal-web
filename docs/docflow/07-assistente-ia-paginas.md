@@ -9,6 +9,10 @@
 
 Permitir que o editor crie (Fase A) ou ajuste (Fase B) uma página do DocFlow a partir de um **briefing colado** e de um **diálogo curto** com a IA, sempre desembocando no `pagina-form` existente como `RASCUNHO` / conteúdo editável.
 
+Na Fase A, o modelo sugerido resolve um blueprint editorial declarativo. A tela explica quantos
+componentes formam a estrutura-base e quantos são opcionais; o backend decide os opcionais pelo
+conteúdo e persiste o `blueprintId` na `PageSpec` v2.
+
 **UI embutida no DocFlow:** `frontend/src/app/modules/docflow/` (rotas `/doc-flow/assistente`, `/doc-flow/propostas-ia`).
 Não substitui o editor: **preenche** o formulário e o HTML (navegação para `/doc-flow/paginas/...`).
 

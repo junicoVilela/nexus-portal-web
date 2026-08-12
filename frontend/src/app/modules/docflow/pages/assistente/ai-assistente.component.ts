@@ -22,10 +22,12 @@ import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
 import { AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
 import { AiTemplateRecomendacao } from '../../models/ai-template-recomendacao.model';
+import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
 import { PaginaTemplate } from '../../models/pagina.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
 import { AiImagensStagingService } from '../../services/ai-imagens-staging.service';
+import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
 import { PaginaService } from '../../services/pagina.service';
 
 type WizardPasso = 'brief' | 'chat' | 'revisar';
@@ -54,6 +56,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private readonly feature = inject(AiFeatureService);
   private readonly paginaService = inject(PaginaService);
   private readonly imagensStaging = inject(AiImagensStagingService);
+  private readonly blueprintService = inject(PaginaBlueprintService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -71,6 +74,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly respostas = signal<Record<string, string>>({});
   protected readonly imagens = signal<AiImagemAnexo[]>([]);
   protected readonly templates = signal<PaginaTemplate[]>([]);
+  protected readonly blueprints = signal<PaginaBlueprint[]>([]);
   protected readonly briefingAtual = signal('');
   protected readonly templateIdAtual = signal('');
   protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
@@ -101,6 +105,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     return this.recomendacaoTemplate()?.recomendado ?? null;
   });
 
+  protected readonly blueprintSugerido = computed(() => {
+    const codigo = this.templateSelecionado()?.codigo ?? this.templateSugerido()?.codigo;
+    return this.buscarBlueprint(codigo);
+  });
+
   protected readonly exigeConfirmacaoTemplate = computed(
     () => !this.templateIdAtual() && this.recomendacaoTemplate()?.exigeConfirmacao === true,
   );
@@ -119,6 +128,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (!id) return null;
     return this.templates().find(t => t.id === id) ?? null;
   });
+
+  protected readonly blueprintUsado = computed(() => this.buscarBlueprint(this.modeloUsado()?.codigo));
 
   protected readonly perguntasPendentes = computed<AiPergunta[]>(() => {
     const s = this.sessao();
@@ -195,6 +206,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
           /* picker opcional — backend identifica o modelo pelo briefing */
         },
       });
+    this.blueprintService.listar().subscribe({
+      next: lista => this.blueprints.set(lista.filter(blueprint => blueprint.status === 'PUBLICADO')),
+      error: () => {
+        /* metadado explicativo opcional — a geração continua no backend */
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -277,6 +294,14 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected selecionarTemplateRecomendado(templateId: string): void {
     this.form.controls.templateId.setValue(templateId);
     this.erro.set(null);
+  }
+
+  protected resumoBlueprint(blueprint: PaginaBlueprint): string {
+    const base = blueprint.secoes.filter(secao => secao.necessidade !== 'OPCIONAL').length;
+    const opcionais = blueprint.secoes.length - base;
+    const rotuloBase = base === 1 ? 'componente-base' : 'componentes-base';
+    const rotuloOpcionais = opcionais === 1 ? 'opcional' : 'opcionais';
+    return `${base} ${rotuloBase}${opcionais ? ` · ${opcionais} ${rotuloOpcionais} conforme o conteúdo` : ''}`;
   }
 
   protected setResposta(id: string, valor: string): void {
@@ -427,6 +452,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       URL.revokeObjectURL(img.previewUrl);
     }
     this.imagens.set([]);
+  }
+
+  private buscarBlueprint(codigo?: string | null): PaginaBlueprint | null {
+    if (!codigo) return null;
+    return this.blueprints().find(blueprint => blueprint.templatesCompativeis.includes(codigo)) ?? null;
   }
 
   private ouvirGeracao(sessaoId: string): void {

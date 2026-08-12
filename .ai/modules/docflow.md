@@ -18,9 +18,9 @@ Cliente → Projeto → Módulo → Página → Publicação
 
 O editor de página usa autosave persistido, backup local, `version` para concorrência otimista,
 checklist editorial e prévia HTML fornecida pelo renderizador do backend. O catálogo possui
-12 modelos visuais responsivos no estilo portal de ajuda, com objetivo, captura de tela,
-marcações numeradas, cartões, fluxos e tabelas de referência. A biblioteca do editor oferece
-13 blocos reutilizáveis inseridos sem substituir o conteúdo atual, com busca textual e
+20 modelos visuais responsivos, 45 componentes canônicos e 10 blueprints editoriais. Modelos
+oferecem páginas completas; blueprints recombinam somente os componentes necessários sem
+duplicar HTML. A biblioteca do editor insere blocos sem substituir o conteúdo atual, com busca textual e
 abertura contextual pelo comando `/` em uma linha vazia. A prévia inclui um organizador
 de seções com drag-and-drop e controles de subir/descer; a nova ordem atualiza o HTML e
 participa do autosave existente. O organizador também permite duplicar, excluir com
@@ -144,6 +144,8 @@ UI em `frontend/src/app/modules/docflow/`:
 - Feature flag: `AiFeatureService` (`GET /ai/status`)
 - Docs: `docs/ai/README.md`, `docs/docflow/07-assistente-ia-paginas.md`
 - E2E: `e2e/ai-assistente-flow.spec.ts` (intercept, sem LLM)
+- O assistente consulta os blueprints em `GET /api/v1/docflow/paginas/blueprints` e explica a
+  estrutura editorial associada ao modelo sugerido ou escolhido.
 
 ## Observações
 
