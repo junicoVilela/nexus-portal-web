@@ -9,7 +9,6 @@ export const TIMINGS = {
   aiGenerationPollIntervalMs: 1000,
   aiGenerationSlowPollIntervalMs: 3000,
   aiGenerationExpectedMs: 120_000,
-  aiGenerationMaxWaitMs: 300_000,
 
   // Toast durations
   toast: {

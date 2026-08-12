@@ -30,11 +30,29 @@ export interface AiJob {
   id: string;
   sessaoId: string;
   tipo: string;
-  status: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO';
+  status: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADO';
+  etapa:
+    | 'AGUARDANDO'
+    | 'PREPARANDO_CONTEXTO'
+    | 'SELECIONANDO_ESTRUTURA'
+    | 'GERANDO_CONTEUDO'
+    | 'VALIDANDO_QUALIDADE'
+    | 'FINALIZANDO'
+    | 'CONCLUIDA'
+    | 'CANCELADA'
+    | 'FALHA';
+  progresso: number;
+  tentativa: number;
   erroMensagem: string | null;
+  diagnosticoId: string | null;
   modelo: string | null;
+  tokensEntrada: number | null;
+  tokensSaida: number | null;
+  duracaoMs: number;
   startedAt: string | null;
   finishedAt: string | null;
+  heartbeatAt: string | null;
+  cancelRequestedAt: string | null;
 }
 
 export interface AiAplicacao {

@@ -46,5 +46,18 @@ API base: `environment.aiApiUrl` (`/api/ai` → proxy → `/api/v1/ai`).
 - Se a API estiver desatualizada ou indisponível, a biblioteca mostra um erro operacional em vez
   de “Nenhum bloco encontrado”.
 
+## Acompanhamento e retomada
+
+- Ao criar a sessão, o wizard mantém `sessaoId` na URL; recarregar a página retoma chat,
+  geração ou revisão no ponto persistido pelo backend.
+- Durante a geração, a interface mostra etapa, percentual e número da tentativa, atualizados por
+  SSE com polling como fallback.
+- Após o tempo esperado, a interface reduz a frequência do polling, mas não encerra o
+  acompanhamento por um timeout artificial do navegador.
+- Uma falha transitória de rede não encerra o acompanhamento, e um clique repetido em gerar
+  reutiliza o job ativo devolvido pela API.
+- Erros exibem a mensagem segura e, quando disponível, o identificador de diagnóstico para o
+  suporte localizar o detalhe técnico sem expô-lo na interface.
+
 Runbook local (backend): `nexus-portal-api/docs/ai/RUNBOOK-LOCAL.md`.
 E2E: `frontend/e2e/ai-assistente-flow.spec.ts`.

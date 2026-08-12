@@ -20,7 +20,7 @@ import { AiImagensDropzoneComponent } from '../../components/ai-imagens-dropzone
 import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas.component';
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
 import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
-import { AiProposta } from '../../models/ai-proposta.model';
+import { AiJob, AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
 import { AiTemplateRecomendacao } from '../../models/ai-template-recomendacao.model';
 import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
@@ -70,6 +70,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected readonly sessao = signal<AiSessao | null>(null);
   protected readonly proposta = signal<AiProposta | null>(null);
+  protected readonly jobGeracao = signal<AiJob | null>(null);
   protected readonly carregando = signal(false);
   protected readonly gerando = signal(false);
   protected readonly geracaoDemorada = signal(false);
@@ -147,6 +148,24 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected readonly pronta = computed(() => this.sessao()?.status === 'PRONTA');
 
+  protected readonly progressoGeracao = computed(() => this.jobGeracao()?.progresso ?? 0);
+
+  protected readonly etapaGeracao = computed(() => {
+    const etapa = this.jobGeracao()?.etapa ?? 'AGUARDANDO';
+    const rotulos: Record<AiJob['etapa'], string> = {
+      AGUARDANDO: 'Aguardando início',
+      PREPARANDO_CONTEXTO: 'Analisando o briefing',
+      SELECIONANDO_ESTRUTURA: 'Escolhendo blueprint e componentes',
+      GERANDO_CONTEUDO: 'Gerando o conteúdo da página',
+      VALIDANDO_QUALIDADE: 'Validando qualidade e consistência',
+      FINALIZANDO: 'Preparando a proposta para revisão',
+      CONCLUIDA: 'Rascunho concluído',
+      CANCELADA: 'Geração cancelada',
+      FALHA: 'Falha na geração',
+    };
+    return rotulos[etapa];
+  });
+
   protected readonly passoAtual = computed<WizardPasso>(() => {
     if (!this.sessao()) return 'brief';
     if (this.proposta() || this.pronta() || this.gerando()) return 'revisar';
@@ -215,6 +234,10 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         /* metadado explicativo opcional — a geração continua no backend */
       },
     });
+    const sessaoId = qp.get('sessaoId');
+    if (sessaoId) {
+      this.retomarSessao(sessaoId);
+    }
   }
 
   ngOnDestroy(): void {
@@ -283,7 +306,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: s => {
-          this.sessao.set(s);
+          this.atualizarSessao(s);
+          this.persistirSessaoNaUrl(s.id);
           this.respostas.set({});
           this.carregando.set(false);
         },
@@ -352,8 +376,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.gerando.set(true);
     this.erro.set(null);
     this.proposta.set(null);
+    this.jobGeracao.set(null);
     this.ai.gerar(s.id).subscribe({
-      next: () => this.ouvirGeracao(s.id),
+      next: job => {
+        this.jobGeracao.set(job);
+        this.geracaoIniciadaEm = this.inicioJob(job);
+        this.ouvirGeracao(s.id);
+      },
       error: err => {
         this.erro.set(this.mensagemErro(err));
         this.gerando.set(false);
@@ -432,6 +461,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.finalizarAcompanhamento();
     this.sessao.set(null);
     this.proposta.set(null);
+    this.jobGeracao.set(null);
     this.respostas.set({});
     this.erro.set(null);
     this.gerando.set(false);
@@ -439,6 +469,88 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.imagensStaging.clear();
     const templateId = this.form.controls.templateId.value;
     this.form.reset({ briefing: '', templateId });
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { sessaoId: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private retomarSessao(sessaoId: string): void {
+    this.carregando.set(true);
+    this.erro.set(null);
+    this.ai.buscarSessao(sessaoId).subscribe({
+      next: s => {
+        this.atualizarSessao(s);
+        this.form.controls.briefing.setValue(s.briefing, { emitEvent: false });
+        this.form.controls.templateId.setValue(s.templateId ?? '', { emitEvent: false });
+        this.briefingAtual.set(s.briefing);
+        this.templateIdAtual.set(s.templateId ?? '');
+        this.carregando.set(false);
+        if (s.status === 'GERANDO') {
+          this.geracaoResolvida = false;
+          this.gerando.set(true);
+          this.geracaoIniciadaEm = this.inicioJob(s.jobAtual);
+          this.geracaoDemorada.set(Date.now() - this.geracaoIniciadaEm >= TIMINGS.aiGenerationExpectedMs);
+          this.ouvirGeracao(s.id);
+          return;
+        }
+        if (s.status === 'PRONTA') {
+          this.carregarProposta(s.id);
+          return;
+        }
+        if (s.status === 'ERRO') {
+          this.erro.set(this.mensagemFalhaJob(s.jobAtual));
+        }
+      },
+      error: err => {
+        this.erro.set(this.mensagemErro(err));
+        this.carregando.set(false);
+        this.persistirSessaoNaUrl(null);
+      },
+    });
+  }
+
+  private carregarProposta(sessaoId: string): void {
+    this.carregando.set(true);
+    this.ai.proposta(sessaoId).subscribe({
+      next: proposta => {
+        this.proposta.set(proposta);
+        this.carregando.set(false);
+      },
+      error: err => {
+        this.erro.set(this.mensagemErro(err));
+        this.carregando.set(false);
+      },
+    });
+  }
+
+  private atualizarSessao(sessao: AiSessao): void {
+    this.sessao.set(sessao);
+    if (sessao.jobAtual) {
+      this.jobGeracao.set(sessao.jobAtual);
+    }
+  }
+
+  private persistirSessaoNaUrl(sessaoId: string | null): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { sessaoId },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private inicioJob(job: AiJob | null): number {
+    if (!job?.startedAt) return Date.now();
+    const inicio = Date.parse(job.startedAt);
+    return Number.isFinite(inicio) ? inicio : Date.now();
+  }
+
+  private mensagemFalhaJob(job: AiJob | null): string {
+    const mensagem = job?.erroMensagem ?? 'Falha na geração do rascunho. Você pode tentar novamente.';
+    return job?.diagnosticoId ? `${mensagem} Diagnóstico: ${job.diagnosticoId}.` : mensagem;
   }
 
   private briefingComImagens(): string {
@@ -469,6 +581,23 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.eventosSub = this.ai.eventosAi().subscribe({
       next: ev => {
         if (ev.sessaoId !== sessaoId) return;
+        this.jobGeracao.update(atual =>
+          atual && atual.id === ev.jobId
+            ? {
+                ...atual,
+                status: ev.status,
+                etapa: ev.etapa,
+                progresso: ev.progresso,
+                tentativa: ev.tentativa,
+                diagnosticoId: ev.diagnosticoId ?? atual.diagnosticoId,
+              }
+            : atual,
+        );
+        if (ev.status === 'CANCELADO') {
+          this.gerando.set(false);
+          this.finalizarAcompanhamento();
+          return;
+        }
         if (ev.status === 'SUCESSO' || ev.status === 'ERRO') {
           this.resolverGeracao(sessaoId, ev.status === 'ERRO');
         }
@@ -483,25 +612,24 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private pollProposta(sessaoId: string): void {
     if (this.geracaoResolvida) return;
     const decorrido = Date.now() - this.geracaoIniciadaEm;
-    if (decorrido >= TIMINGS.aiGenerationMaxWaitMs) {
-      this.erro.set('A geração não foi concluída em até 5 minutos. Cancele esta sessão e tente novamente.');
-      this.gerando.set(false);
-      this.finalizarAcompanhamento();
-      return;
-    }
     if (decorrido >= TIMINGS.aiGenerationExpectedMs) {
       this.geracaoDemorada.set(true);
     }
     this.ai.buscarSessao(sessaoId).subscribe({
       next: s => {
         if (this.geracaoResolvida) return;
-        this.sessao.set(s);
+        this.atualizarSessao(s);
         if (s.status === 'PRONTA') {
           this.resolverGeracao(sessaoId, false);
           return;
         }
         if (s.status === 'ERRO') {
           this.resolverGeracao(sessaoId, true);
+          return;
+        }
+        if (s.status === 'CANCELADA') {
+          this.gerando.set(false);
+          this.finalizarAcompanhamento();
           return;
         }
         this.agendarProximoPoll(sessaoId);
@@ -527,10 +655,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.geracaoResolvida = true;
     this.limparEscutaGeracao();
     if (comErro) {
-      this.erro.set('Falha na geração do rascunho. Você pode tentar novamente.');
       this.gerando.set(false);
       this.finalizarAcompanhamento();
-      this.ai.buscarSessao(sessaoId).subscribe(s => this.sessao.set(s));
+      this.ai.buscarSessao(sessaoId).subscribe(s => {
+        this.atualizarSessao(s);
+        this.erro.set(this.mensagemFalhaJob(s.jobAtual));
+      });
       return;
     }
     this.ai.proposta(sessaoId).subscribe({
@@ -538,7 +668,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         this.proposta.set(p);
         this.gerando.set(false);
         this.finalizarAcompanhamento();
-        this.ai.buscarSessao(sessaoId).subscribe(s => this.sessao.set(s));
+        this.ai.buscarSessao(sessaoId).subscribe(s => this.atualizarSessao(s));
       },
       error: err => {
         this.erro.set(this.mensagemErro(err));

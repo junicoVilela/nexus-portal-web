@@ -233,13 +233,30 @@
           @if (gerando() && !proposta()) {
             <div class="wiz__callout" role="status">
               <lucide-icon name="Loader2" [size]="20" class="wiz__spin" />
-              <div>
+              <div class="wiz__generation-status">
+                <div class="wiz__generation-heading">
+                  <strong>{{ etapaGeracao() }}</strong>
+                  <span>{{ progressoGeracao() }}%</span>
+                </div>
+                <div
+                  class="wiz__generation-progress"
+                  role="progressbar"
+                  aria-label="Progresso da geração"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  [attr.aria-valuenow]="progressoGeracao()"
+                >
+                  <i [style.width.%]="progressoGeracao()"></i>
+                </div>
                 @if (geracaoDemorada()) {
-                  <strong>A geração está levando mais tempo que o normal…</strong>
                   <p>Continuamos acompanhando o processamento. Não é necessário iniciar novamente.</p>
                 } @else {
-                  <strong>Gerando rascunho…</strong>
-                  <p>Acompanhamos o job via SSE, com polling como fallback.</p>
+                  <p>
+                    Acompanhamento em tempo real
+                    @if (jobGeracao()?.tentativa; as tentativa) {
+                      · tentativa {{ tentativa }}
+                    }
+                  </p>
                 }
               </div>
             </div>

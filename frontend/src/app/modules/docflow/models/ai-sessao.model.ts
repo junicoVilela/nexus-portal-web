@@ -1,3 +1,5 @@
+import type { AiJob } from './ai-proposta.model';
+
 export type AiObjetivo = 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
 
 export type AiSessaoStatus =
@@ -39,6 +41,7 @@ export interface AiSessao {
   templateId: string | null;
   briefing: string;
   mensagens: AiMensagem[];
+  jobAtual: AiJob | null;
   createdAt: string;
   updatedAt: string;
 }

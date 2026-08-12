@@ -117,6 +117,7 @@ describe('AiAssistenteComponent', () => {
           createdAt: new Date().toISOString(),
         },
       ],
+      jobAtual: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -140,6 +141,7 @@ describe('AiAssistenteComponent', () => {
         templateId: null,
         briefing: 'x'.repeat(50),
         mensagens: [],
+        jobAtual: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
@@ -180,6 +182,7 @@ describe('AiAssistenteComponent', () => {
         templateId: null,
         briefing: 'x'.repeat(50),
         mensagens: [],
+        jobAtual: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
@@ -217,6 +220,7 @@ describe('AiAssistenteComponent', () => {
         templateId: 't1',
         briefing: 'x'.repeat(50),
         mensagens: [],
+        jobAtual: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }),
@@ -244,18 +248,7 @@ describe('AiAssistenteComponent', () => {
     const cmp = fixture.componentInstance;
     const sessao = criarSessaoTeste('PRONTA_PARA_GERAR');
     cmp['sessao'].set(sessao);
-    ai.gerar.and.returnValue(
-      of({
-        id: 'j1',
-        sessaoId: sessao.id,
-        tipo: 'GERAR_RASCUNHO',
-        status: 'PENDENTE',
-        erroMensagem: null,
-        modelo: null,
-        startedAt: null,
-        finishedAt: null,
-      }),
-    );
+    ai.gerar.and.returnValue(of(criarJobTeste(sessao.id)));
     ai.buscarSessao.and.returnValue(of({ ...sessao, status: 'GERANDO' }));
     ai.proposta.and.returnValue(of(criarPropostaTeste(sessao.id)));
 
@@ -272,22 +265,27 @@ describe('AiAssistenteComponent', () => {
     expect(cmp['gerando']()).toBeFalse();
   }));
 
+  it('continua acompanhando sem impor timeout de cinco minutos no navegador', fakeAsync(() => {
+    const cmp = fixture.componentInstance;
+    const sessao = criarSessaoTeste('PRONTA_PARA_GERAR');
+    cmp['sessao'].set(sessao);
+    ai.gerar.and.returnValue(of(criarJobTeste(sessao.id)));
+    ai.buscarSessao.and.returnValue(of({ ...sessao, status: 'GERANDO' }));
+
+    cmp['gerarRascunho']();
+    tick(301_000);
+
+    expect(cmp['erro']()).toBeNull();
+    expect(cmp['gerando']()).toBeTrue();
+    expect(cmp['geracaoDemorada']()).toBeTrue();
+    cmp.ngOnDestroy();
+  }));
+
   it('mantém o acompanhamento após falha transitória do polling', fakeAsync(() => {
     const cmp = fixture.componentInstance;
     const sessao = criarSessaoTeste('PRONTA_PARA_GERAR');
     cmp['sessao'].set(sessao);
-    ai.gerar.and.returnValue(
-      of({
-        id: 'j1',
-        sessaoId: sessao.id,
-        tipo: 'GERAR_RASCUNHO',
-        status: 'PENDENTE',
-        erroMensagem: null,
-        modelo: null,
-        startedAt: null,
-        finishedAt: null,
-      }),
-    );
+    ai.gerar.and.returnValue(of(criarJobTeste(sessao.id)));
     ai.buscarSessao.and.returnValues(
       throwError(() => new Error('rede temporariamente indisponível')),
       of({ ...sessao, status: 'PRONTA' }),
@@ -300,6 +298,31 @@ describe('AiAssistenteComponent', () => {
 
     expect(cmp['erro']()).toBeNull();
     expect(cmp['proposta']()?.id).toBe('p1');
+  }));
+
+  it('retoma uma geração em andamento com etapa e progresso persistidos', fakeAsync(() => {
+    const cmp = fixture.componentInstance;
+    const job = {
+      ...criarJobTeste('s-geracao'),
+      status: 'PROCESSANDO' as const,
+      etapa: 'GERANDO_CONTEUDO' as const,
+      progresso: 50,
+      startedAt: new Date(Date.now() - 10_000).toISOString(),
+    };
+    const sessao = {
+      ...criarSessaoTeste('GERANDO'),
+      jobAtual: job,
+    };
+    ai.buscarSessao.and.returnValue(of(sessao));
+
+    cmp['retomarSessao'](sessao.id);
+    fixture.detectChanges();
+
+    expect(cmp['gerando']()).toBeTrue();
+    expect(cmp['progressoGeracao']()).toBe(50);
+    expect(cmp['etapaGeracao']()).toContain('Gerando o conteúdo');
+    expect(fixture.nativeElement.textContent).toContain('50%');
+    cmp.ngOnDestroy();
   }));
 
   it('pede confirmação quando a recomendação tem baixa confiança', fakeAsync(() => {
@@ -343,8 +366,31 @@ function criarSessaoTeste(status: 'PRONTA_PARA_GERAR' | 'GERANDO' | 'PRONTA') {
     templateId: null,
     briefing: 'Briefing suficientemente detalhado para gerar uma página.',
     mensagens: [],
+    jobAtual: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+}
+
+function criarJobTeste(sessaoId: string) {
+  return {
+    id: 'j1',
+    sessaoId,
+    tipo: 'GERAR_RASCUNHO',
+    status: 'PENDENTE' as const,
+    etapa: 'AGUARDANDO' as const,
+    progresso: 0,
+    tentativa: 1,
+    erroMensagem: null,
+    diagnosticoId: null,
+    modelo: null,
+    tokensEntrada: null,
+    tokensSaida: null,
+    duracaoMs: 0,
+    startedAt: null,
+    finishedAt: null,
+    heartbeatAt: null,
+    cancelRequestedAt: null,
   };
 }
 

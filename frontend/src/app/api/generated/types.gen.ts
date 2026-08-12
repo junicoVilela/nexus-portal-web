@@ -1597,6 +1597,7 @@ export type AiSessaoResponse = {
   mensagens?: Array<AiMensagemResponse>;
   createdAt?: string;
   updatedAt?: string;
+  jobAtual?: AiJobResponse;
 };
 
 export type AiMensagemRequest = {
@@ -1610,11 +1611,29 @@ export type AiJobResponse = {
   id?: string;
   sessaoId?: string;
   tipo?: 'TRIAGEM' | 'GERAR_RASCUNHO' | 'AJUSTAR';
-  status?: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO';
+  status?: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADO';
   erroMensagem?: string;
   modelo?: string;
   startedAt?: string;
   finishedAt?: string;
+  etapa?:
+    | 'AGUARDANDO'
+    | 'PREPARANDO_CONTEXTO'
+    | 'SELECIONANDO_ESTRUTURA'
+    | 'GERANDO_CONTEUDO'
+    | 'VALIDANDO_QUALIDADE'
+    | 'FINALIZANDO'
+    | 'CONCLUIDA'
+    | 'CANCELADA'
+    | 'FALHA';
+  progresso?: number;
+  tentativa?: number;
+  diagnosticoId?: string;
+  tokensEntrada?: number;
+  tokensSaida?: number;
+  duracaoMs?: number;
+  heartbeatAt?: string;
+  cancelRequestedAt?: string;
 };
 
 export type AplicarAiPropostaRequest = {
