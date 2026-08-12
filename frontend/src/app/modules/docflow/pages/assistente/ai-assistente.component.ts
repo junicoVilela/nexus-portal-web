@@ -12,6 +12,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { Subscription, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap } from 'rxjs';
 
+import { TIMINGS } from '@core/config/timings';
 import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
@@ -65,11 +66,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private recomendacaoSub?: Subscription;
   private pollTimer?: number;
   private geracaoResolvida = false;
+  private geracaoIniciadaEm = 0;
 
   protected readonly sessao = signal<AiSessao | null>(null);
   protected readonly proposta = signal<AiProposta | null>(null);
   protected readonly carregando = signal(false);
   protected readonly gerando = signal(false);
+  protected readonly geracaoDemorada = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly respostas = signal<Record<string, string>>({});
   protected readonly imagens = signal<AiImagemAnexo[]>([]);
@@ -344,6 +347,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (!s) return;
     this.limparEscutaGeracao();
     this.geracaoResolvida = false;
+    this.geracaoIniciadaEm = Date.now();
+    this.geracaoDemorada.set(false);
     this.gerando.set(true);
     this.erro.set(null);
     this.proposta.set(null);
@@ -352,6 +357,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       error: err => {
         this.erro.set(this.mensagemErro(err));
         this.gerando.set(false);
+        this.finalizarAcompanhamento();
       },
     });
   }
@@ -423,7 +429,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected reiniciar(): void {
-    this.limparEscutaGeracao();
+    this.finalizarAcompanhamento();
     this.sessao.set(null);
     this.proposta.set(null);
     this.respostas.set({});
@@ -471,16 +477,20 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         /* polling cobre o fallback */
       },
     });
-    this.pollProposta(sessaoId, 0);
+    this.pollProposta(sessaoId);
   }
 
-  private pollProposta(sessaoId: string, tentativa: number): void {
+  private pollProposta(sessaoId: string): void {
     if (this.geracaoResolvida) return;
-    if (tentativa > 40) {
-      this.erro.set('Tempo esgotado aguardando a geração. Tente novamente.');
+    const decorrido = Date.now() - this.geracaoIniciadaEm;
+    if (decorrido >= TIMINGS.aiGenerationMaxWaitMs) {
+      this.erro.set('A geração não foi concluída em até 5 minutos. Cancele esta sessão e tente novamente.');
       this.gerando.set(false);
-      this.limparEscutaGeracao();
+      this.finalizarAcompanhamento();
       return;
+    }
+    if (decorrido >= TIMINGS.aiGenerationExpectedMs) {
+      this.geracaoDemorada.set(true);
     }
     this.ai.buscarSessao(sessaoId).subscribe({
       next: s => {
@@ -494,15 +504,22 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
           this.resolverGeracao(sessaoId, true);
           return;
         }
-        this.pollTimer = window.setTimeout(() => this.pollProposta(sessaoId, tentativa + 1), 750);
+        this.agendarProximoPoll(sessaoId);
       },
-      error: err => {
+      error: () => {
         if (this.geracaoResolvida) return;
-        this.erro.set(this.mensagemErro(err));
-        this.gerando.set(false);
-        this.limparEscutaGeracao();
+        this.agendarProximoPoll(sessaoId, true);
       },
     });
+  }
+
+  private agendarProximoPoll(sessaoId: string, aposFalha = false): void {
+    const decorrido = Date.now() - this.geracaoIniciadaEm;
+    const intervalo =
+      aposFalha || decorrido >= TIMINGS.aiGenerationExpectedMs
+        ? TIMINGS.aiGenerationSlowPollIntervalMs
+        : TIMINGS.aiGenerationPollIntervalMs;
+    this.pollTimer = window.setTimeout(() => this.pollProposta(sessaoId), intervalo);
   }
 
   private resolverGeracao(sessaoId: string, comErro: boolean): void {
@@ -512,6 +529,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (comErro) {
       this.erro.set('Falha na geração do rascunho. Você pode tentar novamente.');
       this.gerando.set(false);
+      this.finalizarAcompanhamento();
       this.ai.buscarSessao(sessaoId).subscribe(s => this.sessao.set(s));
       return;
     }
@@ -519,11 +537,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       next: p => {
         this.proposta.set(p);
         this.gerando.set(false);
+        this.finalizarAcompanhamento();
         this.ai.buscarSessao(sessaoId).subscribe(s => this.sessao.set(s));
       },
       error: err => {
         this.erro.set(this.mensagemErro(err));
         this.gerando.set(false);
+        this.finalizarAcompanhamento();
       },
     });
   }
@@ -535,6 +555,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       window.clearTimeout(this.pollTimer);
       this.pollTimer = undefined;
     }
+  }
+
+  private finalizarAcompanhamento(): void {
+    this.limparEscutaGeracao();
+    this.geracaoIniciadaEm = 0;
+    this.geracaoDemorada.set(false);
   }
 
   private mensagemErro(err: unknown): string {

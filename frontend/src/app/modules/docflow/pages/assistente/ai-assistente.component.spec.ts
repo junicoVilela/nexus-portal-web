@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import { AiAssistenteService } from '../../services/ai-assistente.service';
@@ -240,6 +240,68 @@ describe('AiAssistenteComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('componente-base');
   });
 
+  it('continua acompanhando uma geração que ultrapassa trinta segundos', fakeAsync(() => {
+    const cmp = fixture.componentInstance;
+    const sessao = criarSessaoTeste('PRONTA_PARA_GERAR');
+    cmp['sessao'].set(sessao);
+    ai.gerar.and.returnValue(
+      of({
+        id: 'j1',
+        sessaoId: sessao.id,
+        tipo: 'GERAR_RASCUNHO',
+        status: 'PENDENTE',
+        erroMensagem: null,
+        modelo: null,
+        startedAt: null,
+        finishedAt: null,
+      }),
+    );
+    ai.buscarSessao.and.returnValue(of({ ...sessao, status: 'GERANDO' }));
+    ai.proposta.and.returnValue(of(criarPropostaTeste(sessao.id)));
+
+    cmp['gerarRascunho']();
+    tick(31_000);
+
+    expect(cmp['erro']()).toBeNull();
+    expect(cmp['gerando']()).toBeTrue();
+
+    ai.buscarSessao.and.returnValue(of({ ...sessao, status: 'PRONTA' }));
+    tick(1_000);
+
+    expect(cmp['proposta']()?.id).toBe('p1');
+    expect(cmp['gerando']()).toBeFalse();
+  }));
+
+  it('mantém o acompanhamento após falha transitória do polling', fakeAsync(() => {
+    const cmp = fixture.componentInstance;
+    const sessao = criarSessaoTeste('PRONTA_PARA_GERAR');
+    cmp['sessao'].set(sessao);
+    ai.gerar.and.returnValue(
+      of({
+        id: 'j1',
+        sessaoId: sessao.id,
+        tipo: 'GERAR_RASCUNHO',
+        status: 'PENDENTE',
+        erroMensagem: null,
+        modelo: null,
+        startedAt: null,
+        finishedAt: null,
+      }),
+    );
+    ai.buscarSessao.and.returnValues(
+      throwError(() => new Error('rede temporariamente indisponível')),
+      of({ ...sessao, status: 'PRONTA' }),
+      of({ ...sessao, status: 'PRONTA' }),
+    );
+    ai.proposta.and.returnValue(of(criarPropostaTeste(sessao.id)));
+
+    cmp['gerarRascunho']();
+    tick(3_000);
+
+    expect(cmp['erro']()).toBeNull();
+    expect(cmp['proposta']()?.id).toBe('p1');
+  }));
+
   it('pede confirmação quando a recomendação tem baixa confiança', fakeAsync(() => {
     ai.recomendarTemplate.and.returnValue(
       of({
@@ -268,3 +330,41 @@ describe('AiAssistenteComponent', () => {
     expect(cmp['exigeConfirmacaoTemplate']()).toBeFalse();
   }));
 });
+
+function criarSessaoTeste(status: 'PRONTA_PARA_GERAR' | 'GERANDO' | 'PRONTA') {
+  return {
+    id: 's-geracao',
+    objetivo: 'CRIAR_PAGINA' as const,
+    status,
+    projetoId: null,
+    moduloId: null,
+    clienteId: null,
+    paginaId: null,
+    templateId: null,
+    briefing: 'Briefing suficientemente detalhado para gerar uma página.',
+    mensagens: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function criarPropostaTeste(sessaoId: string) {
+  return {
+    id: 'p1',
+    sessaoId,
+    jobId: 'j1',
+    tipo: 'NOVA' as const,
+    titulo: 'Consulta de pedidos',
+    slug: 'consulta-de-pedidos',
+    codigoTela: 'PED-001',
+    resumo: 'Consulte pedidos.',
+    conteudoHtml: '<section>Consulta</section>',
+    templateId: null,
+    templateVersao: null,
+    aptoParaRevisao: true,
+    qualidade: [],
+    status: 'PENDENTE' as const,
+    paginaId: null,
+    createdAt: new Date().toISOString(),
+  };
+}

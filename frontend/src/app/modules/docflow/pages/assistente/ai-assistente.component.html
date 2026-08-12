@@ -234,8 +234,13 @@
             <div class="wiz__callout" role="status">
               <lucide-icon name="Loader2" [size]="20" class="wiz__spin" />
               <div>
-                <strong>Gerando rascunho…</strong>
-                <p>Acompanhamos o job via SSE, com polling como fallback.</p>
+                @if (geracaoDemorada()) {
+                  <strong>A geração está levando mais tempo que o normal…</strong>
+                  <p>Continuamos acompanhando o processamento. Não é necessário iniciar novamente.</p>
+                } @else {
+                  <strong>Gerando rascunho…</strong>
+                  <p>Acompanhamos o job via SSE, com polling como fallback.</p>
+                }
               </div>
             </div>
           }
