@@ -23,14 +23,11 @@ export const routes: Routes = [
         path: 'doc-flow',
         loadChildren: () => import('./modules/docflow/docflow.routes').then(m => m.DOCFLOW_ROUTES),
       },
-      {
-        path: 'ai',
-        loadChildren: () => import('./modules/ai/ai.routes').then(m => m.AI_ROUTES),
-      },
       // Temporário: módulos ocultos apontam para página "Em construção"
       { path: 'seguranca', redirectTo: '/em-construcao', pathMatch: 'prefix' },
       { path: 'release-orchestrator', redirectTo: '/em-construcao', pathMatch: 'prefix' },
       // Redirects de compatibilidade
+      { path: 'ai', redirectTo: 'doc-flow/assistente', pathMatch: 'prefix' },
       { path: 'administracao', redirectTo: '/em-construcao', pathMatch: 'prefix' },
       { path: 'usuarios', redirectTo: '/em-construcao', pathMatch: 'full' },
       { path: 'configuracoes', redirectTo: 'doc-flow/configuracoes', pathMatch: 'full' },

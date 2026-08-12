@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
 import { AiJobEvento } from '../models/ai-evento.model';
-import {
-  AiMensagemPayload,
-  AiSessao,
-  CriarAiSessaoPayload,
-} from '../models/ai-sessao.model';
+import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
 import { AiAplicacao, AiJob, AiProposta } from '../models/ai-proposta.model';
 import { AiStatus } from '../models/ai-status.model';
+import {
+  AiTemplateRecomendacao,
+  AiTemplateRecomendacaoPayload,
+} from '../models/ai-template-recomendacao.model';
 
 /**
  * Cliente HTTP do módulo AI.
@@ -27,6 +27,10 @@ export class AiAssistenteService {
 
   criarSessao(payload: CriarAiSessaoPayload): Observable<AiSessao> {
     return this.http.post<AiSessao>(`${this.base}/sessoes`, payload);
+  }
+
+  recomendarTemplate(payload: AiTemplateRecomendacaoPayload): Observable<AiTemplateRecomendacao> {
+    return this.http.post<AiTemplateRecomendacao>(`${this.base}/templates/recomendacao`, payload);
   }
 
   buscarSessao(id: string): Observable<AiSessao> {

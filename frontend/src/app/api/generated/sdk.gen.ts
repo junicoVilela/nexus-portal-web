@@ -43,6 +43,8 @@ import type {
   AnexarResponses,
   AnexosData,
   AnexosResponses,
+  AplicarData,
+  AplicarResponses,
   AplicarTemplateData,
   AplicarTemplateResponses,
   AprovarData,
@@ -105,6 +107,8 @@ import type {
   BaixarAnexoResponses,
   BibliotecaAnexosData,
   BibliotecaAnexosResponses,
+  BlocosData,
+  BlocosResponses,
   Buscar10Data,
   Buscar10Responses,
   Buscar11Data,
@@ -123,6 +127,8 @@ import type {
   Buscar17Responses,
   Buscar18Data,
   Buscar18Responses,
+  Buscar19Data,
+  Buscar19Responses,
   Buscar1Data,
   Buscar1Responses,
   Buscar2Data,
@@ -147,6 +153,8 @@ import type {
   CalcularResponses,
   Cancelar1Data,
   Cancelar1Responses,
+  Cancelar2Data,
+  Cancelar2Responses,
   CancelarData,
   CancelarResponses,
   ChangelogData,
@@ -173,6 +181,8 @@ import type {
   Criar16Responses,
   Criar17Data,
   Criar17Responses,
+  Criar19Data,
+  Criar19Responses,
   Criar1Data,
   Criar1Responses,
   Criar2Data,
@@ -225,6 +235,8 @@ import type {
   DuplicarTemplateResponses,
   EmitirTokenDownloadData,
   EmitirTokenDownloadResponses,
+  EnviarMensagemData,
+  EnviarMensagemResponses,
   EnviarRevisaoData,
   EnviarRevisaoResponses,
   EventosPaginaData,
@@ -273,6 +285,8 @@ import type {
   ExcluirTemplateResponses,
   FuncionalidadesData,
   FuncionalidadesResponses,
+  Gerar12Data,
+  Gerar12Responses,
   Gerar1Data,
   Gerar1Responses,
   Gerar2Data,
@@ -377,6 +391,8 @@ import type {
   PreviewHtmlData,
   PreviewHtmlResponses,
   PreviewResponses,
+  PropostaData,
+  PropostaResponses,
   Publicar1Data,
   Publicar1Responses,
   PublicarData,
@@ -391,6 +407,8 @@ import type {
   ReceberResponses,
   RecentesData,
   RecentesResponses,
+  RecomendarData,
+  RecomendarResponses,
   ReentregarData,
   ReentregarResponses,
   RegistrarAjudaEventoData,
@@ -447,6 +465,8 @@ import type {
   SalvarRascunhoData,
   SalvarRascunhoResponses,
   SalvarResponses,
+  StatusData,
+  StatusResponses,
   TemplatesData,
   TemplatesResponses,
   TestarData,
@@ -2908,5 +2928,111 @@ export const eventosPublicacao = <ThrowOnError extends boolean = true>(
   (options?.client ?? client).sse.get<EventosPublicacaoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes/eventos',
+    ...options,
+  });
+
+export const recomendar = <ThrowOnError extends boolean = true>(
+  options: Options<RecomendarData, ThrowOnError>,
+): RequestResult<RecomendarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<RecomendarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/templates/recomendacao',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const blocos = <ThrowOnError extends boolean = true>(
+  options?: Options<BlocosData, ThrowOnError>,
+): RequestResult<BlocosResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<BlocosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/blocos',
+    ...options,
+  });
+
+export const criar19 = <ThrowOnError extends boolean = true>(
+  options: Options<Criar19Data, ThrowOnError>,
+): RequestResult<Criar19Responses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<Criar19Responses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const enviarMensagem = <ThrowOnError extends boolean = true>(
+  options: Options<EnviarMensagemData, ThrowOnError>,
+): RequestResult<EnviarMensagemResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<EnviarMensagemResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/mensagens',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const gerar12 = <ThrowOnError extends boolean = true>(
+  options: Options<Gerar12Data, ThrowOnError>,
+): RequestResult<Gerar12Responses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<Gerar12Responses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/gerar',
+    ...options,
+  });
+
+export const cancelar2 = <ThrowOnError extends boolean = true>(
+  options: Options<Cancelar2Data, ThrowOnError>,
+): RequestResult<Cancelar2Responses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<Cancelar2Responses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/cancelar',
+    ...options,
+  });
+
+export const aplicar = <ThrowOnError extends boolean = true>(
+  options: Options<AplicarData, ThrowOnError>,
+): RequestResult<AplicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AplicarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/aplicar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const status = <ThrowOnError extends boolean = true>(
+  options?: Options<StatusData, ThrowOnError>,
+): RequestResult<StatusResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<StatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/status',
+    ...options,
+  });
+
+export const buscar19 = <ThrowOnError extends boolean = true>(
+  options: Options<Buscar19Data, ThrowOnError>,
+): RequestResult<Buscar19Responses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<Buscar19Responses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}',
+    ...options,
+  });
+
+export const proposta = <ThrowOnError extends boolean = true>(
+  options: Options<PropostaData, ThrowOnError>,
+): RequestResult<PropostaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<PropostaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/proposta',
     ...options,
   });

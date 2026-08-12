@@ -57,10 +57,9 @@ describe('HomeComponent', () => {
   it('renders all registered modules', () => {
     const text = fixture.nativeElement.textContent;
     expect(text).toContain('DocFlow');
-    expect(text).toContain('Nexus AI');
     expect(text).toContain('Conteúdo estruturado');
-    expect(text).toContain('Briefing → rascunho');
-    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(3);
+    expect(text).toContain('Assistente IA');
+    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(2);
   });
 
   it('renders the KPI strip with all 4 labels', () => {

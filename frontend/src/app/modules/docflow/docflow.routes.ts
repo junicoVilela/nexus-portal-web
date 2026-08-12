@@ -125,6 +125,24 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['PAGINA:LER'] },
       },
       {
+        path: 'assistente',
+        loadComponent: () =>
+          import('./pages/assistente/ai-assistente.component').then(
+            component => component.AiAssistenteComponent,
+          ),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:CRIAR'] },
+      },
+      {
+        path: 'propostas-ia',
+        loadComponent: () =>
+          import('./pages/propostas-ia/ai-propostas.component').then(
+            component => component.AiPropostasComponent,
+          ),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:LER'] },
+      },
+      {
         path: 'revisoes',
         loadComponent: () =>
           import('./pages/revisoes/revisoes.component').then(component => component.RevisoesComponent),

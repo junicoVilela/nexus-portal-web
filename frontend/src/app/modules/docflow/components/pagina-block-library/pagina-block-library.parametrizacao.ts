@@ -76,7 +76,6 @@ function badgeObrigatorio(valor: string): string {
 }
 
 export function montarHtmlParametrizado(tipo: ParametrizacaoBlocoPagina, linhas: Record<string, string>[]): string {
-  const config = CONFIG_PARAMETRIZACAO[tipo];
   const linhasValidas = linhas.filter(linha => Object.values(linha).some(valor => valor.trim()));
 
   switch (tipo) {

@@ -17,7 +17,12 @@
                 <span>Personalizar bloco</span>
                 <h4 id="param-panel-title">{{ config.tituloDialogo }}</h4>
               </div>
-              <button type="button" class="block-library__param-close" (click)="cancelarParametrizacao()" aria-label="Cancelar">
+              <button
+                type="button"
+                class="block-library__param-close"
+                (click)="cancelarParametrizacao()"
+                aria-label="Cancelar"
+              >
                 ×
               </button>
             </header>
@@ -68,7 +73,9 @@
                 Adicionar linha
               </ui-button>
               <div class="block-library__param-actions-end">
-                <ui-button type="button" size="sm" variant="ghost" (clicked)="cancelarParametrizacao()">Cancelar</ui-button>
+                <ui-button type="button" size="sm" variant="ghost" (clicked)="cancelarParametrizacao()"
+                  >Cancelar</ui-button
+                >
                 <ui-button type="button" size="sm" (clicked)="confirmarParametrizacao()">Inserir bloco</ui-button>
               </div>
             </div>
@@ -113,8 +120,13 @@
             </button>
           } @empty {
             <div class="block-library__empty">
-              <strong>Nenhum bloco encontrado</strong>
-              <span>Tente outro termo ou selecione a categoria “Todos”.</span>
+              @if (catalogoIndisponivel()) {
+                <strong>Biblioteca de blocos indisponível</strong>
+                <span>Reinicie a API atualizada e tente abrir a página novamente.</span>
+              } @else {
+                <strong>Nenhum bloco encontrado</strong>
+                <span>Tente outro termo ou selecione a categoria “Todos”.</span>
+              }
             </div>
           }
         </div>

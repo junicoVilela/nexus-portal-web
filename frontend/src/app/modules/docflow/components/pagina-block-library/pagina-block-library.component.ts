@@ -3,17 +3,13 @@ import {
   Component,
   computed,
   ElementRef,
+  input,
   output,
   signal,
   ViewChild,
 } from '@angular/core';
 import { ButtonComponent } from '@shared/ui';
-import {
-  BLOCOS_PAGINA,
-  BlocoPagina,
-  CategoriaBlocoPagina,
-  ParametrizacaoBlocoPagina,
-} from './pagina-block-library.blocks';
+import { BlocoPagina, CategoriaBlocoPagina, ParametrizacaoBlocoPagina } from './pagina-block-library.blocks';
 import {
   clonarLinhasPadrao,
   CONFIG_PARAMETRIZACAO,
@@ -34,6 +30,8 @@ type FiltroBloco = CategoriaBlocoPagina | 'Todos' | 'Recentes';
 export class PaginaBlockLibraryComponent {
   @ViewChild('buscaInput') buscaInput?: ElementRef<HTMLInputElement>;
 
+  readonly blocosCatalogo = input<readonly BlocoPagina[]>([]);
+  readonly catalogoIndisponivel = input(false);
   readonly blocoSelecionado = output<BlocoPagina>();
   readonly aberta = signal(false);
   readonly categoria = signal<FiltroBloco>('Todos');
@@ -57,14 +55,15 @@ export class PaginaBlockLibraryComponent {
   ];
   readonly blocos = computed(() => {
     const categoria = this.categoria();
+    const catalogo = this.blocosCatalogo();
     const porCategoria =
       categoria === 'Todos'
-        ? BLOCOS_PAGINA
+        ? catalogo
         : categoria === 'Recentes'
           ? this.recentes()
-              .map(id => BLOCOS_PAGINA.find(bloco => bloco.id === id))
+              .map(id => catalogo.find(bloco => bloco.id === id))
               .filter((bloco): bloco is BlocoPagina => !!bloco)
-          : BLOCOS_PAGINA.filter(bloco => bloco.categoria === categoria);
+          : catalogo.filter(bloco => bloco.categoria === categoria);
     const termo = this.normalizar(this.busca());
     return termo
       ? porCategoria.filter(bloco =>

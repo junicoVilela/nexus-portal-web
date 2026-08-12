@@ -33,7 +33,7 @@ import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-s
 import { PaginasFiltersComponent } from '@modules/docflow/components/paginas-filters';
 import { PermissaoDirective } from '@modules/identity-access/directives';
 import { AuthService } from '@core/auth/services/auth.service';
-import { AiFeatureService } from '@modules/ai/services/ai-feature.service';
+import { AiFeatureService } from '../../../services/ai-feature.service';
 
 @Component({
   selector: 'app-paginas',

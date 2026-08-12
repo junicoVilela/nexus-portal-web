@@ -45,7 +45,7 @@ nexus-portal-web/
 | 04 | [Services e Models](04-services-e-models.md) | Interfaces TS, contratos |
 | 05 | [Componentes e Padrões UI](05-componentes-e-padroes-ui.md) | Status badges, EmptyState, ConfirmDialog |
 | 06 | [Editor de Páginas](06-editor-paginas.md) | Modos código/split/preview, auto-save, canDeactivate |
-| 07 | [Assistente IA](07-assistente-ia-paginas.md) | Proposta UX; módulo em `modules/ai/` + [`../ai/README.md`](../ai/README.md) |
+| 07 | [Assistente IA](07-assistente-ia-paginas.md) | Wizard embutido no DocFlow + [`../ai/README.md`](../ai/README.md) |
 | 99 | [Melhorias Sugeridas](99-melhorias-sugeridas.md) | Backlog específico frontend |
 
 ## Cross-references

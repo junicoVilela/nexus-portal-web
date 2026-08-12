@@ -1,6 +1,42 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BLOCOS_PAGINA } from './pagina-block-library.blocks';
+import { BlocoPagina, CategoriaBlocoPagina } from './pagina-block-library.blocks';
 import { PaginaBlockLibraryComponent } from './pagina-block-library.component';
+
+const bloco = (
+  id: string,
+  nome: string,
+  categoria: CategoriaBlocoPagina,
+  parametrizacao?: BlocoPagina['parametrizacao'],
+): BlocoPagina => ({
+  id,
+  nome,
+  descricao: `Descrição de ${nome}`,
+  categoria,
+  visual: categoria === 'Kits' ? 'kit' : 'intro',
+  parametrizacao,
+  html:
+    parametrizacao === 'acoes-tela'
+      ? '<section><h2>Ações da tela</h2><table><tbody><tr><td>Pesquisar</td></tr></tbody></table></section>'
+      : `<section><h2>${nome}</h2><p>Conteúdo</p></section>`,
+});
+
+const BLOCOS_TESTE: readonly BlocoPagina[] = [
+  bloco('introducao', 'Introdução editorial', 'Estrutura'),
+  bloco('objetivo', 'Objetivo de negócio', 'Orientação'),
+  bloco('passo-a-passo', 'Passo a passo', 'Estrutura'),
+  bloco('pre-requisitos', 'Pré-requisitos', 'Orientação'),
+  bloco('resultado-esperado', 'Resultado esperado', 'Orientação'),
+  bloco('acoes-tela', 'Ações da tela', 'Referência', 'acoes-tela'),
+  bloco('dicionario', 'Dicionário de campos', 'Referência'),
+  bloco('se-entao', 'SE → ENTÃO', 'Orientação'),
+  bloco('callout-erro', 'Callout · Erro comum', 'Orientação'),
+  bloco('ver-tambem', 'Ver também', 'Navegação'),
+  bloco('kit-lista', 'Kit · Página de lista', 'Kits'),
+  bloco('kit-incluir', 'Kit · Página de inclusão', 'Kits'),
+  bloco('kit-editar', 'Kit · Página de edição', 'Kits'),
+  bloco('kit-indice', 'Kit · Índice de operações', 'Kits'),
+  bloco('kit-menu', 'Kit · Menu / pasta', 'Kits'),
+];
 
 describe('PaginaBlockLibraryComponent', () => {
   let fixture: ComponentFixture<PaginaBlockLibraryComponent>;
@@ -9,6 +45,7 @@ describe('PaginaBlockLibraryComponent', () => {
     localStorage.removeItem('docflow:blocos-recentes');
     await TestBed.configureTestingModule({ imports: [PaginaBlockLibraryComponent] }).compileComponents();
     fixture = TestBed.createComponent(PaginaBlockLibraryComponent);
+    fixture.componentRef.setInput('blocosCatalogo', BLOCOS_TESTE);
     fixture.detectChanges();
   });
 
@@ -16,7 +53,7 @@ describe('PaginaBlockLibraryComponent', () => {
     (fixture.nativeElement.querySelector('.block-library__toggle') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelectorAll('.block-card').length).toBe(BLOCOS_PAGINA.length);
+    expect(fixture.nativeElement.querySelectorAll('.block-card').length).toBe(BLOCOS_TESTE.length);
     expect(fixture.nativeElement.textContent).toContain('Objetivo de negócio');
     expect(fixture.nativeElement.textContent).toContain('Passo a passo');
     expect(fixture.nativeElement.textContent).toContain('Kit · Página de lista');
@@ -43,7 +80,7 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelectorAll('.block-card').length).toBe(
-      BLOCOS_PAGINA.filter(b => b.categoria === 'Navegação').length,
+      BLOCOS_TESTE.filter(b => b.categoria === 'Navegação').length,
     );
   });
 
@@ -99,13 +136,15 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.componentInstance.aberta.set(true);
     fixture.detectChanges();
 
-    const acoes = BLOCOS_PAGINA.find(bloco => bloco.id === 'acoes-tela')!;
+    const acoes = BLOCOS_TESTE.find(item => item.id === 'acoes-tela')!;
     fixture.componentInstance.selecionar(acoes);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.parametrizacaoAtiva()).toBe('acoes-tela');
     expect(fixture.nativeElement.textContent).toContain('Personalizar bloco');
-    expect(fixture.nativeElement.querySelectorAll('.block-library__param-table input').length).toBeGreaterThan(0);
+    expect(
+      fixture.nativeElement.querySelectorAll('.block-library__param-table input').length,
+    ).toBeGreaterThan(0);
   });
 
   it('confirma parametrização e emite bloco com HTML gerado', () => {
@@ -113,7 +152,7 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.componentInstance.aberta.set(true);
     fixture.detectChanges();
 
-    const acoes = BLOCOS_PAGINA.find(bloco => bloco.id === 'acoes-tela')!;
+    const acoes = BLOCOS_TESTE.find(item => item.id === 'acoes-tela')!;
     fixture.componentInstance.selecionar(acoes);
     fixture.detectChanges();
     fixture.componentInstance.confirmarParametrizacao();
@@ -132,7 +171,7 @@ describe('PaginaBlockLibraryComponent', () => {
     fixture.componentInstance.aberta.set(true);
     fixture.detectChanges();
 
-    const acoes = BLOCOS_PAGINA.find(bloco => bloco.id === 'acoes-tela')!;
+    const acoes = BLOCOS_TESTE.find(item => item.id === 'acoes-tela')!;
     fixture.componentInstance.selecionar(acoes);
     fixture.detectChanges();
     fixture.componentInstance.cancelarParametrizacao();
@@ -144,7 +183,7 @@ describe('PaginaBlockLibraryComponent', () => {
   });
 
   it('expõe blocos recomendados para redação de manuais', () => {
-    const ids = BLOCOS_PAGINA.map(b => b.id);
+    const ids = BLOCOS_TESTE.map(b => b.id);
     expect(ids).toContain('passo-a-passo');
     expect(ids).toContain('pre-requisitos');
     expect(ids).toContain('resultado-esperado');

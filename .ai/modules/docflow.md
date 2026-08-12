@@ -131,13 +131,16 @@ GET            /empresa/logo
 POST/DELETE    /empresa/logo
 ```
 
-## Assistente Nexus AI (módulo irmão)
+## Assistente IA (dentro do DocFlow)
 
-Front isolado em `frontend/src/app/modules/ai/`:
+UI em `frontend/src/app/modules/docflow/`:
 
-- Rotas `/ai`, `/ai/assistente`, `/ai/propostas`
+- Rotas `/doc-flow/assistente`, `/doc-flow/propostas-ia` (redirect `/ai/**` → assistente)
+- Pages: `pages/assistente/`, `pages/propostas-ia/`
+- Components: `components/ai-perguntas/`, `components/ai-proposta-preview/`
+- Services: `services/ai-assistente.service.ts`, `services/ai-feature.service.ts`
 - `environment.aiApiUrl` → `/api/ai` (proxy `/api/v1/ai`)
-- CTA DocFlow: lista de páginas → **Criar com IA** (`?origem=ia`)
+- CTA: lista de páginas → **Criar com IA** (`?origem=ia`)
 - Feature flag: `AiFeatureService` (`GET /ai/status`)
 - Docs: `docs/ai/README.md`, `docs/docflow/07-assistente-ia-paginas.md`
 - E2E: `e2e/ai-assistente-flow.spec.ts` (intercept, sem LLM)
@@ -148,4 +151,4 @@ Front isolado em `frontend/src/app/modules/ai/`:
 - Services retornam Observable — nunca chamar HttpClient em component.
 - Usar `PageResult<T>` de `@shared/models/page-result.model.ts` para listas paginadas.
 - `buildQueryParams` de `@shared/utils/http-params.util.ts` para montar HttpParams.
-- Assistente → `modules/ai/`, não embutir LLM no DocFlow.
+- Assistente IA → dentro de `modules/docflow/` (não criar módulo Angular separado).

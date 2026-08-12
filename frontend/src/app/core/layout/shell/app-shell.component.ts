@@ -80,7 +80,6 @@ export class AppShellComponent implements OnInit {
       label: 'Módulos',
       items: [
         { label: 'DocFlow', icon: 'FileText', route: '/doc-flow' },
-        { label: 'Nexus AI', icon: 'Sparkles', route: '/ai', permissao: 'PAGINA:LER' },
         { label: 'Em construção', icon: 'Construction', route: '/em-construcao' },
       ],
     },
@@ -101,7 +100,6 @@ export class AppShellComponent implements OnInit {
     this.palette.registerMany('shell', [
       { id: 'nav-home', label: 'Ir para Início', group: 'Navegação', route: '/' },
       { id: 'nav-doc', label: 'Ir para DocFlow', group: 'Navegação', route: '/doc-flow' },
-      { id: 'nav-ai', label: 'Ir para Nexus AI', group: 'Navegação', route: '/ai' },
       {
         id: 'nav-wip',
         label: 'Ir para Em construção',
@@ -184,6 +182,8 @@ export class AppShellComponent implements OnInit {
       projetos: 'Projetos',
       modulos: 'Módulos',
       paginas: 'Páginas',
+      assistente: 'Assistente IA',
+      'propostas-ia': 'Propostas IA',
       publicacoes: 'Publicações',
       busca: 'Busca',
       releases: 'Releases',
@@ -216,7 +216,6 @@ export class AppShellComponent implements OnInit {
     const firstSegment = url.split(/[?#]/)[0]?.split('/').filter(Boolean)[0];
     const workspaces: Record<string, { label: string; icon: string }> = {
       'doc-flow': { label: 'DocFlow', icon: 'FileText' },
-      ai: { label: 'Nexus AI', icon: 'Sparkles' },
       'em-construcao': { label: 'Em construção', icon: 'Construction' },
     };
     return workspaces[firstSegment ?? ''] ?? { label: 'Nexus Portal', icon: 'House' };
@@ -224,6 +223,6 @@ export class AppShellComponent implements OnInit {
 
   private hasFullHeightModuleNav(url: string): boolean {
     const path = url.split(/[?#]/)[0] ?? '';
-    return path.startsWith('/doc-flow') || path.startsWith('/ai');
+    return path.startsWith('/doc-flow');
   }
 }

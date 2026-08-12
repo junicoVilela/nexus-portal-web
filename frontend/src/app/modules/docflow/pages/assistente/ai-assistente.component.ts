@@ -10,17 +10,23 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap } from 'rxjs';
 
-import { BadgeComponent, ButtonComponent, CardComponent } from '@shared/ui';
+import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
+import { AiImagensDropzoneComponent } from '../../components/ai-imagens-dropzone/ai-imagens-dropzone.component';
 import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas.component';
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
+import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
 import { AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
+import { AiTemplateRecomendacao } from '../../models/ai-template-recomendacao.model';
+import { PaginaTemplate } from '../../models/pagina.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
+import { AiImagensStagingService } from '../../services/ai-imagens-staging.service';
+import { PaginaService } from '../../services/pagina.service';
 
 type WizardPasso = 'brief' | 'chat' | 'revisar';
 
@@ -31,11 +37,13 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
     ReactiveFormsModule,
     RouterLink,
     LucideAngularModule,
+    PageHeaderComponent,
     CardComponent,
     ButtonComponent,
     BadgeComponent,
     AiPerguntasComponent,
     AiPropostaPreviewComponent,
+    AiImagensDropzoneComponent,
   ],
   templateUrl: './ai-assistente.component.html',
   styleUrl: './ai-assistente.component.css',
@@ -44,10 +52,14 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
 export class AiAssistenteComponent implements OnInit, OnDestroy {
   private readonly ai = inject(AiAssistenteService);
   private readonly feature = inject(AiFeatureService);
+  private readonly paginaService = inject(PaginaService);
+  private readonly imagensStaging = inject(AiImagensStagingService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private eventosSub?: Subscription;
+  private formSub?: Subscription;
+  private recomendacaoSub?: Subscription;
   private pollTimer?: number;
   private geracaoResolvida = false;
 
@@ -57,14 +69,55 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly gerando = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly respostas = signal<Record<string, string>>({});
+  protected readonly imagens = signal<AiImagemAnexo[]>([]);
+  protected readonly templates = signal<PaginaTemplate[]>([]);
+  protected readonly briefingAtual = signal('');
+  protected readonly templateIdAtual = signal('');
+  protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
+  protected readonly recomendandoTemplate = signal(false);
   protected readonly aiDisponivel = this.feature.disponivel;
   protected readonly featureReady = this.feature.ready;
 
   protected readonly form = this.fb.nonNullable.group({
-    briefing: [
-      '',
-      [Validators.required, Validators.minLength(40), Validators.maxLength(50_000)],
-    ],
+    briefing: ['', [Validators.required, Validators.minLength(40), Validators.maxLength(50_000)]],
+    templateId: [''],
+  });
+
+  protected readonly briefingTamanho = computed(() => this.briefingAtual().trim().length);
+
+  protected readonly briefingValido = computed(() => {
+    const tamanho = this.briefingTamanho();
+    return tamanho >= 40 && tamanho <= 50_000;
+  });
+
+  protected readonly templateSelecionado = computed(() => {
+    const id = this.templateIdAtual();
+    return this.templates().find(t => t.id === id) ?? null;
+  });
+
+  /** Prévia do modelo que o backend tende a escolher com o briefing atual. */
+  protected readonly templateSugerido = computed(() => {
+    if (this.templateIdAtual()) return null;
+    return this.recomendacaoTemplate()?.recomendado ?? null;
+  });
+
+  protected readonly exigeConfirmacaoTemplate = computed(
+    () => !this.templateIdAtual() && this.recomendacaoTemplate()?.exigeConfirmacao === true,
+  );
+
+  protected readonly podeIniciar = computed(
+    () =>
+      this.briefingValido() &&
+      this.aiDisponivel() &&
+      !this.carregando() &&
+      !this.recomendandoTemplate() &&
+      !this.exigeConfirmacaoTemplate(),
+  );
+
+  protected readonly modeloUsado = computed(() => {
+    const id = this.proposta()?.templateId ?? this.sessao()?.templateId;
+    if (!id) return null;
+    return this.templates().find(t => t.id === id) ?? null;
   });
 
   protected readonly perguntasPendentes = computed<AiPergunta[]>(() => {
@@ -94,10 +147,87 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.feature.ensureLoaded();
+    const qp = this.route.snapshot.queryParamMap;
+    const templateIdQp = qp.get('templateId') ?? '';
+    if (templateIdQp) {
+      this.form.controls.templateId.setValue(templateIdQp);
+      this.templateIdAtual.set(templateIdQp);
+    }
+    this.formSub = this.form.valueChanges.subscribe(v => {
+      this.briefingAtual.set(v.briefing ?? '');
+      this.templateIdAtual.set(v.templateId ?? '');
+    });
+    this.recomendacaoSub = this.form.valueChanges
+      .pipe(
+        debounceTime(450),
+        distinctUntilChanged(
+          (anterior, atual) =>
+            anterior.briefing === atual.briefing && anterior.templateId === atual.templateId,
+        ),
+        switchMap(valor => {
+          const texto = valor.briefing?.trim() ?? '';
+          if (texto.length < 20 || valor.templateId) {
+            this.recomendacaoTemplate.set(null);
+            return of(null);
+          }
+          this.recomendandoTemplate.set(true);
+          return this.ai
+            .recomendarTemplate({
+              briefing: texto,
+              projetoId: qp.get('projetoId'),
+              clienteId: qp.get('clienteId'),
+            })
+            .pipe(
+              catchError(() => of(null)),
+              finalize(() => this.recomendandoTemplate.set(false)),
+            );
+        }),
+      )
+      .subscribe(recomendacao => this.recomendacaoTemplate.set(recomendacao));
+    this.paginaService
+      .templatesPagina({
+        projetoId: qp.get('projetoId') ?? undefined,
+        somenteContexto: false,
+      })
+      .subscribe({
+        next: lista => this.templates.set(lista.filter(t => t.ativo !== false)),
+        error: () => {
+          /* picker opcional — backend identifica o modelo pelo briefing */
+        },
+      });
   }
 
   ngOnDestroy(): void {
+    this.formSub?.unsubscribe();
+    this.recomendacaoSub?.unsubscribe();
     this.limparEscutaGeracao();
+    this.limparImagens();
+  }
+
+  protected setImagens(imagens: AiImagemAnexo[]): void {
+    this.imagens.set(imagens);
+  }
+
+  protected setErroImagem(msg: string | null): void {
+    if (msg) this.erro.set(msg);
+  }
+
+  protected rotuloStatus(status: string): string {
+    const map: Record<string, string> = {
+      AGUARDANDO_USUARIO: 'Aguardando respostas',
+      PRONTA_PARA_GERAR: 'Pronta para gerar',
+      GERANDO: 'Gerando',
+      PRONTA: 'Pronta',
+      ERRO: 'Erro',
+      CANCELADA: 'Cancelada',
+    };
+    return map[status] ?? status;
+  }
+
+  protected rotuloPapel(papel: string): string {
+    if (papel === 'USUARIO') return 'Você';
+    if (papel === 'ASSISTENTE') return 'Assistente';
+    return papel;
   }
 
   protected passoEstado(id: WizardPasso): 'active' | 'done' | 'todo' {
@@ -110,8 +240,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected iniciar(): void {
-    if (this.form.invalid) {
+    if (!this.briefingValido() || this.form.invalid || this.exigeConfirmacaoTemplate()) {
       this.form.markAllAsTouched();
+      if (!this.briefingValido()) {
+        this.erro.set('Informe um briefing com no mínimo 40 e no máximo 50.000 caracteres úteis.');
+      } else if (this.exigeConfirmacaoTemplate()) {
+        this.erro.set('Confirme um dos modelos sugeridos ou escolha outro modelo em Avançado.');
+      }
       return;
     }
     this.carregando.set(true);
@@ -121,10 +256,10 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.ai
       .criarSessao({
         objetivo: 'CRIAR_PAGINA',
-        briefing: this.form.controls.briefing.value.trim(),
+        briefing: this.briefingComImagens(),
         projetoId: qp.get('projetoId'),
         moduloId: qp.get('moduloId'),
-        templateId: qp.get('templateId'),
+        templateId: this.form.controls.templateId.value || qp.get('templateId'),
       })
       .subscribe({
         next: s => {
@@ -137,6 +272,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
           this.carregando.set(false);
         },
       });
+  }
+
+  protected selecionarTemplateRecomendado(templateId: string): void {
+    this.form.controls.templateId.setValue(templateId);
+    this.erro.set(null);
   }
 
   protected setResposta(id: string, valor: string): void {
@@ -205,6 +345,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       .subscribe({
         next: app => {
           this.carregando.set(false);
+          this.imagensStaging.stash(this.imagens().map(i => i.file));
           void this.router.navigate(['/doc-flow/paginas/novo'], {
             queryParams: compactQueryParams({
               projetoId: qp.get('projetoId') || s.projetoId,
@@ -236,6 +377,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected cancelar(): void {
     const s = this.sessao();
     if (!s) {
+      this.limparImagens();
+      this.imagensStaging.clear();
       void this.router.navigate(['/doc-flow/paginas']);
       return;
     }
@@ -243,6 +386,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.ai.cancelarSessao(s.id).subscribe({
       next: () => {
         this.carregando.set(false);
+        this.limparImagens();
+        this.imagensStaging.clear();
         void this.router.navigate(['/doc-flow/paginas']);
       },
       error: err => {
@@ -259,7 +404,29 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.respostas.set({});
     this.erro.set(null);
     this.gerando.set(false);
-    this.form.reset({ briefing: '' });
+    this.limparImagens();
+    this.imagensStaging.clear();
+    const templateId = this.form.controls.templateId.value;
+    this.form.reset({ briefing: '', templateId });
+  }
+
+  private briefingComImagens(): string {
+    const base = this.form.controls.briefing.value.trim();
+    const imgs = this.imagens();
+    if (!imgs.length) return base;
+    const lista = imgs.map(i => `- ${i.nome}`).join('\n');
+    return (
+      `${base}\n\n` +
+      `Imagens anexadas para o manual (inserir no HTML ao aplicar no editor; ` +
+      `use placeholders screen-placeholder referenciando estes nomes):\n${lista}`
+    );
+  }
+
+  private limparImagens(): void {
+    for (const img of this.imagens()) {
+      URL.revokeObjectURL(img.previewUrl);
+    }
+    this.imagens.set([]);
   }
 
   private ouvirGeracao(sessaoId: string): void {

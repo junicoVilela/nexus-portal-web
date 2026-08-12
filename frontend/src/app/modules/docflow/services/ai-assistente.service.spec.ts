@@ -62,14 +62,34 @@ describe('AiAssistenteService', () => {
     });
   });
 
+  it('solicita recomendação de modelo pelo briefing', () => {
+    service.recomendarTemplate({ briefing: 'consulta de pedidos com filtros' }).subscribe(r => {
+      expect(r.recomendado?.codigo).toBe('CONSULTA');
+    });
+
+    const req = http.expectOne(`${environment.aiApiUrl}/templates/recomendacao`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.briefing).toContain('consulta');
+    req.flush({
+      recomendado: {
+        templateId: 't1',
+        codigo: 'CONSULTA',
+        nome: 'Consulta',
+        descricao: null,
+        confianca: 0.91,
+        motivo: 'Termos compatíveis.',
+      },
+      candidatos: [],
+      exigeConfirmacao: false,
+    });
+  });
+
   it('gera rascunho em POST /sessoes/{id}/gerar', () => {
     service.gerar('11111111-1111-1111-1111-111111111111').subscribe(j => {
       expect(j.status).toBe('PENDENTE');
     });
 
-    const req = http.expectOne(
-      `${environment.aiApiUrl}/sessoes/11111111-1111-1111-1111-111111111111/gerar`,
-    );
+    const req = http.expectOne(`${environment.aiApiUrl}/sessoes/11111111-1111-1111-1111-111111111111/gerar`);
     expect(req.request.method).toBe('POST');
     req.flush({
       id: '22222222-2222-2222-2222-222222222222',
@@ -85,17 +105,20 @@ describe('AiAssistenteService', () => {
 
   it('eventosAi() abre stream SSE em /eventos', () => {
     const fetchSpy = spyOn(window, 'fetch').and.resolveTo(
-      new Response('event: ai-job\ndata: {"jobId":"j1","sessaoId":"s1","status":"SUCESSO","progresso":100}\n\n', {
-        status: 200,
-        headers: { 'Content-Type': 'text/event-stream' },
-      }),
+      new Response(
+        'event: ai-job\ndata: {"jobId":"j1","sessaoId":"s1","status":"SUCESSO","progresso":100}\n\n',
+        {
+          status: 200,
+          headers: { 'Content-Type': 'text/event-stream' },
+        },
+      ),
     );
 
     const eventos: unknown[] = [];
     const sub = service.eventosAi().subscribe(e => eventos.push(e));
 
     expect(fetchSpy).toHaveBeenCalled();
-    const url = (fetchSpy.calls.mostRecent().args[0] as string);
+    const url = fetchSpy.calls.mostRecent().args[0] as string;
     expect(url).toContain(`${environment.aiApiUrl}/eventos`);
     sub.unsubscribe();
   });

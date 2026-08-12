@@ -1,6 +1,6 @@
-# Nexus AI — Frontend
+# Assistente IA — Frontend (DocFlow)
 
-Módulo Angular **`modules/ai/`**, isolado do DocFlow para facilitar extração futura.
+A UI de IA vive **dentro do DocFlow** (`frontend/src/app/modules/docflow/`), não como módulo Angular separado.
 
 > Backend: `nexus-portal-api/docs/ai/README.md`  
 > Desenho: `nexus-portal-api/docs/doc-flow/10-assistente-ia-paginas.md`  
@@ -10,13 +10,12 @@ Módulo Angular **`modules/ai/`**, isolado do DocFlow para facilitar extração 
 
 ## Rotas
 
-Base: `/ai` (lazy em `app.routes.ts`).
+Base: `/doc-flow` (lazy em `app.routes.ts`). Redirect de compatibilidade: `/ai/**` → `/doc-flow/assistente`.
 
 | Rota | Tela | Status |
 |---|---|---|
-| `/ai` | Home + status do backend | ✅ |
-| `/ai/assistente` | Wizard Brief → Chat → Revisar | ✅ S3 |
-| `/ai/propostas` | Fila PR → propostas | 📋 S6 |
+| `/doc-flow/assistente` | Wizard Brief → Chat → Revisar | ✅ S3 |
+| `/doc-flow/propostas-ia` | Fila PR → propostas | 📋 S6 |
 
 **Entrada DocFlow:** lista de páginas → **Criar com IA** (`?origem=ia` → assistente).  
 Feature flag: `AiFeatureService` (`GET /ai/status`); CTAs ocultos se `enabled=false`.
@@ -26,24 +25,24 @@ Feature flag: `AiFeatureService` (`GET /ai/status`); CTAs ocultos se `enabled=fa
 ## Estrutura
 
 ```text
-frontend/src/app/modules/ai/
-├── ai.routes.ts
-├── shell/
-├── pages/{home,assistente,propostas}/
+frontend/src/app/modules/docflow/
+├── pages/{assistente,propostas-ia}/
 ├── components/{ai-perguntas,ai-proposta-preview}/
 ├── services/{ai-assistente,ai-feature}.service.ts
-└── models/
+└── models/ai-*.model.ts
 ```
 
 API base: `environment.aiApiUrl` (`/api/ai` → proxy → `/api/v1/ai`).
 
-Runbook local (backend): `nexus-portal-api/docs/ai/RUNBOOK-LOCAL.md`.  
+## Decisão de modelo e componentes
+
+- O wizard consulta `POST /api/ai/templates/recomendacao` após o debounce do briefing.
+- Alta confiança: seleção automática; baixa confiança: confirmação entre até três candidatos.
+- O usuário sempre pode forçar um modelo em **Avançado**.
+- A biblioteca do editor consulta `GET /api/doc-flow/paginas/blocos`; não existe mais catálogo
+  HTML duplicado no bundle Angular.
+- Se a API estiver desatualizada ou indisponível, a biblioteca mostra um erro operacional em vez
+  de “Nenhum bloco encontrado”.
+
+Runbook local (backend): `nexus-portal-api/docs/ai/RUNBOOK-LOCAL.md`.
 E2E: `frontend/e2e/ai-assistente-flow.spec.ts`.
-
----
-
-## Extração
-
-1. Apontar `aiApiUrl` para o host do serviço AI.
-2. Manter navegação para DocFlow via rotas absolutas (`/doc-flow/...`).
-3. Opcional: publicar o módulo como lib npm se o front também separar.

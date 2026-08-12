@@ -9,7 +9,7 @@ import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ToastService } from '@shared/ui';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
-import { AiFeatureService } from '@modules/ai/services/ai-feature.service';
+import { AiFeatureService } from '../../../services/ai-feature.service';
 import { PaginasComponent } from './paginas.component';
 
 describe('PaginasComponent', () => {

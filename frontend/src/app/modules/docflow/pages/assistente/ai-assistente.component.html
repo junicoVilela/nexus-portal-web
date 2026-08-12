@@ -1,0 +1,260 @@
+<div class="wiz">
+  <ui-page-header
+    title="Assistente de página"
+    subtitle="Cole o briefing, responda perguntas se necessário e revise a proposta antes de aplicar no editor."
+    icon="Sparkles"
+  >
+    <div actions class="wiz__header-actions">
+      @if (sessao(); as s) {
+        <ui-badge [tone]="pronta() ? 'success' : s.status === 'CANCELADA' ? 'neutral' : 'info'">
+          {{ rotuloStatus(s.status) }}
+        </ui-badge>
+      }
+      <a class="wiz__back" routerLink="/doc-flow/paginas">
+        <lucide-icon name="ArrowLeft" [size]="14" />
+        Voltar às páginas
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (!aiDisponivel() && featureReady()) {
+    <p class="wiz__msg wiz__msg--warn" role="alert">
+      O módulo AI está desabilitado no backend. O formulário manual de páginas continua disponível.
+    </p>
+  }
+
+  @if (erro()) {
+    <p class="wiz__msg wiz__msg--err" role="alert">{{ erro() }}</p>
+  }
+
+  <div class="wiz__body">
+    <aside class="wiz__steps" aria-label="Passos do assistente">
+      @for (passo of passos; track passo.id) {
+        <div
+          class="wiz__step"
+          [class.wiz__step--active]="passoEstado(passo.id) === 'active'"
+          [class.wiz__step--done]="passoEstado(passo.id) === 'done'"
+        >
+          <span class="wiz__step-num">
+            @if (passoEstado(passo.id) === 'done') {
+              <lucide-icon name="Check" [size]="14" />
+            } @else {
+              {{ passo.num }}
+            }
+          </span>
+          <span class="wiz__step-label">{{ passo.label }}</span>
+        </div>
+      }
+    </aside>
+
+    <main class="wiz__content">
+      @if (passoAtual() === 'brief') {
+        <ui-card padding="lg">
+          <h2 class="wiz__title">Passo 1 de 3 · Briefing</h2>
+          <p class="wiz__hint">
+            O sistema <strong>identifica o modelo da biblioteca</strong> que melhor combina com o contexto e preenche
+            esse modelo — sem inventar layout.
+          </p>
+
+          <form class="wiz__form" [formGroup]="form" (ngSubmit)="iniciar()">
+            <div class="wiz__field">
+              <label class="wiz__label" for="briefing">
+                Especificação, changelog ou descrição da tela
+                <span class="wiz__req">*</span>
+              </label>
+              <textarea
+                id="briefing"
+                class="wiz__input wiz__textarea"
+                formControlName="briefing"
+                rows="12"
+                placeholder="Ex.: Consulta de pedidos&#10;codigoTela: PED-CONSULTA&#10;Público operador. Fluxo: filtrar, listar e exportar…"
+              ></textarea>
+              <p class="wiz__field-hint" [class.wiz__field-hint--error]="briefingTamanho() > 0 && !briefingValido()">
+                {{ briefingTamanho() }} caracteres úteis · mínimo 40. Inclua título e codigoTela para pular perguntas.
+              </p>
+            </div>
+
+            @if (recomendandoTemplate()) {
+              <p class="wiz__field-hint">Analisando o texto e os modelos disponíveis…</p>
+            } @else if (templateSugerido(); as sugestao) {
+              <div class="wiz__callout wiz__callout--success">
+                <div>
+                  <strong>
+                    {{
+                      exigeConfirmacaoTemplate() ? 'Confirme o modelo sugerido' : 'Modelo identificado automaticamente'
+                    }}:
+                    {{ sugestao.nome }}
+                  </strong>
+                  <p>
+                    {{ (sugestao.confianca * 100).toFixed(0) }}% de confiança ·
+                    {{ sugestao.motivo }}
+                  </p>
+                  @if (exigeConfirmacaoTemplate()) {
+                    <div class="wiz__template-options">
+                      @for (candidato of recomendacaoTemplate()?.candidatos ?? []; track candidato.templateId) {
+                        <button
+                          type="button"
+                          class="wiz__template-option"
+                          (click)="selecionarTemplateRecomendado(candidato.templateId)"
+                        >
+                          <strong>{{ candidato.nome }}</strong>
+                          <span>{{ (candidato.confianca * 100).toFixed(0) }}%</span>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else if (briefingAtual().trim().length >= 20) {
+              <p class="wiz__field-hint">
+                Ainda sem correspondência clara. Você pode escolher em Avançado; sem escolha, o backend usa o melhor
+                modelo disponível e registra a decisão.
+              </p>
+            }
+
+            <details class="wiz__advanced">
+              <summary>Avançado: forçar um modelo da biblioteca</summary>
+              <div class="wiz__field">
+                <label class="wiz__label" for="templateId">Modelo</label>
+                <select id="templateId" class="wiz__input" formControlName="templateId">
+                  <option value="">Identificar automaticamente pelo contexto</option>
+                  @for (tpl of templates(); track tpl.id) {
+                    <option [value]="tpl.id">{{ tpl.nome }} · {{ tpl.codigo }}</option>
+                  }
+                </select>
+                @if (templateSelecionado(); as tpl) {
+                  <p class="wiz__field-hint">Forçado: {{ tpl.nome }}. A identificação automática fica desligada.</p>
+                }
+              </div>
+            </details>
+
+            <app-ai-imagens-dropzone
+              [imagens]="imagens()"
+              [disabled]="carregando()"
+              (imagensChange)="setImagens($event)"
+              (erroChange)="setErroImagem($event)"
+            />
+
+            <div class="wiz__footer">
+              <ui-button type="button" variant="ghost" (clicked)="cancelar()">Cancelar</ui-button>
+              <div class="wiz__footer-right">
+                <ui-button
+                  type="submit"
+                  variant="primary"
+                  icon="Sparkles"
+                  [loading]="carregando()"
+                  [disabled]="!podeIniciar()"
+                >
+                  Continuar
+                </ui-button>
+              </div>
+            </div>
+          </form>
+        </ui-card>
+      }
+
+      @if (passoAtual() === 'chat' && sessao(); as s) {
+        <ui-card padding="lg">
+          <h2 class="wiz__title">Passo 2 de 3 · Chat</h2>
+          <p class="wiz__hint">Responda as perguntas da triagem para a IA fechar o contexto da página.</p>
+
+          <div class="wiz__thread" aria-live="polite">
+            @for (msg of s.mensagens; track msg.id) {
+              <article class="wiz__bubble" [attr.data-papel]="msg.papel">
+                <header>{{ rotuloPapel(msg.papel) }}</header>
+                <p>{{ msg.conteudo }}</p>
+              </article>
+            }
+          </div>
+
+          @if (perguntasPendentes().length) {
+            <app-ai-perguntas
+              [perguntas]="perguntasPendentes()"
+              [respostas]="respostas()"
+              [loading]="carregando()"
+              (respostaChange)="setResposta($event.id, $event.valor)"
+              (enviar)="enviarRespostas()"
+            />
+          }
+
+          @if (prontaParaGerar()) {
+            <div class="wiz__callout wiz__callout--success">
+              <div>
+                <strong>Contexto suficiente</strong>
+                <p>Gere o rascunho HTML da página para revisar no próximo passo.</p>
+              </div>
+              <ui-button
+                type="button"
+                variant="primary"
+                icon="Sparkles"
+                [loading]="gerando()"
+                (clicked)="gerarRascunho()"
+              >
+                Gerar rascunho
+              </ui-button>
+            </div>
+          }
+
+          <div class="wiz__footer">
+            <ui-button type="button" variant="ghost" [loading]="carregando()" (clicked)="cancelar()">
+              Cancelar
+            </ui-button>
+            <div class="wiz__footer-right">
+              <ui-button type="button" variant="ghost" (clicked)="reiniciar()">Novo briefing</ui-button>
+            </div>
+          </div>
+        </ui-card>
+      }
+
+      @if (passoAtual() === 'revisar') {
+        <ui-card padding="lg">
+          <h2 class="wiz__title">Passo 3 de 3 · Revisar</h2>
+          <p class="wiz__hint">Confira a proposta e as imagens do manual antes de aplicar no editor.</p>
+          @if (modeloUsado(); as modelo) {
+            <p class="wiz__field-hint">
+              Modelo da biblioteca usado: <strong>{{ modelo.nome }}</strong> ({{ modelo.codigo }})
+            </p>
+          }
+
+          @if (gerando() && !proposta()) {
+            <div class="wiz__callout" role="status">
+              <lucide-icon name="Loader2" [size]="20" class="wiz__spin" />
+              <div>
+                <strong>Gerando rascunho…</strong>
+                <p>Acompanhamos o job via SSE, com polling como fallback.</p>
+              </div>
+            </div>
+          }
+
+          @if (proposta(); as p) {
+            <app-ai-proposta-preview
+              [proposta]="p"
+              [loading]="carregando()"
+              [regenerando]="gerando()"
+              (aplicar)="aplicarNoEditor()"
+              (regenerar)="gerarRascunho()"
+            />
+
+            <div class="wiz__section">
+              <app-ai-imagens-dropzone
+                [imagens]="imagens()"
+                [disabled]="carregando() || gerando()"
+                (imagensChange)="setImagens($event)"
+                (erroChange)="setErroImagem($event)"
+              />
+            </div>
+          }
+
+          <div class="wiz__footer">
+            <ui-button type="button" variant="ghost" [loading]="carregando()" (clicked)="cancelar()">
+              Cancelar
+            </ui-button>
+            <div class="wiz__footer-right">
+              <ui-button type="button" variant="ghost" (clicked)="reiniciar()">Nova sessão</ui-button>
+            </div>
+          </div>
+        </ui-card>
+      }
+    </main>
+  </div>
+</div>

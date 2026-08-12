@@ -1,6 +1,6 @@
 # 07 — Assistente de IA para Páginas (Frontend)
 
-> Status: **S3 em implementação** — wizard em `/ai/assistente`, CTA lista DocFlow, aplicar no `pagina-form`.  
+> Status: **S3** — wizard em `/doc-flow/assistente`, CTA lista DocFlow, aplicar no `pagina-form`.
 > Contrato backend: [`nexus-portal-api/docs/doc-flow/10-assistente-ia-paginas.md`](../../../nexus-portal-api/docs/doc-flow/10-assistente-ia-paginas.md)
 
 ---
@@ -9,7 +9,7 @@
 
 Permitir que o editor crie (Fase A) ou ajuste (Fase B) uma página do DocFlow a partir de um **briefing colado** e de um **diálogo curto** com a IA, sempre desembocando no `pagina-form` existente como `RASCUNHO` / conteúdo editável.
 
-**Módulo Angular isolado:** `frontend/src/app/modules/ai/` (rotas `/ai`).  
+**UI embutida no DocFlow:** `frontend/src/app/modules/docflow/` (rotas `/doc-flow/assistente`, `/doc-flow/propostas-ia`).
 Não substitui o editor: **preenche** o formulário e o HTML (navegação para `/doc-flow/paginas/...`).
 
 ---
@@ -46,12 +46,13 @@ Espelha o espírito do assistente de entrega (sidebar de passos), mas embutido n
 │          │  │ (textarea grande)                                    │   │
 │          │  └──────────────────────────────────────────────────────┘   │
 │          │                                                             │
-│          │  Contexto                                                   │
-│          │  Projeto [____]  Módulo [____]  Template (opc.) [____]      │
+│          │  Imagens do manual (anexar / arrastar · até 8 MB)           │
 │          │                                                             │
 │          │                    [Cancelar]              [Continuar →]    │
 └──────────┴─────────────────────────────────────────────────────────────┘
 ```
+
+As imagens ficam em staging no front; ao **Aplicar no editor**, o `pagina-form` faz upload (`POST /paginas/{id}/anexos`) e injeta `<figure class="photo">` no HTML.
 
 ### 3.2 Passo Chat
 

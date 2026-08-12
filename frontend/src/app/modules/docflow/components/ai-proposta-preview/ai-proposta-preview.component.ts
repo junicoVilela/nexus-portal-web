@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { BadgeComponent, ButtonComponent } from '@shared/ui';
 import { AiProposta } from '../../models/ai-proposta.model';
@@ -7,7 +8,7 @@ import { AiProposta } from '../../models/ai-proposta.model';
 @Component({
   selector: 'app-ai-proposta-preview',
   standalone: true,
-  imports: [BadgeComponent, ButtonComponent],
+  imports: [BadgeComponent, ButtonComponent, LucideAngularModule],
   templateUrl: './ai-proposta-preview.component.html',
   styleUrl: './ai-proposta-preview.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

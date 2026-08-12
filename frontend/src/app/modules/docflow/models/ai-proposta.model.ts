@@ -18,6 +18,7 @@ export interface AiProposta {
   conteudoHtml: string;
   templateId: string | null;
   templateVersao: number | null;
+  pageSpecJson?: string | null;
   aptoParaRevisao: boolean;
   qualidade: AiQualidadeItem[];
   status: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';

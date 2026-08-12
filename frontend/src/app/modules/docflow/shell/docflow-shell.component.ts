@@ -5,6 +5,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '@core/auth/services/auth.service';
 import { CommandPaletteService } from '@shared/ui';
 import { AjudaContextualComponent } from '../components/ajuda-contextual/ajuda-contextual.component';
+import { AiFeatureService } from '../services/ai-feature.service';
 
 interface DocFlowNavItem {
   helpId: string;
@@ -13,6 +14,7 @@ interface DocFlowNavItem {
   route: string[];
   exact?: boolean;
   permissao?: string;
+  requerAi?: boolean;
 }
 
 @Component({
@@ -26,6 +28,7 @@ interface DocFlowNavItem {
 export class DocflowShellComponent implements OnInit, OnDestroy {
   protected readonly auth = inject(AuthService);
   private readonly palette = inject(CommandPaletteService);
+  private readonly aiFeature = inject(AiFeatureService);
 
   private readonly navItemsTodos: DocFlowNavItem[] = [
     { helpId: 'dashboard', label: 'Dashboard', icon: 'BarChart2', route: ['/doc-flow'], exact: true },
@@ -56,6 +59,22 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
       icon: 'FileText',
       route: ['/doc-flow', 'paginas'],
       permissao: 'PAGINA:LER',
+    },
+    {
+      helpId: 'assistente',
+      label: 'Assistente IA',
+      icon: 'Sparkles',
+      route: ['/doc-flow', 'assistente'],
+      permissao: 'PAGINA:CRIAR',
+      requerAi: true,
+    },
+    {
+      helpId: 'propostas-ia',
+      label: 'Propostas IA',
+      icon: 'Inbox',
+      route: ['/doc-flow', 'propostas-ia'],
+      permissao: 'PAGINA:LER',
+      requerAi: true,
     },
     {
       helpId: 'revisoes',
@@ -97,16 +116,33 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
   /** Menu filtrado pelas permissões do usuário autenticado. */
   protected readonly navItems = computed<DocFlowNavItem[]>(() => {
     const tem = this.auth.tem();
-    return this.navItemsTodos.filter(item => !item.permissao || tem(item.permissao));
+    const aiOn = this.aiFeature.disponivel() || !this.aiFeature.ready();
+    return this.navItemsTodos.filter(
+      item =>
+        (!item.permissao || tem(item.permissao)) && (!item.requerAi || aiOn),
+    );
   });
 
   ngOnInit(): void {
+    this.aiFeature.ensureLoaded();
     this.palette.registerMany('doc-flow', [
       { id: 'df:dashboard', label: 'DocFlow — Dashboard', group: 'DocFlow', route: '/doc-flow' },
       { id: 'df:clientes', label: 'DocFlow — Clientes', group: 'DocFlow', route: '/doc-flow/clientes' },
       { id: 'df:projetos', label: 'DocFlow — Projetos', group: 'DocFlow', route: '/doc-flow/projetos' },
       { id: 'df:modulos', label: 'DocFlow — Módulos', group: 'DocFlow', route: '/doc-flow/modulos' },
       { id: 'df:paginas', label: 'DocFlow — Páginas', group: 'DocFlow', route: '/doc-flow/paginas' },
+      {
+        id: 'df:assistente',
+        label: 'DocFlow — Assistente IA',
+        group: 'DocFlow',
+        route: '/doc-flow/assistente',
+      },
+      {
+        id: 'df:propostas-ia',
+        label: 'DocFlow — Propostas IA',
+        group: 'DocFlow',
+        route: '/doc-flow/propostas-ia',
+      },
       {
         id: 'df:revisoes',
         label: 'DocFlow — Central de revisão',

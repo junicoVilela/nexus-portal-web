@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { instalarMocksAiAssistente } from './helpers/ai-api-fixtures';
 
-test.describe('Nexus AI — assistente (intercept, sem LLM)', () => {
+test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
   test('briefing → gerar → aplicar no editor', async ({ page }) => {
     await instalarMocksAiAssistente(page);
 
-    await page.goto('/ai/assistente');
+    await page.goto('/doc-flow/assistente');
     await expect(page.getByRole('heading', { name: 'Assistente de página' })).toBeVisible();
 
     const briefing =

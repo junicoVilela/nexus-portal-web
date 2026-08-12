@@ -27,6 +27,7 @@ import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ClienteService } from '@modules/docflow/services/cliente.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
+import { AiImagensStagingService } from '@modules/docflow/services/ai-imagens-staging.service';
 import { Modulo } from '@modules/docflow/models/modulo.model';
 import {
   Pagina,
@@ -69,7 +70,7 @@ import {
 import { PaginaMetaFieldsComponent } from '@modules/docflow/components/pagina-meta-fields';
 import { PaginaTemplatePickerComponent } from '@modules/docflow/components/pagina-template-picker';
 import { PaginaStatusBadgeComponent } from '@modules/docflow/components/pagina-status-badge';
-import { BlocoPagina, PaginaBlockLibraryComponent, blocoPorId } from '@modules/docflow/components/pagina-block-library';
+import { BlocoPagina, PaginaBlockLibraryComponent } from '@modules/docflow/components/pagina-block-library';
 import {
   PaginaSecaoVisual,
   PaginaSectionOrganizerComponent,
@@ -95,6 +96,7 @@ import {
   ContextoPlaceholdersPagina,
 } from '@modules/docflow/utils/pagina-placeholders.util';
 import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
+import { PaginaBlocoService } from '@modules/docflow/services/pagina-bloco.service';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
 type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
@@ -131,6 +133,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private readonly toast = inject(ToastService);
   private readonly auth = inject(AuthService);
   private readonly paginaDraftService = inject(PaginaDraftService);
+  private readonly aiImagensStaging = inject(AiImagensStagingService);
   private tabelasDecoradasAssinatura = '';
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
@@ -168,6 +171,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly diffConteudoAtual = signal('');
   protected readonly rascunhoSalvoEm = signal<Date | null>(null);
   protected readonly templates = signal<PaginaTemplate[]>([]);
+  protected readonly blocosCatalogo = signal<BlocoPagina[]>([]);
+  protected readonly catalogoBlocosIndisponivel = signal(false);
   protected readonly templateSelecionadoId = signal<string | null>(null);
   protected readonly templateOrigemId = signal<string | undefined>(undefined);
   protected readonly templateOrigemVersao = signal<number | undefined>(undefined);
@@ -344,6 +349,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     private readonly clienteService: ClienteService,
     private readonly moduloService: ModuloService,
     private readonly paginaService: PaginaService,
+    private readonly paginaBlocoService: PaginaBlocoService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly location: Location,
@@ -381,13 +387,20 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
           somenteContexto: true,
         })
         .pipe(catchError(() => of([] as PaginaTemplate[]))),
+      blocos: this.paginaBlocoService.listar().pipe(
+        catchError(() => {
+          this.catalogoBlocosIndisponivel.set(true);
+          return of([] as BlocoPagina[]);
+        }),
+      ),
     }).subscribe({
-      next: ({ projetos, clientes, modulos, paginas, pagina, templates }) => {
+      next: ({ projetos, clientes, modulos, paginas, pagina, templates, blocos }) => {
         this.projetos.set(projetos);
         this.clientes.set(clientes);
         this.todosModulos.set(modulos);
         this.paginas.set(paginas);
         this.templates.set(templates);
+        this.blocosCatalogo.set(blocos);
         if (pagina) {
           this.carregarPagina(pagina);
         } else {
@@ -707,7 +720,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private destacarPlaceholderNoCodigo(): void {
     this.editorModo.set('codigo');
     const html = this.form.controls.conteudoHtml.value ?? '';
-    const placeholder = /\{\{\s*[a-zA-Z0-9_.-]+\s*}}|\b(explique|descreva|informe|liste|registre aqui|nome do campo|escreva uma resposta)\b/i;
+    const placeholder =
+      /\{\{\s*[a-zA-Z0-9_.-]+\s*}}|\b(explique|descreva|informe|liste|registre aqui|nome do campo|escreva uma resposta)\b/i;
     const encontrado = html.match(placeholder);
     if (!encontrado || encontrado.index === undefined) return;
     window.setTimeout(() => {
@@ -1660,7 +1674,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   /**
-   * `?origem=ia` (CTA lista) → wizard `/ai/assistente`.
+   * `?origem=ia` (CTA lista) → wizard `/doc-flow/assistente`.
    * Se já houver `history.state` com proposta, permanece no form.
    */
   private redirecionarAssistenteSeOrigemIa(): boolean {
@@ -1673,7 +1687,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     if (state?.['origem'] === 'ai' && state?.['proposta']) return false;
 
     const qp = this.route.snapshot.queryParamMap;
-    void this.router.navigate(['/ai/assistente'], {
+    void this.router.navigate(docFlowRouterCommands(['assistente']), {
       replaceUrl: true,
       queryParams: compactQueryParams({
         projetoId: qp.get('projetoId'),
@@ -1685,10 +1699,11 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     return true;
   }
 
-  /** Hidrata o form a partir do assistente Nexus AI (`router.navigate` com state). */
+  /** Hidrata o form a partir do assistente IA do DocFlow (`router.navigate` com state). */
   private aplicarPropostaAiSePresente(): void {
-    const state = this.router.getCurrentNavigation()?.extras.state
-      ?? (typeof history !== 'undefined' ? history.state : null);
+    const state =
+      this.router.getCurrentNavigation()?.extras.state ??
+      (typeof history !== 'undefined' ? history.state : null);
     const proposta = state?.['proposta'] as
       | {
           titulo?: string;
@@ -1729,11 +1744,37 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.justSaved = false;
     this.form.markAsDirty();
     this.toast.success('Proposta da IA aplicada no editor. Revise antes de salvar.');
+    void this.anexarImagensAiStaging();
+  }
+
+  /** Imagens arrastadas no assistente → upload DocFlow + insert no HTML. */
+  private async anexarImagensAiStaging(): Promise<void> {
+    const files = this.aiImagensStaging.consume();
+    if (!files.length) return;
+    const paginaId = await this.garantirRascunhoParaAnexos();
+    if (!paginaId) {
+      this.toast.error(
+        'Proposta aplicada, mas as imagens não puderam ser anexadas. Use o botão Foto na toolbar.',
+      );
+      return;
+    }
+    try {
+      const snippets = await Promise.all(files.map(file => this.uploadImagem(paginaId, file)));
+      this.inserirHtml(`\n${snippets.join('\n')}\n`);
+      this.toast.success(
+        files.length === 1
+          ? 'Imagem do assistente anexada ao manual.'
+          : `${files.length} imagens do assistente anexadas.`,
+      );
+    } catch (error) {
+      this.toast.error(this.mensagemErro(error, 'Erro ao anexar imagens do assistente.'));
+    }
   }
 
   private aplicarTipoPaginaInicial(): void {
     const tipo = this.route.snapshot.queryParamMap.get('tipoPagina');
-    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice' && tipo !== 'menu') return;
+    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice' && tipo !== 'menu')
+      return;
 
     const config = {
       lista: {
@@ -1778,7 +1819,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.form.controls.resumo.setValue(config.resumo, { emitEvent: false });
     }
 
-    const kit = blocoPorId(config.kitId);
+    const kit = this.blocosCatalogo().find(bloco => bloco.id === config.kitId);
     if (!kit) return;
     const html = aplicarPlaceholdersConteudo(kit.html, this.contextoPlaceholders());
     this.form.controls.conteudoHtml.setValue(html, { emitEvent: false });
@@ -1903,7 +1944,10 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       const htmlAtual = lista[0].conteudoHtml ?? '';
       this.diffConteudoAnterior.set(htmlAnterior);
       this.diffConteudoAtual.set(htmlAtual);
-      const linhas = await diffLinhasPalavras(htmlAnterior || lista[1].titulo || '', htmlAtual || lista[0].titulo || '');
+      const linhas = await diffLinhasPalavras(
+        htmlAnterior || lista[1].titulo || '',
+        htmlAtual || lista[0].titulo || '',
+      );
       this.diffLinhas.set(linhas);
     } else {
       this.diffConteudoAnterior.set('');

@@ -1,6 +1,9 @@
 <div class="ai-proposta">
   <header class="ai-proposta__header">
-    <h2>Proposta</h2>
+    <div>
+      <p class="ai-proposta__eyebrow">Proposta gerada</p>
+      <h3 class="ai-proposta__title">{{ proposta().titulo }}</h3>
+    </div>
     <ui-badge [tone]="proposta().aptoParaRevisao ? 'success' : 'warn'">
       Qualidade: {{ proposta().aptoParaRevisao ? 'apta' : 'com pendências' }}
       @if (qualidadeTotal()) {
@@ -10,15 +13,23 @@
   </header>
 
   <dl class="ai-proposta__meta">
-    <div><dt>Título</dt><dd>{{ proposta().titulo }}</dd></div>
-    <div><dt>Código</dt><dd>{{ proposta().codigoTela }}</dd></div>
-    <div><dt>Slug</dt><dd>{{ proposta().slug }}</dd></div>
-    <div><dt>Resumo</dt><dd>{{ proposta().resumo || '—' }}</dd></div>
+    <div>
+      <dt>Código</dt>
+      <dd><code>{{ proposta().codigoTela }}</code></dd>
+    </div>
+    <div>
+      <dt>Slug</dt>
+      <dd><code>{{ proposta().slug }}</code></dd>
+    </div>
+    <div class="ai-proposta__meta--wide">
+      <dt>Resumo</dt>
+      <dd>{{ proposta().resumo || '—' }}</dd>
+    </div>
   </dl>
 
   <div class="ai-proposta__body">
     <div class="ai-proposta__preview-col">
-      <h3>Preview</h3>
+      <h4 class="ai-proposta__section-title">Preview</h4>
       @if (previewHtml(); as html) {
         <div class="ai-proposta__preview df-doc-content" [innerHTML]="html"></div>
       } @else {
@@ -26,18 +37,24 @@
       }
     </div>
 
-    <aside class="ai-proposta__checklist" aria-label="Checklist de qualidade">
-      <h3>Checklist</h3>
+    <aside
+      class="ai-proposta__checklist"
+      [class.ai-proposta__checklist--ready]="proposta().aptoParaRevisao"
+      aria-label="Checklist de qualidade"
+    >
+      <h4 class="ai-proposta__section-title">Checklist</h4>
       @if (!proposta().qualidade.length) {
         <p class="ai-proposta__empty">Nenhum item de qualidade retornado.</p>
       } @else {
         <ul>
           @for (item of proposta().qualidade; track item.codigo) {
-            <li [attr.data-ok]="item.ok">
-              <span class="ai-proposta__check" aria-hidden="true">{{ item.ok ? '✓' : '!' }}</span>
+            <li [class.ai-proposta__item--ok]="item.ok">
+              <span class="ai-proposta__check" aria-hidden="true">
+                <lucide-icon [name]="item.ok ? 'Check' : 'AlertTriangle'" [size]="12" />
+              </span>
               <div>
                 <strong>{{ item.titulo }}</strong>
-                <p>{{ item.descricao }}</p>
+                <small>{{ item.descricao }}</small>
               </div>
             </li>
           }

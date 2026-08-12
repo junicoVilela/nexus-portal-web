@@ -1482,6 +1482,169 @@ export type PublicacaoEventoResponse = {
   versao?: string;
 };
 
+export type AiTemplateCandidatoResponse = {
+  templateId?: string;
+  codigo?: string;
+  nome?: string;
+  descricao?: string;
+  confianca?: number;
+  motivo?: string;
+};
+
+export type AiTemplateRecomendacaoRequest = {
+  briefing: string;
+  projetoId?: string;
+  clienteId?: string;
+};
+
+export type AiTemplateRecomendacaoResponse = {
+  recomendado?: AiTemplateCandidatoResponse;
+  candidatos?: Array<AiTemplateCandidatoResponse>;
+  exigeConfirmacao?: boolean;
+};
+
+export type PaginaBlocoResponse = {
+  id?: string;
+  nome?: string;
+  descricao?: string;
+  categoria?: string;
+  visual?: string;
+  html?: string;
+  parametrizacao?: string;
+  versao?: number;
+  slots?: Array<PaginaBlocoSlotResponse>;
+};
+
+export type PaginaBlocoSlotResponse = {
+  id?: string;
+  elemento?: string;
+  classeCss?: string;
+  textoPadrao?: string;
+};
+
+export type AiPropostaResponse = {
+  id?: string;
+  sessaoId?: string;
+  jobId?: string;
+  tipo?: 'NOVA' | 'ATUALIZACAO';
+  titulo?: string;
+  slug?: string;
+  codigoTela?: string;
+  resumo?: string;
+  conteudoHtml?: string;
+  templateId?: string;
+  templateVersao?: number;
+  pageSpecJson?: string;
+  aptoParaRevisao?: boolean;
+  qualidade?: Array<AiQualidadeItemResponse>;
+  status?: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';
+  paginaId?: string;
+  createdAt?: string;
+};
+
+export type AiQualidadeItemResponse = {
+  codigo?: string;
+  titulo?: string;
+  descricao?: string;
+  ok?: boolean;
+  severidade?: string;
+};
+
+export type CriarAiSessaoRequest = {
+  objetivo: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
+  briefing: string;
+  projetoId?: string;
+  moduloId?: string;
+  clienteId?: string;
+  templateId?: string;
+  paginaId?: string;
+};
+
+export type AiMensagemResponse = {
+  id?: string;
+  papel?: 'USUARIO' | 'ASSISTENTE' | 'SISTEMA';
+  conteudo?: string;
+  perguntas?: Array<AiPerguntaResponse>;
+  ordem?: number;
+  createdAt?: string;
+};
+
+export type AiPerguntaResponse = {
+  id?: string;
+  texto?: string;
+  opcoes?: Array<string>;
+  obrigatoria?: boolean;
+};
+
+export type AiSessaoResponse = {
+  id?: string;
+  objetivo?: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
+  status?:
+    | 'ABERTA'
+    | 'AGUARDANDO_USUARIO'
+    | 'PRONTA_PARA_GERAR'
+    | 'GERANDO'
+    | 'PRONTA'
+    | 'APLICADA'
+    | 'CANCELADA'
+    | 'ERRO';
+  projetoId?: string;
+  moduloId?: string;
+  clienteId?: string;
+  paginaId?: string;
+  templateId?: string;
+  briefing?: string;
+  mensagens?: Array<AiMensagemResponse>;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AiMensagemRequest = {
+  conteudo: string;
+  respostas?: {
+    [key: string]: string;
+  };
+};
+
+export type AiJobResponse = {
+  id?: string;
+  sessaoId?: string;
+  tipo?: 'TRIAGEM' | 'GERAR_RASCUNHO' | 'AJUSTAR';
+  status?: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO';
+  erroMensagem?: string;
+  modelo?: string;
+  startedAt?: string;
+  finishedAt?: string;
+};
+
+export type AplicarAiPropostaRequest = {
+  modo: 'FORM' | 'PERSISTIR';
+  moduloId?: string;
+  parentId?: string;
+};
+
+export type AiAplicacaoResponse = {
+  modo?: string;
+  propostaId?: string;
+  paginaId?: string;
+  titulo?: string;
+  slug?: string;
+  codigoTela?: string;
+  resumo?: string;
+  conteudoHtml?: string;
+  templateOrigemId?: string;
+  templateOrigemVersao?: number;
+  moduloId?: string;
+};
+
+export type AiStatusResponse = {
+  enabled?: boolean;
+  prontoParaGerar?: boolean;
+  provider?: string;
+  model?: string;
+  mensagem?: string;
+};
+
 export type ExcluirData = {
   body?: never;
   path: {
@@ -5725,3 +5888,175 @@ export type EventosPublicacaoResponses = {
 };
 
 export type EventosPublicacaoResponse = EventosPublicacaoResponses[keyof EventosPublicacaoResponses];
+
+export type RecomendarData = {
+  body: AiTemplateRecomendacaoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/templates/recomendacao';
+};
+
+export type RecomendarResponses = {
+  /**
+   * OK
+   */
+  200: AiTemplateRecomendacaoResponse;
+};
+
+export type RecomendarResponse = RecomendarResponses[keyof RecomendarResponses];
+
+export type BlocosData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/blocos';
+};
+
+export type BlocosResponses = {
+  /**
+   * OK
+   */
+  200: Array<PaginaBlocoResponse>;
+};
+
+export type BlocosResponse = BlocosResponses[keyof BlocosResponses];
+
+export type Criar19Data = {
+  body: CriarAiSessaoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/sessoes';
+};
+
+export type Criar19Responses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type Criar19Response = Criar19Responses[keyof Criar19Responses];
+
+export type EnviarMensagemData = {
+  body: AiMensagemRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/mensagens';
+};
+
+export type EnviarMensagemResponses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type EnviarMensagemResponse = EnviarMensagemResponses[keyof EnviarMensagemResponses];
+
+export type Gerar12Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/gerar';
+};
+
+export type Gerar12Responses = {
+  /**
+   * OK
+   */
+  200: AiJobResponse;
+};
+
+export type Gerar12Response = Gerar12Responses[keyof Gerar12Responses];
+
+export type Cancelar2Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/cancelar';
+};
+
+export type Cancelar2Responses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type Cancelar2Response = Cancelar2Responses[keyof Cancelar2Responses];
+
+export type AplicarData = {
+  body: AplicarAiPropostaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/aplicar';
+};
+
+export type AplicarResponses = {
+  /**
+   * OK
+   */
+  200: AiAplicacaoResponse;
+};
+
+export type AplicarResponse = AplicarResponses[keyof AplicarResponses];
+
+export type StatusData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/status';
+};
+
+export type StatusResponses = {
+  /**
+   * OK
+   */
+  200: AiStatusResponse;
+};
+
+export type StatusResponse = StatusResponses[keyof StatusResponses];
+
+export type Buscar19Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}';
+};
+
+export type Buscar19Responses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type Buscar19Response = Buscar19Responses[keyof Buscar19Responses];
+
+export type PropostaData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/proposta';
+};
+
+export type PropostaResponses = {
+  /**
+   * OK
+   */
+  200: AiPropostaResponse;
+};
+
+export type PropostaResponse = PropostaResponses[keyof PropostaResponses];

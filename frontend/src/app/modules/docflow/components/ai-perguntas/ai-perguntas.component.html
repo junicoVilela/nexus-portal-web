@@ -1,0 +1,50 @@
+<div class="ai-perguntas">
+  <h3 class="ai-perguntas__title">Perguntas da triagem</h3>
+  <div class="ai-perguntas__fields">
+    @for (p of perguntas(); track p.id) {
+      <div class="ai-perguntas__field">
+        <label class="ai-perguntas__label" [attr.for]="'q-' + p.id">
+          {{ p.texto }}
+          @if (p.obrigatoria) {
+            <span class="ai-perguntas__req">*</span>
+          }
+        </label>
+        @if (p.opcoes.length) {
+          <select
+            class="ai-perguntas__control"
+            [id]="'q-' + p.id"
+            [value]="respostas()[p.id] || ''"
+            [disabled]="disabled()"
+            (change)="setResposta(p.id, $any($event.target).value)"
+          >
+            <option value="" disabled>Selecione…</option>
+            @for (op of p.opcoes; track op) {
+              <option [value]="op">{{ op }}</option>
+            }
+          </select>
+        } @else {
+          <input
+            class="ai-perguntas__control"
+            [id]="'q-' + p.id"
+            type="text"
+            [value]="respostas()[p.id] || ''"
+            [disabled]="disabled()"
+            (input)="setResposta(p.id, $any($event.target).value)"
+          />
+        }
+      </div>
+    }
+  </div>
+  <div class="ai-perguntas__actions">
+    <ui-button
+      type="button"
+      variant="primary"
+      icon="Send"
+      [loading]="loading()"
+      [disabled]="disabled()"
+      (clicked)="enviar.emit()"
+    >
+      Enviar respostas
+    </ui-button>
+  </div>
+</div>

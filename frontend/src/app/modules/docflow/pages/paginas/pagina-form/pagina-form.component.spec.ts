@@ -21,6 +21,24 @@ describe('PaginaFormComponent (smoke)', () => {
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([]), lucideTestIcons],
     }).compileComponents();
     fixture = TestBed.createComponent(PaginaFormComponent);
+    fixture.componentInstance['blocosCatalogo'].set([
+      {
+        id: 'kit-editar',
+        nome: 'Kit editar',
+        descricao: 'Edição',
+        categoria: 'Kits',
+        visual: 'kit',
+        html: '<section><h2>Campos editáveis</h2></section>',
+      },
+      {
+        id: 'kit-menu',
+        nome: 'Kit menu',
+        descricao: 'Menu',
+        categoria: 'Kits',
+        visual: 'kit',
+        html: '<section><h2>Guias disponíveis</h2><div class="resource-list"></div></section>',
+      },
+    ]);
     fixture.detectChanges();
   });
 
@@ -400,10 +418,7 @@ describe('PaginaFormComponent (smoke)', () => {
 
   it('exibe subtítulo de subpágina quando parentId está definido', () => {
     const component = fixture.componentInstance;
-    component['paginas'].set([
-      paginaRascunho(),
-      { ...paginaRascunho(), id: 'pai-1', titulo: 'Operações' },
-    ]);
+    component['paginas'].set([paginaRascunho(), { ...paginaRascunho(), id: 'pai-1', titulo: 'Operações' }]);
     component['form'].controls.parentId.setValue('pai-1');
     expect(component['subtituloCabecalho']()).toBe('Subpágina de Operações');
   });
@@ -492,10 +507,7 @@ describe('PaginaFormComponent (smoke)', () => {
       const component = fixture.componentInstance;
       const savedAt = new Date();
       spyOn(component['paginaDraftService'], 'salvar').and.returnValue(savedAt);
-      const autosalvar = spyOn(
-        component as unknown as { autosalvarServidor(): void },
-        'autosalvarServidor',
-      );
+      const autosalvar = spyOn(component as unknown as { autosalvarServidor(): void }, 'autosalvarServidor');
 
       component['inicializarAutoSave']();
       component['form'].controls.titulo.setValue('Título alterado');

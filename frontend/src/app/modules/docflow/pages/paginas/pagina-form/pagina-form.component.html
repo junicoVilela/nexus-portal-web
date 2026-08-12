@@ -258,7 +258,11 @@
       <div
         id="pagina-conteudo"
         class="pf-editor pf-workflow-anchor"
-        [class.pf-attention]="['CONTEUDO', 'PLACEHOLDERS', 'IMAGENS_ALT', 'IMAGENS_ORIGEM', 'LINKS', 'SECOES', 'TITULOS'].includes(pendenciaDestacada() ?? '')"
+        [class.pf-attention]="
+          ['CONTEUDO', 'PLACEHOLDERS', 'IMAGENS_ALT', 'IMAGENS_ORIGEM', 'LINKS', 'SECOES', 'TITULOS'].includes(
+            pendenciaDestacada() ?? ''
+          )
+        "
         tabindex="-1"
       >
         <div class="pf-editor-head">
@@ -354,6 +358,8 @@
           (removerColunaTabela)="removerColunaTabela()"
         />
         <app-pagina-block-library
+          [blocosCatalogo]="blocosCatalogo()"
+          [catalogoIndisponivel]="catalogoBlocosIndisponivel()"
           (mousedown)="preservarSelecaoEditor()"
           (blocoSelecionado)="inserirBloco($event)"
         />
@@ -416,13 +422,7 @@
                   >
                     {{ organizandoSecoes() ? 'Concluir organização' : 'Organizar seções' }}
                   </ui-button>
-                  <ui-button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    icon="Printer"
-                    (clicked)="imprimirPreview()"
-                  >
+                  <ui-button type="button" size="sm" variant="ghost" icon="Printer" (clicked)="imprimirPreview()">
                     Imprimir
                   </ui-button>
                   <ui-button
@@ -502,7 +502,13 @@
                 ><small>{{ item.descricao }}</small></span
               >
               @if (!item.ok) {
-                <button type="button" class="pf-quality__fix" (click)="$event.stopPropagation(); corrigirPendencia(item.codigo)">Corrigir</button>
+                <button
+                  type="button"
+                  class="pf-quality__fix"
+                  (click)="$event.stopPropagation(); corrigirPendencia(item.codigo)"
+                >
+                  Corrigir
+                </button>
               }
             </div>
           }

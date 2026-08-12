@@ -1,0 +1,72 @@
+<div class="ai-drop">
+  <p class="ai-drop__label">Imagens do manual</p>
+  <p class="ai-drop__hint">
+    Anexe ou arraste capturas que devem aparecer na página. Elas entram no editor ao aplicar a proposta.
+  </p>
+
+  <div
+    class="ai-drop__zone"
+    [class.ai-drop__zone--active]="arrastando()"
+    [class.ai-drop__zone--disabled]="disabled()"
+    role="button"
+    tabindex="0"
+    [attr.aria-disabled]="disabled()"
+    (click)="abrirSeletor()"
+    (keydown.enter)="abrirSeletor()"
+    (keydown.space)="$event.preventDefault(); abrirSeletor()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    <lucide-icon name="CloudUpload" [size]="28" />
+    <div>
+      <strong>Arraste imagens aqui</strong>
+      <span>ou clique para selecionar · PNG, JPG, WEBP · até 8 MB</span>
+    </div>
+    <span (click)="$event.stopPropagation()">
+      <ui-button
+        type="button"
+        variant="secondary"
+        size="sm"
+        icon="Upload"
+        [disabled]="disabled()"
+        (clicked)="abrirSeletor()"
+      >
+        Escolher arquivos
+      </ui-button>
+    </span>
+  </div>
+
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    multiple
+    hidden
+    [disabled]="disabled()"
+    (change)="onFileInput($event)"
+  />
+
+  @if (imagens().length) {
+    <ul class="ai-drop__list" aria-label="Imagens anexadas">
+      @for (img of imagens(); track img.id) {
+        <li class="ai-drop__item">
+          <img [src]="img.previewUrl" [alt]="img.nome" />
+          <div class="ai-drop__meta">
+            <span class="ai-drop__name" [title]="img.nome">{{ img.nome }}</span>
+            <span class="ai-drop__size">{{ tamanhoKb(img.tamanhoBytes) }}</span>
+          </div>
+          <button
+            type="button"
+            class="ai-drop__remove"
+            [disabled]="disabled()"
+            (click)="$event.stopPropagation(); remover(img.id)"
+            [attr.aria-label]="'Remover ' + img.nome"
+          >
+            <lucide-icon name="X" [size]="16" />
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -5,7 +5,7 @@ import { AiStatus } from '../models/ai-status.model';
 import { AiAssistenteService } from './ai-assistente.service';
 
 /**
- * Feature flag runtime do módulo AI (`GET /ai/status`).
+ * Feature flag runtime do assistente IA no DocFlow (`GET /ai/status`).
  * CTAs DocFlow / nav só aparecem quando {@code enabled=true}.
  */
 @Injectable({ providedIn: 'root' })

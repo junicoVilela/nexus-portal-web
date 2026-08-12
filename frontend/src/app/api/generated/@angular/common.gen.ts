@@ -36,6 +36,8 @@ import type {
   AnexarResponse,
   AnexosData,
   AnexosResponse,
+  AplicarData,
+  AplicarResponse,
   AplicarTemplateData,
   AplicarTemplateResponse,
   AprovarData,
@@ -98,6 +100,8 @@ import type {
   BaixarAnexoResponse,
   BibliotecaAnexosData,
   BibliotecaAnexosResponse,
+  BlocosData,
+  BlocosResponse,
   Buscar10Data,
   Buscar10Response,
   Buscar11Data,
@@ -116,6 +120,8 @@ import type {
   Buscar17Response,
   Buscar18Data,
   Buscar18Response,
+  Buscar19Data,
+  Buscar19Response,
   Buscar1Data,
   Buscar1Response,
   Buscar2Data,
@@ -140,6 +146,8 @@ import type {
   CalcularResponse,
   Cancelar1Data,
   Cancelar1Response,
+  Cancelar2Data,
+  Cancelar2Response,
   CancelarData,
   CancelarResponse,
   ChangelogData,
@@ -166,6 +174,8 @@ import type {
   Criar16Response,
   Criar17Data,
   Criar17Response,
+  Criar19Data,
+  Criar19Response,
   Criar1Data,
   Criar1Response,
   Criar2Data,
@@ -218,6 +228,8 @@ import type {
   DuplicarTemplateResponse,
   EmitirTokenDownloadData,
   EmitirTokenDownloadResponse,
+  EnviarMensagemData,
+  EnviarMensagemResponse,
   EnviarRevisaoData,
   EnviarRevisaoResponse,
   EventosPaginaData,
@@ -264,6 +276,8 @@ import type {
   ExcluirTemplateResponse,
   FuncionalidadesData,
   FuncionalidadesResponse,
+  Gerar12Data,
+  Gerar12Response,
   Gerar1Data,
   Gerar1Response,
   Gerar2Data,
@@ -368,6 +382,8 @@ import type {
   PreviewHtmlData,
   PreviewHtmlResponse,
   PreviewResponse,
+  PropostaData,
+  PropostaResponse,
   Publicar1Data,
   Publicar1Response,
   PublicarData,
@@ -381,6 +397,8 @@ import type {
   ReceberData,
   RecentesData,
   RecentesResponse,
+  RecomendarData,
+  RecomendarResponse,
   ReentregarData,
   ReentregarResponse,
   RegistrarAjudaEventoData,
@@ -435,6 +453,8 @@ import type {
   SalvarRascunhoData,
   SalvarRascunhoResponse,
   SalvarResponse,
+  StatusData,
+  StatusResponse,
   TemplatesData,
   TemplatesResponse,
   TestarData,
@@ -2763,6 +2783,106 @@ export const eventosPublicacaoRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const recomendarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<RecomendarData, ThrowOnError>,
+): HttpRequest<RecomendarResponse> =>
+  (options?.client ?? client).requestOptions<RecomendarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/templates/recomendacao',
+    ...options,
+  });
+
+export const blocosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<BlocosData, ThrowOnError>,
+): HttpRequest<BlocosResponse> =>
+  (options?.client ?? client).requestOptions<BlocosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/blocos',
+    ...options,
+  });
+
+export const criar19Request = <ThrowOnError extends boolean = false>(
+  options: Options<Criar19Data, ThrowOnError>,
+): HttpRequest<Criar19Response> =>
+  (options?.client ?? client).requestOptions<Criar19Response, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes',
+    ...options,
+  });
+
+export const enviarMensagemRequest = <ThrowOnError extends boolean = false>(
+  options: Options<EnviarMensagemData, ThrowOnError>,
+): HttpRequest<EnviarMensagemResponse> =>
+  (options?.client ?? client).requestOptions<EnviarMensagemResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/mensagens',
+    ...options,
+  });
+
+export const gerar1Request2 = <ThrowOnError extends boolean = false>(
+  options: Options<Gerar12Data, ThrowOnError>,
+): HttpRequest<Gerar12Response> =>
+  (options?.client ?? client).requestOptions<Gerar12Response, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/gerar',
+    ...options,
+  });
+
+export const cancelar2Request = <ThrowOnError extends boolean = false>(
+  options: Options<Cancelar2Data, ThrowOnError>,
+): HttpRequest<Cancelar2Response> =>
+  (options?.client ?? client).requestOptions<Cancelar2Response, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/cancelar',
+    ...options,
+  });
+
+export const aplicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AplicarData, ThrowOnError>,
+): HttpRequest<AplicarResponse> =>
+  (options?.client ?? client).requestOptions<AplicarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/aplicar',
+    ...options,
+  });
+
+export const statusRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<StatusData, ThrowOnError>,
+): HttpRequest<StatusResponse> =>
+  (options?.client ?? client).requestOptions<StatusResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/status',
+    ...options,
+  });
+
+export const buscar19Request = <ThrowOnError extends boolean = false>(
+  options: Options<Buscar19Data, ThrowOnError>,
+): HttpRequest<Buscar19Response> =>
+  (options?.client ?? client).requestOptions<Buscar19Response, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/sessoes/{id}',
+    ...options,
+  });
+
+export const propostaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<PropostaData, ThrowOnError>,
+): HttpRequest<PropostaResponse> =>
+  (options?.client ?? client).requestOptions<PropostaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
 export const excluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<ExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -4601,4 +4721,84 @@ export const eventosPublicacaoResource = <ThrowOnError extends boolean = false>(
   httpResource<EventosPublicacaoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? eventosPublicacaoRequest(opts) : undefined;
+  });
+
+export const recomendarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<RecomendarData, ThrowOnError> | undefined,
+) =>
+  httpResource<RecomendarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? recomendarRequest(opts) : undefined;
+  });
+
+export const blocosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<BlocosData, ThrowOnError> | undefined,
+) =>
+  httpResource<BlocosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? blocosRequest(opts) : undefined;
+  });
+
+export const criar19Resource = <ThrowOnError extends boolean = false>(
+  options: () => Options<Criar19Data, ThrowOnError> | undefined,
+) =>
+  httpResource<Criar19Response>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? criar19Request(opts) : undefined;
+  });
+
+export const enviarMensagemResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<EnviarMensagemData, ThrowOnError> | undefined,
+) =>
+  httpResource<EnviarMensagemResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? enviarMensagemRequest(opts) : undefined;
+  });
+
+export const gerar1Resource2 = <ThrowOnError extends boolean = false>(
+  options: () => Options<Gerar12Data, ThrowOnError> | undefined,
+) =>
+  httpResource<Gerar12Response>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? gerar1Request2(opts) : undefined;
+  });
+
+export const cancelar2Resource = <ThrowOnError extends boolean = false>(
+  options: () => Options<Cancelar2Data, ThrowOnError> | undefined,
+) =>
+  httpResource<Cancelar2Response>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? cancelar2Request(opts) : undefined;
+  });
+
+export const aplicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AplicarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AplicarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aplicarRequest(opts) : undefined;
+  });
+
+export const statusResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<StatusData, ThrowOnError> | undefined,
+) =>
+  httpResource<StatusResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? statusRequest(opts) : undefined;
+  });
+
+export const buscar19Resource = <ThrowOnError extends boolean = false>(
+  options: () => Options<Buscar19Data, ThrowOnError> | undefined,
+) =>
+  httpResource<Buscar19Response>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? buscar19Request(opts) : undefined;
+  });
+
+export const propostaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<PropostaData, ThrowOnError> | undefined,
+) =>
+  httpResource<PropostaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? propostaRequest(opts) : undefined;
   });
