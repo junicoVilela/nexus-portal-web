@@ -12,10 +12,12 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
       buffer: Buffer.from('# Cadastro\n\n## Listagem\n\nA tela apresenta filtros e registros.'),
     });
 
-    await expect(page.getByText('Plano pronto para revisão')).toBeVisible();
+    await expect(page.getByText('Estrutura sugerida para revisão')).toBeVisible();
     await expect(page.getByText('Cadastro de produto')).toBeVisible();
     await expect(page.getByText('1.1')).toBeVisible();
-    await page.getByRole('button', { name: 'Usar no briefing' }).click();
+    await page.getByRole('button', { name: 'Criar estrutura e continuar' }).click();
+    await expect(page.getByText('Projeto e módulos confirmados')).toBeVisible();
+    await page.getByRole('button', { name: 'Gerar esta página' }).click();
 
     await expect(page.locator('#briefing')).toHaveValue(/### Página: Listagem de registros/);
     await expect(page.getByRole('button', { name: 'Em edição' })).toBeVisible();
@@ -31,7 +33,7 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
       'Consulta de pedidos\ncodigoTela: PED-CONSULTA\n' +
       'Público operador. Fluxo completo para filtrar e exportar pedidos.';
     await page.locator('#briefing').fill(briefing);
-    await page.getByRole('button', { name: 'Continuar' }).click();
+    await page.getByRole('button', { name: 'Analisar página' }).click();
 
     await expect(page.getByText('Passo 2 de 3')).toBeVisible();
     await page.getByRole('button', { name: 'Gerar rascunho' }).click();

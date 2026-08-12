@@ -86,6 +86,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly templateIdAtual = signal('');
   protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
   protected readonly recomendandoTemplate = signal(false);
+  private readonly paginaImportadaContexto = signal<{
+    projetoId: string;
+    moduloId: string;
+    clienteId: string | null;
+  } | null>(null);
   protected readonly aiDisponivel = this.feature.disponivel;
   protected readonly featureReady = this.feature.ready;
   protected readonly contextoImportacao = {
@@ -181,7 +186,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   });
 
   protected readonly passos = [
-    { id: 'brief' as const, label: 'Briefing', num: 1 },
+    { id: 'brief' as const, label: 'Preparar', num: 1 },
     { id: 'chat' as const, label: 'Chat', num: 2 },
     { id: 'revisar' as const, label: 'Revisar', num: 3 },
   ];
@@ -212,11 +217,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
             return of(null);
           }
           this.recomendandoTemplate.set(true);
+          const contextoImportado = this.paginaImportadaContexto();
           return this.ai
             .recomendarTemplate({
               briefing: texto,
-              projetoId: qp.get('projetoId'),
-              clienteId: qp.get('clienteId'),
+              projetoId: contextoImportado?.projetoId ?? qp.get('projetoId'),
+              clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
             })
             .pipe(
               catchError(() => of(null)),
@@ -304,12 +310,14 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.erro.set(null);
     this.proposta.set(null);
     const qp = this.route.snapshot.queryParamMap;
+    const contextoImportado = this.paginaImportadaContexto();
     this.ai
       .criarSessao({
         objetivo: 'CRIAR_PAGINA',
         briefing: this.briefingComImagens(),
-        projetoId: qp.get('projetoId'),
-        moduloId: qp.get('moduloId'),
+        projetoId: contextoImportado?.projetoId ?? qp.get('projetoId'),
+        moduloId: contextoImportado?.moduloId ?? qp.get('moduloId'),
+        clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
         templateId: this.form.controls.templateId.value || qp.get('templateId'),
       })
       .subscribe({
@@ -332,11 +340,27 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected usarPaginaImportada(pagina: AiPaginaDocumentoSelecionada): void {
+    this.paginaImportadaContexto.set({
+      projetoId: pagina.projetoId,
+      moduloId: pagina.moduloId,
+      clienteId: pagina.clienteId,
+    });
     this.form.patchValue({
       briefing: pagina.briefing,
       templateId: pagina.templateId ?? '',
     });
     this.erro.set(null);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: compactQueryParams({
+        importacaoId: pagina.importacaoId,
+        projetoId: pagina.projetoId,
+        moduloId: pagina.moduloId,
+        clienteId: pagina.clienteId,
+      }),
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
     window.setTimeout(() => document.getElementById('briefing')?.focus());
   }
 
@@ -422,10 +446,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (!s) return;
     this.carregando.set(true);
     const qp = this.route.snapshot.queryParamMap;
+    const contextoImportado = this.paginaImportadaContexto();
     this.ai
       .aplicar(s.id, {
         modo: 'FORM',
-        moduloId: qp.get('moduloId') || s.moduloId,
+        moduloId: contextoImportado?.moduloId || qp.get('moduloId') || s.moduloId,
         parentId: qp.get('parentId'),
       })
       .subscribe({
@@ -434,8 +459,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
           this.imagensStaging.stash(this.imagens().map(i => i.file));
           void this.router.navigate(['/doc-flow/paginas/novo'], {
             queryParams: compactQueryParams({
-              projetoId: qp.get('projetoId') || s.projetoId,
-              moduloId: app.moduloId || qp.get('moduloId') || s.moduloId,
+              projetoId: contextoImportado?.projetoId || qp.get('projetoId') || s.projetoId,
+              moduloId: app.moduloId || contextoImportado?.moduloId || qp.get('moduloId') || s.moduloId,
               parentId: qp.get('parentId'),
             }),
             state: {

@@ -115,6 +115,26 @@ describe('AiAssistenteService', () => {
     selecao.flush({ id: 'importacao-1' });
   });
 
+  it('confirma a estrutura sugerida antes de selecionar páginas', () => {
+    service
+      .confirmarEstruturaImportada('importacao-1', {
+        modoProjeto: 'NOVO_PROJETO',
+        modoCliente: 'SEM_CLIENTE',
+        projetoId: null,
+        clienteId: null,
+        clienteNome: null,
+        projetoNome: 'Portal de pedidos',
+        projetoDescricao: 'Manual do portal.',
+        modulos: [{ planoId: 'plano-modulo-1', nome: 'Pedidos' }],
+      })
+      .subscribe(doc => expect(doc.estruturaConfirmada).toBeTrue());
+
+    const req = http.expectOne(`${environment.aiApiUrl}/importacoes/importacao-1/estrutura/confirmar`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.projetoNome).toBe('Portal de pedidos');
+    req.flush({ id: 'importacao-1', estruturaConfirmada: true });
+  });
+
   it('gera rascunho em POST /sessoes/{id}/gerar', () => {
     service.gerar('11111111-1111-1111-1111-111111111111').subscribe(j => {
       expect(j.status).toBe('PENDENTE');

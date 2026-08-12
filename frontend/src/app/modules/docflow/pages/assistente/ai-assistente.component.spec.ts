@@ -158,7 +158,7 @@ describe('AiAssistenteComponent', () => {
     expect(cmp['passoAtual']()).toBe('chat');
   });
 
-  it('habilita o botão Continuar quando o briefing se torna válido', () => {
+  it('habilita o botão Analisar página quando o briefing se torna válido', () => {
     const cmp = fixture.componentInstance;
     const botaoContinuar = (): HTMLButtonElement =>
       fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
@@ -179,6 +179,9 @@ describe('AiAssistenteComponent', () => {
     cmp['usarPaginaImportada']({
       importacaoId: 'importacao-1',
       moduloNome: 'Cadastros',
+      moduloId: 'modulo-1',
+      projetoId: 'projeto-1',
+      clienteId: null,
       id: 'pagina-1',
       titulo: 'Inclusão',
       ordem: 1,

@@ -1,7 +1,7 @@
 <div class="wiz">
   <ui-page-header
     title="Assistente de página"
-    subtitle="Cole o briefing, responda perguntas se necessário e revise a proposta antes de aplicar no editor."
+    subtitle="Importe um documento ou descreva uma página, confirme o contexto e revise a proposta antes de salvar."
     icon="Sparkles"
   >
     <div actions class="wiz__header-actions">
@@ -50,7 +50,7 @@
     <main class="wiz__content">
       @if (passoAtual() === 'brief') {
         <ui-card padding="lg">
-          <h2 class="wiz__title">Passo 1 de 3 · Briefing</h2>
+          <h2 class="wiz__title">Passo 1 de 3 · Preparar</h2>
           <p class="wiz__hint">
             O sistema <strong>identifica o modelo da biblioteca</strong> que melhor combina com o contexto e preenche
             esse modelo — sem inventar layout.
@@ -66,7 +66,7 @@
               (paginaSelecionada)="usarPaginaImportada($event)"
             />
 
-            <div class="wiz__divider"><span>ou descreva uma página</span></div>
+            <div class="wiz__divider"><span>ou crie uma página avulsa</span></div>
 
             <div class="wiz__field">
               <label class="wiz__label" for="briefing">
@@ -164,7 +164,7 @@
                   [loading]="carregando()"
                   [disabled]="!podeIniciar()"
                 >
-                  Continuar
+                  Analisar página
                 </ui-button>
               </div>
             </div>

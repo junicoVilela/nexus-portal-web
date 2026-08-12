@@ -16,7 +16,7 @@ const PROPOSTA_ID = '33333333-3333-3333-3333-333333333333';
 const IMPORTACAO_ID = '44444444-4444-4444-4444-444444444444';
 const PAGINA_PLANO_ID = '55555555-5555-5555-5555-555555555555';
 
-function importacaoDocumento(statusPagina = 'PENDENTE') {
+function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = false) {
   return {
     id: IMPORTACAO_ID,
     nomeArquivo: 'manual-cadastro.txt',
@@ -28,9 +28,14 @@ function importacaoDocumento(statusPagina = 'PENDENTE') {
     status: statusPagina === 'EM_EDICAO' ? 'EM_REVISAO' : 'PRONTO_PARA_REVISAO',
     version: statusPagina === 'EM_EDICAO' ? 1 : 0,
     projetoNome: 'Cadastro de produto',
+    projetoDescricao: 'Manual criado a partir do documento importado.',
+    projetoId: estruturaConfirmada ? '77777777-7777-7777-7777-777777777777' : null,
+    clienteId: null,
+    estruturaConfirmada,
     modulos: [
       {
         id: '66666666-6666-6666-6666-666666666666',
+        moduloId: estruturaConfirmada ? '88888888-8888-8888-8888-888888888888' : null,
         nome: 'Cadastros',
         ordem: 1,
         paginas: [
@@ -166,11 +171,15 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
       return responder(importacaoDocumento(), 201);
     }
 
+    if (method === 'POST' && path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/estrutura/confirmar`) {
+      return responder(importacaoDocumento('PENDENTE', true));
+    }
+
     if (
       method === 'POST' &&
       path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/paginas/${PAGINA_PLANO_ID}/selecionar`
     ) {
-      return responder(importacaoDocumento('EM_EDICAO'));
+      return responder(importacaoDocumento('EM_EDICAO', true));
     }
 
     if (method === 'GET' && path === `/api/v1/ai/sessoes/${SESSAO_ID}`) {

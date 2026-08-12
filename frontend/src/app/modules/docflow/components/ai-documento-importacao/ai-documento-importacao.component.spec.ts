@@ -4,21 +4,39 @@ import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import { AiDocumentoImportacao } from '../../models/ai-documento-importacao.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
+import { ClienteService } from '../../services/cliente.service';
+import { ModuloService } from '../../services/modulo.service';
+import { ProjetoService } from '../../services/projeto.service';
 import { AiDocumentoImportacaoComponent } from './ai-documento-importacao.component';
 
 describe('AiDocumentoImportacaoComponent', () => {
   let fixture: ComponentFixture<AiDocumentoImportacaoComponent>;
   let ai: jasmine.SpyObj<AiAssistenteService>;
+  let clientes: jasmine.SpyObj<ClienteService>;
+  let modulos: jasmine.SpyObj<ModuloService>;
+  let projetos: jasmine.SpyObj<ProjetoService>;
 
   beforeEach(async () => {
     ai = jasmine.createSpyObj<AiAssistenteService>('AiAssistenteService', [
       'importarDocumento',
       'buscarImportacao',
+      'confirmarEstruturaImportada',
       'selecionarPaginaImportada',
     ]);
+    clientes = jasmine.createSpyObj<ClienteService>('ClienteService', ['clientes']);
+    projetos = jasmine.createSpyObj<ProjetoService>('ProjetoService', ['projetos', 'invalidarCache']);
+    modulos = jasmine.createSpyObj<ModuloService>('ModuloService', ['invalidarCache']);
+    clientes.clientes.and.returnValue(of([]));
+    projetos.projetos.and.returnValue(of([]));
     await TestBed.configureTestingModule({
       imports: [AiDocumentoImportacaoComponent],
-      providers: [lucideTestIcons, { provide: AiAssistenteService, useValue: ai }],
+      providers: [
+        lucideTestIcons,
+        { provide: AiAssistenteService, useValue: ai },
+        { provide: ClienteService, useValue: clientes },
+        { provide: ProjetoService, useValue: projetos },
+        { provide: ModuloService, useValue: modulos },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(AiDocumentoImportacaoComponent);
     fixture.detectChanges();
@@ -36,12 +54,36 @@ describe('AiDocumentoImportacaoComponent', () => {
     fixture.detectChanges();
 
     expect(ai.importarDocumento).toHaveBeenCalledWith(arquivo, { projetoId: null, clienteId: null });
-    expect(fixture.nativeElement.textContent).toContain('Plano pronto para revisão');
+    expect(fixture.nativeElement.textContent).toContain('Estrutura sugerida para revisão');
     expect(fixture.nativeElement.textContent).toContain('Listagem de registros');
   });
 
-  it('marca a página em edição antes de enviá-la ao briefing', () => {
+  it('confirma projeto novo e módulos antes de liberar as páginas', () => {
     const importacao = importacaoTeste();
+    const confirmada = importacaoTeste(true);
+    ai.confirmarEstruturaImportada.and.returnValue(of(confirmada));
+    fixture.componentInstance['definirImportacao'](importacao);
+    fixture.componentInstance['prepararEstrutura'](importacao);
+    fixture.componentInstance['modoCliente'].set('NOVO_CLIENTE');
+    fixture.componentInstance['estruturaForm'].controls.clienteNome.setValue('Cliente ACME');
+
+    fixture.componentInstance['confirmarEstrutura']();
+
+    expect(ai.confirmarEstruturaImportada).toHaveBeenCalledWith(
+      'importacao-1',
+      jasmine.objectContaining({
+        modoProjeto: 'NOVO_PROJETO',
+        modoCliente: 'NOVO_CLIENTE',
+        clienteNome: 'Cliente ACME',
+        projetoNome: 'Manual do portal',
+        modulos: [{ planoId: 'modulo-1', nome: 'Cadastros' }],
+      }),
+    );
+    expect(fixture.componentInstance['importacao']()?.estruturaConfirmada).toBeTrue();
+  });
+
+  it('marca a página em edição antes de enviá-la ao briefing', () => {
+    const importacao = importacaoTeste(true);
     ai.importarDocumento.and.returnValue(of(importacao));
     ai.selecionarPaginaImportada.and.returnValue(
       of({
@@ -58,16 +100,22 @@ describe('AiDocumentoImportacaoComponent', () => {
     const emitSpy = spyOn(fixture.componentInstance.paginaSelecionada, 'emit');
     fixture.componentInstance['importacao'].set(importacao);
 
-    fixture.componentInstance['usarPagina'](importacao.modulos[0].paginas[0], 'Cadastros');
+    fixture.componentInstance['usarPagina'](importacao.modulos[0].paginas[0], importacao.modulos[0]);
 
     expect(ai.selecionarPaginaImportada).toHaveBeenCalledWith('importacao-1', 'pagina-1');
     expect(emitSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({ id: 'pagina-1', moduloNome: 'Cadastros', status: 'EM_EDICAO' }),
+      jasmine.objectContaining({
+        id: 'pagina-1',
+        moduloNome: 'Cadastros',
+        moduloId: 'modulo-real-1',
+        projetoId: 'projeto-1',
+        status: 'EM_EDICAO',
+      }),
     );
   });
 });
 
-function importacaoTeste(): AiDocumentoImportacao {
+function importacaoTeste(confirmada = false): AiDocumentoImportacao {
   return {
     id: 'importacao-1',
     nomeArquivo: 'manual.txt',
@@ -79,9 +127,14 @@ function importacaoTeste(): AiDocumentoImportacao {
     status: 'PRONTO_PARA_REVISAO',
     version: 0,
     projetoNome: 'Manual do portal',
+    projetoDescricao: 'Manual criado a partir do documento.',
+    projetoId: confirmada ? 'projeto-1' : null,
+    clienteId: null,
+    estruturaConfirmada: confirmada,
     modulos: [
       {
         id: 'modulo-1',
+        moduloId: confirmada ? 'modulo-real-1' : null,
         nome: 'Cadastros',
         ordem: 1,
         paginas: [

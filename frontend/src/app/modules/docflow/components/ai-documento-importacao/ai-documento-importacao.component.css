@@ -106,6 +106,218 @@
   color: var(--warn);
 }
 
+.doc-import__context {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.doc-import__context header {
+  display: grid;
+  gap: 3px;
+}
+
+.doc-import__context-step {
+  color: var(--accent) !important;
+  font: 700 10.5px/1.2 var(--font-body) !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.doc-import__context h4,
+.doc-import__context p {
+  margin: 0;
+}
+
+.doc-import__context h4 {
+  color: var(--text);
+  font: 700 15px/1.3 var(--font-display);
+}
+
+.doc-import__context p {
+  color: var(--text-muted);
+  font: 400 12px/1.45 var(--font-body);
+}
+
+.doc-import__mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.doc-import__mode button {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  cursor: pointer;
+  text-align: left;
+}
+
+.doc-import__mode button:hover,
+.doc-import__mode-option--active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)) !important;
+}
+
+.doc-import__mode button span,
+.doc-import__mode button small {
+  display: block;
+}
+
+.doc-import__mode button strong {
+  color: var(--text);
+  font: 650 12.5px/1.3 var(--font-body);
+}
+
+.doc-import__mode button small {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font: 400 11px/1.35 var(--font-body);
+}
+
+.doc-import__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.doc-import__field {
+  display: grid;
+  gap: 5px;
+}
+
+.doc-import__field--wide {
+  grid-column: 1 / -1;
+}
+
+.doc-import__field > span,
+.doc-import__module-editor > div > strong {
+  color: var(--text);
+  font: 600 12px/1.3 var(--font-body);
+}
+
+.doc-import__field em {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.doc-import__field input,
+.doc-import__field select,
+.doc-import__field textarea,
+.doc-import__module-editor input {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  color: var(--text);
+  background: var(--bg);
+  font: 400 12.5px/1.4 var(--font-body);
+}
+
+.doc-import__field input:focus,
+.doc-import__field select:focus,
+.doc-import__field textarea:focus,
+.doc-import__module-editor input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.doc-import__field textarea {
+  resize: vertical;
+}
+
+.doc-import__field small,
+.doc-import__module-editor > div > span,
+.doc-import__module-editor li small,
+.doc-import__confirm span,
+.doc-import__confirmed span {
+  color: var(--text-muted);
+  font: 400 11px/1.4 var(--font-body);
+}
+
+.doc-import__module-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.doc-import__module-editor > div {
+  display: grid;
+  gap: 2px;
+}
+
+.doc-import__module-editor ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc-import__module-editor li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.doc-import__module-editor li b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font: 700 11px/1 var(--font-body);
+}
+
+.doc-import__confirm,
+.doc-import__confirmed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+}
+
+.doc-import__confirm {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.doc-import__confirm > div,
+.doc-import__confirmed > div {
+  display: grid;
+  gap: 2px;
+}
+
+.doc-import__confirm strong,
+.doc-import__confirmed strong {
+  color: var(--text);
+  font: 650 12px/1.3 var(--font-body);
+}
+
+.doc-import__confirmed {
+  justify-content: flex-start;
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 28%, var(--border));
+  background: color-mix(in srgb, var(--success-soft) 55%, var(--surface));
+}
+
 .doc-import__plan {
   display: grid;
   gap: 10px;
@@ -256,6 +468,24 @@
 
   .doc-import__dropzone ui-button {
     grid-column: 1 / -1;
+  }
+
+  .doc-import__mode,
+  .doc-import__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-import__module-editor li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .doc-import__module-editor li small {
+    grid-column: 2;
+  }
+
+  .doc-import__confirm {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .doc-import__module li {

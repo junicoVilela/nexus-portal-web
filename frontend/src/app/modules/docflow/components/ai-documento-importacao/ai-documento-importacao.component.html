@@ -2,8 +2,8 @@
   <div class="doc-import__heading">
     <span class="doc-import__icon"><lucide-icon name="FileText" [size]="18" /></span>
     <div>
-      <h3 id="doc-import-title">Começar por um manual existente</h3>
-      <p>A IA separa o documento em projeto, módulos e páginas antes da geração.</p>
+      <h3 id="doc-import-title">Começar por um documento</h3>
+      <p>A IA propõe projeto, módulos e páginas. Você confirma a estrutura antes da geração.</p>
     </div>
     <ui-badge tone="neutral">Opcional</ui-badge>
   </div>
@@ -11,7 +11,7 @@
   <div
     class="doc-import__dropzone"
     [class.doc-import__dropzone--active]="arrastando()"
-    [class.doc-import__dropzone--disabled]="disabled() || importando()"
+    [class.doc-import__dropzone--disabled]="disabled() || importando() || confirmando()"
     (dragover)="permitirSoltar($event)"
     (dragleave)="sairDropzone()"
     (drop)="soltar($event)"
@@ -25,7 +25,7 @@
       #arquivoInput
       type="file"
       accept=".doc,.docx,.pdf,.txt,application/msword,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
-      [disabled]="disabled() || importando()"
+      [disabled]="disabled() || importando() || confirmando()"
       (change)="selecionarArquivo($event)"
     />
     <ui-button
@@ -33,7 +33,7 @@
       variant="secondary"
       icon="Upload"
       [loading]="importando()"
-      [disabled]="disabled() || importando()"
+      [disabled]="disabled() || importando() || confirmando()"
       (clicked)="arquivoInput.click()"
     >
       Selecionar arquivo
@@ -48,7 +48,7 @@
     <div class="doc-import__plan">
       <header class="doc-import__summary">
         <div>
-          <span>Plano pronto para revisão</span>
+          <span>{{ doc.estruturaConfirmada ? 'Estrutura criada' : 'Estrutura sugerida para revisão' }}</span>
           <strong>{{ doc.projetoNome }}</strong>
           <small>{{ doc.nomeArquivo }} · {{ tamanhoLegivel(doc.tamanhoBytes) }}</small>
         </div>
@@ -67,6 +67,149 @@
 
       @for (aviso of doc.avisos; track aviso) {
         <p class="doc-import__warning"><lucide-icon name="Info" [size]="14" /> {{ aviso }}</p>
+      }
+
+      @if (!doc.estruturaConfirmada) {
+        <section class="doc-import__context" aria-labelledby="doc-import-context-title">
+          <header>
+            <span class="doc-import__context-step">Antes de gerar as páginas</span>
+            <h4 id="doc-import-context-title">Onde este documento será organizado?</h4>
+            <p>O arquivo não informa um vínculo confiável. Confirme um projeto novo ou escolha um projeto existente.</p>
+          </header>
+
+          <div class="doc-import__mode" role="radiogroup" aria-label="Destino do documento">
+            <button
+              type="button"
+              role="radio"
+              [attr.aria-checked]="modoProjeto() === 'NOVO_PROJETO'"
+              [class.doc-import__mode-option--active]="modoProjeto() === 'NOVO_PROJETO'"
+              (click)="definirModoProjeto('NOVO_PROJETO')"
+            >
+              <lucide-icon name="FolderPlus" [size]="18" />
+              <span><strong>Criar novo projeto</strong><small>Recomendado para um manual do zero</small></span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              [attr.aria-checked]="modoProjeto() === 'PROJETO_EXISTENTE'"
+              [class.doc-import__mode-option--active]="modoProjeto() === 'PROJETO_EXISTENTE'"
+              (click)="definirModoProjeto('PROJETO_EXISTENTE')"
+            >
+              <lucide-icon name="FolderSearch" [size]="18" />
+              <span
+                ><strong>Usar projeto existente</strong><small>Vincula o plano a uma estrutura já criada</small></span
+              >
+            </button>
+          </div>
+
+          <div class="doc-import__fields" [formGroup]="estruturaForm">
+            @if (modoProjeto() === 'NOVO_PROJETO') {
+              <label class="doc-import__field doc-import__field--wide">
+                <span>Nome sugerido para o projeto</span>
+                <input type="text" formControlName="projetoNome" maxlength="150" />
+                <small>A sugestão foi extraída do título e do conteúdo; você pode alterá-la.</small>
+              </label>
+              <label class="doc-import__field doc-import__field--wide">
+                <span>Descrição</span>
+                <textarea formControlName="projetoDescricao" rows="2" maxlength="1000"></textarea>
+              </label>
+            } @else {
+              <label class="doc-import__field doc-import__field--wide">
+                <span>Projeto existente</span>
+                <select formControlName="projetoId">
+                  <option value="">Selecione o projeto</option>
+                  @for (projeto of projetos(); track projeto.id) {
+                    <option [value]="projeto.id">{{ projeto.nome }}</option>
+                  }
+                </select>
+                @if (carregandoCatalogos()) {
+                  <small>Carregando projetos…</small>
+                }
+              </label>
+            }
+
+            <label class="doc-import__field doc-import__field--wide">
+              <span>Cliente</span>
+              <select [value]="modoCliente()" (change)="definirModoCliente($event)">
+                <option value="SEM_CLIENTE">Não vincular cliente agora</option>
+                <option value="CLIENTE_EXISTENTE">Selecionar cliente existente</option>
+                <option value="NOVO_CLIENTE">Cadastrar novo cliente</option>
+              </select>
+              <small>A IA não inventa esse dado porque o cliente não foi identificado com segurança no arquivo.</small>
+            </label>
+
+            @if (modoCliente() === 'CLIENTE_EXISTENTE') {
+              <label class="doc-import__field doc-import__field--wide">
+                <span>Cliente existente</span>
+                <select formControlName="clienteId">
+                  <option value="">Selecione o cliente</option>
+                  @for (cliente of clientes(); track cliente.id) {
+                    <option [value]="cliente.id">{{ cliente.nome }}</option>
+                  }
+                </select>
+              </label>
+            } @else if (modoCliente() === 'NOVO_CLIENTE') {
+              <label class="doc-import__field doc-import__field--wide">
+                <span>Nome do novo cliente</span>
+                <input
+                  type="text"
+                  formControlName="clienteNome"
+                  maxlength="150"
+                  placeholder="Informe o nome oficial do cliente"
+                />
+                <small>Este nome é informado por você e será criado junto com a estrutura.</small>
+              </label>
+            }
+          </div>
+
+          @if (erroCatalogos()) {
+            <p class="doc-import__warning"><lucide-icon name="Info" [size]="14" /> {{ erroCatalogos() }}</p>
+          }
+
+          <div class="doc-import__module-editor">
+            <div>
+              <strong>Módulos sugeridos</strong>
+              <span>Revise os nomes. As páginas serão mantidas na ordem identificada.</span>
+            </div>
+            <ol>
+              @for (modulo of doc.modulos; track modulo.id; let indice = $index) {
+                <li>
+                  <b>{{ modulo.ordem }}</b>
+                  <label>
+                    <span class="sr-only">Nome do módulo {{ modulo.ordem }}</span>
+                    <input type="text" maxlength="150" [formControl]="modulosForm.controls[indice]" />
+                  </label>
+                  <small>{{ modulo.paginas.length }} páginas identificadas</small>
+                </li>
+              }
+            </ol>
+          </div>
+
+          <div class="doc-import__confirm">
+            <div>
+              <strong>Nenhuma página será gerada ainda.</strong>
+              <span>Primeiro criaremos o projeto e os módulos; depois você revisa cada página.</span>
+            </div>
+            <ui-button
+              type="button"
+              variant="primary"
+              icon="Check"
+              [loading]="confirmando()"
+              [disabled]="disabled() || importando() || confirmando()"
+              (clicked)="confirmarEstrutura()"
+            >
+              Criar estrutura e continuar
+            </ui-button>
+          </div>
+        </section>
+      } @else {
+        <div class="doc-import__confirmed" role="status">
+          <lucide-icon name="CircleCheck" [size]="18" />
+          <div>
+            <strong>Projeto e módulos confirmados</strong>
+            <span>Agora escolha uma página para preencher o briefing e gerar o rascunho.</span>
+          </div>
+        </div>
       }
 
       <div class="doc-import__modules">
@@ -95,10 +238,10 @@
                     type="button"
                     [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
                     icon="Sparkles"
-                    [disabled]="importando()"
-                    (clicked)="usarPagina(pagina, modulo.nome)"
+                    [disabled]="importando() || !doc.estruturaConfirmada"
+                    (clicked)="usarPagina(pagina, modulo)"
                   >
-                    {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Usar no briefing' }}
+                    {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Gerar esta página' }}
                   </ui-button>
                 </li>
               }

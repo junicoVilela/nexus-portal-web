@@ -3,7 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
-import { AiDocumentoImportacao } from '../models/ai-documento-importacao.model';
+import {
+  AiConfirmarEstruturaDocumentoPayload,
+  AiDocumentoImportacao,
+} from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
 import { AiAplicacao, AiJob, AiProposta } from '../models/ai-proposta.model';
@@ -48,6 +51,16 @@ export class AiAssistenteService {
 
   buscarImportacao(id: string): Observable<AiDocumentoImportacao> {
     return this.http.get<AiDocumentoImportacao>(`${this.base}/importacoes/${id}`);
+  }
+
+  confirmarEstruturaImportada(
+    importacaoId: string,
+    payload: AiConfirmarEstruturaDocumentoPayload,
+  ): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/estrutura/confirmar`,
+      payload,
+    );
   }
 
   selecionarPaginaImportada(importacaoId: string, paginaId: string): Observable<AiDocumentoImportacao> {
