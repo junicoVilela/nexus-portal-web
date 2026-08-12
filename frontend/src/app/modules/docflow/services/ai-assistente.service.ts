@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
+import { AiDocumentoImportacao } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
 import { AiAplicacao, AiJob, AiProposta } from '../models/ai-proposta.model';
@@ -31,6 +32,29 @@ export class AiAssistenteService {
 
   recomendarTemplate(payload: AiTemplateRecomendacaoPayload): Observable<AiTemplateRecomendacao> {
     return this.http.post<AiTemplateRecomendacao>(`${this.base}/templates/recomendacao`, payload);
+  }
+
+  importarDocumento(
+    arquivo: File,
+    contexto?: { projetoId?: string | null; clienteId?: string | null },
+  ): Observable<AiDocumentoImportacao> {
+    const formData = new FormData();
+    formData.append('arquivo', arquivo, arquivo.name);
+    const params: Record<string, string> = {};
+    if (contexto?.projetoId) params['projetoId'] = contexto.projetoId;
+    if (contexto?.clienteId) params['clienteId'] = contexto.clienteId;
+    return this.http.post<AiDocumentoImportacao>(`${this.base}/importacoes`, formData, { params });
+  }
+
+  buscarImportacao(id: string): Observable<AiDocumentoImportacao> {
+    return this.http.get<AiDocumentoImportacao>(`${this.base}/importacoes/${id}`);
+  }
+
+  selecionarPaginaImportada(importacaoId: string, paginaId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/paginas/${paginaId}/selecionar`,
+      {},
+    );
   }
 
   buscarSessao(id: string): Observable<AiSessao> {

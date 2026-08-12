@@ -27,12 +27,21 @@ Feature flag: `AiFeatureService` (`GET /ai/status`); CTAs ocultos se `enabled=fa
 ```text
 frontend/src/app/modules/docflow/
 ├── pages/{assistente,propostas-ia}/
-├── components/{ai-perguntas,ai-proposta-preview}/
+├── components/{ai-documento-importacao,ai-perguntas,ai-proposta-preview}/
 ├── services/{ai-assistente,ai-feature}.service.ts
 └── models/ai-*.model.ts
 ```
 
 API base: `environment.aiApiUrl` (`/api/ai` → proxy → `/api/v1/ai`).
+
+## Importação de um manual
+
+- O primeiro passo aceita arrastar ou selecionar `DOC`, `DOCX`, PDF pesquisável e `TXT` de até 15 MB.
+- O backend devolve um plano persistido com projeto, módulos, páginas, ordem e modelo recomendado.
+- A árvore fica disponível para revisão antes de gerar; **Usar no briefing** coloca somente o
+  conteúdo da página escolhida no pipeline existente, sem perder os textos do documento.
+- `importacaoId` fica na URL, permitindo recarregar ou voltar do editor e continuar o plano.
+- PDFs sem texto selecionável mostram uma orientação clara para aplicar OCR antes da importação.
 
 ## Decisão de modelo e componentes
 

@@ -1,0 +1,111 @@
+<section class="doc-import" aria-labelledby="doc-import-title">
+  <div class="doc-import__heading">
+    <span class="doc-import__icon"><lucide-icon name="FileText" [size]="18" /></span>
+    <div>
+      <h3 id="doc-import-title">Começar por um manual existente</h3>
+      <p>A IA separa o documento em projeto, módulos e páginas antes da geração.</p>
+    </div>
+    <ui-badge tone="neutral">Opcional</ui-badge>
+  </div>
+
+  <div
+    class="doc-import__dropzone"
+    [class.doc-import__dropzone--active]="arrastando()"
+    [class.doc-import__dropzone--disabled]="disabled() || importando()"
+    (dragover)="permitirSoltar($event)"
+    (dragleave)="sairDropzone()"
+    (drop)="soltar($event)"
+  >
+    <lucide-icon name="CloudUpload" [size]="24" />
+    <div>
+      <strong>{{ importando() ? 'Interpretando e organizando o documento…' : 'Arraste o arquivo aqui' }}</strong>
+      <span>DOC, DOCX, PDF com texto ou TXT · até 15 MB</span>
+    </div>
+    <input
+      #arquivoInput
+      type="file"
+      accept=".doc,.docx,.pdf,.txt,application/msword,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+      [disabled]="disabled() || importando()"
+      (change)="selecionarArquivo($event)"
+    />
+    <ui-button
+      type="button"
+      variant="secondary"
+      icon="Upload"
+      [loading]="importando()"
+      [disabled]="disabled() || importando()"
+      (clicked)="arquivoInput.click()"
+    >
+      Selecionar arquivo
+    </ui-button>
+  </div>
+
+  @if (erro()) {
+    <p class="doc-import__error" role="alert">{{ erro() }}</p>
+  }
+
+  @if (importacao(); as doc) {
+    <div class="doc-import__plan">
+      <header class="doc-import__summary">
+        <div>
+          <span>Plano pronto para revisão</span>
+          <strong>{{ doc.projetoNome }}</strong>
+          <small>{{ doc.nomeArquivo }} · {{ tamanhoLegivel(doc.tamanhoBytes) }}</small>
+        </div>
+        <div class="doc-import__metrics" aria-label="Resumo do plano">
+          <span
+            ><strong>{{ doc.modulos.length }}</strong> módulos</span
+          >
+          <span
+            ><strong>{{ totalPaginas(doc) }}</strong> páginas</span
+          >
+          <span
+            ><strong>{{ doc.caracteresExtraidos }}</strong> caracteres</span
+          >
+        </div>
+      </header>
+
+      @for (aviso of doc.avisos; track aviso) {
+        <p class="doc-import__warning"><lucide-icon name="Info" [size]="14" /> {{ aviso }}</p>
+      }
+
+      <div class="doc-import__modules">
+        @for (modulo of doc.modulos; track modulo.id) {
+          <details class="doc-import__module" [open]="$first">
+            <summary>
+              <span
+                ><b>{{ modulo.ordem }}</b> {{ modulo.nome }}</span
+              >
+              <small>{{ modulo.paginas.length }} páginas</small>
+            </summary>
+            <ol>
+              @for (pagina of modulo.paginas; track pagina.id) {
+                <li [class.doc-import__page--active]="paginaAtivaId() === pagina.id">
+                  <span class="doc-import__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
+                  <div class="doc-import__page-copy">
+                    <strong>{{ pagina.titulo }}</strong>
+                    <span>
+                      {{ pagina.templateNome || 'Modelo será confirmado no assistente' }}
+                      @if (pagina.templateNome) {
+                        · {{ (pagina.confiancaTemplate * 100).toFixed(0) }}%
+                      }
+                    </span>
+                  </div>
+                  <ui-button
+                    type="button"
+                    [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
+                    icon="Sparkles"
+                    [disabled]="importando()"
+                    (clicked)="usarPagina(pagina, modulo.nome)"
+                  >
+                    {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Usar no briefing' }}
+                  </ui-button>
+                </li>
+              }
+            </ol>
+          </details>
+        }
+      </div>
+    </div>
+  }
+</section>

@@ -84,6 +84,37 @@ describe('AiAssistenteService', () => {
     });
   });
 
+  it('importa documento como multipart e envia o contexto', () => {
+    const arquivo = new File(['# Manual\nConteúdo suficiente para organizar as páginas.'], 'manual.txt', {
+      type: 'text/plain',
+    });
+    service.importarDocumento(arquivo, { projetoId: 'projeto-1' }).subscribe(doc => {
+      expect(doc.nomeArquivo).toBe('manual.txt');
+    });
+
+    const req = http.expectOne(
+      r => r.url === `${environment.aiApiUrl}/importacoes` && r.params.get('projetoId') === 'projeto-1',
+    );
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body instanceof FormData).toBeTrue();
+    expect(((req.request.body as FormData).get('arquivo') as File).name).toBe('manual.txt');
+    req.flush({ nomeArquivo: 'manual.txt' });
+  });
+
+  it('retoma importação persistida e marca página selecionada', () => {
+    service.buscarImportacao('importacao-1').subscribe();
+    const busca = http.expectOne(`${environment.aiApiUrl}/importacoes/importacao-1`);
+    expect(busca.request.method).toBe('GET');
+    busca.flush({ id: 'importacao-1' });
+
+    service.selecionarPaginaImportada('importacao-1', 'pagina-1').subscribe();
+    const selecao = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/paginas/pagina-1/selecionar`,
+    );
+    expect(selecao.request.method).toBe('POST');
+    selecao.flush({ id: 'importacao-1' });
+  });
+
   it('gera rascunho em POST /sessoes/{id}/gerar', () => {
     service.gerar('11111111-1111-1111-1111-111111111111').subscribe(j => {
       expect(j.status).toBe('PENDENTE');

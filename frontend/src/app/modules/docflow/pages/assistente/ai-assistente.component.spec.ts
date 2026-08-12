@@ -25,6 +25,9 @@ describe('AiAssistenteComponent', () => {
       'buscarSessao',
       'eventosAi',
       'recomendarTemplate',
+      'importarDocumento',
+      'buscarImportacao',
+      'selecionarPaginaImportada',
     ]);
     ai.eventosAi.and.returnValue(of());
     ai.recomendarTemplate.and.returnValue(of({ recomendado: null, candidatos: [], exigeConfirmacao: false }));
@@ -167,6 +170,29 @@ describe('AiAssistenteComponent', () => {
 
     expect(cmp['briefingValido']()).toBeTrue();
     expect(botaoContinuar().disabled).toBeFalse();
+  });
+
+  it('preenche briefing e modelo com a página escolhida no documento', () => {
+    const cmp = fixture.componentInstance;
+    const briefing = '# Projeto\n## Módulo\n### Página\nTexto específico da página selecionada.';
+
+    cmp['usarPaginaImportada']({
+      importacaoId: 'importacao-1',
+      moduloNome: 'Cadastros',
+      id: 'pagina-1',
+      titulo: 'Inclusão',
+      ordem: 1,
+      briefing,
+      templateId: 't1',
+      templateCodigo: 'FUNCIONALIDADE',
+      templateNome: 'Funcionalidade',
+      confiancaTemplate: 0.9,
+      motivoTemplate: 'Conteúdo compatível.',
+      status: 'EM_EDICAO',
+    });
+
+    expect(cmp['form'].controls.briefing.value).toBe(briefing);
+    expect(cmp['form'].controls.templateId.value).toBe('t1');
   });
 
   it('inclui nomes das imagens no briefing enviado', () => {

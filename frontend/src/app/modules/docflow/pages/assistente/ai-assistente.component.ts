@@ -16,9 +16,11 @@ import { TIMINGS } from '@core/config/timings';
 import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
+import { AiDocumentoImportacaoComponent } from '../../components/ai-documento-importacao/ai-documento-importacao.component';
 import { AiImagensDropzoneComponent } from '../../components/ai-imagens-dropzone/ai-imagens-dropzone.component';
 import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas.component';
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
+import { AiPaginaDocumentoSelecionada } from '../../models/ai-documento-importacao.model';
 import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
 import { AiJob, AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
@@ -47,6 +49,7 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
     AiPerguntasComponent,
     AiPropostaPreviewComponent,
     AiImagensDropzoneComponent,
+    AiDocumentoImportacaoComponent,
   ],
   templateUrl: './ai-assistente.component.html',
   styleUrl: './ai-assistente.component.css',
@@ -85,6 +88,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly recomendandoTemplate = signal(false);
   protected readonly aiDisponivel = this.feature.disponivel;
   protected readonly featureReady = this.feature.ready;
+  protected readonly contextoImportacao = {
+    importacaoId: this.route.snapshot.queryParamMap.get('importacaoId'),
+    projetoId: this.route.snapshot.queryParamMap.get('projetoId'),
+    clienteId: this.route.snapshot.queryParamMap.get('clienteId'),
+  };
 
   protected readonly form = this.fb.nonNullable.group({
     briefing: ['', [Validators.required, Validators.minLength(40), Validators.maxLength(50_000)]],
@@ -321,6 +329,24 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected selecionarTemplateRecomendado(templateId: string): void {
     this.form.controls.templateId.setValue(templateId);
     this.erro.set(null);
+  }
+
+  protected usarPaginaImportada(pagina: AiPaginaDocumentoSelecionada): void {
+    this.form.patchValue({
+      briefing: pagina.briefing,
+      templateId: pagina.templateId ?? '',
+    });
+    this.erro.set(null);
+    window.setTimeout(() => document.getElementById('briefing')?.focus());
+  }
+
+  protected persistirImportacaoNaUrl(importacaoId: string): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { importacaoId },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   protected resumoBlueprint(blueprint: PaginaBlueprint): string {

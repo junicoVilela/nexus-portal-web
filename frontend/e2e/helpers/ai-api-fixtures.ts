@@ -13,6 +13,49 @@ const AGORA = '2026-08-03T12:00:00Z';
 const SESSAO_ID = '11111111-1111-1111-1111-111111111111';
 const JOB_ID = '22222222-2222-2222-2222-222222222222';
 const PROPOSTA_ID = '33333333-3333-3333-3333-333333333333';
+const IMPORTACAO_ID = '44444444-4444-4444-4444-444444444444';
+const PAGINA_PLANO_ID = '55555555-5555-5555-5555-555555555555';
+
+function importacaoDocumento(statusPagina = 'PENDENTE') {
+  return {
+    id: IMPORTACAO_ID,
+    nomeArquivo: 'manual-cadastro.txt',
+    tipoArquivo: 'TXT',
+    mimeType: 'text/plain',
+    tamanhoBytes: 256,
+    caracteresExtraidos: 220,
+    totalPaginasOrigem: 1,
+    status: statusPagina === 'EM_EDICAO' ? 'EM_REVISAO' : 'PRONTO_PARA_REVISAO',
+    version: statusPagina === 'EM_EDICAO' ? 1 : 0,
+    projetoNome: 'Cadastro de produto',
+    modulos: [
+      {
+        id: '66666666-6666-6666-6666-666666666666',
+        nome: 'Cadastros',
+        ordem: 1,
+        paginas: [
+          {
+            id: PAGINA_PLANO_ID,
+            titulo: 'Listagem de registros',
+            ordem: 1,
+            briefing:
+              '# Projeto: Cadastro de produto\n\n## Módulo: Cadastros\n\n' +
+              '### Página: Listagem de registros\n\nA tela apresenta filtros, tabela e paginação.',
+            templateId: null,
+            templateCodigo: 'LISTAR_REGISTROS',
+            templateNome: 'Listar e consultar registros',
+            confiancaTemplate: 0.9,
+            motivoTemplate: 'Listagem e filtros identificados.',
+            status: statusPagina,
+          },
+        ],
+      },
+    ],
+    avisos: [],
+    createdAt: AGORA,
+    updatedAt: AGORA,
+  };
+}
 
 export const AI_PROPOSTA_FAKE = {
   id: PROPOSTA_ID,
@@ -97,24 +140,37 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
 
     if (method === 'POST' && path === '/api/v1/ai/sessoes') {
       statusSessao = 'PRONTA_PARA_GERAR';
-      return responder(sessao(statusSessao, [
-        {
-          id: 'm1',
-          papel: 'USUARIO',
-          conteudo: 'briefing',
-          perguntas: [],
-          ordem: 1,
-          createdAt: AGORA,
-        },
-        {
-          id: 'm2',
-          papel: 'ASSISTENTE',
-          conteudo: 'Contexto suficiente para gerar.',
-          perguntas: [],
-          ordem: 2,
-          createdAt: AGORA,
-        },
-      ]));
+      return responder(
+        sessao(statusSessao, [
+          {
+            id: 'm1',
+            papel: 'USUARIO',
+            conteudo: 'briefing',
+            perguntas: [],
+            ordem: 1,
+            createdAt: AGORA,
+          },
+          {
+            id: 'm2',
+            papel: 'ASSISTENTE',
+            conteudo: 'Contexto suficiente para gerar.',
+            perguntas: [],
+            ordem: 2,
+            createdAt: AGORA,
+          },
+        ]),
+      );
+    }
+
+    if (method === 'POST' && path === '/api/v1/ai/importacoes') {
+      return responder(importacaoDocumento(), 201);
+    }
+
+    if (
+      method === 'POST' &&
+      path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/paginas/${PAGINA_PLANO_ID}/selecionar`
+    ) {
+      return responder(importacaoDocumento('EM_EDICAO'));
     }
 
     if (method === 'GET' && path === `/api/v1/ai/sessoes/${SESSAO_ID}`) {
@@ -175,7 +231,10 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
     if (await tryHandleDocFlowFallbackGet(ctx, responder)) return;
 
     // formulário de página precisa de listas vazias
-    if (method === 'GET' && (path.includes('/projetos') || path.includes('/modulos') || path.includes('/paginas'))) {
+    if (
+      method === 'GET' &&
+      (path.includes('/projetos') || path.includes('/modulos') || path.includes('/paginas'))
+    ) {
       return responder([]);
     }
 

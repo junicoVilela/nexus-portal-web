@@ -57,6 +57,17 @@
           </p>
 
           <form class="wiz__form" [formGroup]="form" (ngSubmit)="iniciar()">
+            <app-ai-documento-importacao
+              [importacaoIdInicial]="contextoImportacao.importacaoId"
+              [projetoId]="contextoImportacao.projetoId"
+              [clienteId]="contextoImportacao.clienteId"
+              [disabled]="carregando()"
+              (importacaoChange)="persistirImportacaoNaUrl($event)"
+              (paginaSelecionada)="usarPaginaImportada($event)"
+            />
+
+            <div class="wiz__divider"><span>ou descreva uma página</span></div>
+
             <div class="wiz__field">
               <label class="wiz__label" for="briefing">
                 Especificação, changelog ou descrição da tela

@@ -2,6 +2,25 @@ import { expect, test } from '@playwright/test';
 import { instalarMocksAiAssistente } from './helpers/ai-api-fixtures';
 
 test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
+  test('importa manual, revisa a ordem e leva somente uma página ao briefing', async ({ page }) => {
+    await instalarMocksAiAssistente(page);
+    await page.goto('/doc-flow/assistente');
+
+    await page.locator('app-ai-documento-importacao input[type="file"]').setInputFiles({
+      name: 'manual-cadastro.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('# Cadastro\n\n## Listagem\n\nA tela apresenta filtros e registros.'),
+    });
+
+    await expect(page.getByText('Plano pronto para revisão')).toBeVisible();
+    await expect(page.getByText('Cadastro de produto')).toBeVisible();
+    await expect(page.getByText('1.1')).toBeVisible();
+    await page.getByRole('button', { name: 'Usar no briefing' }).click();
+
+    await expect(page.locator('#briefing')).toHaveValue(/### Página: Listagem de registros/);
+    await expect(page.getByRole('button', { name: 'Em edição' })).toBeVisible();
+  });
+
   test('briefing → gerar → aplicar no editor', async ({ page }) => {
     await instalarMocksAiAssistente(page);
 
