@@ -125,6 +125,15 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['PAGINA:LER'] },
       },
       {
+        path: 'assistente/importacoes/:id/revisao',
+        loadComponent: () =>
+          import('./pages/assistente-revisao/ai-assistente-revisao.component').then(
+            component => component.AiAssistenteRevisaoComponent,
+          ),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:CRIAR'] },
+      },
+      {
         path: 'assistente',
         loadComponent: () =>
           import('./pages/assistente/ai-assistente.component').then(

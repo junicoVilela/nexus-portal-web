@@ -1,0 +1,352 @@
+<section class="manual-review">
+  @if (importacao(); as doc) {
+    <ui-page-header
+      [title]="'Revisão do manual · ' + doc.projetoNome"
+      [subtitle]="'Compare o conteúdo de ' + doc.nomeArquivo + ' com cada proposta antes de criar as páginas.'"
+      icon="ClipboardCheck"
+    >
+      <nav breadcrumb aria-label="Navegação estrutural">
+        <a routerLink="/doc-flow/assistente">Assistente</a>
+        <span>/</span>
+        <span>Revisão do manual</span>
+      </nav>
+      <div actions class="manual-review__header-actions">
+        <ui-button
+          variant="secondary"
+          size="sm"
+          icon="RefreshCw"
+          [loading]="sincronizando()"
+          (clicked)="sincronizarAgora(true)"
+        >
+          Atualizar
+        </ui-button>
+        <a class="manual-review__editorial-link" routerLink="/doc-flow/revisoes">
+          Fila editorial
+          <lucide-icon name="ArrowRight" [size]="15" />
+        </a>
+      </div>
+      <div meta class="manual-review__summary">
+        <span
+          ><strong>{{ doc.modulos.length }}</strong> módulos</span
+        >
+        <span
+          ><strong>{{ itens().length }}</strong> páginas planejadas</span
+        >
+        <span
+          ><strong>{{ totalSalvas() }}</strong> rascunhos salvos</span
+        >
+        <span
+          ><strong>{{ totalRevisadas() }}</strong> revisadas</span
+        >
+        <span class="manual-review__progress" aria-label="Progresso de criação das páginas">
+          <i><b [style.width.%]="progresso()"></b></i>
+          {{ progresso() }}%
+        </span>
+      </div>
+    </ui-page-header>
+  }
+
+  @if (erro()) {
+    <div class="manual-review__error" role="alert">
+      <lucide-icon name="AlertTriangle" [size]="17" />
+      <span>{{ erro() }}</span>
+      @if (!importacao()) {
+        <ui-button variant="secondary" size="sm" (clicked)="carregar()">Tentar novamente</ui-button>
+      }
+    </div>
+  }
+
+  @if (carregando()) {
+    <div class="manual-review__loading" role="status">
+      <lucide-icon name="Loader2" [size]="24" />
+      <strong>Preparando a central de revisão…</strong>
+      <span>Sincronizando propostas e páginas do manual.</span>
+    </div>
+  } @else if (importacao(); as doc) {
+    @if (!doc.estruturaConfirmada) {
+      <div class="manual-review__empty">
+        <lucide-icon name="FileText" [size]="30" />
+        <h2>Confirme primeiro a estrutura do documento</h2>
+        <p>O projeto e os módulos precisam existir antes da geração e revisão das páginas.</p>
+        <a
+          class="manual-review__editorial-link"
+          [routerLink]="['/doc-flow/assistente']"
+          [queryParams]="{ importacaoId: doc.id }"
+        >
+          Voltar ao assistente
+          <lucide-icon name="ArrowRight" [size]="15" />
+        </a>
+      </div>
+    } @else {
+      <div class="manual-review__filters" role="tablist" aria-label="Filtrar páginas do manual">
+        @for (item of filtros; track item.id) {
+          <button
+            type="button"
+            role="tab"
+            [attr.aria-selected]="filtro() === item.id"
+            [class.manual-review__filter--active]="filtro() === item.id"
+            (click)="definirFiltro(item.id)"
+          >
+            {{ item.rotulo }} <span>{{ totalFiltro(item.id) }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="manual-review__workspace">
+        <aside class="manual-review__queue" aria-label="Ordem das páginas do manual">
+          <header>
+            <div>
+              <span>Ordem do documento</span>
+              <strong>{{ itensFiltrados().length }} páginas neste filtro</strong>
+            </div>
+            <lucide-icon name="ListTree" [size]="17" />
+          </header>
+          <div class="manual-review__queue-list">
+            @for (item of itensFiltrados(); track item.pagina.id) {
+              <button
+                type="button"
+                class="manual-review__queue-item"
+                [class.manual-review__queue-item--active]="selecionadaId() === item.pagina.id"
+                (click)="selecionar(item)"
+              >
+                <span class="manual-review__queue-order">{{ item.modulo.ordem }}.{{ item.pagina.ordem }}</span>
+                <span class="manual-review__queue-copy">
+                  <small>{{ item.modulo.nome }}</small>
+                  <strong>{{ item.pagina.titulo }}</strong>
+                  <em>
+                    @if (item.pagina.status === 'EM_GERACAO') {
+                      <lucide-icon name="Loader2" [size]="12" />
+                    }
+                    {{ rotuloStatus(item.pagina.status) }}
+                  </em>
+                </span>
+                @if (item.pagina.paginaId) {
+                  <lucide-icon class="manual-review__queue-check" name="CircleCheck" [size]="16" />
+                }
+              </button>
+            } @empty {
+              <div class="manual-review__queue-empty">
+                <strong>Nenhuma página neste filtro</strong>
+                <span>Escolha outro estado para continuar.</span>
+              </div>
+            }
+          </div>
+        </aside>
+
+        <main class="manual-review__detail" aria-live="polite">
+          @if (selecionada(); as item) {
+            <header class="manual-review__detail-header">
+              <div>
+                <span class="manual-review__eyebrow"
+                  >Página {{ item.modulo.ordem }}.{{ item.pagina.ordem }} · {{ item.modulo.nome }}</span
+                >
+                <h2>{{ item.pagina.titulo }}</h2>
+                <p>
+                  Modelo {{ item.pagina.templateNome || 'a definir' }}
+                  @if (item.pagina.templateNome) {
+                    · confiança {{ (item.pagina.confiancaTemplate * 100).toFixed(0) }}%
+                  }
+                </p>
+              </div>
+              <div class="manual-review__detail-nav">
+                <ui-badge [tone]="tomStatus(item.pagina.status)">{{ rotuloStatus(item.pagina.status) }}</ui-badge>
+                @if (paginaSalva(); as salva) {
+                  <ui-badge
+                    [tone]="
+                      salva.status === 'RASCUNHO' ? 'neutral' : salva.status === 'EM_REVISAO' ? 'info' : 'success'
+                    "
+                  >
+                    {{ rotuloStatusEditorial(salva.status) }}
+                  </ui-badge>
+                }
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  icon="ArrowLeft"
+                  [disabled]="indiceFiltrado() <= 0"
+                  (clicked)="mover(-1)"
+                >
+                  Anterior
+                </ui-button>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  icon="ArrowRight"
+                  iconPosition="trailing"
+                  [disabled]="indiceFiltrado() < 0 || indiceFiltrado() >= itensFiltrados().length - 1"
+                  (clicked)="mover(1)"
+                >
+                  Próxima
+                </ui-button>
+              </div>
+            </header>
+
+            <div class="manual-review__trace">
+              <div>
+                <lucide-icon name="FileText" [size]="15" />
+                <span
+                  ><strong>Origem rastreável</strong>{{ doc.nomeArquivo }} · trecho convertido para o briefing desta
+                  página</span
+                >
+              </div>
+              <div>
+                <lucide-icon name="Sparkles" [size]="15" />
+                <span
+                  ><strong>Decisão de composição</strong
+                  >{{ item.pagina.motivoTemplate || 'A estrutura será confirmada pela IA durante a geração.' }}</span
+                >
+              </div>
+            </div>
+
+            <div class="manual-review__comparison">
+              <article class="manual-review__panel manual-review__panel--source">
+                <header>
+                  <div>
+                    <span>Documento de origem</span>
+                    <h3>Conteúdo interpretado</h3>
+                  </div>
+                  <ui-badge tone="neutral">Fonte</ui-badge>
+                </header>
+                <pre>{{ item.pagina.briefing }}</pre>
+              </article>
+
+              <article class="manual-review__panel manual-review__panel--result">
+                <header>
+                  <div>
+                    <span>Composição da IA</span>
+                    <h3>{{ proposta()?.titulo || 'Página ainda não gerada' }}</h3>
+                  </div>
+                  @if (proposta(); as gerada) {
+                    <ui-badge [tone]="gerada.aptoParaRevisao ? 'success' : 'warn'">
+                      {{ gerada.aptoParaRevisao ? 'Qualidade apta' : 'Requer ajustes' }}
+                    </ui-badge>
+                  }
+                </header>
+
+                @if (carregandoDetalhe()) {
+                  <div class="manual-review__result-state">
+                    <lucide-icon name="Loader2" [size]="22" />
+                    <strong>Carregando a proposta…</strong>
+                  </div>
+                } @else if (previewHtml(); as html) {
+                  @if (item.pagina.status === 'EM_GERACAO') {
+                    <div class="manual-review__generation-note">
+                      <lucide-icon name="Loader2" [size]="14" />
+                      Uma nova versão está sendo gerada. A prévia abaixo é a versão anterior.
+                    </div>
+                  }
+                  <div class="manual-review__preview df-doc-content" [innerHTML]="html"></div>
+                } @else if (item.pagina.status === 'EM_GERACAO') {
+                  <div class="manual-review__result-state">
+                    <lucide-icon name="Loader2" [size]="24" />
+                    <strong>A IA está compondo esta página</strong>
+                    <span>A tela será atualizada automaticamente quando a proposta estiver pronta.</span>
+                  </div>
+                } @else if (item.pagina.status === 'ERRO') {
+                  <div class="manual-review__result-state manual-review__result-state--error">
+                    <lucide-icon name="AlertTriangle" [size]="24" />
+                    <strong>A geração não foi concluída</strong>
+                    <span>{{ item.pagina.erroMensagem || 'Revise o briefing ou tente gerar novamente.' }}</span>
+                  </div>
+                } @else {
+                  <div class="manual-review__result-state">
+                    <lucide-icon name="Sparkles" [size]="24" />
+                    <strong>Esta página está pronta para ser gerada</strong>
+                    <span>A IA usará somente os componentes adequados ao trecho identificado.</span>
+                  </div>
+                }
+              </article>
+            </div>
+
+            @if (proposta(); as gerada) {
+              <section class="manual-review__quality" aria-label="Checklist de qualidade da proposta">
+                <header>
+                  <div>
+                    <span>Validação automática</span>
+                    <strong>Checklist antes de aceitar</strong>
+                  </div>
+                  <small>{{ gerada.qualidade.length }} verificações</small>
+                </header>
+                <div>
+                  @for (qualidade of gerada.qualidade; track qualidade.codigo) {
+                    <article [class.manual-review__quality-item--ok]="qualidade.ok">
+                      <span>{{ qualidade.ok ? '✓' : '!' }}</span>
+                      <p>
+                        <strong>{{ qualidade.titulo }}</strong
+                        ><small>{{ qualidade.descricao }}</small>
+                      </p>
+                    </article>
+                  } @empty {
+                    <p class="manual-review__quality-empty">Nenhuma verificação retornada para esta proposta.</p>
+                  }
+                </div>
+              </section>
+            }
+
+            <footer class="manual-review__actions">
+              <div>
+                @if (item.pagina.paginaId) {
+                  <span>Próxima etapa</span>
+                  <strong>O rascunho já faz parte do projeto</strong>
+                } @else if (proposta()) {
+                  <span>Decisão desta página</span>
+                  <strong>Edite, regenere ou aceite a proposta</strong>
+                } @else {
+                  <span>Próxima etapa</span>
+                  <strong>Gerar a primeira proposta desta página</strong>
+                }
+              </div>
+              <nav>
+                @if (item.pagina.paginaId) {
+                  <ui-button variant="secondary" icon="Pencil" [loading]="executando()" (clicked)="editar()">
+                    Abrir no editor
+                  </ui-button>
+                  @if (paginaSalva()?.status === 'RASCUNHO') {
+                    <ui-button icon="Send" [loading]="executando()" (clicked)="enviarParaRevisao()">
+                      Enviar para revisão
+                    </ui-button>
+                  } @else if (paginaSalva()?.status === 'EM_REVISAO') {
+                    <a class="manual-review__editorial-link" routerLink="/doc-flow/revisoes">
+                      Abrir fila editorial
+                      <lucide-icon name="ArrowRight" [size]="15" />
+                    </a>
+                  }
+                } @else if (proposta()) {
+                  <ui-button variant="ghost" icon="RefreshCw" [loading]="executando()" (clicked)="gerarOuRegenerar()">
+                    Regenerar
+                  </ui-button>
+                  <ui-button variant="secondary" icon="Pencil" [loading]="executando()" (clicked)="editar()">
+                    Ajustar no editor
+                  </ui-button>
+                  <ui-button
+                    icon="Check"
+                    [loading]="executando()"
+                    [disabled]="!podeAceitar()"
+                    (clicked)="aceitarComoRascunho()"
+                  >
+                    Aceitar e criar rascunho
+                  </ui-button>
+                } @else {
+                  <ui-button
+                    icon="Sparkles"
+                    [loading]="executando() || item.pagina.status === 'EM_GERACAO'"
+                    [disabled]="item.pagina.status === 'EM_GERACAO'"
+                    (clicked)="gerarOuRegenerar()"
+                  >
+                    {{ item.pagina.status === 'ERRO' ? 'Tentar novamente' : 'Gerar esta página' }}
+                  </ui-button>
+                }
+              </nav>
+            </footer>
+          } @else {
+            <div class="manual-review__empty manual-review__empty--detail">
+              <lucide-icon name="ClipboardCheck" [size]="30" />
+              <h2>Selecione uma página</h2>
+              <p>O conteúdo de origem e a proposta aparecerão lado a lado.</p>
+            </div>
+          }
+        </main>
+      </div>
+    }
+  }
+</section>

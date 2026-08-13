@@ -82,7 +82,10 @@
           <span class="doc-import__analysis-icon"><lucide-icon name="Sparkles" [size]="18" /></span>
           <div>
             <strong>A IA está organizando a jornada do manual</strong>
-            <span>Identificando módulos, dependências, nomes e a melhor ordem das páginas. Você pode continuar na tela.</span>
+            <span
+              >Identificando módulos, dependências, nomes e a melhor ordem das páginas. Você pode continuar na
+              tela.</span
+            >
           </div>
           <span class="doc-import__analysis-pulse" aria-hidden="true"></span>
         </div>
@@ -90,7 +93,9 @@
         <div class="doc-import__analysis-result">
           <lucide-icon [name]="doc.analiseOrigem === 'LLM' ? 'Sparkles' : 'ListTree'" [size]="16" />
           <span>
-            <strong>{{ doc.analiseOrigem === 'LLM' ? 'Estrutura refinada pela IA' : 'Estrutura analisada localmente' }}</strong>
+            <strong>{{
+              doc.analiseOrigem === 'LLM' ? 'Estrutura refinada pela IA' : 'Estrutura analisada localmente'
+            }}</strong>
             {{ doc.analiseMensagem }}
           </span>
         </div>
@@ -241,8 +246,13 @@
           <lucide-icon name="CircleCheck" [size]="18" />
           <div>
             <strong>Projeto e módulos confirmados</strong>
-            <span>Agora escolha uma página para preencher o briefing e gerar o rascunho.</span>
+            <span>Gere as páginas abaixo ou acompanhe todas em uma central de revisão.</span>
           </div>
+          <a class="doc-import__review-link" [routerLink]="['/doc-flow/assistente/importacoes', doc.id, 'revisao']">
+            <lucide-icon name="ClipboardCheck" [size]="15" />
+            Abrir central de revisão
+            <lucide-icon name="ArrowRight" [size]="14" />
+          </a>
         </div>
       }
 
@@ -270,7 +280,9 @@
             </ui-button>
           </div>
           <div class="doc-import__batch-actions">
-            <span><strong>{{ paginasSelecionadas().size }}</strong> páginas selecionadas</span>
+            <span
+              ><strong>{{ paginasSelecionadas().size }}</strong> páginas selecionadas</span
+            >
             <ui-button
               type="button"
               variant="secondary"
@@ -314,87 +326,83 @@
 
       @if (doc.status !== 'ANALISANDO_ESTRUTURA') {
         <div class="doc-import__modules">
-        @for (modulo of doc.modulos; track modulo.id) {
-          <details class="doc-import__module" [open]="$first">
-            <summary>
-              <span
-                ><b>{{ modulo.ordem }}</b> {{ modulo.nome }}</span
-              >
-              <small>{{ modulo.paginas.length }} páginas</small>
-            </summary>
-            <ol>
-              @for (pagina of modulo.paginas; track pagina.id) {
-                <li
-                  [class.doc-import__page--active]="paginaAtivaId() === pagina.id"
-                  [class.doc-import__page--next]="doc.estruturaConfirmada && proximaPaginaId(doc) === pagina.id"
+          @for (modulo of doc.modulos; track modulo.id) {
+            <details class="doc-import__module" [open]="$first">
+              <summary>
+                <span
+                  ><b>{{ modulo.ordem }}</b> {{ modulo.nome }}</span
                 >
-                  <span class="doc-import__page-select">
-                    @if (paginaSelecionavel(pagina)) {
-                      <input
-                        type="checkbox"
-                        [checked]="paginasSelecionadas().has(pagina.id)"
-                        [disabled]="!paginasSelecionadas().has(pagina.id) && paginasSelecionadas().size >= 10"
-                        [attr.aria-label]="'Selecionar ' + pagina.titulo + ' para o lote'"
-                        (change)="alternarPaginaLote(pagina, $event)"
-                      />
-                    } @else if (pagina.status === 'REVISADA' || pagina.status === 'GERADA') {
-                      <lucide-icon name="CircleCheck" [size]="15" />
-                    } @else if (pagina.status === 'EM_GERACAO') {
-                      <lucide-icon name="Loader2" [size]="15" class="doc-import__spin" />
-                    }
-                  </span>
-                  <span class="doc-import__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
-                  <div class="doc-import__page-copy">
-                    <strong>{{ pagina.titulo }}</strong>
-                    <span>
-                      {{ pagina.templateNome || 'Modelo será confirmado no assistente' }}
-                      @if (pagina.templateNome) {
-                        · {{ (pagina.confiancaTemplate * 100).toFixed(0) }}%
+                <small>{{ modulo.paginas.length }} páginas</small>
+              </summary>
+              <ol>
+                @for (pagina of modulo.paginas; track pagina.id) {
+                  <li
+                    [class.doc-import__page--active]="paginaAtivaId() === pagina.id"
+                    [class.doc-import__page--next]="doc.estruturaConfirmada && proximaPaginaId(doc) === pagina.id"
+                  >
+                    <span class="doc-import__page-select">
+                      @if (paginaSelecionavel(pagina)) {
+                        <input
+                          type="checkbox"
+                          [checked]="paginasSelecionadas().has(pagina.id)"
+                          [disabled]="!paginasSelecionadas().has(pagina.id) && paginasSelecionadas().size >= 10"
+                          [attr.aria-label]="'Selecionar ' + pagina.titulo + ' para o lote'"
+                          (change)="alternarPaginaLote(pagina, $event)"
+                        />
+                      } @else if (pagina.status === 'REVISADA' || pagina.status === 'GERADA') {
+                        <lucide-icon name="CircleCheck" [size]="15" />
+                      } @else if (pagina.status === 'EM_GERACAO') {
+                        <lucide-icon name="Loader2" [size]="15" class="doc-import__spin" />
                       }
                     </span>
-                    <small class="doc-import__page-status" [attr.data-status]="pagina.status">
-                      {{ rotuloStatusPagina(pagina.status) }}
-                    </small>
-                  </div>
-                  @if (pagina.paginaId) {
-                    <a class="doc-import__page-link" [routerLink]="['/doc-flow/paginas', pagina.paginaId, 'editar']">
-                      Abrir página
-                    </a>
-                  } @else if (pagina.sessaoId && pagina.status !== 'EM_GERACAO') {
-                    <a
-                      class="doc-import__page-link"
-                      [routerLink]="['/doc-flow/assistente']"
-                      [queryParams]="{
-                        importacaoId: doc.id,
-                        paginaPlanoId: pagina.id,
-                        sessaoId: pagina.sessaoId,
-                        projetoId: doc.projetoId,
-                        moduloId: modulo.moduloId,
-                        clienteId: doc.clienteId
-                      }"
-                    >
-                      {{ pagina.status === 'ERRO' ? 'Revisar erro' : 'Revisar rascunho' }}
-                    </a>
-                  } @else {
-                    <ui-button
-                      type="button"
-                      [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
-                      icon="Sparkles"
-                      [disabled]="
-                        importando() ||
-                        !doc.estruturaConfirmada ||
-                        pagina.status === 'EM_GERACAO'
-                      "
-                      (clicked)="usarPagina(pagina, modulo)"
-                    >
-                      {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Gerar esta página' }}
-                    </ui-button>
-                  }
-                </li>
-              }
-            </ol>
-          </details>
-        }
+                    <span class="doc-import__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
+                    <div class="doc-import__page-copy">
+                      <strong>{{ pagina.titulo }}</strong>
+                      <span>
+                        {{ pagina.templateNome || 'Modelo será confirmado no assistente' }}
+                        @if (pagina.templateNome) {
+                          · {{ (pagina.confiancaTemplate * 100).toFixed(0) }}%
+                        }
+                      </span>
+                      <small class="doc-import__page-status" [attr.data-status]="pagina.status">
+                        {{ rotuloStatusPagina(pagina.status) }}
+                      </small>
+                    </div>
+                    @if (pagina.paginaId) {
+                      <a class="doc-import__page-link" [routerLink]="['/doc-flow/paginas', pagina.paginaId, 'editar']">
+                        Abrir página
+                      </a>
+                    } @else if (pagina.sessaoId && pagina.status !== 'EM_GERACAO') {
+                      <a
+                        class="doc-import__page-link"
+                        [routerLink]="['/doc-flow/assistente']"
+                        [queryParams]="{
+                          importacaoId: doc.id,
+                          paginaPlanoId: pagina.id,
+                          sessaoId: pagina.sessaoId,
+                          projetoId: doc.projetoId,
+                          moduloId: modulo.moduloId,
+                          clienteId: doc.clienteId,
+                        }"
+                      >
+                        {{ pagina.status === 'ERRO' ? 'Revisar erro' : 'Revisar rascunho' }}
+                      </a>
+                    } @else {
+                      <ui-button
+                        type="button"
+                        [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
+                        icon="Sparkles"
+                        [disabled]="importando() || !doc.estruturaConfirmada || pagina.status === 'EM_GERACAO'"
+                        (clicked)="usarPagina(pagina, modulo)"
+                      >
+                        {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Gerar esta página' }}
+                      </ui-button>
+                    }
+                  </li>
+                }
+              </ol>
+            </details>
+          }
         </div>
       }
     </div>

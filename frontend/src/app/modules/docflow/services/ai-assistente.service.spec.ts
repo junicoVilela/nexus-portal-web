@@ -115,6 +115,19 @@ describe('AiAssistenteService', () => {
     selecao.flush({ id: 'importacao-1' });
   });
 
+  it('aceita proposta importada e cria o rascunho pelo endpoint atômico', () => {
+    service.aceitarPaginaImportada('importacao-1', 'pagina-1').subscribe(doc => {
+      expect(doc.id).toBe('importacao-1');
+    });
+
+    const req = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/paginas/pagina-1/aceitar`,
+    );
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({});
+    req.flush({ id: 'importacao-1' });
+  });
+
   it('confirma a estrutura sugerida antes de selecionar páginas', () => {
     service
       .confirmarEstruturaImportada('importacao-1', {

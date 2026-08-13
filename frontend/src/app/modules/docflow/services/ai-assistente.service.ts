@@ -82,14 +82,24 @@ export class AiAssistenteService {
     );
   }
 
+  aceitarPaginaImportada(importacaoId: string, paginaPlanoId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/paginas/${paginaPlanoId}/aceitar`,
+      {},
+    );
+  }
+
   sincronizarImportacao(importacaoId: string): Observable<AiDocumentoImportacao> {
     return this.http.post<AiDocumentoImportacao>(`${this.base}/importacoes/${importacaoId}/sincronizar`, {});
   }
 
   estimarLoteImportacao(importacaoId: string, paginas: string[]): Observable<AiEstimativaLoteDocumento> {
-    return this.http.post<AiEstimativaLoteDocumento>(`${this.base}/importacoes/${importacaoId}/lote/estimar`, {
-      paginas,
-    });
+    return this.http.post<AiEstimativaLoteDocumento>(
+      `${this.base}/importacoes/${importacaoId}/lote/estimar`,
+      {
+        paginas,
+      },
+    );
   }
 
   gerarLoteImportacao(importacaoId: string, paginas: string[]): Observable<AiDocumentoImportacao> {
@@ -120,7 +130,12 @@ export class AiAssistenteService {
 
   aplicar(
     id: string,
-    payload: { modo: 'FORM' | 'PERSISTIR'; moduloId?: string | null; parentId?: string | null },
+    payload: {
+      modo: 'FORM' | 'PERSISTIR';
+      moduloId?: string | null;
+      parentId?: string | null;
+      ordem?: number | null;
+    },
   ): Observable<AiAplicacao> {
     return this.http.post<AiAplicacao>(`${this.base}/sessoes/${id}/aplicar`, payload);
   }

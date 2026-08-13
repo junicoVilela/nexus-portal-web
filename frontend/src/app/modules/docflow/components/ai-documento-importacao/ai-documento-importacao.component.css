@@ -385,6 +385,26 @@
   background: color-mix(in srgb, var(--success-soft) 55%, var(--surface));
 }
 
+.doc-import__review-link {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--success) 28%, var(--border));
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--success);
+  font: 650 11px/1 var(--font-body);
+  text-decoration: none;
+}
+
+.doc-import__review-link:hover {
+  border-color: color-mix(in srgb, var(--success) 48%, var(--border));
+  background: color-mix(in srgb, var(--success-soft) 45%, var(--surface));
+}
+
 .doc-import__plan {
   display: grid;
   gap: 10px;
