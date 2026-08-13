@@ -22,6 +22,9 @@ describe('AiDocumentoImportacaoComponent', () => {
       'buscarImportacao',
       'confirmarEstruturaImportada',
       'selecionarPaginaImportada',
+      'sincronizarImportacao',
+      'estimarLoteImportacao',
+      'gerarLoteImportacao',
     ]);
     clientes = jasmine.createSpyObj<ClienteService>('ClienteService', ['clientes']);
     projetos = jasmine.createSpyObj<ProjetoService>('ProjetoService', ['projetos', 'invalidarCache']);
@@ -113,6 +116,40 @@ describe('AiDocumentoImportacaoComponent', () => {
       }),
     );
   });
+
+  it('estima e inicia um lote somente após confirmação do consumo', () => {
+    const importacao = importacaoTeste(true);
+    const estimativa = {
+      paginas: 1,
+      caracteresEntrada: 120,
+      tokensEntradaEstimados: 700,
+      tokensSaidaEstimados: 3000,
+      modelo: 'openai/gpt-5.6-luna',
+      observacao: 'Estimativa técnica.',
+    };
+    ai.estimarLoteImportacao.and.returnValue(of(estimativa));
+    ai.gerarLoteImportacao.and.returnValue(
+      of({
+        ...importacao,
+        modulos: [
+          {
+            ...importacao.modulos[0],
+            paginas: [{ ...importacao.modulos[0].paginas[0], status: 'EM_GERACAO', sessaoId: 'sessao-1' }],
+          },
+        ],
+      }),
+    );
+    fixture.componentInstance['importacao'].set(importacao);
+    fixture.componentInstance['paginasSelecionadas'].set(new Set(['pagina-1']));
+
+    fixture.componentInstance['estimarLote']();
+    expect(ai.estimarLoteImportacao).toHaveBeenCalledWith('importacao-1', ['pagina-1']);
+    expect(fixture.componentInstance['estimativaLote']()).toEqual(estimativa);
+
+    fixture.componentInstance['gerarLote']();
+    expect(ai.gerarLoteImportacao).toHaveBeenCalledWith('importacao-1', ['pagina-1']);
+    expect(fixture.componentInstance['importacao']()?.modulos[0].paginas[0].status).toBe('EM_GERACAO');
+  });
 });
 
 function importacaoTeste(confirmada = false): AiDocumentoImportacao {
@@ -131,6 +168,11 @@ function importacaoTeste(confirmada = false): AiDocumentoImportacao {
     projetoId: confirmada ? 'projeto-1' : null,
     clienteId: null,
     estruturaConfirmada: confirmada,
+    projetoNomesSugeridos: ['Manual do portal'],
+    analiseOrigem: 'ESTRUTURAL',
+    analiseMensagem: 'Estrutura analisada localmente.',
+    tokensEntradaAnalise: null,
+    tokensSaidaAnalise: null,
     modulos: [
       {
         id: 'modulo-1',
@@ -149,6 +191,9 @@ function importacaoTeste(confirmada = false): AiDocumentoImportacao {
             confiancaTemplate: 0.9,
             motivoTemplate: 'Listagem identificada.',
             status: 'PENDENTE',
+            paginaId: null,
+            sessaoId: null,
+            erroMensagem: null,
           },
         ],
       },

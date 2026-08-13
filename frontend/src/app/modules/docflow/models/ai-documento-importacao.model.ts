@@ -1,6 +1,17 @@
 export type AiTipoDocumento = 'DOC' | 'DOCX' | 'PDF' | 'TXT';
-export type AiImportacaoStatus = 'PRONTO_PARA_REVISAO' | 'EM_REVISAO' | 'CONCLUIDA';
-export type AiPaginaPlanoStatus = 'PENDENTE' | 'EM_EDICAO' | 'GERADA' | 'REVISADA';
+export type AiImportacaoStatus =
+  | 'ANALISANDO_ESTRUTURA'
+  | 'PRONTO_PARA_REVISAO'
+  | 'EM_REVISAO'
+  | 'CONCLUIDA';
+export type AiPaginaPlanoStatus =
+  | 'PENDENTE'
+  | 'EM_EDICAO'
+  | 'EM_GERACAO'
+  | 'GERADA'
+  | 'REVISADA'
+  | 'ERRO';
+export type AiDocumentoAnaliseOrigem = 'ESTRUTURAL' | 'LLM';
 export type AiDocumentoProjetoModo = 'NOVO_PROJETO' | 'PROJETO_EXISTENTE';
 export type AiDocumentoClienteModo = 'SEM_CLIENTE' | 'CLIENTE_EXISTENTE' | 'NOVO_CLIENTE';
 
@@ -15,6 +26,9 @@ export interface AiPaginaDocumento {
   confiancaTemplate: number;
   motivoTemplate: string;
   status: AiPaginaPlanoStatus;
+  paginaId: string | null;
+  sessaoId: string | null;
+  erroMensagem: string | null;
 }
 
 export interface AiModuloDocumento {
@@ -40,6 +54,11 @@ export interface AiDocumentoImportacao {
   projetoId: string | null;
   clienteId: string | null;
   estruturaConfirmada: boolean;
+  projetoNomesSugeridos: string[];
+  analiseOrigem: AiDocumentoAnaliseOrigem;
+  analiseMensagem: string | null;
+  tokensEntradaAnalise: number | null;
+  tokensSaidaAnalise: number | null;
   modulos: AiModuloDocumento[];
   avisos: string[];
   createdAt: string;
@@ -63,4 +82,13 @@ export interface AiConfirmarEstruturaDocumentoPayload {
   projetoNome: string | null;
   projetoDescricao: string | null;
   modulos: Array<{ planoId: string; nome: string }>;
+}
+
+export interface AiEstimativaLoteDocumento {
+  paginas: number;
+  caracteresEntrada: number;
+  tokensEntradaEstimados: number;
+  tokensSaidaEstimados: number;
+  modelo: string;
+  observacao: string;
 }

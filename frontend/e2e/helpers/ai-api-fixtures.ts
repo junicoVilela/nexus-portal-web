@@ -32,6 +32,11 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
     projetoId: estruturaConfirmada ? '77777777-7777-7777-7777-777777777777' : null,
     clienteId: null,
     estruturaConfirmada,
+    projetoNomesSugeridos: ['Cadastro de produto', 'Manual de cadastros'],
+    analiseOrigem: 'LLM',
+    analiseMensagem: 'Estrutura, nomes e ordem refinados semanticamente pela IA.',
+    tokensEntradaAnalise: 500,
+    tokensSaidaAnalise: 180,
     modulos: [
       {
         id: '66666666-6666-6666-6666-666666666666',
@@ -52,6 +57,9 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
             confiancaTemplate: 0.9,
             motivoTemplate: 'Listagem e filtros identificados.',
             status: statusPagina,
+            paginaId: null,
+            sessaoId: null,
+            erroMensagem: null,
           },
         ],
       },

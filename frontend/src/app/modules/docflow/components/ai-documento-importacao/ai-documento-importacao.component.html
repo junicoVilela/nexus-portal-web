@@ -48,7 +48,15 @@
     <div class="doc-import__plan">
       <header class="doc-import__summary">
         <div>
-          <span>{{ doc.estruturaConfirmada ? 'Estrutura criada' : 'Estrutura sugerida para revisão' }}</span>
+          <span>
+            {{
+              doc.status === 'ANALISANDO_ESTRUTURA'
+                ? 'Análise semântica em andamento'
+                : doc.estruturaConfirmada
+                  ? 'Estrutura criada'
+                  : 'Estrutura sugerida para revisão'
+            }}
+          </span>
           <strong>{{ doc.projetoNome }}</strong>
           <small>{{ doc.nomeArquivo }} · {{ tamanhoLegivel(doc.tamanhoBytes) }}</small>
         </div>
@@ -69,7 +77,26 @@
         <p class="doc-import__warning"><lucide-icon name="Info" [size]="14" /> {{ aviso }}</p>
       }
 
-      @if (!doc.estruturaConfirmada) {
+      @if (doc.status === 'ANALISANDO_ESTRUTURA') {
+        <div class="doc-import__analysis" role="status" aria-live="polite">
+          <span class="doc-import__analysis-icon"><lucide-icon name="Sparkles" [size]="18" /></span>
+          <div>
+            <strong>A IA está organizando a jornada do manual</strong>
+            <span>Identificando módulos, dependências, nomes e a melhor ordem das páginas. Você pode continuar na tela.</span>
+          </div>
+          <span class="doc-import__analysis-pulse" aria-hidden="true"></span>
+        </div>
+      } @else if (doc.analiseMensagem) {
+        <div class="doc-import__analysis-result">
+          <lucide-icon [name]="doc.analiseOrigem === 'LLM' ? 'BrainCircuit' : 'ListTree'" [size]="16" />
+          <span>
+            <strong>{{ doc.analiseOrigem === 'LLM' ? 'Estrutura refinada pela IA' : 'Estrutura analisada localmente' }}</strong>
+            {{ doc.analiseMensagem }}
+          </span>
+        </div>
+      }
+
+      @if (!doc.estruturaConfirmada && doc.status !== 'ANALISANDO_ESTRUTURA') {
         <section class="doc-import__context" aria-labelledby="doc-import-context-title">
           <header>
             <span class="doc-import__context-step">Antes de gerar as páginas</span>
@@ -108,6 +135,13 @@
                 <span>Nome sugerido para o projeto</span>
                 <input type="text" formControlName="projetoNome" maxlength="150" />
                 <small>A sugestão foi extraída do título e do conteúdo; você pode alterá-la.</small>
+                @if (doc.projetoNomesSugeridos.length > 1) {
+                  <span class="doc-import__suggestions" aria-label="Outras sugestões de nome">
+                    @for (nome of doc.projetoNomesSugeridos; track nome) {
+                      <button type="button" (click)="usarNomeSugerido(nome)">{{ nome }}</button>
+                    }
+                  </span>
+                }
               </label>
               <label class="doc-import__field doc-import__field--wide">
                 <span>Descrição</span>
@@ -202,7 +236,7 @@
             </ui-button>
           </div>
         </section>
-      } @else {
+      } @else if (doc.estruturaConfirmada) {
         <div class="doc-import__confirmed" role="status">
           <lucide-icon name="CircleCheck" [size]="18" />
           <div>
@@ -212,7 +246,74 @@
         </div>
       }
 
-      <div class="doc-import__modules">
+      @if (doc.estruturaConfirmada) {
+        <section class="doc-import__progress" aria-label="Progresso das páginas do manual">
+          <div class="doc-import__progress-copy">
+            <span>Progresso do manual</span>
+            <strong>{{ paginasFinalizadas(doc) }} de {{ totalPaginas(doc) }} páginas concluídas</strong>
+          </div>
+          <span class="doc-import__progress-value">{{ progresso(doc) }}%</span>
+          <div class="doc-import__progress-track" aria-hidden="true">
+            <span [style.width.%]="progresso(doc)"></span>
+          </div>
+        </section>
+
+        <section class="doc-import__batch" aria-labelledby="doc-import-batch-title">
+          <div class="doc-import__batch-heading">
+            <div>
+              <span>Automação supervisionada</span>
+              <strong id="doc-import-batch-title">Gerar páginas em lote</strong>
+              <small>Selecione até 10 páginas. Cada rascunho continuará disponível para revisão antes de salvar.</small>
+            </div>
+            <ui-button type="button" variant="ghost" icon="ListChecks" (clicked)="selecionarProximas(doc)">
+              Selecionar próximas 5
+            </ui-button>
+          </div>
+          <div class="doc-import__batch-actions">
+            <span><strong>{{ paginasSelecionadas().size }}</strong> páginas selecionadas</span>
+            <ui-button
+              type="button"
+              variant="secondary"
+              icon="Calculator"
+              [loading]="estimandoLote()"
+              [disabled]="!paginasSelecionadas().size || estimandoLote() || gerandoLote()"
+              (clicked)="estimarLote()"
+            >
+              Estimar consumo
+            </ui-button>
+          </div>
+          @if (estimativaLote(); as estimativa) {
+            <div class="doc-import__estimate">
+              <div>
+                <span>Entrada estimada</span>
+                <strong>{{ numeroLegivel(estimativa.tokensEntradaEstimados) }} tokens</strong>
+              </div>
+              <div>
+                <span>Saída máxima provável</span>
+                <strong>{{ numeroLegivel(estimativa.tokensSaidaEstimados) }} tokens</strong>
+              </div>
+              <div>
+                <span>Modelo</span>
+                <strong>{{ estimativa.modelo }}</strong>
+              </div>
+              <ui-button
+                type="button"
+                variant="primary"
+                icon="Play"
+                [loading]="gerandoLote()"
+                [disabled]="gerandoLote()"
+                (clicked)="gerarLote()"
+              >
+                Gerar {{ estimativa.paginas }} páginas
+              </ui-button>
+              <small>{{ estimativa.observacao }}</small>
+            </div>
+          }
+        </section>
+      }
+
+      @if (doc.status !== 'ANALISANDO_ESTRUTURA') {
+        <div class="doc-import__modules">
         @for (modulo of doc.modulos; track modulo.id) {
           <details class="doc-import__module" [open]="$first">
             <summary>
@@ -223,7 +324,25 @@
             </summary>
             <ol>
               @for (pagina of modulo.paginas; track pagina.id) {
-                <li [class.doc-import__page--active]="paginaAtivaId() === pagina.id">
+                <li
+                  [class.doc-import__page--active]="paginaAtivaId() === pagina.id"
+                  [class.doc-import__page--next]="doc.estruturaConfirmada && proximaPaginaId(doc) === pagina.id"
+                >
+                  <span class="doc-import__page-select">
+                    @if (paginaSelecionavel(pagina)) {
+                      <input
+                        type="checkbox"
+                        [checked]="paginasSelecionadas().has(pagina.id)"
+                        [disabled]="!paginasSelecionadas().has(pagina.id) && paginasSelecionadas().size >= 10"
+                        [attr.aria-label]="'Selecionar ' + pagina.titulo + ' para o lote'"
+                        (change)="alternarPaginaLote(pagina, $event)"
+                      />
+                    } @else if (pagina.status === 'REVISADA' || pagina.status === 'GERADA') {
+                      <lucide-icon name="CircleCheck" [size]="15" />
+                    } @else if (pagina.status === 'EM_GERACAO') {
+                      <lucide-icon name="Loader2" [size]="15" class="doc-import__spin" />
+                    }
+                  </span>
                   <span class="doc-import__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
                   <div class="doc-import__page-copy">
                     <strong>{{ pagina.titulo }}</strong>
@@ -233,22 +352,51 @@
                         · {{ (pagina.confiancaTemplate * 100).toFixed(0) }}%
                       }
                     </span>
+                    <small class="doc-import__page-status" [attr.data-status]="pagina.status">
+                      {{ rotuloStatusPagina(pagina.status) }}
+                    </small>
                   </div>
-                  <ui-button
-                    type="button"
-                    [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
-                    icon="Sparkles"
-                    [disabled]="importando() || !doc.estruturaConfirmada"
-                    (clicked)="usarPagina(pagina, modulo)"
-                  >
-                    {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Gerar esta página' }}
-                  </ui-button>
+                  @if (pagina.paginaId) {
+                    <a class="doc-import__page-link" [routerLink]="['/doc-flow/paginas', pagina.paginaId, 'editar']">
+                      Abrir página
+                    </a>
+                  } @else if (pagina.sessaoId && pagina.status !== 'EM_GERACAO') {
+                    <a
+                      class="doc-import__page-link"
+                      [routerLink]="['/doc-flow/assistente']"
+                      [queryParams]="{
+                        importacaoId: doc.id,
+                        paginaPlanoId: pagina.id,
+                        sessaoId: pagina.sessaoId,
+                        projetoId: doc.projetoId,
+                        moduloId: modulo.moduloId,
+                        clienteId: doc.clienteId
+                      }"
+                    >
+                      {{ pagina.status === 'ERRO' ? 'Revisar erro' : 'Revisar rascunho' }}
+                    </a>
+                  } @else {
+                    <ui-button
+                      type="button"
+                      [variant]="paginaAtivaId() === pagina.id ? 'secondary' : 'ghost'"
+                      icon="Sparkles"
+                      [disabled]="
+                        importando() ||
+                        !doc.estruturaConfirmada ||
+                        pagina.status === 'EM_GERACAO'
+                      "
+                      (clicked)="usarPagina(pagina, modulo)"
+                    >
+                      {{ paginaAtivaId() === pagina.id ? 'Em edição' : 'Gerar esta página' }}
+                    </ui-button>
+                  }
                 </li>
               }
             </ol>
           </details>
         }
-      </div>
+        </div>
+      }
     </div>
   }
 </section>

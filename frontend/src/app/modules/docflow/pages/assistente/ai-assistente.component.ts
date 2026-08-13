@@ -87,6 +87,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
   protected readonly recomendandoTemplate = signal(false);
   private readonly paginaImportadaContexto = signal<{
+    importacaoId: string;
+    paginaPlanoId: string;
     projetoId: string;
     moduloId: string;
     clienteId: string | null;
@@ -341,6 +343,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected usarPaginaImportada(pagina: AiPaginaDocumentoSelecionada): void {
     this.paginaImportadaContexto.set({
+      importacaoId: pagina.importacaoId,
+      paginaPlanoId: pagina.id,
       projetoId: pagina.projetoId,
       moduloId: pagina.moduloId,
       clienteId: pagina.clienteId,
@@ -357,6 +361,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         projetoId: pagina.projetoId,
         moduloId: pagina.moduloId,
         clienteId: pagina.clienteId,
+        paginaPlanoId: pagina.id,
       }),
       queryParamsHandling: 'merge',
       replaceUrl: true,
@@ -462,6 +467,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
               projetoId: contextoImportado?.projetoId || qp.get('projetoId') || s.projetoId,
               moduloId: app.moduloId || contextoImportado?.moduloId || qp.get('moduloId') || s.moduloId,
               parentId: qp.get('parentId'),
+              importacaoId: contextoImportado?.importacaoId || qp.get('importacaoId'),
+              paginaPlanoId: contextoImportado?.paginaPlanoId || qp.get('paginaPlanoId'),
             }),
             state: {
               origem: 'ai',
@@ -474,6 +481,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
                 templateOrigemId: app.templateOrigemId,
                 templateOrigemVersao: app.templateOrigemVersao,
                 moduloId: app.moduloId,
+                importacaoId: contextoImportado?.importacaoId || qp.get('importacaoId'),
+                paginaPlanoId: contextoImportado?.paginaPlanoId || qp.get('paginaPlanoId'),
               },
             },
           });

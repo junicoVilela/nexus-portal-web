@@ -97,6 +97,7 @@ import {
 } from '@modules/docflow/utils/pagina-placeholders.util';
 import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
 import { PaginaBlocoService } from '@modules/docflow/services/pagina-bloco.service';
+import { AiAssistenteService } from '@modules/docflow/services/ai-assistente.service';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
 type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
@@ -134,6 +135,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private readonly auth = inject(AuthService);
   private readonly paginaDraftService = inject(PaginaDraftService);
   private readonly aiImagensStaging = inject(AiImagensStagingService);
+  private readonly aiAssistenteService = inject(AiAssistenteService);
   private tabelasDecoradasAssinatura = '';
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
@@ -206,6 +208,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly podeCriarTemplate = computed(() => this.auth.tem()('PAGINA:CRIAR'));
   protected readonly podeEditarTemplate = computed(() => this.auth.tem()('PAGINA:EDITAR'));
   protected readonly podeExcluirTemplate = computed(() => this.auth.tem()('PAGINA:EXCLUIR'));
+  protected readonly paginaDeImportacao =
+    !!this.route.snapshot.queryParamMap.get('importacaoId') &&
+    !!this.route.snapshot.queryParamMap.get('paginaPlanoId');
   protected readonly temFilhosPagina = computed(() => {
     const id = this.editId();
     if (!id) return false;
@@ -513,16 +518,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         if (pagina.parentId) {
           sincronizarIndicePai(this.paginaService, this.toast, pagina.parentId);
         }
-        if (destino === 'lista') {
-          this.router.navigate(docFlowRouterCommands(['paginas']));
-          return;
-        }
-        if (destino === 'nova') {
-          this.prepararProximaPagina(pagina);
-          return;
-        }
-        this.ativarPaginaSalva(pagina);
-        this.toast.success('Página salva. Você pode continuar editando.');
+        this.vincularImportacaoEContinuar(pagina, destino);
       },
       error: error => {
         this.saving.set(false);
@@ -1653,6 +1649,49 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.toast.success('Página salva. O próximo cadastro manteve o mesmo contexto.');
   }
 
+  private vincularImportacaoEContinuar(pagina: Pagina, destino: SalvarDestino): void {
+    const params = this.route.snapshot.queryParamMap;
+    const importacaoId = params.get('importacaoId');
+    const paginaPlanoId = params.get('paginaPlanoId');
+    if (!importacaoId || !paginaPlanoId) {
+      this.executarDestinoDepoisDeSalvar(pagina, destino);
+      return;
+    }
+    this.aiAssistenteService.vincularPaginaImportada(importacaoId, paginaPlanoId, pagina.id).subscribe({
+      next: () => this.executarDestinoDepoisDeSalvar(pagina, destino),
+      error: () => {
+        this.toast.error('A página foi salva, mas não foi possível atualizar o progresso da importação.');
+        this.executarDestinoDepoisDeSalvar(pagina, destino);
+      },
+    });
+  }
+
+  private executarDestinoDepoisDeSalvar(pagina: Pagina, destino: SalvarDestino): void {
+    const params = this.route.snapshot.queryParamMap;
+    const importacaoId = params.get('importacaoId');
+    if (destino === 'lista') {
+      this.router.navigate(docFlowRouterCommands(['paginas']));
+      return;
+    }
+    if (destino === 'nova' && importacaoId) {
+      void this.router.navigate(docFlowRouterCommands(['assistente']), {
+        queryParams: compactQueryParams({
+          importacaoId,
+          projetoId: this.form.controls.projetoId.value,
+          moduloId: this.form.controls.moduloId.value,
+        }),
+      });
+      this.toast.success('Página salva e progresso atualizado. Selecione a próxima página do plano.');
+      return;
+    }
+    if (destino === 'nova') {
+      this.prepararProximaPagina(pagina);
+      return;
+    }
+    this.ativarPaginaSalva(pagina);
+    this.toast.success('Página salva. Você pode continuar editando.');
+  }
+
   private aplicarContextoInicial(): void {
     const params = this.route.snapshot.queryParamMap;
     const projetoId = params.get('projetoId') ?? '';
@@ -1832,6 +1871,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     return {
       modo: this.editorModo() === 'split' ? null : this.editorModo(),
       diff: this.showDiff() ? 1 : null,
+      importacaoId: this.route.snapshot.queryParamMap.get('importacaoId'),
+      paginaPlanoId: this.route.snapshot.queryParamMap.get('paginaPlanoId'),
     };
   }
 

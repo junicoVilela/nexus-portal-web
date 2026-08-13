@@ -192,6 +192,9 @@ describe('AiAssistenteComponent', () => {
       confiancaTemplate: 0.9,
       motivoTemplate: 'Conteúdo compatível.',
       status: 'EM_EDICAO',
+      paginaId: null,
+      sessaoId: null,
+      erroMensagem: null,
     });
 
     expect(cmp['form'].controls.briefing.value).toBe(briefing);

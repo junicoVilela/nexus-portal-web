@@ -13,7 +13,7 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     });
 
     await expect(page.getByText('Estrutura sugerida para revisão')).toBeVisible();
-    await expect(page.getByText('Cadastro de produto')).toBeVisible();
+    await expect(page.locator('.doc-import__summary strong', { hasText: 'Cadastro de produto' })).toBeVisible();
     await expect(page.getByText('1.1')).toBeVisible();
     await page.getByRole('button', { name: 'Criar estrutura e continuar' }).click();
     await expect(page.getByText('Projeto e módulos confirmados')).toBeVisible();

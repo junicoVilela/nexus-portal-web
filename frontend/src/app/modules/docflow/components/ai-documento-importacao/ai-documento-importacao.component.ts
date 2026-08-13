@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { catchError, forkJoin, of } from 'rxjs';
 
@@ -9,6 +10,7 @@ import {
   AiDocumentoImportacao,
   AiDocumentoClienteModo,
   AiDocumentoProjetoModo,
+  AiEstimativaLoteDocumento,
   AiModuloDocumento,
   AiPaginaDocumento,
   AiPaginaDocumentoSelecionada,
@@ -23,12 +25,12 @@ import { ProjetoService } from '../../services/projeto.service';
 @Component({
   selector: 'app-ai-documento-importacao',
   standalone: true,
-  imports: [ReactiveFormsModule, LucideAngularModule, ButtonComponent, BadgeComponent],
+  imports: [ReactiveFormsModule, RouterLink, LucideAngularModule, ButtonComponent, BadgeComponent],
   templateUrl: './ai-documento-importacao.component.html',
   styleUrl: './ai-documento-importacao.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiDocumentoImportacaoComponent implements OnInit {
+export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   private readonly ai = inject(AiAssistenteService);
   private readonly clienteService = inject(ClienteService);
   private readonly projetoService = inject(ProjetoService);
@@ -36,6 +38,8 @@ export class AiDocumentoImportacaoComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private carregouImportacaoInicial = false;
   private catalogosCarregados = false;
+  private analiseTimer?: number;
+  private loteTimer?: number;
 
   readonly importacaoIdInicial = input<string | null>(null);
   readonly projetoId = input<string | null>(null);
@@ -52,6 +56,10 @@ export class AiDocumentoImportacaoComponent implements OnInit {
   protected readonly erro = signal<string | null>(null);
   protected readonly erroCatalogos = signal<string | null>(null);
   protected readonly paginaAtivaId = signal<string | null>(null);
+  protected readonly paginasSelecionadas = signal<Set<string>>(new Set());
+  protected readonly estimativaLote = signal<AiEstimativaLoteDocumento | null>(null);
+  protected readonly estimandoLote = signal(false);
+  protected readonly gerandoLote = signal(false);
   protected readonly modoProjeto = signal<AiDocumentoProjetoModo>('NOVO_PROJETO');
   protected readonly modoCliente = signal<AiDocumentoClienteModo>('SEM_CLIENTE');
   protected readonly clientes = signal<Cliente[]>([]);
@@ -71,6 +79,11 @@ export class AiDocumentoImportacaoComponent implements OnInit {
       this.carregouImportacaoInicial = true;
       this.carregar(id);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.cancelarPollingAnalise();
+    this.cancelarPollingLote();
   }
 
   protected selecionarArquivo(event: Event): void {
@@ -133,6 +146,108 @@ export class AiDocumentoImportacaoComponent implements OnInit {
 
   protected totalPaginas(importacao: AiDocumentoImportacao): number {
     return importacao.modulos.reduce((total, modulo) => total + modulo.paginas.length, 0);
+  }
+
+  protected paginasFinalizadas(importacao: AiDocumentoImportacao): number {
+    return importacao.modulos
+      .flatMap(modulo => modulo.paginas)
+      .filter(pagina => pagina.status === 'GERADA' || pagina.status === 'REVISADA').length;
+  }
+
+  protected progresso(importacao: AiDocumentoImportacao): number {
+    const total = this.totalPaginas(importacao);
+    return total ? Math.round((this.paginasFinalizadas(importacao) / total) * 100) : 0;
+  }
+
+  protected proximaPaginaId(importacao: AiDocumentoImportacao): string | null {
+    return (
+      importacao.modulos
+        .flatMap(modulo => modulo.paginas)
+        .find(pagina => pagina.status === 'PENDENTE' || pagina.status === 'ERRO')?.id ?? null
+    );
+  }
+
+  protected rotuloStatusPagina(status: AiPaginaDocumento['status']): string {
+    const rotulos: Record<AiPaginaDocumento['status'], string> = {
+      PENDENTE: 'Pendente',
+      EM_EDICAO: 'Em edição',
+      EM_GERACAO: 'Gerando',
+      GERADA: 'Rascunho pronto',
+      REVISADA: 'Revisada',
+      ERRO: 'Requer atenção',
+    };
+    return rotulos[status];
+  }
+
+  protected usarNomeSugerido(nome: string): void {
+    this.estruturaForm.controls.projetoNome.setValue(nome);
+  }
+
+  protected paginaSelecionavel(pagina: AiPaginaDocumento): boolean {
+    return !pagina.paginaId && (pagina.status === 'PENDENTE' || pagina.status === 'ERRO');
+  }
+
+  protected alternarPaginaLote(pagina: AiPaginaDocumento, event: Event): void {
+    const marcado = (event.target as HTMLInputElement).checked;
+    this.paginasSelecionadas.update(atuais => {
+      const novas = new Set(atuais);
+      if (marcado && novas.size < 10) novas.add(pagina.id);
+      else novas.delete(pagina.id);
+      return novas;
+    });
+    this.estimativaLote.set(null);
+  }
+
+  protected selecionarProximas(importacao: AiDocumentoImportacao): void {
+    const ids = importacao.modulos
+      .flatMap(modulo => modulo.paginas)
+      .filter(pagina => this.paginaSelecionavel(pagina))
+      .slice(0, 5)
+      .map(pagina => pagina.id);
+    this.paginasSelecionadas.set(new Set(ids));
+    this.estimativaLote.set(null);
+  }
+
+  protected estimarLote(): void {
+    const importacao = this.importacao();
+    const paginas = [...this.paginasSelecionadas()];
+    if (!importacao || !paginas.length || this.estimandoLote()) return;
+    this.estimandoLote.set(true);
+    this.erro.set(null);
+    this.ai.estimarLoteImportacao(importacao.id, paginas).subscribe({
+      next: estimativa => {
+        this.estimativaLote.set(estimativa);
+        this.estimandoLote.set(false);
+      },
+      error: err => {
+        this.erro.set(mensagemErroHttp(err, 'Não foi possível estimar o lote.'));
+        this.estimandoLote.set(false);
+      },
+    });
+  }
+
+  protected gerarLote(): void {
+    const importacao = this.importacao();
+    const paginas = [...this.paginasSelecionadas()];
+    if (!importacao || !paginas.length || !this.estimativaLote() || this.gerandoLote()) return;
+    this.gerandoLote.set(true);
+    this.erro.set(null);
+    this.ai.gerarLoteImportacao(importacao.id, paginas).subscribe({
+      next: atualizada => {
+        this.paginasSelecionadas.set(new Set());
+        this.estimativaLote.set(null);
+        this.gerandoLote.set(false);
+        this.definirImportacao(atualizada);
+      },
+      error: err => {
+        this.erro.set(mensagemErroHttp(err, 'Não foi possível iniciar a geração em lote.'));
+        this.gerandoLote.set(false);
+      },
+    });
+  }
+
+  protected numeroLegivel(valor: number): string {
+    return valor.toLocaleString('pt-BR');
   }
 
   protected tamanhoLegivel(bytes: number): string {
@@ -234,6 +349,8 @@ export class AiDocumentoImportacaoComponent implements OnInit {
     this.importando.set(true);
     this.erro.set(null);
     this.paginaAtivaId.set(null);
+    this.paginasSelecionadas.set(new Set());
+    this.estimativaLote.set(null);
     this.ai
       .importarDocumento(arquivo, { projetoId: this.projetoId(), clienteId: this.clienteId() })
       .subscribe({
@@ -255,9 +372,22 @@ export class AiDocumentoImportacaoComponent implements OnInit {
     this.erro.set(null);
     this.ai.buscarImportacao(id).subscribe({
       next: importacao => {
-        this.definirImportacao(importacao);
-        this.prepararEstrutura(importacao);
-        this.importando.set(false);
+        if (importacao.estruturaConfirmada && importacao.status !== 'ANALISANDO_ESTRUTURA') {
+          this.ai.sincronizarImportacao(importacao.id).subscribe({
+            next: sincronizada => {
+              this.definirImportacao(sincronizada);
+              this.importando.set(false);
+            },
+            error: () => {
+              this.definirImportacao(importacao);
+              this.importando.set(false);
+            },
+          });
+        } else {
+          this.definirImportacao(importacao);
+          this.prepararEstrutura(importacao);
+          this.importando.set(false);
+        }
       },
       error: err => {
         this.erro.set(mensagemErroHttp(err, 'Não foi possível retomar a importação.'));
@@ -272,10 +402,17 @@ export class AiDocumentoImportacaoComponent implements OnInit {
       .flatMap(modulo => modulo.paginas)
       .find(pagina => pagina.status === 'EM_EDICAO');
     this.paginaAtivaId.set(paginaAtiva?.id ?? null);
+    if (importacao.status === 'ANALISANDO_ESTRUTURA') this.agendarPollingAnalise(importacao.id);
+    else this.cancelarPollingAnalise();
+    const gerando = importacao.modulos.some(modulo =>
+      modulo.paginas.some(pagina => pagina.status === 'EM_GERACAO'),
+    );
+    if (gerando) this.agendarPollingLote(importacao.id);
+    else this.cancelarPollingLote();
   }
 
   private prepararEstrutura(importacao: AiDocumentoImportacao): void {
-    if (importacao.estruturaConfirmada) return;
+    if (importacao.estruturaConfirmada || importacao.status === 'ANALISANDO_ESTRUTURA') return;
     this.estruturaForm.patchValue({
       projetoId: importacao.projetoId ?? this.projetoId() ?? '',
       clienteId: importacao.clienteId ?? this.clienteId() ?? '',
@@ -292,6 +429,45 @@ export class AiDocumentoImportacaoComponent implements OnInit {
     );
     this.definirModoProjeto(importacao.projetoId || this.projetoId() ? 'PROJETO_EXISTENTE' : 'NOVO_PROJETO');
     this.carregarCatalogos();
+  }
+
+  private agendarPollingAnalise(importacaoId: string): void {
+    this.cancelarPollingAnalise();
+    this.analiseTimer = window.setTimeout(() => {
+      this.ai.buscarImportacao(importacaoId).subscribe({
+        next: atualizada => {
+          this.definirImportacao(atualizada);
+          if (atualizada.status !== 'ANALISANDO_ESTRUTURA') this.prepararEstrutura(atualizada);
+        },
+        error: () => {
+          this.erro.set('Não foi possível acompanhar a análise. Você pode retomar esta importação depois.');
+          this.cancelarPollingAnalise();
+        },
+      });
+    }, 1_200);
+  }
+
+  private cancelarPollingAnalise(): void {
+    if (this.analiseTimer !== undefined) window.clearTimeout(this.analiseTimer);
+    this.analiseTimer = undefined;
+  }
+
+  private agendarPollingLote(importacaoId: string): void {
+    this.cancelarPollingLote();
+    this.loteTimer = window.setTimeout(() => {
+      this.ai.sincronizarImportacao(importacaoId).subscribe({
+        next: atualizada => this.definirImportacao(atualizada),
+        error: () => {
+          this.erro.set('Não foi possível atualizar a fila agora. O processamento continua no servidor.');
+          this.cancelarPollingLote();
+        },
+      });
+    }, 2_000);
+  }
+
+  private cancelarPollingLote(): void {
+    if (this.loteTimer !== undefined) window.clearTimeout(this.loteTimer);
+    this.loteTimer = undefined;
   }
 
   private carregarCatalogos(): void {

@@ -6,6 +6,7 @@ import { environment } from '@env/environment';
 import {
   AiConfirmarEstruturaDocumentoPayload,
   AiDocumentoImportacao,
+  AiEstimativaLoteDocumento,
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
@@ -68,6 +69,33 @@ export class AiAssistenteService {
       `${this.base}/importacoes/${importacaoId}/paginas/${paginaId}/selecionar`,
       {},
     );
+  }
+
+  vincularPaginaImportada(
+    importacaoId: string,
+    paginaPlanoId: string,
+    paginaId: string,
+  ): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/paginas/${paginaPlanoId}/vincular/${paginaId}`,
+      {},
+    );
+  }
+
+  sincronizarImportacao(importacaoId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(`${this.base}/importacoes/${importacaoId}/sincronizar`, {});
+  }
+
+  estimarLoteImportacao(importacaoId: string, paginas: string[]): Observable<AiEstimativaLoteDocumento> {
+    return this.http.post<AiEstimativaLoteDocumento>(`${this.base}/importacoes/${importacaoId}/lote/estimar`, {
+      paginas,
+    });
+  }
+
+  gerarLoteImportacao(importacaoId: string, paginas: string[]): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(`${this.base}/importacoes/${importacaoId}/lote/gerar`, {
+      paginas,
+    });
   }
 
   buscarSessao(id: string): Observable<AiSessao> {

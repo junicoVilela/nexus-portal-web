@@ -547,7 +547,7 @@
       }
       <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
       <ui-button variant="secondary" type="button" [disabled]="form.invalid || saving()" (clicked)="salvar('nova')">
-        Salvar e criar próxima
+        {{ paginaDeImportacao ? 'Salvar e gerar próxima' : 'Salvar e criar próxima' }}
       </ui-button>
       <ui-button
         variant="secondary"
