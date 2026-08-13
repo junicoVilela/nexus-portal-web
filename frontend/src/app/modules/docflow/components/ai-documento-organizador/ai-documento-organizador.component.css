@@ -350,6 +350,12 @@
   height: 28px;
 }
 
+.organizer__move-actions--page .organizer__preview {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border));
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .organizer__empty-module {
   display: none;
   min-height: 44px;

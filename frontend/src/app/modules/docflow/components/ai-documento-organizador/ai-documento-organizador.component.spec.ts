@@ -1,4 +1,5 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
@@ -6,11 +7,13 @@ import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import { AiDocumentoImportacao, AiModuloDocumento } from '../../models/ai-documento-importacao.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
+import { AiDocumentoPreviewDialogComponent } from './ai-documento-preview-dialog.component';
 import { AiDocumentoOrganizadorComponent } from './ai-documento-organizador.component';
 
 describe('AiDocumentoOrganizadorComponent', () => {
   let fixture: ComponentFixture<AiDocumentoOrganizadorComponent>;
   let ai: jasmine.SpyObj<AiAssistenteService>;
+  let dialog: jasmine.SpyObj<Dialog>;
   let importacao: AiDocumentoImportacao;
 
   beforeEach(async () => {
@@ -18,9 +21,14 @@ describe('AiDocumentoOrganizadorComponent', () => {
       'reordenarEstruturaImportada',
       'buscarImportacao',
     ]);
+    dialog = jasmine.createSpyObj<Dialog>('Dialog', ['open']);
     await TestBed.configureTestingModule({
       imports: [AiDocumentoOrganizadorComponent],
-      providers: [lucideTestIcons, { provide: AiAssistenteService, useValue: ai }],
+      providers: [
+        lucideTestIcons,
+        { provide: AiAssistenteService, useValue: ai },
+        { provide: Dialog, useValue: dialog },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(AiDocumentoOrganizadorComponent);
     importacao = criarImportacao();
@@ -35,6 +43,25 @@ describe('AiDocumentoOrganizadorComponent', () => {
     expect(texto).toContain('Usuários');
     expect(texto).toContain('Permissões');
     expect(texto).toContain('3 páginas');
+  });
+
+  it('abre a prévia do conteúdo identificado pela lupa', () => {
+    const botao = fixture.nativeElement.querySelector(
+      '[aria-label="Visualizar conteúdo da página Consultar usuários"]',
+    ) as HTMLButtonElement;
+
+    botao.click();
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      AiDocumentoPreviewDialogComponent,
+      jasmine.objectContaining({
+        data: jasmine.objectContaining({
+          pagina: jasmine.objectContaining({ titulo: 'Consultar usuários' }),
+          modulo: jasmine.objectContaining({ nome: 'Usuários' }),
+        }),
+      }),
+    );
+    expect(ai.reordenarEstruturaImportada).not.toHaveBeenCalled();
   });
 
   it('reordena módulos e persiste IDs com a versão atual', () => {

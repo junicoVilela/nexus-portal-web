@@ -1,4 +1,5 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -21,6 +22,10 @@ import {
   AiPaginaDocumento,
 } from '../../models/ai-documento-importacao.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
+import {
+  AiDocumentoPreviewDialogComponent,
+  AiDocumentoPreviewDialogData,
+} from './ai-documento-preview-dialog.component';
 
 type SalvamentoStatus = 'idle' | 'saving' | 'saved' | 'conflict' | 'error';
 type TipoPersistencia = 'normal' | 'undo';
@@ -35,6 +40,7 @@ type TipoPersistencia = 'normal' | 'undo';
 })
 export class AiDocumentoOrganizadorComponent implements OnDestroy {
   private readonly ai = inject(AiAssistenteService);
+  private readonly dialog = inject(Dialog);
   private importacaoObservada?: string;
   private statusTimer?: number;
 
@@ -153,6 +159,17 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
     const [pagina] = origem.paginas.splice(indice, 1);
     destino.paginas.push(pagina);
     this.aplicar(normalizarOrdens(proximo), anterior);
+  }
+
+  protected visualizarConteudo(pagina: AiPaginaDocumento, modulo: AiModuloDocumento): void {
+    this.dialog.open<void, AiDocumentoPreviewDialogData>(AiDocumentoPreviewDialogComponent, {
+      data: { pagina, modulo },
+      ariaLabel: `Conteúdo da página ${pagina.titulo}`,
+      backdropClass: 'ui-dialog-backdrop',
+      panelClass: 'ui-dialog-panel',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+    });
   }
 
   protected atualizarNovoModuloNome(event: Event): void {

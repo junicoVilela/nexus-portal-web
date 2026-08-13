@@ -18,6 +18,13 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     ).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Ordene módulos e páginas' })).toBeVisible();
     await expect(page.locator('.organizer__page-order', { hasText: '1.1' })).toBeVisible();
+    await page.getByRole('button', { name: 'Visualizar conteúdo da página Listagem de registros' }).click();
+    const previa = page.getByRole('dialog', { name: 'Conteúdo da página Listagem de registros' });
+    await expect(previa).toBeVisible();
+    await expect(previa.getByText('A tela apresenta filtros, tabela e paginação.')).toBeVisible();
+    await expect(previa.getByText('Listar e consultar registros')).toBeVisible();
+    await previa.getByRole('button', { name: 'Fechar prévia' }).click();
+    await expect(previa).toBeHidden();
     await page.getByLabel('Novo módulo').fill('Relatórios');
     await page.getByRole('button', { name: 'Criar módulo' }).click();
     await expect(page.locator('.organizer__module')).toHaveCount(2);

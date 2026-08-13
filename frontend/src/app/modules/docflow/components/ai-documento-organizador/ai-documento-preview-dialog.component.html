@@ -1,0 +1,44 @@
+<article class="document-preview">
+  <header class="document-preview__header">
+    <span class="document-preview__icon"><lucide-icon name="Search" [size]="19" /></span>
+    <div class="document-preview__heading">
+      <span>Conteúdo identificado no documento</span>
+      <h3>{{ data.pagina.titulo }}</h3>
+      <p>Confira o texto que será utilizado como contexto pela IA antes de gerar a página.</p>
+    </div>
+    <button type="button" class="document-preview__close" (click)="fechar()" aria-label="Fechar prévia" title="Fechar">
+      <lucide-icon name="X" [size]="17" />
+    </button>
+  </header>
+
+  <dl class="document-preview__meta">
+    <div>
+      <dt>Posição</dt>
+      <dd>{{ data.modulo.ordem }}.{{ data.pagina.ordem }}</dd>
+    </div>
+    <div>
+      <dt>Módulo</dt>
+      <dd>{{ data.modulo.nome }}</dd>
+    </div>
+    <div>
+      <dt>Modelo recomendado</dt>
+      <dd>{{ data.pagina.templateNome || 'Será definido durante a geração' }}</dd>
+    </div>
+  </dl>
+
+  <section class="document-preview__content" aria-label="Texto completo da página">
+    @if (conteudoHtml(); as html) {
+      <div class="df-doc-content" [innerHTML]="html"></div>
+    } @else {
+      <div class="document-preview__loading" role="status">
+        <lucide-icon name="Loader2" [size]="18" />
+        Preparando conteúdo…
+      </div>
+    }
+  </section>
+
+  <footer class="document-preview__footer">
+    <span><lucide-icon name="Info" [size]="14" /> Prévia somente para leitura</span>
+    <button type="button" (click)="fechar()">Fechar</button>
+  </footer>
+</article>

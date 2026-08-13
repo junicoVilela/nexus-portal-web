@@ -159,6 +159,15 @@
               <span class="organizer__move-actions organizer__move-actions--page">
                 <button
                   type="button"
+                  class="organizer__preview"
+                  (click)="visualizarConteudo(pagina, modulo)"
+                  [attr.aria-label]="'Visualizar conteúdo da página ' + pagina.titulo"
+                  title="Visualizar conteúdo"
+                >
+                  <lucide-icon name="Search" [size]="13" />
+                </button>
+                <button
+                  type="button"
                   [disabled]="bloqueado() || primeiraPagina"
                   (click)="moverPagina(modulo.id, indicePagina, -1)"
                   [attr.aria-label]="'Mover página ' + pagina.titulo + ' para cima'"
