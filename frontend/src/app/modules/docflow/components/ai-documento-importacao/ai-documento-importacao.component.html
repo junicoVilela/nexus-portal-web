@@ -101,6 +101,14 @@
         </div>
       }
 
+      @if (!doc.estruturaConfirmada && doc.status !== 'ANALISANDO_ESTRUTURA' && doc.analiseOrigem === 'LLM') {
+        <app-ai-documento-sugestoes
+          [importacao]="doc"
+          [disabled]="disabled() || importando() || confirmando()"
+          (importacaoAtualizada)="atualizarSugestoes($event)"
+        />
+      }
+
       @if (!doc.estruturaConfirmada && doc.status !== 'ANALISANDO_ESTRUTURA') {
         <section class="doc-import__context" aria-labelledby="doc-import-context-title">
           <header>

@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -21,11 +30,19 @@ import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { ClienteService } from '../../services/cliente.service';
 import { ModuloService } from '../../services/modulo.service';
 import { ProjetoService } from '../../services/projeto.service';
+import { AiDocumentoSugestoesComponent } from '../ai-documento-sugestoes/ai-documento-sugestoes.component';
 
 @Component({
   selector: 'app-ai-documento-importacao',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LucideAngularModule, ButtonComponent, BadgeComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    LucideAngularModule,
+    ButtonComponent,
+    BadgeComponent,
+    AiDocumentoSugestoesComponent,
+  ],
   templateUrl: './ai-documento-importacao.component.html',
   styleUrl: './ai-documento-importacao.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -181,6 +198,18 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
 
   protected usarNomeSugerido(nome: string): void {
     this.estruturaForm.controls.projetoNome.setValue(nome);
+  }
+
+  protected atualizarSugestoes(atualizada: AiDocumentoImportacao): void {
+    const anterior = this.importacao();
+    this.definirImportacao(atualizada);
+    atualizada.modulos.forEach((modulo, indice) => {
+      const controle = this.modulosForm.controls[indice];
+      const moduloAnterior = anterior?.modulos.find(item => item.id === modulo.id);
+      if (controle && (!moduloAnterior || controle.value === moduloAnterior.nome)) {
+        controle.setValue(modulo.nome);
+      }
+    });
   }
 
   protected paginaSelecionavel(pagina: AiPaginaDocumento): boolean {

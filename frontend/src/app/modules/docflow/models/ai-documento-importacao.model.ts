@@ -1,17 +1,10 @@
 export type AiTipoDocumento = 'DOC' | 'DOCX' | 'PDF' | 'TXT';
-export type AiImportacaoStatus =
-  | 'ANALISANDO_ESTRUTURA'
-  | 'PRONTO_PARA_REVISAO'
-  | 'EM_REVISAO'
-  | 'CONCLUIDA';
-export type AiPaginaPlanoStatus =
-  | 'PENDENTE'
-  | 'EM_EDICAO'
-  | 'EM_GERACAO'
-  | 'GERADA'
-  | 'REVISADA'
-  | 'ERRO';
+export type AiImportacaoStatus = 'ANALISANDO_ESTRUTURA' | 'PRONTO_PARA_REVISAO' | 'EM_REVISAO' | 'CONCLUIDA';
+export type AiPaginaPlanoStatus = 'PENDENTE' | 'EM_EDICAO' | 'EM_GERACAO' | 'GERADA' | 'REVISADA' | 'ERRO';
 export type AiDocumentoAnaliseOrigem = 'ESTRUTURAL' | 'LLM';
+export type AiDocumentoSugestaoTipo =
+  'ADICIONAR_PAGINA' | 'RENOMEAR_PAGINA' | 'MOVER_PAGINA' | 'MESCLAR_PAGINAS' | 'RENOMEAR_MODULO';
+export type AiDocumentoSugestaoStatus = 'PENDENTE' | 'APLICADA' | 'IGNORADA';
 export type AiDocumentoProjetoModo = 'NOVO_PROJETO' | 'PROJETO_EXISTENTE';
 export type AiDocumentoClienteModo = 'SEM_CLIENTE' | 'CLIENTE_EXISTENTE' | 'NOVO_CLIENTE';
 
@@ -39,6 +32,22 @@ export interface AiModuloDocumento {
   paginas: AiPaginaDocumento[];
 }
 
+export interface AiDocumentoSugestao {
+  id: string;
+  tipo: AiDocumentoSugestaoTipo;
+  titulo: string;
+  justificativa: string;
+  confianca: number;
+  status: AiDocumentoSugestaoStatus;
+  aplicacaoSegura: boolean;
+  paginaOrigemId: string | null;
+  paginaDestinoId: string | null;
+  moduloOrigemId: string | null;
+  moduloDestinoId: string | null;
+  valorSugerido: string | null;
+  conteudoSugerido: string | null;
+}
+
 export interface AiDocumentoImportacao {
   id: string;
   nomeArquivo: string;
@@ -59,6 +68,7 @@ export interface AiDocumentoImportacao {
   analiseMensagem: string | null;
   tokensEntradaAnalise: number | null;
   tokensSaidaAnalise: number | null;
+  sugestoes: AiDocumentoSugestao[];
   modulos: AiModuloDocumento[];
   avisos: string[];
   createdAt: string;

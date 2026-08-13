@@ -1,0 +1,92 @@
+<section class="completeness" aria-labelledby="completeness-title">
+  <header class="completeness__header">
+    <span class="completeness__icon"><lucide-icon name="ScanSearch" [size]="19" /></span>
+    <div>
+      <span class="completeness__eyebrow">Revisão inteligente</span>
+      <h4 id="completeness-title">Análise de completude</h4>
+      <p>
+        A IA encontrou oportunidades na estrutura. Nada é alterado sem sua decisão e o texto importado é preservado.
+      </p>
+    </div>
+    <ui-badge tone="accent" [dot]="pendentes().length > 0"> {{ pendentes().length }} pendentes </ui-badge>
+  </header>
+
+  @if (totalSeguras() > 0) {
+    <div class="completeness__safe">
+      <span><lucide-icon name="ShieldCheck" [size]="16" /></span>
+      <div>
+        <strong>{{ totalSeguras() }} ajustes sem perda de conteúdo</strong>
+        <small>Aplica apenas renomeações e movimentos. Inclusões e mesclagens continuam individuais.</small>
+      </div>
+      <ui-button
+        type="button"
+        variant="secondary"
+        icon="Sparkles"
+        [loading]="aplicandoSeguras()"
+        [disabled]="bloqueado()"
+        (clicked)="aplicarSeguras()"
+      >
+        Aplicar ajustes seguros
+      </ui-button>
+    </div>
+  }
+
+  @if (erro()) {
+    <p class="completeness__error" role="alert">{{ erro() }}</p>
+  }
+
+  @if (!importacao().sugestoes.length) {
+    <div class="completeness__empty" role="status">
+      <lucide-icon name="CircleCheck" [size]="17" />
+      <span>
+        <strong>Nenhuma lacuna estrutural clara foi encontrada</strong>
+        <small>Continue revisando projeto, módulos e páginas antes de criar a estrutura.</small>
+      </span>
+    </div>
+  } @else {
+    <div class="completeness__list">
+      @for (sugestao of importacao().sugestoes; track sugestao.id) {
+        <article class="completeness__item" [class.completeness__item--resolved]="sugestao.status !== 'PENDENTE'">
+          <span class="completeness__item-icon"><lucide-icon [name]="iconeTipo(sugestao.tipo)" [size]="17" /></span>
+          <div class="completeness__copy">
+            <div class="completeness__meta">
+              <span>{{ rotuloTipo(sugestao.tipo) }}</span>
+              <ui-badge [tone]="toneStatus(sugestao)">{{ rotuloStatus(sugestao) }}</ui-badge>
+              <small>{{ confianca(sugestao) }}% de confiança</small>
+            </div>
+            <strong>{{ sugestao.titulo }}</strong>
+            <p>{{ sugestao.justificativa }}</p>
+            @if (impacto(sugestao); as descricaoImpacto) {
+              <span class="completeness__impact"
+                ><lucide-icon name="ArrowRight" [size]="13" />{{ descricaoImpacto }}</span
+              >
+            }
+            @if (sugestao.conteudoSugerido && sugestao.tipo === 'ADICIONAR_PAGINA') {
+              <details>
+                <summary>Ver escopo sugerido</summary>
+                <p>{{ sugestao.conteudoSugerido }}</p>
+              </details>
+            }
+          </div>
+          @if (sugestao.status === 'PENDENTE') {
+            <div class="completeness__actions">
+              <ui-button type="button" variant="ghost" [disabled]="bloqueado()" (clicked)="ignorar(sugestao)">
+                Ignorar
+              </ui-button>
+              <ui-button
+                type="button"
+                [variant]="sugestao.aplicacaoSegura ? 'secondary' : 'primary'"
+                [icon]="sugestao.tipo === 'MESCLAR_PAGINAS' ? 'Files' : 'Check'"
+                [loading]="processandoId() === sugestao.id"
+                [disabled]="bloqueado()"
+                (clicked)="aceitar(sugestao)"
+              >
+                {{ sugestao.tipo === 'MESCLAR_PAGINAS' ? 'Mesclar páginas' : 'Aplicar sugestão' }}
+              </ui-button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

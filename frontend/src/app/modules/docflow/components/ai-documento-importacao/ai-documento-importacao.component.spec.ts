@@ -173,6 +173,7 @@ function importacaoTeste(confirmada = false): AiDocumentoImportacao {
     analiseMensagem: 'Estrutura analisada localmente.',
     tokensEntradaAnalise: null,
     tokensSaidaAnalise: null,
+    sugestoes: [],
     modulos: [
       {
         id: 'modulo-1',

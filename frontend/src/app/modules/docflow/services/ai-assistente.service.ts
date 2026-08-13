@@ -54,6 +54,27 @@ export class AiAssistenteService {
     return this.http.get<AiDocumentoImportacao>(`${this.base}/importacoes/${id}`);
   }
 
+  aceitarSugestaoImportacao(importacaoId: string, sugestaoId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/sugestoes/${sugestaoId}/aceitar`,
+      {},
+    );
+  }
+
+  ignorarSugestaoImportacao(importacaoId: string, sugestaoId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/sugestoes/${sugestaoId}/ignorar`,
+      {},
+    );
+  }
+
+  aplicarSugestoesSegurasImportacao(importacaoId: string): Observable<AiDocumentoImportacao> {
+    return this.http.post<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/sugestoes/aplicar-seguras`,
+      {},
+    );
+  }
+
   confirmarEstruturaImportada(
     importacaoId: string,
     payload: AiConfirmarEstruturaDocumentoPayload,

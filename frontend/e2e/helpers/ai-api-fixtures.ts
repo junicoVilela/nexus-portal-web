@@ -37,6 +37,7 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
     analiseMensagem: 'Estrutura, nomes e ordem refinados semanticamente pela IA.',
     tokensEntradaAnalise: 500,
     tokensSaidaAnalise: 180,
+    sugestoes: [],
     modulos: [
       {
         id: '66666666-6666-6666-6666-666666666666',

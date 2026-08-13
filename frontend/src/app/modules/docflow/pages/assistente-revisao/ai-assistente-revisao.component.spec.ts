@@ -120,6 +120,7 @@ function importacaoTeste(): AiDocumentoImportacao {
     analiseMensagem: 'Estrutura identificada.',
     tokensEntradaAnalise: 100,
     tokensSaidaAnalise: 50,
+    sugestoes: [],
     modulos: [
       {
         id: 'modulo-plano-1',

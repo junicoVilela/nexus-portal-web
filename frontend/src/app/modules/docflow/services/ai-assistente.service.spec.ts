@@ -120,12 +120,33 @@ describe('AiAssistenteService', () => {
       expect(doc.id).toBe('importacao-1');
     });
 
-    const req = http.expectOne(
-      `${environment.aiApiUrl}/importacoes/importacao-1/paginas/pagina-1/aceitar`,
-    );
+    const req = http.expectOne(`${environment.aiApiUrl}/importacoes/importacao-1/paginas/pagina-1/aceitar`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({});
     req.flush({ id: 'importacao-1' });
+  });
+
+  it('revisa sugestões estruturais da importação', () => {
+    service.aceitarSugestaoImportacao('importacao-1', 'sugestao-1').subscribe();
+    const aceitar = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/sugestoes/sugestao-1/aceitar`,
+    );
+    expect(aceitar.request.method).toBe('POST');
+    aceitar.flush({ id: 'importacao-1' });
+
+    service.ignorarSugestaoImportacao('importacao-1', 'sugestao-2').subscribe();
+    const ignorar = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/sugestoes/sugestao-2/ignorar`,
+    );
+    expect(ignorar.request.method).toBe('POST');
+    ignorar.flush({ id: 'importacao-1' });
+
+    service.aplicarSugestoesSegurasImportacao('importacao-1').subscribe();
+    const seguras = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/sugestoes/aplicar-seguras`,
+    );
+    expect(seguras.request.method).toBe('POST');
+    seguras.flush({ id: 'importacao-1' });
   });
 
   it('confirma a estrutura sugerida antes de selecionar páginas', () => {
