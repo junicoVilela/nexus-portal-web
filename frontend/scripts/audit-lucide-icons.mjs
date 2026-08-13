@@ -16,6 +16,15 @@ function collectMatches(source, expression, result) {
   for (const match of source.matchAll(expression)) result.add(match[1]);
 }
 
+function collectDynamicLucideNames(source, result) {
+  for (const tag of source.matchAll(/<lucide-icon\b[\s\S]*?>/g)) {
+    // Valores produzidos por ternários em `[name]`, por exemplo:
+    // [name]="condicao ? 'CircleCheck' : 'CircleHelp'".
+    collectMatches(tag[0], /(?:\?|:)\s*'([A-Z][A-Za-z0-9]+)'/g, result);
+    collectMatches(tag[0], /\[name\]="\s*'([A-Z][A-Za-z0-9]+)'\s*"/g, result);
+  }
+}
+
 const config = readFileSync(configPath, 'utf8');
 const pick = config.match(/LucideAngularModule\.pick\(\{([\s\S]*?)\}\)/)?.[1] ?? '';
 const registered = new Set();
@@ -27,6 +36,7 @@ for (const file of sourceFiles(appRoot)) {
   collectMatches(source, /<lucide-icon\s+name="([A-Z][A-Za-z0-9]+)"/g, used);
   collectMatches(source, /\bicon="([A-Z][A-Za-z0-9]+)"/g, used);
   collectMatches(source, /\bicon:\s*'([A-Z][A-Za-z0-9]+)'/g, used);
+  collectDynamicLucideNames(source, used);
 }
 
 const missing = [...used].filter(icon => !registered.has(icon)).sort();

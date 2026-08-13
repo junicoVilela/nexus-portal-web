@@ -88,7 +88,7 @@
         </div>
       } @else if (doc.analiseMensagem) {
         <div class="doc-import__analysis-result">
-          <lucide-icon [name]="doc.analiseOrigem === 'LLM' ? 'BrainCircuit' : 'ListTree'" [size]="16" />
+          <lucide-icon [name]="doc.analiseOrigem === 'LLM' ? 'Sparkles' : 'ListTree'" [size]="16" />
           <span>
             <strong>{{ doc.analiseOrigem === 'LLM' ? 'Estrutura refinada pela IA' : 'Estrutura analisada localmente' }}</strong>
             {{ doc.analiseMensagem }}
