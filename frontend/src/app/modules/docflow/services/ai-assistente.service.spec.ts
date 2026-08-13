@@ -149,6 +149,23 @@ describe('AiAssistenteService', () => {
     seguras.flush({ id: 'importacao-1' });
   });
 
+  it('persiste a ordem do rascunho importado com controle de versão', () => {
+    service
+      .reordenarEstruturaImportada('importacao-1', {
+        version: 3,
+        modulos: [{ planoId: 'modulo-1', paginas: ['pagina-2', 'pagina-1'] }],
+      })
+      .subscribe(doc => expect(doc.version).toBe(4));
+
+    const req = http.expectOne(`${environment.aiApiUrl}/importacoes/importacao-1/estrutura/rascunho`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({
+      version: 3,
+      modulos: [{ planoId: 'modulo-1', paginas: ['pagina-2', 'pagina-1'] }],
+    });
+    req.flush({ id: 'importacao-1', version: 4 });
+  });
+
   it('confirma a estrutura sugerida antes de selecionar páginas', () => {
     service
       .confirmarEstruturaImportada('importacao-1', {

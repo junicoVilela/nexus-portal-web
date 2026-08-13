@@ -1,0 +1,156 @@
+<section class="organizer" aria-labelledby="document-organizer-title">
+  <header class="organizer__header">
+    <span class="organizer__header-icon"><lucide-icon name="ListTree" [size]="18" /></span>
+    <div>
+      <span class="organizer__eyebrow">Organização visual</span>
+      <h4 id="document-organizer-title">Ordene módulos e páginas</h4>
+      <p>Arraste pelas alças ou use as setas e o seletor. Cada alteração é salva automaticamente.</p>
+    </div>
+    <div class="organizer__header-actions">
+      <span class="organizer__status" [attr.data-status]="status()" aria-live="polite">
+        @if (salvando()) {
+          <lucide-icon name="Loader2" [size]="13" class="organizer__spin" />
+        } @else if (status() === 'saved') {
+          <lucide-icon name="CircleCheck" [size]="13" />
+        }
+        {{ statusLabel() }}
+      </span>
+      <button type="button" class="organizer__undo" [disabled]="!podeDesfazer()" (click)="desfazer()">
+        <lucide-icon name="RotateCcw" [size]="14" />
+        Desfazer
+      </button>
+      <span class="organizer__count">{{ modulos().length }} módulos · {{ totalPaginas() }} páginas</span>
+    </div>
+  </header>
+
+  @if (erro()) {
+    <p class="organizer__error" role="alert">{{ erro() }}</p>
+  }
+
+  <div
+    class="organizer__modules"
+    cdkDropList
+    cdkDropListOrientation="mixed"
+    [cdkDropListData]="modulos()"
+    (cdkDropListDropped)="soltarModulo($event)"
+  >
+    @for (
+      modulo of modulos();
+      track modulo.id;
+      let indiceModulo = $index;
+      let primeiroModulo = $first;
+      let ultimoModulo = $last
+    ) {
+      <article class="organizer__module" cdkDrag [cdkDragDisabled]="bloqueado()">
+        <header class="organizer__module-header">
+          <button
+            type="button"
+            class="organizer__drag-handle"
+            cdkDragHandle
+            [disabled]="bloqueado()"
+            [attr.aria-label]="'Arrastar módulo ' + modulo.nome"
+            title="Arrastar módulo"
+          >
+            <span aria-hidden="true">⋮⋮</span>
+          </button>
+          <span class="organizer__module-order">{{ modulo.ordem }}</span>
+          <span class="organizer__module-copy">
+            <strong>{{ modulo.nome }}</strong>
+            <small>{{ modulo.paginas.length }} páginas</small>
+          </span>
+          <span class="organizer__move-actions">
+            <button
+              type="button"
+              [disabled]="bloqueado() || primeiroModulo"
+              (click)="moverModulo(indiceModulo, -1)"
+              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para a esquerda'"
+              title="Mover módulo para a esquerda"
+            >
+              <lucide-icon name="ArrowUp" [size]="14" />
+            </button>
+            <button
+              type="button"
+              [disabled]="bloqueado() || ultimoModulo"
+              (click)="moverModulo(indiceModulo, 1)"
+              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para a direita'"
+              title="Mover módulo para a direita"
+            >
+              <lucide-icon name="ArrowDown" [size]="14" />
+            </button>
+          </span>
+        </header>
+
+        <div
+          class="organizer__pages"
+          cdkDropList
+          [id]="listaPaginasId(modulo.id)"
+          [cdkDropListData]="modulo.paginas"
+          [cdkDropListConnectedTo]="listasPaginas()"
+          (cdkDropListDropped)="soltarPagina($event, modulo.id)"
+        >
+          @for (
+            pagina of modulo.paginas;
+            track pagina.id;
+            let indicePagina = $index;
+            let primeiraPagina = $first;
+            let ultimaPagina = $last
+          ) {
+            <article class="organizer__page" cdkDrag [cdkDragDisabled]="bloqueado()">
+              <button
+                type="button"
+                class="organizer__drag-handle organizer__drag-handle--page"
+                cdkDragHandle
+                [disabled]="bloqueado()"
+                [attr.aria-label]="'Arrastar página ' + pagina.titulo"
+                title="Arrastar página"
+              >
+                <span aria-hidden="true">⋮⋮</span>
+              </button>
+              <span class="organizer__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
+              <span class="organizer__page-copy">
+                <strong>{{ pagina.titulo }}</strong>
+                <small>{{ pagina.templateNome || 'Modelo pendente' }}</small>
+              </span>
+              <label class="organizer__module-select">
+                <span class="sr-only">Mover {{ pagina.titulo }} para outro módulo</span>
+                <select
+                  [value]="modulo.id"
+                  [disabled]="bloqueado() || modulos().length < 2"
+                  (change)="moverPaginaParaModulo(pagina.id, $event)"
+                  [attr.aria-label]="'Módulo da página ' + pagina.titulo"
+                >
+                  @for (destino of modulos(); track destino.id) {
+                    <option [value]="destino.id">{{ destino.nome }}</option>
+                  }
+                </select>
+              </label>
+              <span class="organizer__move-actions organizer__move-actions--page">
+                <button
+                  type="button"
+                  [disabled]="bloqueado() || primeiraPagina"
+                  (click)="moverPagina(modulo.id, indicePagina, -1)"
+                  [attr.aria-label]="'Mover página ' + pagina.titulo + ' para cima'"
+                  title="Mover página para cima"
+                >
+                  <lucide-icon name="ArrowUp" [size]="13" />
+                </button>
+                <button
+                  type="button"
+                  [disabled]="bloqueado() || ultimaPagina"
+                  (click)="moverPagina(modulo.id, indicePagina, 1)"
+                  [attr.aria-label]="'Mover página ' + pagina.titulo + ' para baixo'"
+                  title="Mover página para baixo"
+                >
+                  <lucide-icon name="ArrowDown" [size]="13" />
+                </button>
+              </span>
+              <div class="organizer__page-placeholder" *cdkDragPlaceholder></div>
+            </article>
+          }
+          <div class="organizer__empty-module">Solte uma página aqui</div>
+        </div>
+        <div class="organizer__module-placeholder" *cdkDragPlaceholder></div>
+      </article>
+    }
+  </div>
+</section>

@@ -30,6 +30,7 @@ import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { ClienteService } from '../../services/cliente.service';
 import { ModuloService } from '../../services/modulo.service';
 import { ProjetoService } from '../../services/projeto.service';
+import { AiDocumentoOrganizadorComponent } from '../ai-documento-organizador/ai-documento-organizador.component';
 import { AiDocumentoSugestoesComponent } from '../ai-documento-sugestoes/ai-documento-sugestoes.component';
 
 @Component({
@@ -41,6 +42,7 @@ import { AiDocumentoSugestoesComponent } from '../ai-documento-sugestoes/ai-docu
     LucideAngularModule,
     ButtonComponent,
     BadgeComponent,
+    AiDocumentoOrganizadorComponent,
     AiDocumentoSugestoesComponent,
   ],
   templateUrl: './ai-documento-importacao.component.html',
@@ -77,6 +79,8 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   protected readonly estimativaLote = signal<AiEstimativaLoteDocumento | null>(null);
   protected readonly estimandoLote = signal(false);
   protected readonly gerandoLote = signal(false);
+  protected readonly organizando = signal(false);
+  protected readonly revisandoSugestoes = signal(false);
   protected readonly modoProjeto = signal<AiDocumentoProjetoModo>('NOVO_PROJETO');
   protected readonly modoCliente = signal<AiDocumentoClienteModo>('SEM_CLIENTE');
   protected readonly clientes = signal<Cliente[]>([]);
@@ -201,14 +205,31 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   }
 
   protected atualizarSugestoes(atualizada: AiDocumentoImportacao): void {
+    this.atualizarPlanoEditavel(atualizada);
+  }
+
+  protected atualizarOrganizacao(atualizada: AiDocumentoImportacao): void {
+    this.atualizarPlanoEditavel(atualizada);
+  }
+
+  private atualizarPlanoEditavel(atualizada: AiDocumentoImportacao): void {
     const anterior = this.importacao();
+    const valoresAtuais = new Map<string, string>();
+    anterior?.modulos.forEach((modulo, indice) => {
+      valoresAtuais.set(modulo.id, this.modulosForm.controls[indice]?.value ?? modulo.nome);
+    });
     this.definirImportacao(atualizada);
-    atualizada.modulos.forEach((modulo, indice) => {
-      const controle = this.modulosForm.controls[indice];
+    this.modulosForm.clear();
+    atualizada.modulos.forEach(modulo => {
       const moduloAnterior = anterior?.modulos.find(item => item.id === modulo.id);
-      if (controle && (!moduloAnterior || controle.value === moduloAnterior.nome)) {
-        controle.setValue(modulo.nome);
-      }
+      const valorAtual = valoresAtuais.get(modulo.id);
+      const nome =
+        moduloAnterior && valorAtual !== undefined && valorAtual !== moduloAnterior.nome
+          ? valorAtual
+          : modulo.nome;
+      this.modulosForm.push(
+        this.fb.nonNullable.control(nome, [Validators.required, Validators.maxLength(150)]),
+      );
     });
   }
 
@@ -300,7 +321,14 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
 
   protected confirmarEstrutura(): void {
     const importacao = this.importacao();
-    if (!importacao || importacao.estruturaConfirmada || this.confirmando()) return;
+    if (
+      !importacao ||
+      importacao.estruturaConfirmada ||
+      this.confirmando() ||
+      this.organizando() ||
+      this.revisandoSugestoes()
+    )
+      return;
     this.estruturaForm.markAllAsTouched();
     this.modulosForm.controls.forEach(controle => controle.markAsTouched());
     const nomesModulos = this.modulosForm.controls.map(controle => controle.value.trim());
@@ -365,7 +393,15 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   }
 
   private importar(arquivo: File): void {
-    if (this.disabled() || this.importando()) return;
+    if (
+      this.disabled() ||
+      this.importando() ||
+      this.confirmando() ||
+      this.organizando() ||
+      this.revisandoSugestoes()
+    ) {
+      return;
+    }
     const extensao = arquivo.name.split('.').pop()?.toLowerCase();
     if (!extensao || !['doc', 'docx', 'pdf', 'txt'].includes(extensao)) {
       this.erro.set('Use um arquivo DOC, DOCX, PDF pesquisável ou TXT em UTF-8.');

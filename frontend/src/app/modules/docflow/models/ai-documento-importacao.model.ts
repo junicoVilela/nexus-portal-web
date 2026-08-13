@@ -94,6 +94,11 @@ export interface AiConfirmarEstruturaDocumentoPayload {
   modulos: Array<{ planoId: string; nome: string }>;
 }
 
+export interface AiReordenarEstruturaDocumentoPayload {
+  version: number;
+  modulos: Array<{ planoId: string; paginas: string[] }>;
+}
+
 export interface AiEstimativaLoteDocumento {
   paginas: number;
   caracteresEntrada: number;

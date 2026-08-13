@@ -25,6 +25,7 @@ describe('AiDocumentoImportacaoComponent', () => {
       'sincronizarImportacao',
       'estimarLoteImportacao',
       'gerarLoteImportacao',
+      'reordenarEstruturaImportada',
     ]);
     clientes = jasmine.createSpyObj<ClienteService>('ClienteService', ['clientes']);
     projetos = jasmine.createSpyObj<ProjetoService>('ProjetoService', ['projetos', 'invalidarCache']);

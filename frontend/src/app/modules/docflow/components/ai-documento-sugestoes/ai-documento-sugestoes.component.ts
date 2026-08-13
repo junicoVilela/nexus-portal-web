@@ -24,6 +24,7 @@ export class AiDocumentoSugestoesComponent {
   readonly importacao = input.required<AiDocumentoImportacao>();
   readonly disabled = input(false);
   readonly importacaoAtualizada = output<AiDocumentoImportacao>();
+  readonly processandoChange = output<boolean>();
 
   protected readonly processandoId = signal<string | null>(null);
   protected readonly aplicandoSeguras = signal(false);
@@ -40,6 +41,7 @@ export class AiDocumentoSugestoesComponent {
   protected aceitar(sugestao: AiDocumentoSugestao): void {
     if (this.bloqueado()) return;
     this.processandoId.set(sugestao.id);
+    this.processandoChange.emit(true);
     this.erro.set(null);
     this.ai.aceitarSugestaoImportacao(this.importacao().id, sugestao.id).subscribe({
       next: atualizada => this.concluir(atualizada),
@@ -50,6 +52,7 @@ export class AiDocumentoSugestoesComponent {
   protected ignorar(sugestao: AiDocumentoSugestao): void {
     if (this.bloqueado()) return;
     this.processandoId.set(sugestao.id);
+    this.processandoChange.emit(true);
     this.erro.set(null);
     this.ai.ignorarSugestaoImportacao(this.importacao().id, sugestao.id).subscribe({
       next: atualizada => this.concluir(atualizada),
@@ -60,6 +63,7 @@ export class AiDocumentoSugestoesComponent {
   protected aplicarSeguras(): void {
     if (this.bloqueado() || !this.totalSeguras()) return;
     this.aplicandoSeguras.set(true);
+    this.processandoChange.emit(true);
     this.erro.set(null);
     this.ai.aplicarSugestoesSegurasImportacao(this.importacao().id).subscribe({
       next: atualizada => this.concluir(atualizada),
@@ -143,6 +147,7 @@ export class AiDocumentoSugestoesComponent {
   private concluir(importacao: AiDocumentoImportacao): void {
     this.processandoId.set(null);
     this.aplicandoSeguras.set(false);
+    this.processandoChange.emit(false);
     this.importacaoAtualizada.emit(importacao);
   }
 
@@ -150,5 +155,6 @@ export class AiDocumentoSugestoesComponent {
     this.erro.set(mensagemErroHttp(erro, mensagem));
     this.processandoId.set(null);
     this.aplicandoSeguras.set(false);
+    this.processandoChange.emit(false);
   }
 }

@@ -11,7 +11,9 @@
   <div
     class="doc-import__dropzone"
     [class.doc-import__dropzone--active]="arrastando()"
-    [class.doc-import__dropzone--disabled]="disabled() || importando() || confirmando()"
+    [class.doc-import__dropzone--disabled]="
+      disabled() || importando() || confirmando() || organizando() || revisandoSugestoes()
+    "
     (dragover)="permitirSoltar($event)"
     (dragleave)="sairDropzone()"
     (drop)="soltar($event)"
@@ -25,7 +27,7 @@
       #arquivoInput
       type="file"
       accept=".doc,.docx,.pdf,.txt,application/msword,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
-      [disabled]="disabled() || importando() || confirmando()"
+      [disabled]="disabled() || importando() || confirmando() || organizando() || revisandoSugestoes()"
       (change)="selecionarArquivo($event)"
     />
     <ui-button
@@ -33,7 +35,7 @@
       variant="secondary"
       icon="Upload"
       [loading]="importando()"
-      [disabled]="disabled() || importando() || confirmando()"
+      [disabled]="disabled() || importando() || confirmando() || organizando() || revisandoSugestoes()"
       (clicked)="arquivoInput.click()"
     >
       Selecionar arquivo
@@ -104,8 +106,9 @@
       @if (!doc.estruturaConfirmada && doc.status !== 'ANALISANDO_ESTRUTURA' && doc.analiseOrigem === 'LLM') {
         <app-ai-documento-sugestoes
           [importacao]="doc"
-          [disabled]="disabled() || importando() || confirmando()"
+          [disabled]="disabled() || importando() || confirmando() || organizando()"
           (importacaoAtualizada)="atualizarSugestoes($event)"
+          (processandoChange)="revisandoSugestoes.set($event)"
         />
       }
 
@@ -216,7 +219,7 @@
           <div class="doc-import__module-editor">
             <div>
               <strong>Módulos sugeridos</strong>
-              <span>Revise os nomes. As páginas serão mantidas na ordem identificada.</span>
+              <span>Revise os nomes e organize a jornada antes de criar a estrutura.</span>
             </div>
             <ol>
               @for (modulo of doc.modulos; track modulo.id; let indice = $index) {
@@ -232,6 +235,13 @@
             </ol>
           </div>
 
+          <app-ai-documento-organizador
+            [importacao]="doc"
+            [disabled]="disabled() || importando() || confirmando() || revisandoSugestoes()"
+            (importacaoAtualizada)="atualizarOrganizacao($event)"
+            (processandoChange)="organizando.set($event)"
+          />
+
           <div class="doc-import__confirm">
             <div>
               <strong>Nenhuma página será gerada ainda.</strong>
@@ -242,7 +252,7 @@
               variant="primary"
               icon="Check"
               [loading]="confirmando()"
-              [disabled]="disabled() || importando() || confirmando()"
+              [disabled]="disabled() || importando() || confirmando() || organizando() || revisandoSugestoes()"
               (clicked)="confirmarEstrutura()"
             >
               Criar estrutura e continuar

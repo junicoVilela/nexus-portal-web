@@ -7,6 +7,7 @@ import {
   AiConfirmarEstruturaDocumentoPayload,
   AiDocumentoImportacao,
   AiEstimativaLoteDocumento,
+  AiReordenarEstruturaDocumentoPayload,
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
@@ -72,6 +73,16 @@ export class AiAssistenteService {
     return this.http.post<AiDocumentoImportacao>(
       `${this.base}/importacoes/${importacaoId}/sugestoes/aplicar-seguras`,
       {},
+    );
+  }
+
+  reordenarEstruturaImportada(
+    importacaoId: string,
+    payload: AiReordenarEstruturaDocumentoPayload,
+  ): Observable<AiDocumentoImportacao> {
+    return this.http.put<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/estrutura/rascunho`,
+      payload,
     );
   }
 
