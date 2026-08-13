@@ -3,6 +3,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   input,
   output,
@@ -81,6 +82,9 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   protected readonly gerandoLote = signal(false);
   protected readonly organizando = signal(false);
   protected readonly revisandoSugestoes = signal(false);
+  protected readonly temModuloVazio = computed(
+    () => this.importacao()?.modulos.some(modulo => modulo.paginas.length === 0) ?? false,
+  );
   protected readonly modoProjeto = signal<AiDocumentoProjetoModo>('NOVO_PROJETO');
   protected readonly modoCliente = signal<AiDocumentoClienteModo>('SEM_CLIENTE');
   protected readonly clientes = signal<Cliente[]>([]);
@@ -326,7 +330,8 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
       importacao.estruturaConfirmada ||
       this.confirmando() ||
       this.organizando() ||
-      this.revisandoSugestoes()
+      this.revisandoSugestoes() ||
+      this.temModuloVazio()
     )
       return;
     this.estruturaForm.markAllAsTouched();

@@ -120,6 +120,7 @@ function sessao(status: string, mensagens: unknown[] = []) {
 /** Instala JWT + mocks de auth/RBAC/DocFlow + AI (sem LLM real). */
 export async function instalarMocksAiAssistente(page: Page): Promise<void> {
   let statusSessao = 'PRONTA_PARA_GERAR';
+  let importacaoRascunho = importacaoDocumento();
 
   await page.addInitScript(
     ({ token }) => {
@@ -177,7 +178,34 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
     }
 
     if (method === 'POST' && path === '/api/v1/ai/importacoes') {
-      return responder(importacaoDocumento(), 201);
+      return responder(importacaoRascunho, 201);
+    }
+
+    if (method === 'PUT' && path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/estrutura/rascunho`) {
+      const payload = request.postDataJSON() as {
+        modulos: Array<{ planoId: string; nome: string; paginas: string[] }>;
+      };
+      type PaginaRascunho = (typeof importacaoRascunho.modulos)[number]['paginas'][number];
+      const paginas = new Map<string, PaginaRascunho>();
+      importacaoRascunho.modulos.forEach(modulo =>
+        modulo.paginas.forEach(pagina => paginas.set(pagina.id, pagina)),
+      );
+      importacaoRascunho = {
+        ...importacaoRascunho,
+        version: importacaoRascunho.version + 1,
+        modulos: payload.modulos.map((modulo, indiceModulo) => ({
+          id: modulo.planoId,
+          moduloId: null,
+          nome: modulo.nome,
+          ordem: indiceModulo + 1,
+          paginas: modulo.paginas.map((paginaId, indicePagina) => {
+            const pagina = paginas.get(paginaId);
+            if (!pagina) throw new Error(`Página ${paginaId} ausente no mock da importação.`);
+            return { ...pagina, ordem: indicePagina + 1 };
+          }),
+        })),
+      };
+      return responder(importacaoRascunho);
     }
 
     if (method === 'POST' && path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/estrutura/confirmar`) {

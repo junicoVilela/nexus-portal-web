@@ -27,6 +27,28 @@
     <p class="organizer__error" role="alert">{{ erro() }}</p>
   }
 
+  <form class="organizer__create" (submit)="adicionarModulo($event)">
+    <label for="document-organizer-new-module">Novo módulo</label>
+    <input
+      id="document-organizer-new-module"
+      type="text"
+      maxlength="150"
+      placeholder="Ex.: Relatórios e indicadores"
+      [value]="novoModuloNome()"
+      [disabled]="bloqueado() || modulos().length >= 30"
+      (input)="atualizarNovoModuloNome($event)"
+    />
+    <button
+      type="submit"
+      class="organizer__add"
+      [disabled]="bloqueado() || !novoModuloNome().trim() || modulos().length >= 30"
+    >
+      <lucide-icon name="Plus" [size]="14" />
+      Criar módulo
+    </button>
+    <small>Depois, arraste as páginas para o novo módulo.</small>
+  </form>
+
   <div
     class="organizer__modules"
     cdkDropList
@@ -78,6 +100,16 @@
               <lucide-icon name="ArrowDown" [size]="14" />
             </button>
           </span>
+          <button
+            type="button"
+            class="organizer__remove"
+            [disabled]="bloqueado() || modulo.paginas.length > 0 || modulos().length === 1"
+            (click)="removerModulo(modulo.id)"
+            [attr.aria-label]="'Remover módulo ' + modulo.nome"
+            [title]="modulo.paginas.length ? 'Mova as páginas antes de remover' : 'Remover módulo'"
+          >
+            <lucide-icon name="Trash2" [size]="14" />
+          </button>
         </header>
 
         <div
@@ -147,7 +179,9 @@
               <div class="organizer__page-placeholder" *cdkDragPlaceholder></div>
             </article>
           }
-          <div class="organizer__empty-module">Solte uma página aqui</div>
+          <div class="organizer__empty-module" [class.organizer__empty-module--visible]="modulo.paginas.length === 0">
+            Arraste uma página para este módulo
+          </div>
         </div>
         <div class="organizer__module-placeholder" *cdkDragPlaceholder></div>
       </article>

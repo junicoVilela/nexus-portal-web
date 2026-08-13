@@ -245,14 +245,20 @@
           <div class="doc-import__confirm">
             <div>
               <strong>Nenhuma página será gerada ainda.</strong>
-              <span>Primeiro criaremos o projeto e os módulos; depois você revisa cada página.</span>
+              @if (temModuloVazio()) {
+                <span>Mova ao menos uma página para cada módulo ou remova os módulos vazios.</span>
+              } @else {
+                <span>Primeiro criaremos o projeto e os módulos; depois você revisa cada página.</span>
+              }
             </div>
             <ui-button
               type="button"
               variant="primary"
               icon="Check"
               [loading]="confirmando()"
-              [disabled]="disabled() || importando() || confirmando() || organizando() || revisandoSugestoes()"
+              [disabled]="
+                disabled() || importando() || confirmando() || organizando() || revisandoSugestoes() || temModuloVazio()
+              "
               (clicked)="confirmarEstrutura()"
             >
               Criar estrutura e continuar

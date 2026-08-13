@@ -153,7 +153,7 @@ describe('AiAssistenteService', () => {
     service
       .reordenarEstruturaImportada('importacao-1', {
         version: 3,
-        modulos: [{ planoId: 'modulo-1', paginas: ['pagina-2', 'pagina-1'] }],
+        modulos: [{ planoId: 'modulo-1', nome: 'Cadastros', paginas: ['pagina-2', 'pagina-1'] }],
       })
       .subscribe(doc => expect(doc.version).toBe(4));
 
@@ -161,7 +161,7 @@ describe('AiAssistenteService', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({
       version: 3,
-      modulos: [{ planoId: 'modulo-1', paginas: ['pagina-2', 'pagina-1'] }],
+      modulos: [{ planoId: 'modulo-1', nome: 'Cadastros', paginas: ['pagina-2', 'pagina-1'] }],
     });
     req.flush({ id: 'importacao-1', version: 4 });
   });

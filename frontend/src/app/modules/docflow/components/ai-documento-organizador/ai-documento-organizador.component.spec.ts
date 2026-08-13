@@ -56,8 +56,12 @@ describe('AiDocumentoOrganizadorComponent', () => {
     expect(ai.reordenarEstruturaImportada).toHaveBeenCalledWith('importacao-1', {
       version: 0,
       modulos: [
-        { planoId: 'modulo-seguranca', paginas: ['pagina-senha'] },
-        { planoId: 'modulo-usuarios', paginas: ['pagina-consulta', 'pagina-permissoes'] },
+        { planoId: 'modulo-seguranca', nome: 'Segurança', paginas: ['pagina-senha'] },
+        {
+          planoId: 'modulo-usuarios',
+          nome: 'Usuários',
+          paginas: ['pagina-consulta', 'pagina-permissoes'],
+        },
       ],
     });
     expect(fixture.componentInstance['modulos']()[0].nome).toBe('Segurança');
@@ -95,18 +99,68 @@ describe('AiDocumentoOrganizadorComponent', () => {
     expect(fixture.componentInstance['historico']()).toEqual([]);
   });
 
-  it('impede deixar um módulo sem páginas', () => {
-    ai.reordenarEstruturaImportada.and.returnValue(of(importacao));
-    const select = document.createElement('select');
-    select.innerHTML = '<option value="modulo-usuarios">Usuários</option>';
-    select.value = 'modulo-usuarios';
+  it('permite criar módulo, mover uma página e remover o módulo quando vazio', () => {
+    const novoModuloId = '77777777-7777-4777-8777-777777777777';
+    spyOn(crypto, 'randomUUID').and.returnValue(novoModuloId);
+    const comModulo: AiDocumentoImportacao = {
+      ...importacao,
+      version: 1,
+      modulos: [
+        ...importacao.modulos,
+        {
+          id: novoModuloId,
+          moduloId: null,
+          nome: 'Relatórios',
+          ordem: 3,
+          paginas: [],
+        },
+      ],
+    };
+    const comPagina: AiDocumentoImportacao = {
+      ...comModulo,
+      version: 2,
+      modulos: [
+        { ...importacao.modulos[0], paginas: [importacao.modulos[0].paginas[0]] },
+        importacao.modulos[1],
+        { ...comModulo.modulos[2], paginas: [importacao.modulos[0].paginas[1]] },
+      ],
+    };
+    const vazioNovamente: AiDocumentoImportacao = { ...comModulo, version: 3 };
+    const removido: AiDocumentoImportacao = { ...importacao, version: 4 };
+    ai.reordenarEstruturaImportada.and.returnValues(
+      of(comModulo),
+      of(comPagina),
+      of(vazioNovamente),
+      of(removido),
+    );
 
-    fixture.componentInstance['moverPaginaParaModulo']('pagina-senha', {
+    const input = document.createElement('input');
+    input.value = 'Relatórios';
+    fixture.componentInstance['atualizarNovoModuloNome']({ target: input } as unknown as Event);
+    fixture.componentInstance['adicionarModulo'](new Event('submit'));
+    expect(ai.reordenarEstruturaImportada.calls.argsFor(0)[1].modulos[2]).toEqual({
+      planoId: novoModuloId,
+      nome: 'Relatórios',
+      paginas: [],
+    });
+
+    const select = document.createElement('select');
+    select.innerHTML = `<option value="${novoModuloId}">Relatórios</option>`;
+    select.value = novoModuloId;
+    fixture.componentInstance['moverPaginaParaModulo']('pagina-permissoes', {
       target: select,
     } as unknown as Event);
 
-    expect(ai.reordenarEstruturaImportada).not.toHaveBeenCalled();
-    expect(fixture.componentInstance['erro']()).toContain('pelo menos uma página');
+    const retorno = document.createElement('select');
+    retorno.innerHTML = '<option value="modulo-usuarios">Usuários</option>';
+    retorno.value = 'modulo-usuarios';
+    fixture.componentInstance['moverPaginaParaModulo']('pagina-permissoes', {
+      target: retorno,
+    } as unknown as Event);
+    fixture.componentInstance['removerModulo'](novoModuloId);
+
+    expect(ai.reordenarEstruturaImportada).toHaveBeenCalledTimes(4);
+    expect(ai.reordenarEstruturaImportada.calls.mostRecent().args[1].modulos).toHaveSize(2);
   });
 
   it('recarrega a versão atual quando outra tela alterou o plano', () => {

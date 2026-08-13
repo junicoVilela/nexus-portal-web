@@ -48,6 +48,7 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
   protected readonly versao = signal(0);
   protected readonly status = signal<SalvamentoStatus>('idle');
   protected readonly erro = signal<string | null>(null);
+  protected readonly novoModuloNome = signal('');
   protected readonly salvando = computed(() => this.status() === 'saving');
   protected readonly bloqueado = computed(() => this.disabled() || this.salvando());
   protected readonly podeDesfazer = computed(() => this.historico().length > 0 && !this.bloqueado());
@@ -111,11 +112,6 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
     const origem = proximo.find(modulo => modulo.id === moduloOrigemId);
     const destino = proximo.find(modulo => modulo.id === moduloDestinoId);
     if (!origem || !destino) return;
-    if (origem.id !== destino.id && origem.paginas.length === 1) {
-      this.erro.set('Cada módulo precisa manter pelo menos uma página.');
-      return;
-    }
-
     if (origem.id === destino.id) {
       moveItemInArray(origem.paginas, event.previousIndex, event.currentIndex);
     } else {
@@ -153,13 +149,61 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
     const origem = proximo.find(modulo => modulo.paginas.some(pagina => pagina.id === paginaId));
     const destino = proximo.find(modulo => modulo.id === moduloDestinoId);
     if (!origem || !destino || origem.id === destino.id) return;
-    if (origem.paginas.length === 1) {
-      this.erro.set('Cada módulo precisa manter pelo menos uma página.');
-      return;
-    }
     const indice = origem.paginas.findIndex(pagina => pagina.id === paginaId);
     const [pagina] = origem.paginas.splice(indice, 1);
     destino.paginas.push(pagina);
+    this.aplicar(normalizarOrdens(proximo), anterior);
+  }
+
+  protected atualizarNovoModuloNome(event: Event): void {
+    this.novoModuloNome.set((event.target as HTMLInputElement).value);
+  }
+
+  protected adicionarModulo(event: Event): void {
+    event.preventDefault();
+    const nome = this.novoModuloNome().trim();
+    if (this.bloqueado()) return;
+    if (!nome) {
+      this.erro.set('Informe o nome do novo módulo.');
+      return;
+    }
+    if (this.modulos().length >= 30) {
+      this.erro.set('O documento pode ter no máximo 30 módulos.');
+      return;
+    }
+    if (this.modulos().some(modulo => normalizarNome(modulo.nome) === normalizarNome(nome))) {
+      this.erro.set('Use um nome diferente para o novo módulo.');
+      return;
+    }
+    const anterior = clonarModulos(this.modulos());
+    const proximo = [
+      ...clonarModulos(anterior),
+      {
+        id: crypto.randomUUID(),
+        moduloId: null,
+        nome,
+        ordem: anterior.length + 1,
+        paginas: [],
+      },
+    ];
+    this.novoModuloNome.set('');
+    this.aplicar(proximo, anterior);
+  }
+
+  protected removerModulo(moduloId: string): void {
+    if (this.bloqueado()) return;
+    const anterior = clonarModulos(this.modulos());
+    const modulo = anterior.find(item => item.id === moduloId);
+    if (!modulo) return;
+    if (anterior.length === 1) {
+      this.erro.set('O documento precisa manter pelo menos um módulo.');
+      return;
+    }
+    if (modulo.paginas.length) {
+      this.erro.set('Mova as páginas deste módulo antes de removê-lo.');
+      return;
+    }
+    const proximo = anterior.filter(item => item.id !== moduloId);
     this.aplicar(normalizarOrdens(proximo), anterior);
   }
 
@@ -201,6 +245,7 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
         version: this.versao(),
         modulos: proximo.map(modulo => ({
           planoId: modulo.id,
+          nome: modulo.nome,
           paginas: modulo.paginas.map(pagina => pagina.id),
         })),
       })
@@ -276,4 +321,8 @@ function normalizarOrdens(modulos: AiModuloDocumento[]): AiModuloDocumento[] {
       ordem: indicePagina + 1,
     })),
   }));
+}
+
+function normalizarNome(nome: string): string {
+  return nome.trim().toLocaleLowerCase('pt-BR');
 }
