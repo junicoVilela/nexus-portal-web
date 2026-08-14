@@ -57,6 +57,22 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     await mesclagem.getByRole('button', { name: 'Mesclar páginas' }).click();
     await expect(page.locator('.organizer__page')).toHaveCount(1);
 
+    await page
+      .getByRole('button', {
+        name: 'Visualizar conteúdo da página Pesquisa de registros',
+        exact: true,
+      })
+      .click();
+    const composicao = page.getByRole('dialog', {
+      name: 'Conteúdo da página Pesquisa de registros',
+      exact: true,
+    });
+    await composicao.getByRole('button', { name: 'Composição', exact: true }).click();
+    await expect(composicao.locator('.component-composer__item')).toHaveCount(7);
+    await composicao.getByRole('button', { name: 'Remover Mensagens do sistema' }).click();
+    await composicao.getByRole('button', { name: 'Salvar composição' }).click();
+    await expect(page.locator('.organizer__page').filter({ hasText: '6 blocos' })).toBeVisible();
+
     await page.getByRole('button', { name: 'Adicionar página ao módulo Cadastros' }).click();
     const novaPagina = page.getByRole('dialog', { name: 'Nova página no módulo Cadastros' });
     await novaPagina.getByLabel('Título da nova página').fill('Exportar registros');
@@ -91,6 +107,7 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
 
     await expect(page.locator('#briefing')).toHaveValue(/### Página: Pesquisa de registros/);
     await expect(page.locator('#briefing')).toHaveValue(/Consulte os resultados e a paginação/);
+    await expect(page.getByRole('heading', { name: '6 blocos na ordem de geração' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Em edição' })).toBeVisible();
   });
 
@@ -104,9 +121,9 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
       'Consulta de pedidos\ncodigoTela: PED-CONSULTA\n' +
       'Público operador. Fluxo completo para filtrar e exportar pedidos.';
     await page.locator('#briefing').fill(briefing);
-    await expect(page.getByRole('heading', { name: 'A página será montada com 7 blocos' })).toBeVisible();
-    await page.getByRole('button', { name: 'Remover Mensagens do sistema da composição' }).click();
-    await expect(page.getByRole('heading', { name: 'A página será montada com 6 blocos' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '7 blocos na ordem de geração' })).toBeVisible();
+    await page.getByRole('button', { name: 'Remover Mensagens do sistema' }).click();
+    await expect(page.getByRole('heading', { name: '6 blocos na ordem de geração' })).toBeVisible();
     await page.getByRole('button', { name: 'Analisar página' }).click();
 
     await expect(page.getByText('Passo 2 de 3')).toBeVisible();

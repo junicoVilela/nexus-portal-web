@@ -2,27 +2,35 @@
   <header class="component-composer__header">
     <span class="component-composer__icon"><lucide-icon name="Boxes" [size]="18" /></span>
     <div>
-      <span>Composição inteligente</span>
-      <h3 id="component-composer-title">A página será montada com {{ totalSelecionados() }} blocos</h3>
-      <p>A IA selecionou partes da biblioteca conforme o texto. Retire o que não fizer sentido antes de analisar.</p>
+      <span>Plano editorial modular</span>
+      <h3 id="component-composer-title">{{ totalSelecionados() }} blocos na ordem de geração</h3>
+      <p>Arraste para ordenar, remova opcionais ou procure uma parte específica na biblioteca.</p>
     </div>
     <span class="component-composer__count">
       {{ totalSelecionados() }} selecionados · {{ plano().totalBiblioteca }} disponíveis
     </span>
   </header>
 
-  <div class="component-composer__flow" aria-label="Componentes da página na ordem de geração">
-    @for (componente of plano().componentes; track componente.id; let indice = $index) {
-      <button
-        type="button"
-        class="component-composer__item"
-        [class.component-composer__item--selected]="selecionado(componente)"
-        [class.component-composer__item--required]="componente.obrigatorio"
-        [disabled]="disabled() || (selecionado(componente) && !podeRemover(componente))"
-        [attr.aria-pressed]="selecionado(componente)"
-        [attr.aria-label]="acaoLabel(componente)"
-        (click)="alternar(componente)"
-      >
+  <div
+    class="component-composer__flow"
+    cdkDropList
+    [cdkDropListData]="componentesSelecionados()"
+    [cdkDropListDisabled]="disabled()"
+    (cdkDropListDropped)="reordenar($event)"
+    aria-label="Componentes da página na ordem de geração"
+  >
+    @for (componente of componentesSelecionados(); track componente.id; let indice = $index) {
+      <article class="component-composer__item" cdkDrag [cdkDragDisabled]="disabled()">
+        <button
+          type="button"
+          class="component-composer__handle"
+          cdkDragHandle
+          [disabled]="disabled()"
+          [attr.aria-label]="'Arrastar ' + componente.nome"
+          title="Arrastar para reordenar"
+        >
+          ⋮⋮
+        </button>
         <span class="component-composer__order">{{ indice + 1 }}</span>
         <span class="component-composer__copy">
           <span class="component-composer__item-heading">
@@ -36,23 +44,115 @@
           </span>
           <span>{{ componente.motivo }}</span>
         </span>
-        <span class="component-composer__check" aria-hidden="true">
-          @if (selecionado(componente)) {
-            <lucide-icon name="Check" [size]="13" />
+        <button
+          type="button"
+          class="component-composer__preview"
+          (click)="visualizar(componente)"
+          [attr.aria-label]="'Visualizar ' + componente.nome"
+          title="Visualizar componente"
+        >
+          <lucide-icon name="Search" [size]="13" />
+        </button>
+        <button
+          type="button"
+          class="component-composer__remove"
+          [disabled]="disabled() || !podeRemover(componente)"
+          (click)="remover(componente)"
+          [attr.aria-label]="'Remover ' + componente.nome"
+          [title]="componente.obrigatorio ? 'Componente essencial' : 'Remover componente'"
+        >
+          <lucide-icon [name]="componente.obrigatorio ? 'Lock' : 'X'" [size]="13" />
+        </button>
+        <div class="component-composer__placeholder" *cdkDragPlaceholder></div>
+      </article>
+    }
+  </div>
+
+  @if (componenteEmPreview(); as componente) {
+    <aside class="component-composer__visual" aria-live="polite">
+      <header>
+        <div>
+          <span>Prévia do bloco</span><strong>{{ componente.nome }}</strong>
+        </div>
+        <button type="button" (click)="componenteEmPreview.set(null)" aria-label="Fechar prévia">
+          <lucide-icon name="X" [size]="13" />
+        </button>
+      </header>
+      <p>{{ componente.descricao }}</p>
+      @if (componente.html) {
+        <div class="component-composer__html df-doc-content" [innerHTML]="componente.html"></div>
+      } @else {
+        <div class="component-composer__visual-fallback">A estrutura visual estará disponível na página gerada.</div>
+      }
+    </aside>
+  }
+
+  <div class="component-composer__explorer" [class.component-composer__explorer--open]="exploradorAberto()">
+    <button
+      type="button"
+      class="component-composer__explorer-toggle"
+      [disabled]="disabled() || totalSelecionados() >= 12"
+      [attr.aria-expanded]="exploradorAberto()"
+      (click)="alternarExplorador()"
+    >
+      <lucide-icon name="BookOpen" [size]="14" />
+      <span><strong>Explorar biblioteca</strong><small>Adicione somente o bloco que estiver faltando.</small></span>
+      <lucide-icon name="ChevronDown" [size]="14" />
+    </button>
+    @if (exploradorAberto()) {
+      <div class="component-composer__explorer-content">
+        <div class="component-composer__filters">
+          <label>
+            <lucide-icon name="Search" [size]="13" />
+            <input
+              type="search"
+              placeholder="Buscar por nome ou finalidade..."
+              [value]="busca()"
+              (input)="atualizarBusca($event)"
+            />
+          </label>
+          <select [value]="categoria()" (change)="atualizarCategoria($event)" aria-label="Categoria do componente">
+            @for (item of categorias(); track item) {
+              <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+        <div class="component-composer__library">
+          @for (componente of componentesDisponiveis(); track componente.id) {
+            <article>
+              <span
+                ><strong>{{ componente.nome }}</strong
+                ><small>{{ componente.descricao }}</small></span
+              >
+              <button
+                type="button"
+                (click)="visualizar(componente)"
+                [attr.aria-label]="'Visualizar ' + componente.nome"
+              >
+                <lucide-icon name="Search" [size]="13" />
+              </button>
+              <button
+                type="button"
+                class="component-composer__add"
+                [disabled]="disabled() || totalSelecionados() >= 12"
+                (click)="adicionar(componente)"
+                [attr.aria-label]="'Adicionar ' + componente.nome"
+              >
+                <lucide-icon name="Plus" [size]="13" /> Adicionar
+              </button>
+            </article>
+          } @empty {
+            <p class="component-composer__empty">Nenhum outro componente encontrado para este filtro.</p>
           }
-        </span>
-      </button>
+        </div>
+      </div>
     }
   </div>
 
   <footer class="component-composer__footer">
-    <span>
-      <lucide-icon name="Info" [size]="13" />
-      A geração usará somente os blocos selecionados; os essenciais ficam protegidos.
-    </span>
+    <span><lucide-icon name="Info" [size]="13" /> Os essenciais ficam protegidos. Limite de 3 a 12 blocos.</span>
     <button type="button" [disabled]="disabled()" (click)="restaurar()">
-      <lucide-icon name="RotateCcw" [size]="13" />
-      Restaurar sugestão
+      <lucide-icon name="RotateCcw" [size]="13" /> Restaurar sugestão da IA
     </button>
   </footer>
 </section>

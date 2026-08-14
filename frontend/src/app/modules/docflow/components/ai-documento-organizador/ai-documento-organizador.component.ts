@@ -196,6 +196,11 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
       erroMensagem: null,
       origem: 'MANUAL',
       ajustadaManualmente: true,
+      blueprintId: null,
+      blueprintNome: null,
+      componentesSelecionados: [],
+      componentesObrigatorios: [],
+      composicaoAjustadaManualmente: false,
     };
     this.abrirInspetor(pagina, modulo, true);
   }
@@ -231,6 +236,10 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
     moduloId: string,
   ): Promise<void> {
     if (this.bloqueado()) return;
+    if (resultado.tipo === 'COMPOSICAO') {
+      this.persistirComposicao(paginaId, resultado.componentesSelecionados);
+      return;
+    }
     if (resultado.tipo === 'EXCLUIR') {
       await this.removerPagina(paginaId);
       return;
@@ -442,6 +451,44 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
       });
   }
 
+  private persistirComposicao(paginaId: string, componentesSelecionados: string[]): void {
+    if (this.statusTimer !== undefined) window.clearTimeout(this.statusTimer);
+    this.status.set('saving');
+    this.processandoChange.emit(true);
+    this.erro.set(null);
+    this.ai
+      .atualizarComposicaoImportada(this.importacao().id, paginaId, {
+        version: this.versao(),
+        componentesSelecionados,
+      })
+      .subscribe({
+        next: atualizada => {
+          this.importacaoObservada = `${atualizada.id}:${atualizada.version}`;
+          this.versao.set(atualizada.version);
+          this.modulos.set(clonarModulos(atualizada.modulos));
+          this.status.set('saved');
+          this.processandoChange.emit(false);
+          this.importacaoAtualizada.emit(atualizada);
+          this.agendarStatusInicial();
+        },
+        error: err => {
+          this.processandoChange.emit(false);
+          this.status.set(err instanceof HttpErrorResponse && err.status === 409 ? 'conflict' : 'error');
+          this.erro.set(mensagemErroHttp(err, 'Não foi possível salvar a composição da página.'));
+          if (err instanceof HttpErrorResponse && err.status === 409) {
+            this.ai.buscarImportacao(this.importacao().id).subscribe({
+              next: atualizada => {
+                this.importacaoObservada = `${atualizada.id}:${atualizada.version}`;
+                this.versao.set(atualizada.version);
+                this.modulos.set(clonarModulos(atualizada.modulos));
+                this.importacaoAtualizada.emit(atualizada);
+              },
+            });
+          }
+        },
+      });
+  }
+
   private tratarFalha(
     err: unknown,
     rollback: AiModuloDocumento[],
@@ -530,6 +577,11 @@ function paginaRascunho(
     erroMensagem: null,
     origem,
     ajustadaManualmente: true,
+    blueprintId: null,
+    blueprintNome: null,
+    componentesSelecionados: [],
+    componentesObrigatorios: [],
+    composicaoAjustadaManualmente: false,
   };
 }
 

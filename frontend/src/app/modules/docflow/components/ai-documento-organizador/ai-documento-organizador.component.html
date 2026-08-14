@@ -151,7 +151,11 @@
               <span class="organizer__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
               <span class="organizer__page-copy">
                 <strong>{{ pagina.titulo }}</strong>
-                <small> {{ pagina.templateNome || 'Modelo pendente' }} · {{ origemPaginaLabel(pagina) }} </small>
+                <small>
+                  {{ pagina.templateNome || 'Modelo pendente' }} ·
+                  {{ (pagina.componentesSelecionados || []).length }} blocos ·
+                  {{ origemPaginaLabel(pagina) }}
+                </small>
               </span>
               <label class="organizer__module-select">
                 <span class="sr-only">Mover {{ pagina.titulo }} para outro módulo</span>

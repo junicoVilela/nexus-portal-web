@@ -25,6 +25,11 @@ export interface AiPaginaDocumento {
   erroMensagem: string | null;
   origem: AiPaginaPlanoOrigem;
   ajustadaManualmente: boolean;
+  blueprintId?: string | null;
+  blueprintNome?: string | null;
+  componentesSelecionados?: string[];
+  componentesObrigatorios?: string[];
+  composicaoAjustadaManualmente?: boolean;
 }
 
 export interface AiModuloDocumento {
@@ -110,6 +115,11 @@ export interface AiReordenarEstruturaDocumentoPayload {
       ajustadaManualmente: boolean;
     }[];
   }[];
+}
+
+export interface AiAtualizarComposicaoDocumentoPayload {
+  version: number;
+  componentesSelecionados: string[];
 }
 
 export interface AiEstimativaLoteDocumento {

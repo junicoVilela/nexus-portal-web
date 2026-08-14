@@ -204,10 +204,30 @@ describe('AiAssistenteComponent', () => {
       paginaId: null,
       sessaoId: null,
       erroMensagem: null,
+      componentesSelecionados: ['introducao', 'resultado-esperado', 'visao-tela'],
+      componentesObrigatorios: ['introducao'],
+      blueprintId: 'funcionalidade-geral',
+      blueprintNome: 'Funcionalidade geral',
+      composicaoAjustadaManualmente: true,
+    });
+
+    cmp['aplicarRecomendacao']({
+      recomendado: null,
+      candidatos: [],
+      exigeConfirmacao: false,
+      blueprintId: 'funcionalidade-geral',
+      blueprintNome: 'Funcionalidade geral',
+      totalBiblioteca: 45,
+      componentes: [
+        componenteCandidato('introducao', true),
+        componenteCandidato('visao-tela', false),
+        componenteCandidato('resultado-esperado', false),
+      ],
     });
 
     expect(cmp['form'].controls.briefing.value).toBe(briefing);
     expect(cmp['form'].controls.templateId.value).toBe('t1');
+    expect(cmp['componentesSelecionados']()).toEqual(['introducao', 'resultado-esperado', 'visao-tela']);
   });
 
   it('inclui nomes das imagens no briefing enviado', () => {

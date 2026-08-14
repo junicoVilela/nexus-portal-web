@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import {
   AiConfirmarEstruturaDocumentoPayload,
+  AiAtualizarComposicaoDocumentoPayload,
   AiDocumentoImportacao,
   AiEstimativaLoteDocumento,
   AiReordenarEstruturaDocumentoPayload,
@@ -82,6 +83,17 @@ export class AiAssistenteService {
   ): Observable<AiDocumentoImportacao> {
     return this.http.put<AiDocumentoImportacao>(
       `${this.base}/importacoes/${importacaoId}/estrutura/rascunho`,
+      payload,
+    );
+  }
+
+  atualizarComposicaoImportada(
+    importacaoId: string,
+    paginaId: string,
+    payload: AiAtualizarComposicaoDocumentoPayload,
+  ): Observable<AiDocumentoImportacao> {
+    return this.http.put<AiDocumentoImportacao>(
+      `${this.base}/importacoes/${importacaoId}/paginas/${paginaId}/composicao`,
       payload,
     );
   }

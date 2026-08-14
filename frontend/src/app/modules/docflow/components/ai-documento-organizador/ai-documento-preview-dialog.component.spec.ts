@@ -1,5 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import {
@@ -7,6 +8,7 @@ import {
   AiDocumentoPreviewDialogComponent,
   AiDocumentoPreviewDialogData,
 } from './ai-documento-preview-dialog.component';
+import { PaginaBlocoService } from '../../services/pagina-bloco.service';
 
 describe('AiDocumentoPreviewDialogComponent', () => {
   let fixture: ComponentFixture<AiDocumentoPreviewDialogComponent>;
@@ -62,6 +64,11 @@ describe('AiDocumentoPreviewDialogComponent', () => {
         erroMensagem: null,
         origem: 'DOCUMENTO',
         ajustadaManualmente: false,
+        blueprintId: 'consulta-operacional',
+        blueprintNome: 'Consulta operacional',
+        componentesSelecionados: ['introducao', 'visao-tela', 'filtros-resultado'],
+        componentesObrigatorios: ['introducao'],
+        composicaoAjustadaManualmente: false,
       },
     };
 
@@ -71,6 +78,18 @@ describe('AiDocumentoPreviewDialogComponent', () => {
         lucideTestIcons,
         { provide: DIALOG_DATA, useValue: data },
         { provide: DialogRef, useValue: dialogRef },
+        {
+          provide: PaginaBlocoService,
+          useValue: {
+            listar: () =>
+              of([
+                bloco('introducao', 'Introdução'),
+                bloco('visao-tela', 'Visão da tela'),
+                bloco('filtros-resultado', 'Filtros e resultados'),
+                bloco('resultado-esperado', 'Resultado esperado'),
+              ]),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -143,4 +162,26 @@ describe('AiDocumentoPreviewDialogComponent', () => {
       }),
     );
   });
+
+  it('devolve a composição modular revisada mantendo a ordem escolhida', () => {
+    fixture.componentInstance['compor']();
+    fixture.componentInstance['atualizarComponentes'](['introducao', 'resultado-esperado', 'visao-tela']);
+    fixture.componentInstance['salvarComposicao']();
+
+    expect(dialogRef.close).toHaveBeenCalledWith({
+      tipo: 'COMPOSICAO',
+      componentesSelecionados: ['introducao', 'resultado-esperado', 'visao-tela'],
+    });
+  });
 });
+
+function bloco(id: string, nome: string) {
+  return {
+    id,
+    nome,
+    descricao: nome,
+    categoria: 'Estrutura' as const,
+    visual: 'intro',
+    html: `<section>${nome}</section>`,
+  };
+}

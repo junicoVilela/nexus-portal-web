@@ -22,6 +22,7 @@ describe('AiDocumentoOrganizadorComponent', () => {
   beforeEach(async () => {
     ai = jasmine.createSpyObj<AiAssistenteService>('AiAssistenteService', [
       'reordenarEstruturaImportada',
+      'atualizarComposicaoImportada',
       'buscarImportacao',
     ]);
     dialog = jasmine.createSpyObj<Dialog>('Dialog', ['open']);
@@ -70,6 +71,36 @@ describe('AiDocumentoOrganizadorComponent', () => {
       }),
     );
     expect(ai.reordenarEstruturaImportada).not.toHaveBeenCalled();
+  });
+
+  it('persiste a composição aprovada sem regravar toda a estrutura', async () => {
+    const componentes = ['introducao', 'resultado-esperado', 'visao-tela'];
+    const atualizada: AiDocumentoImportacao = {
+      ...importacao,
+      version: 1,
+      modulos: importacao.modulos.map(modulo => ({
+        ...modulo,
+        paginas: modulo.paginas.map(pagina =>
+          pagina.id === 'pagina-consulta'
+            ? { ...pagina, componentesSelecionados: componentes, composicaoAjustadaManualmente: true }
+            : pagina,
+        ),
+      })),
+    };
+    ai.atualizarComposicaoImportada.and.returnValue(of(atualizada));
+
+    await fixture.componentInstance['aplicarResultadoInspetor'](
+      { tipo: 'COMPOSICAO', componentesSelecionados: componentes },
+      'pagina-consulta',
+      'modulo-usuarios',
+    );
+
+    expect(ai.atualizarComposicaoImportada).toHaveBeenCalledWith('importacao-1', 'pagina-consulta', {
+      version: 0,
+      componentesSelecionados: componentes,
+    });
+    expect(ai.reordenarEstruturaImportada).not.toHaveBeenCalled();
+    expect(fixture.componentInstance['versao']()).toBe(1);
   });
 
   it('reordena módulos e persiste IDs com a versão atual', () => {

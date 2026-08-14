@@ -42,6 +42,15 @@
         <dt>Modelo recomendado</dt>
         <dd>{{ data.pagina.templateNome || 'Será reavaliado durante a geração' }}</dd>
       </div>
+      <div>
+        <dt>Composição</dt>
+        <dd>
+          {{ componentesSelecionados().length || 'Pendente' }} blocos
+          @if (data.pagina.composicaoAjustadaManualmente) {
+            <span class="document-preview__adjusted">Personalizada</span>
+          }
+        </dd>
+      </div>
     </dl>
   }
 
@@ -174,6 +183,23 @@
           }
         </form>
       }
+      @case ('COMPOSICAO') {
+        <div class="document-preview__composition">
+          <div class="document-preview__form-heading">
+            <div>
+              <span>Arquitetura da página</span>
+              <h4>Revise os blocos e a ordem de geração</h4>
+            </div>
+            <small>{{ data.pagina.blueprintNome || data.pagina.templateNome || 'Composição contextual' }}</small>
+          </div>
+          <app-ai-component-composer
+            [plano]="planoComposicao"
+            [selecionados]="componentesSelecionados()"
+            [catalogo]="catalogo()"
+            (selecionadosChange)="atualizarComponentes($event)"
+          />
+        </div>
+      }
     }
   </section>
 
@@ -188,6 +214,9 @@
         </button>
         <button type="button" [disabled]="!podeMesclar" (click)="mesclar()">
           <lucide-icon name="Merge" [size]="14" /> Mesclar
+        </button>
+        <button type="button" [disabled]="!editavel" (click)="compor()">
+          <lucide-icon name="Boxes" [size]="14" /> Composição
         </button>
         <button type="button" class="document-preview__danger" [disabled]="!editavel" (click)="solicitarExclusao()">
           <lucide-icon name="Trash2" [size]="14" /> Remover
@@ -206,12 +235,30 @@
               ? divisaoForm.invalid
               : modo() === 'MESCLAR'
                 ? mesclagemForm.invalid
-                : paginaForm.invalid
+                : modo() === 'COMPOSICAO'
+                  ? componentesSelecionados().length < 3 || componentesSelecionados().length > 12
+                  : paginaForm.invalid
           "
-          (click)="modo() === 'DIVIDIR' ? confirmarDivisao() : modo() === 'MESCLAR' ? confirmarMesclagem() : salvar()"
+          (click)="
+            modo() === 'DIVIDIR'
+              ? confirmarDivisao()
+              : modo() === 'MESCLAR'
+                ? confirmarMesclagem()
+                : modo() === 'COMPOSICAO'
+                  ? salvarComposicao()
+                  : salvar()
+          "
         >
           <lucide-icon name="Check" [size]="14" />
-          {{ modo() === 'DIVIDIR' ? 'Criar duas páginas' : modo() === 'MESCLAR' ? 'Mesclar páginas' : 'Salvar página' }}
+          {{
+            modo() === 'DIVIDIR'
+              ? 'Criar duas páginas'
+              : modo() === 'MESCLAR'
+                ? 'Mesclar páginas'
+                : modo() === 'COMPOSICAO'
+                  ? 'Salvar composição'
+                  : 'Salvar página'
+          }}
         </button>
       </div>
     }

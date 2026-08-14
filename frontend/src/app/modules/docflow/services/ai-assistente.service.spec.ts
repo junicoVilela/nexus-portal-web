@@ -208,6 +208,23 @@ describe('AiAssistenteService', () => {
     req.flush({ id: 'importacao-1', version: 4 });
   });
 
+  it('persiste a composição modular de uma página com controle de versão', () => {
+    const componentesSelecionados = ['introducao', 'passo-a-passo', 'resultado-esperado'];
+    service
+      .atualizarComposicaoImportada('importacao-1', 'pagina-1', {
+        version: 4,
+        componentesSelecionados,
+      })
+      .subscribe(doc => expect(doc.version).toBe(5));
+
+    const req = http.expectOne(
+      `${environment.aiApiUrl}/importacoes/importacao-1/paginas/pagina-1/composicao`,
+    );
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ version: 4, componentesSelecionados });
+    req.flush({ id: 'importacao-1', version: 5 });
+  });
+
   it('confirma a estrutura sugerida antes de selecionar páginas', () => {
     service
       .confirmarEstruturaImportada('importacao-1', {

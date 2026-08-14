@@ -93,6 +93,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
   protected readonly recomendandoTemplate = signal(false);
   protected readonly componentesSelecionados = signal<string[]>([]);
+  private readonly componentesImportadosPendentes = signal<string[] | null>(null);
   private readonly paginaImportadaContexto = signal<{
     importacaoId: string;
     paginaPlanoId: string;
@@ -142,8 +143,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected readonly composicaoValida = computed(() => {
     const componentes = this.recomendacaoTemplate()?.componentes ?? [];
-    if (!componentes.length) return true;
     const selecionados = this.componentesSelecionados();
+    if (!componentes.length && !selecionados.length) return true;
     return (
       selecionados.length >= 3 &&
       componentes.filter(item => item.obrigatorio).every(item => selecionados.includes(item.id))
@@ -354,7 +355,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         moduloId: contextoImportado?.moduloId ?? qp.get('moduloId'),
         clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
         templateId: this.form.controls.templateId.value || qp.get('templateId'),
-        componentesSelecionados: this.recomendacaoTemplate()?.componentes.length
+        componentesSelecionados: this.componentesSelecionados().length
           ? this.componentesSelecionados()
           : undefined,
       })
@@ -390,6 +391,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       moduloId: pagina.moduloId,
       clienteId: pagina.clienteId,
     });
+    this.componentesImportadosPendentes.set([...(pagina.componentesSelecionados ?? [])]);
     this.form.patchValue({
       briefing: pagina.briefing,
       templateId: pagina.templateId ?? '',
@@ -638,7 +640,16 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   private aplicarRecomendacao(recomendacao: AiTemplateRecomendacao | null): void {
     this.recomendacaoTemplate.set(recomendacao);
+    const importados = this.componentesImportadosPendentes();
+    if (recomendacao && importados?.length) {
+      if (importados.length >= 3) {
+        this.componentesSelecionados.set(importados);
+        this.componentesImportadosPendentes.set(null);
+        return;
+      }
+    }
     this.componentesSelecionados.set(recomendacao?.componentes.map(item => item.id) ?? []);
+    if (recomendacao) this.componentesImportadosPendentes.set(null);
   }
 
   private persistirSessaoNaUrl(sessaoId: string | null): void {

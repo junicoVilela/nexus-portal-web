@@ -48,13 +48,53 @@ describe('AiComponentComposerComponent', () => {
     const emit = jasmine.createSpy('selecionadosChange');
     fixture.componentInstance.selecionadosChange.subscribe(emit);
     const botoes = fixture.nativeElement.querySelectorAll(
-      '.component-composer__item',
+      '.component-composer__remove',
     ) as NodeListOf<HTMLButtonElement>;
 
     expect(botoes[0].disabled).toBeTrue();
     botoes[3].click();
 
     expect(emit).toHaveBeenCalledWith(['introducao', 'visao-tela', 'filtros-resultado']);
+  });
+
+  it('abre a biblioteca e adiciona somente o bloco escolhido', () => {
+    fixture.componentRef.setInput('catalogo', [
+      ...plano.componentes.map(item => bloco(item.id, item.nome)),
+      bloco('resultado-esperado', 'Resultado esperado'),
+    ]);
+    fixture.detectChanges();
+    const emit = jasmine.createSpy('selecionadosChange');
+    fixture.componentInstance.selecionadosChange.subscribe(emit);
+
+    (
+      fixture.nativeElement.querySelector('.component-composer__explorer-toggle') as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+    (fixture.nativeElement.querySelector('.component-composer__add') as HTMLButtonElement).click();
+
+    expect(emit).toHaveBeenCalledWith([
+      'introducao',
+      'visao-tela',
+      'filtros-resultado',
+      'mensagens-sistema',
+      'resultado-esperado',
+    ]);
+  });
+
+  it('persiste a nova ordem ao arrastar um componente', () => {
+    const emit = jasmine.createSpy('selecionadosChange');
+    fixture.componentInstance.selecionadosChange.subscribe(emit);
+
+    const reordenar = fixture.componentInstance['reordenar'] as unknown as (event: {
+      previousIndex: number;
+      currentIndex: number;
+    }) => void;
+    reordenar.call(fixture.componentInstance, {
+      previousIndex: 3,
+      currentIndex: 1,
+    });
+
+    expect(emit).toHaveBeenCalledWith(['introducao', 'mensagens-sistema', 'visao-tela', 'filtros-resultado']);
   });
 });
 
@@ -68,5 +108,16 @@ function componente(id: string, nome: string, obrigatorio: boolean) {
     necessidade: obrigatorio ? ('OBRIGATORIA' as const) : ('CONTEXTUAL' as const),
     obrigatorio,
     motivo: obrigatorio ? 'Essencial para a página.' : 'Identificado no texto.',
+  };
+}
+
+function bloco(id: string, nome: string) {
+  return {
+    id,
+    nome,
+    descricao: nome,
+    categoria: 'Estrutura' as const,
+    visual: 'intro',
+    html: `<section>${nome}</section>`,
   };
 }

@@ -129,10 +129,11 @@
             }
 
             @if (recomendacaoTemplate(); as plano) {
-              @if (plano.componentes.length) {
+              @if (plano.componentes.length || plano.totalBiblioteca) {
                 <app-ai-component-composer
                   [plano]="plano"
                   [selecionados]="componentesSelecionados()"
+                  [catalogo]="blocosCatalogo()"
                   [disabled]="carregando()"
                   (selecionadosChange)="atualizarComponentesSelecionados($event)"
                 />

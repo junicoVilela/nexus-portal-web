@@ -84,6 +84,13 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
             erroMensagem: null,
             origem: 'DOCUMENTO',
             ajustadaManualmente: false,
+            blueprintId: 'consulta-operacional',
+            blueprintNome: 'Consulta operacional',
+            componentesSelecionados: COMPONENTES_RECOMENDADOS.map(item => item.id),
+            componentesObrigatorios: COMPONENTES_RECOMENDADOS.filter(item => item.obrigatorio).map(
+              item => item.id,
+            ),
+            composicaoAjustadaManualmente: false,
           },
         ],
       },
@@ -272,6 +279,11 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
                 paginaId: null,
                 sessaoId: null,
                 erroMensagem: null,
+                blueprintId: null,
+                blueprintNome: null,
+                componentesSelecionados: [],
+                componentesObrigatorios: [],
+                composicaoAjustadaManualmente: false,
               }),
               id: paginaRascunho.planoId,
               titulo: paginaRascunho.titulo,
@@ -281,6 +293,31 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
               ordem: indicePagina + 1,
             };
           }),
+        })),
+      };
+      return responder(importacaoRascunho);
+    }
+
+    const composicaoMatch = path.match(
+      new RegExp(`^/api/v1/ai/importacoes/${IMPORTACAO_ID}/paginas/([^/]+)/composicao$`),
+    );
+    if (method === 'PUT' && composicaoMatch) {
+      const paginaId = composicaoMatch[1];
+      const payload = request.postDataJSON() as { componentesSelecionados: string[] };
+      importacaoRascunho = {
+        ...importacaoRascunho,
+        version: importacaoRascunho.version + 1,
+        modulos: importacaoRascunho.modulos.map(modulo => ({
+          ...modulo,
+          paginas: modulo.paginas.map(pagina =>
+            pagina.id === paginaId
+              ? {
+                  ...pagina,
+                  componentesSelecionados: payload.componentesSelecionados,
+                  composicaoAjustadaManualmente: true,
+                }
+              : pagina,
+          ),
         })),
       };
       return responder(importacaoRascunho);
