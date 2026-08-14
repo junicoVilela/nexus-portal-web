@@ -192,6 +192,8 @@ function importacaoTeste(confirmada = false): AiDocumentoImportacao {
             templateNome: 'Listar registros',
             confiancaTemplate: 0.9,
             motivoTemplate: 'Listagem identificada.',
+            origem: 'DOCUMENTO',
+            ajustadaManualmente: false,
             status: 'PENDENTE',
             paginaId: null,
             sessaoId: null,

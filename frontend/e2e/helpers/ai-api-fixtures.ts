@@ -61,6 +61,8 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
             paginaId: null,
             sessaoId: null,
             erroMensagem: null,
+            origem: 'DOCUMENTO',
+            ajustadaManualmente: false,
           },
         ],
       },
@@ -183,7 +185,17 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
 
     if (method === 'PUT' && path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/estrutura/rascunho`) {
       const payload = request.postDataJSON() as {
-        modulos: Array<{ planoId: string; nome: string; paginas: string[] }>;
+        modulos: Array<{
+          planoId: string;
+          nome: string;
+          paginas: Array<{
+            planoId: string;
+            titulo: string;
+            conteudo: string;
+            origem: string;
+            ajustadaManualmente: boolean;
+          }>;
+        }>;
       };
       type PaginaRascunho = (typeof importacaoRascunho.modulos)[number]['paginas'][number];
       const paginas = new Map<string, PaginaRascunho>();
@@ -198,10 +210,27 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
           moduloId: null,
           nome: modulo.nome,
           ordem: indiceModulo + 1,
-          paginas: modulo.paginas.map((paginaId, indicePagina) => {
-            const pagina = paginas.get(paginaId);
-            if (!pagina) throw new Error(`Página ${paginaId} ausente no mock da importação.`);
-            return { ...pagina, ordem: indicePagina + 1 };
+          paginas: modulo.paginas.map((paginaRascunho, indicePagina) => {
+            const pagina = paginas.get(paginaRascunho.planoId);
+            return {
+              ...(pagina ?? {
+                templateId: null,
+                templateCodigo: null,
+                templateNome: null,
+                confiancaTemplate: 0,
+                motivoTemplate: 'Modelo pendente.',
+                status: 'PENDENTE',
+                paginaId: null,
+                sessaoId: null,
+                erroMensagem: null,
+              }),
+              id: paginaRascunho.planoId,
+              titulo: paginaRascunho.titulo,
+              briefing: `# Projeto: Cadastro de produto\n\n## Módulo: ${modulo.nome}\n\n### Página: ${paginaRascunho.titulo}\n\n${paginaRascunho.conteudo}`,
+              origem: paginaRascunho.origem,
+              ajustadaManualmente: paginaRascunho.ajustadaManualmente,
+              ordem: indicePagina + 1,
+            };
           }),
         })),
       };
@@ -209,14 +238,35 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
     }
 
     if (method === 'POST' && path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/estrutura/confirmar`) {
-      return responder(importacaoDocumento('PENDENTE', true));
+      importacaoRascunho = {
+        ...importacaoRascunho,
+        estruturaConfirmada: true,
+        projetoId: '77777777-7777-7777-7777-777777777777',
+        modulos: importacaoRascunho.modulos.map(modulo => ({
+          ...modulo,
+          moduloId: '88888888-8888-8888-8888-888888888888',
+        })),
+      };
+      return responder(importacaoRascunho);
     }
 
     if (
       method === 'POST' &&
       path === `/api/v1/ai/importacoes/${IMPORTACAO_ID}/paginas/${PAGINA_PLANO_ID}/selecionar`
     ) {
-      return responder(importacaoDocumento('EM_EDICAO', true));
+      importacaoRascunho = {
+        ...importacaoRascunho,
+        status: 'EM_REVISAO',
+        version: importacaoRascunho.version + 1,
+        modulos: importacaoRascunho.modulos.map(modulo => ({
+          ...modulo,
+          paginas: modulo.paginas.map(pagina => ({
+            ...pagina,
+            status: pagina.id === PAGINA_PLANO_ID ? 'EM_EDICAO' : pagina.status,
+          })),
+        })),
+      };
+      return responder(importacaoRascunho);
     }
 
     if (method === 'GET' && path === `/api/v1/ai/sessoes/${SESSAO_ID}`) {

@@ -195,7 +195,7 @@
 
 .organizer__module-header {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 7px;
   padding: 8px;
@@ -205,6 +205,7 @@
 
 .organizer__drag-handle,
 .organizer__move-actions button,
+.organizer__add-page,
 .organizer__remove {
   display: inline-grid;
   width: 28px;
@@ -229,6 +230,7 @@
 
 .organizer__drag-handle:hover:not(:disabled),
 .organizer__move-actions button:hover:not(:disabled),
+.organizer__add-page:hover:not(:disabled),
 .organizer__remove:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--accent);
@@ -236,9 +238,14 @@
 
 .organizer__drag-handle:disabled,
 .organizer__move-actions button:disabled,
+.organizer__add-page:disabled,
 .organizer__remove:disabled {
   opacity: 0.38;
   cursor: not-allowed;
+}
+
+.organizer__add-page {
+  color: var(--accent);
 }
 
 .organizer__remove {

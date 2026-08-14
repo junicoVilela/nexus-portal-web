@@ -5,8 +5,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
+import { ConfirmService } from '@shared/ui';
 import { AiDocumentoImportacao, AiModuloDocumento } from '../../models/ai-documento-importacao.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
+import { extrairConteudoPagina } from './ai-documento-estrutura.utils';
 import { AiDocumentoPreviewDialogComponent } from './ai-documento-preview-dialog.component';
 import { AiDocumentoOrganizadorComponent } from './ai-documento-organizador.component';
 
@@ -14,6 +16,7 @@ describe('AiDocumentoOrganizadorComponent', () => {
   let fixture: ComponentFixture<AiDocumentoOrganizadorComponent>;
   let ai: jasmine.SpyObj<AiAssistenteService>;
   let dialog: jasmine.SpyObj<Dialog>;
+  let confirm: jasmine.SpyObj<ConfirmService>;
   let importacao: AiDocumentoImportacao;
 
   beforeEach(async () => {
@@ -22,12 +25,16 @@ describe('AiDocumentoOrganizadorComponent', () => {
       'buscarImportacao',
     ]);
     dialog = jasmine.createSpyObj<Dialog>('Dialog', ['open']);
+    dialog.open.and.returnValue({ closed: of(undefined) } as never);
+    confirm = jasmine.createSpyObj<ConfirmService>('ConfirmService', ['confirm']);
+    confirm.confirm.and.resolveTo(true);
     await TestBed.configureTestingModule({
       imports: [AiDocumentoOrganizadorComponent],
       providers: [
         lucideTestIcons,
         { provide: AiAssistenteService, useValue: ai },
         { provide: Dialog, useValue: dialog },
+        { provide: ConfirmService, useValue: confirm },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(AiDocumentoOrganizadorComponent);
@@ -58,6 +65,7 @@ describe('AiDocumentoOrganizadorComponent', () => {
         data: jasmine.objectContaining({
           pagina: jasmine.objectContaining({ titulo: 'Consultar usuários' }),
           modulo: jasmine.objectContaining({ nome: 'Usuários' }),
+          projetoNome: 'Portal',
         }),
       }),
     );
@@ -83,11 +91,15 @@ describe('AiDocumentoOrganizadorComponent', () => {
     expect(ai.reordenarEstruturaImportada).toHaveBeenCalledWith('importacao-1', {
       version: 0,
       modulos: [
-        { planoId: 'modulo-seguranca', nome: 'Segurança', paginas: ['pagina-senha'] },
+        {
+          planoId: 'modulo-seguranca',
+          nome: 'Segurança',
+          paginas: [paginaPayload(importacao.modulos[1].paginas[0])],
+        },
         {
           planoId: 'modulo-usuarios',
           nome: 'Usuários',
-          paginas: ['pagina-consulta', 'pagina-permissoes'],
+          paginas: importacao.modulos[0].paginas.map(paginaPayload),
         },
       ],
     });
@@ -118,12 +130,58 @@ describe('AiDocumentoOrganizadorComponent', () => {
     fixture.componentInstance['desfazer']();
 
     expect(ai.reordenarEstruturaImportada).toHaveBeenCalledTimes(2);
-    expect(ai.reordenarEstruturaImportada.calls.argsFor(0)[1].modulos[1].paginas).toEqual([
-      'pagina-senha',
-      'pagina-permissoes',
-    ]);
+    expect(
+      ai.reordenarEstruturaImportada.calls.argsFor(0)[1].modulos[1].paginas.map(item => item.planoId),
+    ).toEqual(['pagina-senha', 'pagina-permissoes']);
     expect(ai.reordenarEstruturaImportada.calls.argsFor(1)[1].version).toBe(1);
     expect(fixture.componentInstance['historico']()).toEqual([]);
+  });
+
+  it('persiste a edição do inspetor e marca o conteúdo como ajustado', async () => {
+    ai.reordenarEstruturaImportada.and.returnValue(of({ ...importacao, version: 1 }));
+
+    await fixture.componentInstance['aplicarResultadoInspetor'](
+      {
+        tipo: 'SALVAR',
+        titulo: 'Pesquisar usuários',
+        conteudo: 'Use filtros avançados e clique em Pesquisar.',
+      },
+      'pagina-consulta',
+      'modulo-usuarios',
+    );
+
+    const pagina = ai.reordenarEstruturaImportada.calls.mostRecent().args[1].modulos[0].paginas[0];
+    expect(pagina).toEqual({
+      planoId: 'pagina-consulta',
+      titulo: 'Pesquisar usuários',
+      conteudo: 'Use filtros avançados e clique em Pesquisar.',
+      origem: 'DOCUMENTO',
+      ajustadaManualmente: true,
+    });
+  });
+
+  it('remove página editável após confirmação e mantém desfazer disponível', async () => {
+    const semPermissoes: AiDocumentoImportacao = {
+      ...importacao,
+      version: 1,
+      modulos: [
+        { ...importacao.modulos[0], paginas: [importacao.modulos[0].paginas[0]] },
+        importacao.modulos[1],
+      ],
+    };
+    ai.reordenarEstruturaImportada.and.returnValue(of(semPermissoes));
+
+    await fixture.componentInstance['aplicarResultadoInspetor'](
+      { tipo: 'EXCLUIR' },
+      'pagina-permissoes',
+      'modulo-usuarios',
+    );
+
+    expect(confirm.confirm).toHaveBeenCalled();
+    expect(
+      ai.reordenarEstruturaImportada.calls.mostRecent().args[1].modulos[0].paginas.map(item => item.planoId),
+    ).toEqual(['pagina-consulta']);
+    expect(fixture.componentInstance['podeDesfazer']()).toBeTrue();
   });
 
   it('permite criar módulo, mover uma página e remover o módulo quando vazio', () => {
@@ -212,7 +270,7 @@ function criarImportacao(): AiDocumentoImportacao {
     id,
     titulo,
     ordem,
-    briefing: `### Página: ${titulo}`,
+    briefing: `# Projeto: Portal\n\n## Módulo: Cadastros\n\n### Página: ${titulo}\n\nConteúdo de ${titulo}.`,
     templateId: null,
     templateCodigo: null,
     templateNome: null,
@@ -222,6 +280,8 @@ function criarImportacao(): AiDocumentoImportacao {
     paginaId: null,
     sessaoId: null,
     erroMensagem: null,
+    origem: 'DOCUMENTO' as const,
+    ajustadaManualmente: false,
   });
   return {
     id: 'importacao-1',
@@ -266,5 +326,15 @@ function criarImportacao(): AiDocumentoImportacao {
     avisos: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+}
+
+function paginaPayload(pagina: AiDocumentoImportacao['modulos'][number]['paginas'][number]) {
+  return {
+    planoId: pagina.id,
+    titulo: pagina.titulo,
+    conteudo: extrairConteudoPagina(pagina.briefing),
+    origem: pagina.origem,
+    ajustadaManualmente: pagina.ajustadaManualmente,
   };
 }

@@ -1,6 +1,7 @@
 export type AiTipoDocumento = 'DOC' | 'DOCX' | 'PDF' | 'TXT';
 export type AiImportacaoStatus = 'ANALISANDO_ESTRUTURA' | 'PRONTO_PARA_REVISAO' | 'EM_REVISAO' | 'CONCLUIDA';
 export type AiPaginaPlanoStatus = 'PENDENTE' | 'EM_EDICAO' | 'EM_GERACAO' | 'GERADA' | 'REVISADA' | 'ERRO';
+export type AiPaginaPlanoOrigem = 'DOCUMENTO' | 'IA' | 'MANUAL' | 'DIVISAO' | 'MESCLAGEM';
 export type AiDocumentoAnaliseOrigem = 'ESTRUTURAL' | 'LLM';
 export type AiDocumentoSugestaoTipo =
   'ADICIONAR_PAGINA' | 'RENOMEAR_PAGINA' | 'MOVER_PAGINA' | 'MESCLAR_PAGINAS' | 'RENOMEAR_MODULO';
@@ -22,6 +23,8 @@ export interface AiPaginaDocumento {
   paginaId: string | null;
   sessaoId: string | null;
   erroMensagem: string | null;
+  origem: AiPaginaPlanoOrigem;
+  ajustadaManualmente: boolean;
 }
 
 export interface AiModuloDocumento {
@@ -91,12 +94,22 @@ export interface AiConfirmarEstruturaDocumentoPayload {
   clienteNome: string | null;
   projetoNome: string | null;
   projetoDescricao: string | null;
-  modulos: Array<{ planoId: string; nome: string }>;
+  modulos: { planoId: string; nome: string }[];
 }
 
 export interface AiReordenarEstruturaDocumentoPayload {
   version: number;
-  modulos: Array<{ planoId: string; nome: string; paginas: string[] }>;
+  modulos: {
+    planoId: string;
+    nome: string;
+    paginas: {
+      planoId: string;
+      titulo: string;
+      conteudo: string;
+      origem: AiPaginaPlanoOrigem;
+      ajustadaManualmente: boolean;
+    }[];
+  }[];
 }
 
 export interface AiEstimativaLoteDocumento {

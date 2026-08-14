@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { instalarMocksAiAssistente } from './helpers/ai-api-fixtures';
 
 test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
-  test('importa manual, revisa a ordem e leva somente uma página ao briefing', async ({ page }) => {
+  test('importa manual, revisa páginas e leva a estrutura confirmada ao briefing', async ({ page }) => {
     await instalarMocksAiAssistente(page);
     await page.goto('/doc-flow/assistente');
 
@@ -23,8 +23,56 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     await expect(previa).toBeVisible();
     await expect(previa.getByText('A tela apresenta filtros, tabela e paginação.')).toBeVisible();
     await expect(previa.getByText('Listar e consultar registros')).toBeVisible();
-    await previa.getByRole('button', { name: 'Fechar prévia' }).click();
+    await previa.getByRole('button', { name: 'Editar', exact: true }).click();
+    await previa.getByLabel('Título da página').fill('Pesquisa de registros');
+    await previa
+      .getByLabel('Conteúdo que será enviado à IA')
+      .fill('Use os filtros para localizar registros.\n\nConsulte os resultados e a paginação.');
+    await previa.getByRole('button', { name: 'Salvar página' }).click();
     await expect(previa).toBeHidden();
+    await expect(page.locator('.organizer__page').filter({ hasText: 'Pesquisa de registros' })).toBeVisible();
+
+    await page
+      .getByRole('button', {
+        name: 'Visualizar conteúdo da página Pesquisa de registros',
+        exact: true,
+      })
+      .click();
+    const inspetor = page.getByRole('dialog', { name: 'Conteúdo da página Pesquisa de registros' });
+    await inspetor.getByRole('button', { name: 'Dividir', exact: true }).click();
+    await inspetor.getByRole('button', { name: 'Criar duas páginas' }).click();
+    await expect(page.locator('.organizer__page')).toHaveCount(2);
+
+    await page
+      .getByRole('button', {
+        name: 'Visualizar conteúdo da página Pesquisa de registros',
+        exact: true,
+      })
+      .click();
+    const mesclagem = page.getByRole('dialog', {
+      name: 'Conteúdo da página Pesquisa de registros',
+      exact: true,
+    });
+    await mesclagem.getByRole('button', { name: 'Mesclar', exact: true }).click();
+    await mesclagem.getByRole('button', { name: 'Mesclar páginas' }).click();
+    await expect(page.locator('.organizer__page')).toHaveCount(1);
+
+    await page.getByRole('button', { name: 'Adicionar página ao módulo Cadastros' }).click();
+    const novaPagina = page.getByRole('dialog', { name: 'Nova página no módulo Cadastros' });
+    await novaPagina.getByLabel('Título da nova página').fill('Exportar registros');
+    await novaPagina
+      .getByLabel('Conteúdo e instruções')
+      .fill('Explique como exportar o resultado filtrado para Excel e PDF.');
+    await novaPagina.getByRole('button', { name: 'Salvar página' }).click();
+    await expect(page.locator('.organizer__page')).toHaveCount(2);
+    await expect(page.locator('.organizer__page').filter({ hasText: 'Criada manualmente' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Visualizar conteúdo da página Exportar registros' }).click();
+    const paginaManual = page.getByRole('dialog', { name: 'Conteúdo da página Exportar registros' });
+    await paginaManual.getByRole('button', { name: 'Remover', exact: true }).click();
+    await page.getByRole('button', { name: 'Remover página' }).click();
+    await expect(page.locator('.organizer__page')).toHaveCount(1);
+
     await page.getByLabel('Novo módulo').fill('Relatórios');
     await page.getByRole('button', { name: 'Criar módulo' }).click();
     await expect(page.locator('.organizer__module')).toHaveCount(2);
@@ -41,7 +89,8 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     await expect(page.getByText('Projeto e módulos confirmados')).toBeVisible();
     await page.getByRole('button', { name: 'Gerar esta página' }).click();
 
-    await expect(page.locator('#briefing')).toHaveValue(/### Página: Listagem de registros/);
+    await expect(page.locator('#briefing')).toHaveValue(/### Página: Pesquisa de registros/);
+    await expect(page.locator('#briefing')).toHaveValue(/Consulte os resultados e a paginação/);
     await expect(page.getByRole('button', { name: 'Em edição' })).toBeVisible();
   });
 

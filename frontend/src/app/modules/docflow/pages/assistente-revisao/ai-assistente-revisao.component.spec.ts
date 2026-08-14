@@ -138,6 +138,8 @@ function importacaoTeste(): AiDocumentoImportacao {
             templateNome: 'Consulta',
             confiancaTemplate: 0.91,
             motivoTemplate: 'O texto descreve filtros e resultados.',
+            origem: 'DOCUMENTO',
+            ajustadaManualmente: false,
             status: 'GERADA',
             paginaId: null,
             sessaoId: 'sessao-1',

@@ -3,17 +3,41 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
 import {
+  AiDocumentoInspectorResultado,
   AiDocumentoPreviewDialogComponent,
   AiDocumentoPreviewDialogData,
 } from './ai-documento-preview-dialog.component';
 
 describe('AiDocumentoPreviewDialogComponent', () => {
   let fixture: ComponentFixture<AiDocumentoPreviewDialogComponent>;
-  let dialogRef: jasmine.SpyObj<DialogRef<void>>;
+  let dialogRef: jasmine.SpyObj<DialogRef<AiDocumentoInspectorResultado | undefined>>;
 
   beforeEach(async () => {
-    dialogRef = jasmine.createSpyObj<DialogRef<void>>('DialogRef', ['close']);
+    dialogRef = jasmine.createSpyObj<DialogRef<AiDocumentoInspectorResultado | undefined>>('DialogRef', [
+      'close',
+    ]);
     const data: AiDocumentoPreviewDialogData = {
+      projetoNome: 'Portal',
+      paginasMesclagem: [
+        {
+          id: 'pagina-2',
+          titulo: 'Editar usuários',
+          ordem: 4,
+          briefing:
+            '# Projeto: Portal\n\n## Módulo: Usuários\n\n### Página: Editar usuários\n\nAltere os campos e salve.',
+          templateId: null,
+          templateCodigo: null,
+          templateNome: null,
+          confiancaTemplate: 0,
+          motivoTemplate: 'Modelo pendente.',
+          status: 'PENDENTE',
+          paginaId: null,
+          sessaoId: null,
+          erroMensagem: null,
+          origem: 'DOCUMENTO',
+          ajustadaManualmente: false,
+        },
+      ],
       modulo: {
         id: 'modulo-1',
         moduloId: null,
@@ -36,6 +60,8 @@ describe('AiDocumentoPreviewDialogComponent', () => {
         paginaId: null,
         sessaoId: null,
         erroMensagem: null,
+        origem: 'DOCUMENTO',
+        ajustadaManualmente: false,
       },
     };
 
@@ -70,5 +96,51 @@ describe('AiDocumentoPreviewDialogComponent', () => {
     botao.click();
 
     expect(dialogRef.close).toHaveBeenCalled();
+  });
+
+  it('edita título e conteúdo e devolve a alteração ao organizador', () => {
+    fixture.componentInstance['editar']();
+    fixture.componentInstance['paginaForm'].setValue({
+      titulo: 'Pesquisar usuários',
+      conteudo: 'Use filtros avançados para localizar um usuário.',
+    });
+
+    fixture.componentInstance['salvar']();
+
+    expect(dialogRef.close).toHaveBeenCalledWith({
+      tipo: 'SALVAR',
+      titulo: 'Pesquisar usuários',
+      conteudo: 'Use filtros avançados para localizar um usuário.',
+    });
+  });
+
+  it('prepara divisão em duas páginas e devolve os dois conteúdos', () => {
+    fixture.componentInstance['paginaForm'].controls.conteudo.setValue(
+      'Primeiro bloco da página.\n\nSegundo bloco da página.',
+    );
+
+    fixture.componentInstance['dividir']();
+    fixture.componentInstance['confirmarDivisao']();
+
+    expect(dialogRef.close).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        tipo: 'DIVIDIR',
+        atual: jasmine.objectContaining({ conteudo: 'Primeiro bloco da página.' }),
+        nova: jasmine.objectContaining({ conteudo: 'Segundo bloco da página.' }),
+      }),
+    );
+  });
+
+  it('mescla com outra página e identifica a página removida', () => {
+    fixture.componentInstance['mesclar']();
+    fixture.componentInstance['confirmarMesclagem']();
+
+    expect(dialogRef.close).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        tipo: 'MESCLAR',
+        paginaRemovidaId: 'pagina-2',
+        conteudo: jasmine.stringMatching(/Altere os campos e salve/),
+      }),
+    );
   });
 });

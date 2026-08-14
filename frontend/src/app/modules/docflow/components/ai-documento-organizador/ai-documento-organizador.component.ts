@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 
+import { ConfirmService } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import {
   AiDocumentoImportacao,
@@ -23,6 +24,13 @@ import {
 } from '../../models/ai-documento-importacao.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import {
+  extrairConteudoPagina,
+  montarBriefingPagina,
+  paginaPodeSerEditada,
+  rotuloOrigemPagina,
+} from './ai-documento-estrutura.utils';
+import {
+  AiDocumentoInspectorResultado,
   AiDocumentoPreviewDialogComponent,
   AiDocumentoPreviewDialogData,
 } from './ai-documento-preview-dialog.component';
@@ -41,6 +49,7 @@ type TipoPersistencia = 'normal' | 'undo';
 export class AiDocumentoOrganizadorComponent implements OnDestroy {
   private readonly ai = inject(AiAssistenteService);
   private readonly dialog = inject(Dialog);
+  private readonly confirm = inject(ConfirmService);
   private importacaoObservada?: string;
   private statusTimer?: number;
 
@@ -162,14 +171,157 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
   }
 
   protected visualizarConteudo(pagina: AiPaginaDocumento, modulo: AiModuloDocumento): void {
-    this.dialog.open<void, AiDocumentoPreviewDialogData>(AiDocumentoPreviewDialogComponent, {
-      data: { pagina, modulo },
-      ariaLabel: `Conteúdo da página ${pagina.titulo}`,
-      backdropClass: 'ui-dialog-backdrop',
-      panelClass: 'ui-dialog-panel',
-      autoFocus: 'first-tabbable',
-      restoreFocus: true,
+    this.abrirInspetor(pagina, modulo, false);
+  }
+
+  protected adicionarPagina(modulo: AiModuloDocumento): void {
+    if (this.bloqueado()) return;
+    if (this.totalPaginas() >= 80) {
+      this.erro.set('O documento pode ter no máximo 80 páginas.');
+      return;
+    }
+    const pagina: AiPaginaDocumento = {
+      id: crypto.randomUUID(),
+      titulo: '',
+      ordem: modulo.paginas.length + 1,
+      briefing: '',
+      templateId: null,
+      templateCodigo: null,
+      templateNome: null,
+      confiancaTemplate: 0,
+      motivoTemplate: 'O modelo será escolhido durante a geração.',
+      status: 'PENDENTE',
+      paginaId: null,
+      sessaoId: null,
+      erroMensagem: null,
+      origem: 'MANUAL',
+      ajustadaManualmente: true,
+    };
+    this.abrirInspetor(pagina, modulo, true);
+  }
+
+  private abrirInspetor(pagina: AiPaginaDocumento, modulo: AiModuloDocumento, criacao: boolean): void {
+    const ref = this.dialog.open<AiDocumentoInspectorResultado, AiDocumentoPreviewDialogData>(
+      AiDocumentoPreviewDialogComponent,
+      {
+        data: {
+          pagina,
+          modulo,
+          projetoNome: this.importacao().projetoNome,
+          paginasMesclagem: modulo.paginas.filter(
+            item => item.id !== pagina.id && paginaPodeSerEditada(item),
+          ),
+          criacao,
+        },
+        ariaLabel: criacao ? `Nova página no módulo ${modulo.nome}` : `Conteúdo da página ${pagina.titulo}`,
+        backdropClass: 'ui-dialog-backdrop',
+        panelClass: 'ui-dialog-panel',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+      },
+    );
+    ref.closed.subscribe(resultado => {
+      if (resultado) void this.aplicarResultadoInspetor(resultado, pagina.id, modulo.id);
     });
+  }
+
+  private async aplicarResultadoInspetor(
+    resultado: AiDocumentoInspectorResultado,
+    paginaId: string,
+    moduloId: string,
+  ): Promise<void> {
+    if (this.bloqueado()) return;
+    if (resultado.tipo === 'EXCLUIR') {
+      await this.removerPagina(paginaId);
+      return;
+    }
+    const anterior = clonarModulos(this.modulos());
+    const proximo = clonarModulos(anterior);
+    const modulo = proximo.find(item => item.id === moduloId);
+    if (!modulo) return;
+
+    if (resultado.tipo === 'CRIAR') {
+      modulo.paginas.push(
+        paginaRascunho(
+          paginaId,
+          resultado.titulo,
+          resultado.conteudo,
+          this.importacao().projetoNome,
+          modulo.nome,
+          'MANUAL',
+        ),
+      );
+    } else {
+      const indice = modulo.paginas.findIndex(item => item.id === paginaId);
+      const pagina = modulo.paginas[indice];
+      if (!pagina || !paginaPodeSerEditada(pagina)) return;
+      if (resultado.tipo === 'SALVAR') {
+        modulo.paginas[indice] = paginaAtualizada(
+          pagina,
+          resultado.titulo,
+          resultado.conteudo,
+          this.importacao().projetoNome,
+          modulo.nome,
+          pagina.origem,
+        );
+      } else if (resultado.tipo === 'DIVIDIR') {
+        modulo.paginas[indice] = paginaAtualizada(
+          pagina,
+          resultado.atual.titulo,
+          resultado.atual.conteudo,
+          this.importacao().projetoNome,
+          modulo.nome,
+          pagina.origem,
+        );
+        modulo.paginas.splice(
+          indice + 1,
+          0,
+          paginaRascunho(
+            crypto.randomUUID(),
+            resultado.nova.titulo,
+            resultado.nova.conteudo,
+            this.importacao().projetoNome,
+            modulo.nome,
+            'DIVISAO',
+          ),
+        );
+      } else {
+        modulo.paginas[indice] = paginaAtualizada(
+          pagina,
+          resultado.titulo,
+          resultado.conteudo,
+          this.importacao().projetoNome,
+          modulo.nome,
+          'MESCLAGEM',
+        );
+        modulo.paginas = modulo.paginas.filter(item => item.id !== resultado.paginaRemovidaId);
+      }
+    }
+    this.aplicar(normalizarOrdens(proximo), anterior);
+  }
+
+  private async removerPagina(paginaId: string): Promise<void> {
+    const anterior = clonarModulos(this.modulos());
+    const pagina = anterior.flatMap(modulo => modulo.paginas).find(item => item.id === paginaId);
+    if (!pagina || !paginaPodeSerEditada(pagina)) return;
+    if (this.totalPaginas() === 1) {
+      this.erro.set('O documento precisa manter pelo menos uma página.');
+      return;
+    }
+    const confirmado = await this.confirm.confirm({
+      title: `Remover “${pagina.titulo}”?`,
+      message: 'A página sairá do plano do manual. Você ainda poderá usar Desfazer após a remoção.',
+      acceptLabel: 'Remover página',
+      rejectLabel: 'Manter página',
+      variant: 'danger',
+      icon: 'Trash2',
+    });
+    if (!confirmado || this.bloqueado()) return;
+    const proximo = anterior.map(modulo => ({
+      ...modulo,
+      paginas: modulo.paginas.filter(item => item.id !== paginaId),
+    }));
+    this.aplicar(normalizarOrdens(proximo), anterior);
   }
 
   protected atualizarNovoModuloNome(event: Event): void {
@@ -237,6 +389,10 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
     return `doc-pages-${moduloId}`;
   }
 
+  protected origemPaginaLabel(pagina: AiPaginaDocumento): string {
+    return `${rotuloOrigemPagina(pagina.origem)}${pagina.ajustadaManualmente ? ' · ajustada' : ''}`;
+  }
+
   private moduloIdDaLista(listaId: string): string | null {
     const prefixo = 'doc-pages-';
     return listaId.startsWith(prefixo) ? listaId.slice(prefixo.length) : null;
@@ -263,7 +419,13 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
         modulos: proximo.map(modulo => ({
           planoId: modulo.id,
           nome: modulo.nome,
-          paginas: modulo.paginas.map(pagina => pagina.id),
+          paginas: modulo.paginas.map(pagina => ({
+            planoId: pagina.id,
+            titulo: pagina.titulo,
+            conteudo: extrairConteudoPagina(pagina.briefing),
+            origem: pagina.origem,
+            ajustadaManualmente: pagina.ajustadaManualmente,
+          })),
         })),
       })
       .subscribe({
@@ -342,4 +504,45 @@ function normalizarOrdens(modulos: AiModuloDocumento[]): AiModuloDocumento[] {
 
 function normalizarNome(nome: string): string {
   return nome.trim().toLocaleLowerCase('pt-BR');
+}
+
+function paginaRascunho(
+  id: string,
+  titulo: string,
+  conteudo: string,
+  projetoNome: string,
+  moduloNome: string,
+  origem: AiPaginaDocumento['origem'],
+): AiPaginaDocumento {
+  return {
+    id,
+    titulo,
+    ordem: 0,
+    briefing: montarBriefingPagina(projetoNome, moduloNome, titulo, conteudo),
+    templateId: null,
+    templateCodigo: null,
+    templateNome: null,
+    confiancaTemplate: 0,
+    motivoTemplate: 'Conteúdo ajustado durante a revisão; o modelo será reavaliado na geração.',
+    status: 'PENDENTE',
+    paginaId: null,
+    sessaoId: null,
+    erroMensagem: null,
+    origem,
+    ajustadaManualmente: true,
+  };
+}
+
+function paginaAtualizada(
+  pagina: AiPaginaDocumento,
+  titulo: string,
+  conteudo: string,
+  projetoNome: string,
+  moduloNome: string,
+  origem: AiPaginaDocumento['origem'],
+): AiPaginaDocumento {
+  return {
+    ...paginaRascunho(pagina.id, titulo, conteudo, projetoNome, moduloNome, origem),
+    ordem: pagina.ordem,
+  };
 }

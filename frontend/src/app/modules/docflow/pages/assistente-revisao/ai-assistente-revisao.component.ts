@@ -63,7 +63,7 @@ export class AiAssistenteRevisaoComponent implements OnInit, OnDestroy {
   protected readonly sincronizando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
-  protected readonly filtros: Array<{ id: FiltroRevisao; rotulo: string }> = [
+  protected readonly filtros: { id: FiltroRevisao; rotulo: string }[] = [
     { id: 'TODAS', rotulo: 'Todas' },
     { id: 'A_REVISAR', rotulo: 'A revisar' },
     { id: 'EM_GERACAO', rotulo: 'Gerando' },

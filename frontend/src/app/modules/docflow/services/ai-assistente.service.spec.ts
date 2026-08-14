@@ -153,7 +153,28 @@ describe('AiAssistenteService', () => {
     service
       .reordenarEstruturaImportada('importacao-1', {
         version: 3,
-        modulos: [{ planoId: 'modulo-1', nome: 'Cadastros', paginas: ['pagina-2', 'pagina-1'] }],
+        modulos: [
+          {
+            planoId: 'modulo-1',
+            nome: 'Cadastros',
+            paginas: [
+              {
+                planoId: 'pagina-2',
+                titulo: 'Editar usuário',
+                conteudo: 'Altere os dados e clique em Salvar.',
+                origem: 'DOCUMENTO',
+                ajustadaManualmente: false,
+              },
+              {
+                planoId: 'pagina-1',
+                titulo: 'Consultar usuário',
+                conteudo: 'Use os filtros para localizar usuários.',
+                origem: 'DOCUMENTO',
+                ajustadaManualmente: true,
+              },
+            ],
+          },
+        ],
       })
       .subscribe(doc => expect(doc.version).toBe(4));
 
@@ -161,7 +182,28 @@ describe('AiAssistenteService', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({
       version: 3,
-      modulos: [{ planoId: 'modulo-1', nome: 'Cadastros', paginas: ['pagina-2', 'pagina-1'] }],
+      modulos: [
+        {
+          planoId: 'modulo-1',
+          nome: 'Cadastros',
+          paginas: [
+            {
+              planoId: 'pagina-2',
+              titulo: 'Editar usuário',
+              conteudo: 'Altere os dados e clique em Salvar.',
+              origem: 'DOCUMENTO',
+              ajustadaManualmente: false,
+            },
+            {
+              planoId: 'pagina-1',
+              titulo: 'Consultar usuário',
+              conteudo: 'Use os filtros para localizar usuários.',
+              origem: 'DOCUMENTO',
+              ajustadaManualmente: true,
+            },
+          ],
+        },
+      ],
     });
     req.flush({ id: 'importacao-1', version: 4 });
   });

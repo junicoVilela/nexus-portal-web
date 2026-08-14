@@ -1,44 +1,219 @@
 <article class="document-preview">
   <header class="document-preview__header">
-    <span class="document-preview__icon"><lucide-icon name="Search" [size]="19" /></span>
+    <span class="document-preview__icon">
+      <lucide-icon [name]="data.criacao ? 'FilePlus2' : 'Search'" [size]="19" />
+    </span>
     <div class="document-preview__heading">
-      <span>Conteúdo identificado no documento</span>
-      <h3>{{ data.pagina.titulo }}</h3>
-      <p>Confira o texto que será utilizado como contexto pela IA antes de gerar a página.</p>
+      <span>{{ data.criacao ? 'Nova página do manual' : 'Inspetor de página' }}</span>
+      <h3>{{ data.criacao ? 'Adicionar página' : data.pagina.titulo }}</h3>
+      <p>
+        {{
+          data.criacao
+            ? 'Descreva o conteúdo que será usado pela IA para montar a página.'
+            : 'Revise e organize o contexto antes de iniciar a geração.'
+        }}
+      </p>
     </div>
     <button type="button" class="document-preview__close" (click)="fechar()" aria-label="Fechar prévia" title="Fechar">
       <lucide-icon name="X" [size]="17" />
     </button>
   </header>
 
-  <dl class="document-preview__meta">
-    <div>
-      <dt>Posição</dt>
-      <dd>{{ data.modulo.ordem }}.{{ data.pagina.ordem }}</dd>
-    </div>
-    <div>
-      <dt>Módulo</dt>
-      <dd>{{ data.modulo.nome }}</dd>
-    </div>
-    <div>
-      <dt>Modelo recomendado</dt>
-      <dd>{{ data.pagina.templateNome || 'Será definido durante a geração' }}</dd>
-    </div>
-  </dl>
-
-  <section class="document-preview__content" aria-label="Texto completo da página">
-    @if (conteudoHtml(); as html) {
-      <div class="df-doc-content" [innerHTML]="html"></div>
-    } @else {
-      <div class="document-preview__loading" role="status">
-        <lucide-icon name="Loader2" [size]="18" />
-        Preparando conteúdo…
+  @if (!data.criacao) {
+    <dl class="document-preview__meta">
+      <div>
+        <dt>Posição</dt>
+        <dd>{{ data.modulo.ordem }}.{{ data.pagina.ordem }}</dd>
       </div>
+      <div>
+        <dt>Módulo</dt>
+        <dd>{{ data.modulo.nome }}</dd>
+      </div>
+      <div>
+        <dt>Origem</dt>
+        <dd>
+          {{ origemLabel }}
+          @if (data.pagina.ajustadaManualmente) {
+            <span class="document-preview__adjusted">Ajustada</span>
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Modelo recomendado</dt>
+        <dd>{{ data.pagina.templateNome || 'Será reavaliado durante a geração' }}</dd>
+      </div>
+    </dl>
+  }
+
+  <section class="document-preview__content" aria-label="Conteúdo da página">
+    @switch (modo()) {
+      @case ('PREVIA') {
+        @if (conteudoHtml(); as html) {
+          <div class="df-doc-content" [innerHTML]="html"></div>
+        } @else {
+          <div class="document-preview__loading" role="status">
+            <lucide-icon name="Loader2" [size]="18" />
+            Preparando conteúdo…
+          </div>
+        }
+      }
+      @case ('EDITAR') {
+        <form class="document-preview__form" [formGroup]="paginaForm" (ngSubmit)="salvar()">
+          <div class="document-preview__form-heading">
+            <div>
+              <span>Edição manual</span>
+              <h4>Corrija o título ou o conteúdo identificado</h4>
+            </div>
+            <small>O modelo será reavaliado quando o conteúdo mudar.</small>
+          </div>
+          <label>
+            <span>Título da página</span>
+            <input type="text" maxlength="180" formControlName="titulo" />
+          </label>
+          <label>
+            <span>Conteúdo que será enviado à IA</span>
+            <textarea rows="16" maxlength="200000" formControlName="conteudo"></textarea>
+          </label>
+          @if (paginaForm.invalid && paginaForm.touched) {
+            <p class="document-preview__validation">Informe o título e o conteúdo da página.</p>
+          }
+        </form>
+      }
+      @case ('CRIAR') {
+        <form class="document-preview__form" [formGroup]="paginaForm" (ngSubmit)="salvar()">
+          <div class="document-preview__form-heading">
+            <div>
+              <span>Criação manual</span>
+              <h4>Inclua uma página que não veio no documento</h4>
+            </div>
+            <small>Ela será adicionada ao final de {{ data.modulo.nome }}.</small>
+          </div>
+          <label>
+            <span>Título da nova página</span>
+            <input type="text" maxlength="180" formControlName="titulo" placeholder="Ex.: Exportar relatório" />
+          </label>
+          <label>
+            <span>Conteúdo e instruções</span>
+            <textarea
+              rows="16"
+              maxlength="200000"
+              formControlName="conteudo"
+              placeholder="Descreva o objetivo, os passos, campos, regras e mensagens importantes."
+            ></textarea>
+          </label>
+          @if (paginaForm.invalid && paginaForm.touched) {
+            <p class="document-preview__validation">Informe o título e o conteúdo da nova página.</p>
+          }
+        </form>
+      }
+      @case ('DIVIDIR') {
+        <form class="document-preview__form" [formGroup]="divisaoForm" (ngSubmit)="confirmarDivisao()">
+          <div class="document-preview__form-heading">
+            <div>
+              <span>Dividir página</span>
+              <h4>Revise onde cada parte deve ficar</h4>
+            </div>
+            <small>A segunda página será inserida logo após a atual.</small>
+          </div>
+          <div class="document-preview__split-grid">
+            <fieldset>
+              <legend>1. Página atual</legend>
+              <label>
+                <span>Título</span>
+                <input type="text" maxlength="180" formControlName="tituloAtual" />
+              </label>
+              <label>
+                <span>Conteúdo</span>
+                <textarea rows="14" maxlength="200000" formControlName="conteudoAtual"></textarea>
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>2. Nova página</legend>
+              <label>
+                <span>Título</span>
+                <input type="text" maxlength="180" formControlName="tituloNova" />
+              </label>
+              <label>
+                <span>Conteúdo</span>
+                <textarea rows="14" maxlength="200000" formControlName="conteudoNovo"></textarea>
+              </label>
+            </fieldset>
+          </div>
+          @if (divisaoForm.invalid && divisaoForm.touched) {
+            <p class="document-preview__validation">As duas páginas precisam de título e conteúdo.</p>
+          }
+        </form>
+      }
+      @case ('MESCLAR') {
+        <form class="document-preview__form" [formGroup]="mesclagemForm" (ngSubmit)="confirmarMesclagem()">
+          <div class="document-preview__form-heading">
+            <div>
+              <span>Mesclar páginas</span>
+              <h4>Consolide conteúdos relacionados</h4>
+            </div>
+            <small>A página selecionada será removida após a consolidação.</small>
+          </div>
+          <label>
+            <span>Mesclar com</span>
+            <select formControlName="paginaId" (change)="selecionarPaginaMesclagem($event)">
+              @for (pagina of data.paginasMesclagem; track pagina.id) {
+                <option [value]="pagina.id">{{ pagina.titulo }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>Título final</span>
+            <input type="text" maxlength="180" formControlName="titulo" />
+          </label>
+          <label>
+            <span>Conteúdo consolidado</span>
+            <textarea rows="16" maxlength="200000" formControlName="conteudo"></textarea>
+          </label>
+          @if (mesclagemForm.invalid && mesclagemForm.touched) {
+            <p class="document-preview__validation">Selecione a página e revise o conteúdo consolidado.</p>
+          }
+        </form>
+      }
     }
   </section>
 
   <footer class="document-preview__footer">
-    <span><lucide-icon name="Info" [size]="14" /> Prévia somente para leitura</span>
-    <button type="button" (click)="fechar()">Fechar</button>
+    @if (modo() === 'PREVIA') {
+      <div class="document-preview__tools">
+        <button type="button" [disabled]="!editavel" (click)="editar()">
+          <lucide-icon name="Pencil" [size]="14" /> Editar
+        </button>
+        <button type="button" [disabled]="!editavel" (click)="dividir()">
+          <lucide-icon name="Columns2" [size]="14" /> Dividir
+        </button>
+        <button type="button" [disabled]="!podeMesclar" (click)="mesclar()">
+          <lucide-icon name="Merge" [size]="14" /> Mesclar
+        </button>
+        <button type="button" class="document-preview__danger" [disabled]="!editavel" (click)="solicitarExclusao()">
+          <lucide-icon name="Trash2" [size]="14" /> Remover
+        </button>
+      </div>
+      <button type="button" class="document-preview__primary" (click)="fechar()">Fechar</button>
+    } @else {
+      <span><lucide-icon name="Info" [size]="14" /> As mudanças serão salvas no rascunho.</span>
+      <div class="document-preview__footer-actions">
+        <button type="button" (click)="voltar()">Cancelar</button>
+        <button
+          type="button"
+          class="document-preview__primary"
+          [disabled]="
+            modo() === 'DIVIDIR'
+              ? divisaoForm.invalid
+              : modo() === 'MESCLAR'
+                ? mesclagemForm.invalid
+                : paginaForm.invalid
+          "
+          (click)="modo() === 'DIVIDIR' ? confirmarDivisao() : modo() === 'MESCLAR' ? confirmarMesclagem() : salvar()"
+        >
+          <lucide-icon name="Check" [size]="14" />
+          {{ modo() === 'DIVIDIR' ? 'Criar duas páginas' : modo() === 'MESCLAR' ? 'Mesclar páginas' : 'Salvar página' }}
+        </button>
+      </div>
+    }
   </footer>
 </article>

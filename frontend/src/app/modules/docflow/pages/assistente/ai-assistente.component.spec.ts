@@ -191,6 +191,8 @@ describe('AiAssistenteComponent', () => {
       templateNome: 'Funcionalidade',
       confiancaTemplate: 0.9,
       motivoTemplate: 'Conteúdo compatível.',
+      origem: 'DOCUMENTO',
+      ajustadaManualmente: false,
       status: 'EM_EDICAO',
       paginaId: null,
       sessaoId: null,

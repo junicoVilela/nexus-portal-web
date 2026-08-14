@@ -52,7 +52,7 @@
   <div
     class="organizer__modules"
     cdkDropList
-    cdkDropListOrientation="mixed"
+    cdkDropListOrientation="vertical"
     [cdkDropListData]="modulos()"
     (cdkDropListDropped)="soltarModulo($event)"
   >
@@ -85,8 +85,8 @@
               type="button"
               [disabled]="bloqueado() || primeiroModulo"
               (click)="moverModulo(indiceModulo, -1)"
-              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para a esquerda'"
-              title="Mover módulo para a esquerda"
+              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para cima'"
+              title="Mover módulo para cima"
             >
               <lucide-icon name="ArrowUp" [size]="14" />
             </button>
@@ -94,12 +94,22 @@
               type="button"
               [disabled]="bloqueado() || ultimoModulo"
               (click)="moverModulo(indiceModulo, 1)"
-              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para a direita'"
-              title="Mover módulo para a direita"
+              [attr.aria-label]="'Mover módulo ' + modulo.nome + ' para baixo'"
+              title="Mover módulo para baixo"
             >
               <lucide-icon name="ArrowDown" [size]="14" />
             </button>
           </span>
+          <button
+            type="button"
+            class="organizer__add-page"
+            [disabled]="bloqueado() || totalPaginas() >= 80"
+            (click)="adicionarPagina(modulo)"
+            [attr.aria-label]="'Adicionar página ao módulo ' + modulo.nome"
+            title="Adicionar página"
+          >
+            <lucide-icon name="FilePlus2" [size]="14" />
+          </button>
           <button
             type="button"
             class="organizer__remove"
@@ -141,7 +151,7 @@
               <span class="organizer__page-order">{{ modulo.ordem }}.{{ pagina.ordem }}</span>
               <span class="organizer__page-copy">
                 <strong>{{ pagina.titulo }}</strong>
-                <small>{{ pagina.templateNome || 'Modelo pendente' }}</small>
+                <small> {{ pagina.templateNome || 'Modelo pendente' }} · {{ origemPaginaLabel(pagina) }} </small>
               </span>
               <label class="organizer__module-select">
                 <span class="sr-only">Mover {{ pagina.titulo }} para outro módulo</span>

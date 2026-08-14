@@ -123,6 +123,8 @@ function criarImportacao(): AiDocumentoImportacao {
             templateNome: null,
             confiancaTemplate: 0,
             motivoTemplate: 'Modelo pendente.',
+            origem: 'DOCUMENTO',
+            ajustadaManualmente: false,
             status: 'PENDENTE',
             paginaId: null,
             sessaoId: null,
