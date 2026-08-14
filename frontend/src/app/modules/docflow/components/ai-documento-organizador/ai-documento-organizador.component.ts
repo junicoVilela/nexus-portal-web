@@ -47,6 +47,7 @@ type TipoPersistencia = 'normal' | 'undo';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiDocumentoOrganizadorComponent implements OnDestroy {
+  protected readonly limitePaginas = 300;
   private readonly ai = inject(AiAssistenteService);
   private readonly dialog = inject(Dialog);
   private readonly confirm = inject(ConfirmService);
@@ -176,8 +177,8 @@ export class AiDocumentoOrganizadorComponent implements OnDestroy {
 
   protected adicionarPagina(modulo: AiModuloDocumento): void {
     if (this.bloqueado()) return;
-    if (this.totalPaginas() >= 80) {
-      this.erro.set('O documento pode ter no máximo 80 páginas.');
+    if (this.totalPaginas() >= this.limitePaginas) {
+      this.erro.set(`O documento pode ter no máximo ${this.limitePaginas} páginas.`);
       return;
     }
     const pagina: AiPaginaDocumento = {

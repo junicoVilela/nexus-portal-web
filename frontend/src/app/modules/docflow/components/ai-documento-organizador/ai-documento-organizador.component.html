@@ -103,7 +103,7 @@
           <button
             type="button"
             class="organizer__add-page"
-            [disabled]="bloqueado() || totalPaginas() >= 80"
+            [disabled]="bloqueado() || totalPaginas() >= limitePaginas"
             (click)="adicionarPagina(modulo)"
             [attr.aria-label]="'Adicionar página ao módulo ' + modulo.nome"
             title="Adicionar página"
