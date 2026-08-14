@@ -26,6 +26,12 @@ export interface AiProposta {
   createdAt: string;
 }
 
+export interface AiPageSpecResumo {
+  schemaVersion: number;
+  blueprintId: string | null;
+  blocos: { componenteId: string }[];
+}
+
 export interface AiJob {
   id: string;
   sessaoId: string;

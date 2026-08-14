@@ -1,0 +1,58 @@
+<section class="component-composer" aria-labelledby="component-composer-title">
+  <header class="component-composer__header">
+    <span class="component-composer__icon"><lucide-icon name="Boxes" [size]="18" /></span>
+    <div>
+      <span>Composição inteligente</span>
+      <h3 id="component-composer-title">A página será montada com {{ totalSelecionados() }} blocos</h3>
+      <p>A IA selecionou partes da biblioteca conforme o texto. Retire o que não fizer sentido antes de analisar.</p>
+    </div>
+    <span class="component-composer__count">
+      {{ totalSelecionados() }} selecionados · {{ plano().totalBiblioteca }} disponíveis
+    </span>
+  </header>
+
+  <div class="component-composer__flow" aria-label="Componentes da página na ordem de geração">
+    @for (componente of plano().componentes; track componente.id; let indice = $index) {
+      <button
+        type="button"
+        class="component-composer__item"
+        [class.component-composer__item--selected]="selecionado(componente)"
+        [class.component-composer__item--required]="componente.obrigatorio"
+        [disabled]="disabled() || (selecionado(componente) && !podeRemover(componente))"
+        [attr.aria-pressed]="selecionado(componente)"
+        [attr.aria-label]="acaoLabel(componente)"
+        (click)="alternar(componente)"
+      >
+        <span class="component-composer__order">{{ indice + 1 }}</span>
+        <span class="component-composer__copy">
+          <span class="component-composer__item-heading">
+            <strong>{{ componente.nome }}</strong>
+            <small [attr.data-necessidade]="componente.necessidade">
+              @if (componente.obrigatorio) {
+                <lucide-icon name="Lock" [size]="11" />
+              }
+              {{ necessidadeLabel(componente) }}
+            </small>
+          </span>
+          <span>{{ componente.motivo }}</span>
+        </span>
+        <span class="component-composer__check" aria-hidden="true">
+          @if (selecionado(componente)) {
+            <lucide-icon name="Check" [size]="13" />
+          }
+        </span>
+      </button>
+    }
+  </div>
+
+  <footer class="component-composer__footer">
+    <span>
+      <lucide-icon name="Info" [size]="13" />
+      A geração usará somente os blocos selecionados; os essenciais ficam protegidos.
+    </span>
+    <button type="button" [disabled]="disabled()" (click)="restaurar()">
+      <lucide-icon name="RotateCcw" [size]="13" />
+      Restaurar sugestão
+    </button>
+  </footer>
+</section>

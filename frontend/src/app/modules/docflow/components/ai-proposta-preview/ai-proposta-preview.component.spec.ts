@@ -19,6 +19,11 @@ describe('AiPropostaPreviewComponent', () => {
     conteudoHtml: '<div class="df-doc-content"><h1>Consulta</h1></div>',
     templateId: null,
     templateVersao: null,
+    pageSpecJson: JSON.stringify({
+      schemaVersion: 1,
+      blueprintId: 'consulta-operacional',
+      blocos: [{ componenteId: 'introducao' }, { componenteId: 'filtros-resultado' }],
+    }),
     aptoParaRevisao: false,
     qualidade: [
       {
@@ -48,6 +53,24 @@ describe('AiPropostaPreviewComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(AiPropostaPreviewComponent);
     fixture.componentRef.setInput('proposta', proposta);
+    fixture.componentRef.setInput('componentesCatalogo', [
+      {
+        id: 'introducao',
+        nome: 'Introdução',
+        descricao: 'Abertura',
+        categoria: 'Estrutura',
+        visual: 'intro',
+        html: '<section></section>',
+      },
+      {
+        id: 'filtros-resultado',
+        nome: 'Filtros e resultados',
+        descricao: 'Consulta',
+        categoria: 'Referência',
+        visual: 'table',
+        html: '<section></section>',
+      },
+    ]);
     fixture.detectChanges();
   });
 
@@ -57,6 +80,8 @@ describe('AiPropostaPreviewComponent', () => {
     expect(el.textContent).toContain('PED-001');
     expect(el.querySelectorAll('.ai-proposta__checklist li').length).toBe(2);
     expect(el.querySelector('.df-doc-content')).toBeTruthy();
+    expect(el.querySelectorAll('.ai-proposta__composition li').length).toBe(2);
+    expect(el.textContent).toContain('Filtros e resultados');
   });
 
   it('emite aplicar', () => {

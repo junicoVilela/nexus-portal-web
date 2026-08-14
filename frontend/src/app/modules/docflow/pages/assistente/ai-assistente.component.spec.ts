@@ -7,6 +7,7 @@ import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
 import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
+import { PaginaBlocoService } from '../../services/pagina-bloco.service';
 import { PaginaService } from '../../services/pagina.service';
 import { AiAssistenteComponent } from './ai-assistente.component';
 
@@ -30,7 +31,7 @@ describe('AiAssistenteComponent', () => {
       'selecionarPaginaImportada',
     ]);
     ai.eventosAi.and.returnValue(of());
-    ai.recomendarTemplate.and.returnValue(of({ recomendado: null, candidatos: [], exigeConfirmacao: false }));
+    ai.recomendarTemplate.and.returnValue(of(recomendacaoVazia()));
 
     await TestBed.configureTestingModule({
       imports: [AiAssistenteComponent],
@@ -76,6 +77,10 @@ describe('AiAssistenteComponent', () => {
           },
         },
         {
+          provide: PaginaBlocoService,
+          useValue: { listar: () => of([]) },
+        },
+        {
           provide: PaginaService,
           useValue: {
             templatesPagina: () =>
@@ -109,6 +114,7 @@ describe('AiAssistenteComponent', () => {
       clienteId: null,
       paginaId: null,
       templateId: null,
+      componentesSelecionados: [],
       briefing: 'x'.repeat(50),
       mensagens: [
         {
@@ -142,6 +148,7 @@ describe('AiAssistenteComponent', () => {
         clienteId: null,
         paginaId: null,
         templateId: null,
+        componentesSelecionados: [],
         briefing: 'x'.repeat(50),
         mensagens: [],
         jobAtual: null,
@@ -214,6 +221,7 @@ describe('AiAssistenteComponent', () => {
         clienteId: null,
         paginaId: null,
         templateId: null,
+        componentesSelecionados: [],
         briefing: 'x'.repeat(50),
         mensagens: [],
         jobAtual: null,
@@ -252,6 +260,7 @@ describe('AiAssistenteComponent', () => {
         clienteId: null,
         paginaId: null,
         templateId: 't1',
+        componentesSelecionados: [],
         briefing: 'x'.repeat(50),
         mensagens: [],
         jobAtual: null,
@@ -266,6 +275,32 @@ describe('AiAssistenteComponent', () => {
 
     const payload = ai.criarSessao.calls.mostRecent().args[0] as { templateId?: string };
     expect(payload.templateId).toBe('t1');
+  });
+
+  it('envia somente os componentes aprovados pelo usuário', () => {
+    ai.criarSessao.and.returnValue(of(criarSessaoTeste('PRONTA_PARA_GERAR')));
+    const cmp = fixture.componentInstance;
+    cmp['form'].patchValue({ briefing: 'x'.repeat(50) });
+    cmp['aplicarRecomendacao']({
+      recomendado: null,
+      candidatos: [],
+      exigeConfirmacao: false,
+      blueprintId: 'consulta-operacional',
+      blueprintNome: 'Consulta operacional',
+      totalBiblioteca: 45,
+      componentes: [
+        componenteCandidato('introducao', true),
+        componenteCandidato('visao-tela', true),
+        componenteCandidato('filtros-resultado', false),
+        componenteCandidato('mensagens-sistema', false),
+      ],
+    });
+    cmp['atualizarComponentesSelecionados'](['introducao', 'visao-tela', 'filtros-resultado']);
+
+    cmp['iniciar']();
+
+    const payload = ai.criarSessao.calls.mostRecent().args[0];
+    expect(payload.componentesSelecionados).toEqual(['introducao', 'visao-tela', 'filtros-resultado']);
   });
 
   it('explica o blueprint associado ao modelo escolhido', () => {
@@ -372,6 +407,10 @@ describe('AiAssistenteComponent', () => {
         },
         candidatos: [],
         exigeConfirmacao: true,
+        blueprintId: 'funcionalidade-geral',
+        blueprintNome: 'Funcionalidade geral',
+        totalBiblioteca: 45,
+        componentes: [],
       }),
     );
     const cmp = fixture.componentInstance;
@@ -398,11 +437,37 @@ function criarSessaoTeste(status: 'PRONTA_PARA_GERAR' | 'GERANDO' | 'PRONTA') {
     clienteId: null,
     paginaId: null,
     templateId: null,
+    componentesSelecionados: [],
     briefing: 'Briefing suficientemente detalhado para gerar uma página.',
     mensagens: [],
     jobAtual: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+}
+
+function recomendacaoVazia() {
+  return {
+    recomendado: null,
+    candidatos: [],
+    exigeConfirmacao: false,
+    blueprintId: null,
+    blueprintNome: null,
+    totalBiblioteca: 0,
+    componentes: [],
+  };
+}
+
+function componenteCandidato(id: string, obrigatorio: boolean) {
+  return {
+    id,
+    nome: id,
+    descricao: id,
+    categoria: 'Estrutura',
+    visual: 'intro',
+    necessidade: obrigatorio ? ('OBRIGATORIA' as const) : ('CONTEXTUAL' as const),
+    obrigatorio,
+    motivo: 'Componente de teste.',
   };
 }
 

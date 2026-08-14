@@ -16,6 +16,7 @@ import { TIMINGS } from '@core/config/timings';
 import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
+import { AiComponentComposerComponent } from '../../components/ai-component-composer/ai-component-composer.component';
 import { AiDocumentoImportacaoComponent } from '../../components/ai-documento-importacao/ai-documento-importacao.component';
 import { AiImagensDropzoneComponent } from '../../components/ai-imagens-dropzone/ai-imagens-dropzone.component';
 import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas.component';
@@ -25,12 +26,14 @@ import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
 import { AiJob, AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
 import { AiTemplateRecomendacao } from '../../models/ai-template-recomendacao.model';
+import { BlocoPagina } from '../../components/pagina-block-library';
 import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
 import { PaginaTemplate } from '../../models/pagina.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
 import { AiImagensStagingService } from '../../services/ai-imagens-staging.service';
 import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
+import { PaginaBlocoService } from '../../services/pagina-bloco.service';
 import { PaginaService } from '../../services/pagina.service';
 
 type WizardPasso = 'brief' | 'chat' | 'revisar';
@@ -50,6 +53,7 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
     AiPropostaPreviewComponent,
     AiImagensDropzoneComponent,
     AiDocumentoImportacaoComponent,
+    AiComponentComposerComponent,
   ],
   templateUrl: './ai-assistente.component.html',
   styleUrl: './ai-assistente.component.css',
@@ -61,6 +65,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private readonly paginaService = inject(PaginaService);
   private readonly imagensStaging = inject(AiImagensStagingService);
   private readonly blueprintService = inject(PaginaBlueprintService);
+  private readonly blocoService = inject(PaginaBlocoService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -82,10 +87,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly imagens = signal<AiImagemAnexo[]>([]);
   protected readonly templates = signal<PaginaTemplate[]>([]);
   protected readonly blueprints = signal<PaginaBlueprint[]>([]);
+  protected readonly blocosCatalogo = signal<BlocoPagina[]>([]);
   protected readonly briefingAtual = signal('');
   protected readonly templateIdAtual = signal('');
   protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
   protected readonly recomendandoTemplate = signal(false);
+  protected readonly componentesSelecionados = signal<string[]>([]);
   private readonly paginaImportadaContexto = signal<{
     importacaoId: string;
     paginaPlanoId: string;
@@ -133,13 +140,24 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     () => !this.templateIdAtual() && this.recomendacaoTemplate()?.exigeConfirmacao === true,
   );
 
+  protected readonly composicaoValida = computed(() => {
+    const componentes = this.recomendacaoTemplate()?.componentes ?? [];
+    if (!componentes.length) return true;
+    const selecionados = this.componentesSelecionados();
+    return (
+      selecionados.length >= 3 &&
+      componentes.filter(item => item.obrigatorio).every(item => selecionados.includes(item.id))
+    );
+  });
+
   protected readonly podeIniciar = computed(
     () =>
       this.briefingValido() &&
       this.aiDisponivel() &&
       !this.carregando() &&
       !this.recomendandoTemplate() &&
-      !this.exigeConfirmacaoTemplate(),
+      !this.exigeConfirmacaoTemplate() &&
+      this.composicaoValida(),
   );
 
   protected readonly modeloUsado = computed(() => {
@@ -214,8 +232,9 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         ),
         switchMap(valor => {
           const texto = valor.briefing?.trim() ?? '';
-          if (texto.length < 20 || valor.templateId) {
+          if (texto.length < 20) {
             this.recomendacaoTemplate.set(null);
+            this.componentesSelecionados.set([]);
             return of(null);
           }
           this.recomendandoTemplate.set(true);
@@ -225,6 +244,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
               briefing: texto,
               projetoId: contextoImportado?.projetoId ?? qp.get('projetoId'),
               clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
+              templateId: valor.templateId || null,
             })
             .pipe(
               catchError(() => of(null)),
@@ -232,7 +252,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
             );
         }),
       )
-      .subscribe(recomendacao => this.recomendacaoTemplate.set(recomendacao));
+      .subscribe(recomendacao => this.aplicarRecomendacao(recomendacao));
     this.paginaService
       .templatesPagina({
         projetoId: qp.get('projetoId') ?? undefined,
@@ -248,6 +268,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       next: lista => this.blueprints.set(lista.filter(blueprint => blueprint.status === 'PUBLICADO')),
       error: () => {
         /* metadado explicativo opcional — a geração continua no backend */
+      },
+    });
+    this.blocoService.listar().subscribe({
+      next: blocos => this.blocosCatalogo.set(blocos),
+      error: () => {
+        /* nomes dos componentes na revisão são um complemento; a geração continua no backend */
       },
     });
     const sessaoId = qp.get('sessaoId');
@@ -299,12 +325,19 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected iniciar(): void {
-    if (!this.briefingValido() || this.form.invalid || this.exigeConfirmacaoTemplate()) {
+    if (
+      !this.briefingValido() ||
+      this.form.invalid ||
+      this.exigeConfirmacaoTemplate() ||
+      !this.composicaoValida()
+    ) {
       this.form.markAllAsTouched();
       if (!this.briefingValido()) {
         this.erro.set('Informe um briefing com no mínimo 40 e no máximo 50.000 caracteres úteis.');
       } else if (this.exigeConfirmacaoTemplate()) {
         this.erro.set('Confirme um dos modelos sugeridos ou escolha outro modelo em Avançado.');
+      } else if (!this.composicaoValida()) {
+        this.erro.set('Mantenha os blocos essenciais e selecione pelo menos três componentes.');
       }
       return;
     }
@@ -321,6 +354,9 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         moduloId: contextoImportado?.moduloId ?? qp.get('moduloId'),
         clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
         templateId: this.form.controls.templateId.value || qp.get('templateId'),
+        componentesSelecionados: this.recomendacaoTemplate()?.componentes.length
+          ? this.componentesSelecionados()
+          : undefined,
       })
       .subscribe({
         next: s => {
@@ -338,6 +374,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected selecionarTemplateRecomendado(templateId: string): void {
     this.form.controls.templateId.setValue(templateId);
+    this.erro.set(null);
+  }
+
+  protected atualizarComponentesSelecionados(ids: string[]): void {
+    this.componentesSelecionados.set(ids);
     this.erro.set(null);
   }
 
@@ -523,6 +564,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.proposta.set(null);
     this.jobGeracao.set(null);
     this.respostas.set({});
+    this.componentesSelecionados.set([]);
     this.erro.set(null);
     this.gerando.set(false);
     this.limparImagens();
@@ -547,6 +589,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         this.form.controls.templateId.setValue(s.templateId ?? '', { emitEvent: false });
         this.briefingAtual.set(s.briefing);
         this.templateIdAtual.set(s.templateId ?? '');
+        this.componentesSelecionados.set(s.componentesSelecionados ?? []);
         this.carregando.set(false);
         if (s.status === 'GERANDO') {
           this.geracaoResolvida = false;
@@ -591,6 +634,11 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (sessao.jobAtual) {
       this.jobGeracao.set(sessao.jobAtual);
     }
+  }
+
+  private aplicarRecomendacao(recomendacao: AiTemplateRecomendacao | null): void {
+    this.recomendacaoTemplate.set(recomendacao);
+    this.componentesSelecionados.set(recomendacao?.componentes.map(item => item.id) ?? []);
   }
 
   private persistirSessaoNaUrl(sessaoId: string | null): void {

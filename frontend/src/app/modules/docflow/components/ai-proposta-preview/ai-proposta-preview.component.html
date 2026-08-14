@@ -15,17 +15,40 @@
   <dl class="ai-proposta__meta">
     <div>
       <dt>Código</dt>
-      <dd><code>{{ proposta().codigoTela }}</code></dd>
+      <dd>
+        <code>{{ proposta().codigoTela }}</code>
+      </dd>
     </div>
     <div>
       <dt>Slug</dt>
-      <dd><code>{{ proposta().slug }}</code></dd>
+      <dd>
+        <code>{{ proposta().slug }}</code>
+      </dd>
     </div>
     <div class="ai-proposta__meta--wide">
       <dt>Resumo</dt>
       <dd>{{ proposta().resumo || '—' }}</dd>
     </div>
   </dl>
+
+  @if (composicaoUsada().length) {
+    <section class="ai-proposta__composition" aria-labelledby="ai-proposta-composition-title">
+      <div>
+        <span>Composição usada</span>
+        <strong id="ai-proposta-composition-title">
+          {{ composicaoUsada().length }} blocos aprovados e preenchidos
+        </strong>
+      </div>
+      <ol aria-label="Blocos usados na ordem da página">
+        @for (componente of composicaoUsada(); track componente.id; let indice = $index) {
+          <li>
+            <small>{{ indice + 1 }}</small
+            >{{ componente.nome }}
+          </li>
+        }
+      </ol>
+    </section>
+  }
 
   <div class="ai-proposta__body">
     <div class="ai-proposta__preview-col">

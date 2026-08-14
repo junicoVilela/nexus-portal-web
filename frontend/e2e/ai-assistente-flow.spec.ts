@@ -104,6 +104,9 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
       'Consulta de pedidos\ncodigoTela: PED-CONSULTA\n' +
       'Público operador. Fluxo completo para filtrar e exportar pedidos.';
     await page.locator('#briefing').fill(briefing);
+    await expect(page.getByRole('heading', { name: 'A página será montada com 7 blocos' })).toBeVisible();
+    await page.getByRole('button', { name: 'Remover Mensagens do sistema da composição' }).click();
+    await expect(page.getByRole('heading', { name: 'A página será montada com 6 blocos' })).toBeVisible();
     await page.getByRole('button', { name: 'Analisar página' }).click();
 
     await expect(page.getByText('Passo 2 de 3')).toBeVisible();
@@ -112,6 +115,9 @@ test.describe('DocFlow — assistente IA (intercept, sem LLM)', () => {
     await expect(page.getByText('Passo 3 de 3')).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('Consulta de pedidos')).toBeVisible();
     await expect(page.getByText('PED-CONSULTA')).toBeVisible();
+    await expect(page.getByText('6 blocos aprovados e preenchidos')).toBeVisible();
+    await expect(page.locator('.ai-proposta__composition li')).toHaveCount(6);
+    await expect(page.getByText('Mensagens do sistema', { exact: true })).toBeHidden();
 
     await page.getByRole('button', { name: 'Aplicar no editor' }).click();
     await expect(page).toHaveURL(/\/doc-flow\/paginas\/novo/, { timeout: 10_000 });

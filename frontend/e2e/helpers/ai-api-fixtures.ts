@@ -16,6 +16,27 @@ const PROPOSTA_ID = '33333333-3333-3333-3333-333333333333';
 const IMPORTACAO_ID = '44444444-4444-4444-4444-444444444444';
 const PAGINA_PLANO_ID = '55555555-5555-5555-5555-555555555555';
 
+const COMPONENTES_RECOMENDADOS = [
+  componente('introducao', 'Introdução editorial', true, 'OBRIGATORIA'),
+  componente('objetivo', 'Objetivo de negócio', false, 'RECOMENDADA'),
+  componente('visao-tela', 'Visão da tela', true, 'OBRIGATORIA'),
+  componente('filtros-resultado', 'Filtros → resultado', true, 'OBRIGATORIA'),
+  componente('acoes-tela', 'Ações da tela', false, 'RECOMENDADA'),
+  componente('resultado-esperado', 'Resultado esperado', true, 'OBRIGATORIA'),
+  componente('mensagens-sistema', 'Mensagens do sistema', false, 'OPCIONAL'),
+];
+
+const BLOCOS_CATALOGO = COMPONENTES_RECOMENDADOS.map(item => ({
+  id: item.id,
+  nome: item.nome,
+  descricao: item.descricao,
+  categoria: item.categoria,
+  visual: item.visual,
+  html: `<section data-bloco="${item.id}"><p>Conteúdo</p></section>`,
+  versao: 1,
+  slots: [],
+}));
+
 function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = false) {
   return {
     id: IMPORTACAO_ID,
@@ -87,6 +108,7 @@ export const AI_PROPOSTA_FAKE = {
     '<div class="screen-placeholder"><strong>Insira captura</strong><span>Substitua pela imagem real da tela.</span></div>',
   templateId: null,
   templateVersao: null,
+  pageSpecJson: null,
   aptoParaRevisao: true,
   qualidade: [
     {
@@ -102,7 +124,7 @@ export const AI_PROPOSTA_FAKE = {
   createdAt: AGORA,
 };
 
-function sessao(status: string, mensagens: unknown[] = []) {
+function sessao(status: string, mensagens: unknown[] = [], componentesSelecionados: string[] = []) {
   return {
     id: SESSAO_ID,
     objetivo: 'CRIAR_PAGINA',
@@ -112,6 +134,7 @@ function sessao(status: string, mensagens: unknown[] = []) {
     clienteId: null,
     paginaId: null,
     templateId: null,
+    componentesSelecionados,
     briefing: 'x'.repeat(50),
     mensagens,
     createdAt: AGORA,
@@ -123,6 +146,7 @@ function sessao(status: string, mensagens: unknown[] = []) {
 export async function instalarMocksAiAssistente(page: Page): Promise<void> {
   let statusSessao = 'PRONTA_PARA_GERAR';
   let importacaoRascunho = importacaoDocumento();
+  let componentesSelecionados = COMPONENTES_RECOMENDADOS.map(item => item.id);
 
   await page.addInitScript(
     ({ token }) => {
@@ -155,27 +179,52 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
       });
     }
 
+    if (method === 'POST' && path === '/api/v1/ai/templates/recomendacao') {
+      return responder({
+        recomendado: {
+          templateId: '10000000-0000-0000-0000-000000000004',
+          codigo: 'CONSULTA',
+          nome: 'Consulta ou listagem',
+          descricao: 'Explica filtros, listagem e ações.',
+          confianca: 0.91,
+          motivo: 'Consulta e filtros identificados no briefing.',
+        },
+        candidatos: [],
+        exigeConfirmacao: false,
+        blueprintId: 'consulta-operacional',
+        blueprintNome: 'Consulta operacional',
+        totalBiblioteca: 45,
+        componentes: COMPONENTES_RECOMENDADOS,
+      });
+    }
+
     if (method === 'POST' && path === '/api/v1/ai/sessoes') {
+      const payload = request.postDataJSON() as { componentesSelecionados?: string[] };
+      componentesSelecionados = payload.componentesSelecionados ?? [];
       statusSessao = 'PRONTA_PARA_GERAR';
       return responder(
-        sessao(statusSessao, [
-          {
-            id: 'm1',
-            papel: 'USUARIO',
-            conteudo: 'briefing',
-            perguntas: [],
-            ordem: 1,
-            createdAt: AGORA,
-          },
-          {
-            id: 'm2',
-            papel: 'ASSISTENTE',
-            conteudo: 'Contexto suficiente para gerar.',
-            perguntas: [],
-            ordem: 2,
-            createdAt: AGORA,
-          },
-        ]),
+        sessao(
+          statusSessao,
+          [
+            {
+              id: 'm1',
+              papel: 'USUARIO',
+              conteudo: 'briefing',
+              perguntas: [],
+              ordem: 1,
+              createdAt: AGORA,
+            },
+            {
+              id: 'm2',
+              papel: 'ASSISTENTE',
+              conteudo: 'Contexto suficiente para gerar.',
+              perguntas: [],
+              ordem: 2,
+              createdAt: AGORA,
+            },
+          ],
+          componentesSelecionados,
+        ),
       );
     }
 
@@ -270,7 +319,7 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
     }
 
     if (method === 'GET' && path === `/api/v1/ai/sessoes/${SESSAO_ID}`) {
-      return responder(sessao(statusSessao));
+      return responder(sessao(statusSessao, [], componentesSelecionados));
     }
 
     if (method === 'POST' && path === `/api/v1/ai/sessoes/${SESSAO_ID}/gerar`) {
@@ -281,17 +330,33 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
           sessaoId: SESSAO_ID,
           tipo: 'GERAR_RASCUNHO',
           status: 'PENDENTE',
+          etapa: 'AGUARDANDO',
+          progresso: 0,
+          tentativa: 1,
           erroMensagem: null,
+          diagnosticoId: null,
           modelo: null,
+          tokensEntrada: null,
+          tokensSaida: null,
+          duracaoMs: 0,
           startedAt: null,
           finishedAt: null,
+          heartbeatAt: null,
+          cancelRequestedAt: null,
         },
         202,
       );
     }
 
     if (method === 'GET' && path === `/api/v1/ai/sessoes/${SESSAO_ID}/proposta`) {
-      return responder(AI_PROPOSTA_FAKE);
+      return responder({
+        ...AI_PROPOSTA_FAKE,
+        pageSpecJson: JSON.stringify({
+          schemaVersion: 1,
+          blueprintId: 'consulta-operacional',
+          blocos: componentesSelecionados.map(componenteId => ({ componenteId })),
+        }),
+      });
     }
 
     if (method === 'POST' && path === `/api/v1/ai/sessoes/${SESSAO_ID}/aplicar`) {
@@ -312,7 +377,7 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
 
     if (method === 'POST' && path.endsWith('/cancelar')) {
       statusSessao = 'CANCELADA';
-      return responder(sessao(statusSessao));
+      return responder(sessao(statusSessao, [], componentesSelecionados));
     }
 
     if (method === 'GET' && path === '/api/v1/ai/eventos') {
@@ -321,6 +386,10 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
         headers: { 'Content-Type': 'text/event-stream' },
         body: 'event: conectado\ndata: {"status":"OK"}\n\n',
       });
+    }
+
+    if (method === 'GET' && path === '/api/v1/docflow/paginas/blocos') {
+      return responder(BLOCOS_CATALOGO);
     }
 
     if (await tryHandleDocFlowRoutes(ctx, responder)) return;
@@ -336,4 +405,17 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
 
     return responder(authMePayload(TODAS_PERMISSOES));
   });
+}
+
+function componente(id: string, nome: string, obrigatorio: boolean, necessidade: string) {
+  return {
+    id,
+    nome,
+    descricao: `Bloco ${nome}.`,
+    categoria: 'Estrutura',
+    visual: 'intro',
+    necessidade,
+    obrigatorio,
+    motivo: obrigatorio ? 'Essencial para a página.' : 'Identificado no texto.',
+  };
 }

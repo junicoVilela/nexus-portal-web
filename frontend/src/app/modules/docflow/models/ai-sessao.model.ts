@@ -39,6 +39,7 @@ export interface AiSessao {
   clienteId: string | null;
   paginaId: string | null;
   templateId: string | null;
+  componentesSelecionados: string[];
   briefing: string;
   mensagens: AiMensagem[];
   jobAtual: AiJob | null;
@@ -54,6 +55,7 @@ export interface CriarAiSessaoPayload {
   clienteId?: string | null;
   templateId?: string | null;
   paginaId?: string | null;
+  componentesSelecionados?: string[];
 }
 
 export interface AiMensagemPayload {
