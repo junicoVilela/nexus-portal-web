@@ -14,6 +14,7 @@ Jornada integrada (manual + entrega técnica): [`nexus-portal-api/docs/jornadas/
 4. Spec **03** inventariga as páginas.
 5. Specs **04-06** detalham services, componentes e padrões.
 6. Spec **99** é o backlog de melhorias.
+7. Integrações de mercado (llms.txt, widget, MCP, S5/S6): spec **12** no backend.
 
 ## Stack
 
@@ -48,9 +49,12 @@ nexus-portal-web/
 | 07 | [Assistente IA](07-assistente-ia-paginas.md) | Wizard embutido no DocFlow + [`../ai/README.md`](../ai/README.md) |
 | 99 | [Melhorias Sugeridas](99-melhorias-sugeridas.md) | Backlog específico frontend |
 
+Integrações (backend + pacote + IA): [`nexus-portal-api/docs/doc-flow/12-proximos-passos-integracoes.md`](../../../nexus-portal-api/docs/doc-flow/12-proximos-passos-integracoes.md).
+
 ## Cross-references
 
 - [`nexus-portal-api/docs/doc-flow/README.md`](../../../nexus-portal-api/docs/doc-flow/README.md) — Backend.
+- [`nexus-portal-api/docs/doc-flow/12-proximos-passos-integracoes.md`](../../../nexus-portal-api/docs/doc-flow/12-proximos-passos-integracoes.md) — Próximas integrações (ondas A–F).
 - [`nexus-portal-api/docs/jornadas/`](../../../nexus-portal-api/docs/jornadas/README.md) — Jornadas de uso.
 - `nexus-portal-web/.ai/modules/docflow.md` — Spec resumida do módulo para IA.
 - `nexus-portal-web/docs/release-orchestrator/` — Doc do módulo irmão Release Orchestrator.
