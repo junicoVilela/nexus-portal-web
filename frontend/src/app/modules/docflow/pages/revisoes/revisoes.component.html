@@ -73,8 +73,15 @@
             </p>
           }
           <div class="review-detail__actions">
-            <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar()">Abrir editor</ui-button>
-            @if (!souOResponsavel()) {
+            <ui-button
+              *appPermissao="'PAGINA:EDITAR'"
+              variant="secondary"
+              size="sm"
+              icon="Pencil"
+              (clicked)="editar()"
+              >Abrir editor</ui-button
+            >
+            @if (!souOResponsavel() && podeDecidir()) {
               <label class="review-detail__prazo">
                 <span class="sr-only">Prazo da revisão</span>
                 <input type="date" [(ngModel)]="prazo" name="prazoRevisao" />
@@ -83,10 +90,13 @@
                 >{{ responsavel() ? 'Assumir para mim' : 'Assumir' }}</ui-button
               >
             }
-            <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="devolver()"
-              >Devolver</ui-button
-            >
+            @if (podeDecidir()) {
+              <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="devolver()"
+                >Devolver</ui-button
+              >
+            }
             <ui-button
+              *appPermissao="[]; ou: ['PAGINA:APROVAR', 'PAGINA:EDITAR']"
               size="sm"
               icon="Check"
               [disabled]="qualidade()?.aptoParaRevisao === false || !podeAprovar()"

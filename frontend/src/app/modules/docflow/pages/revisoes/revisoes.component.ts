@@ -12,6 +12,7 @@ import type { DiffModo } from '@modules/docflow/components/pagina-revisoes/pagin
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
 import { ListPageComponent } from '@shared/layouts';
 import { BadgeComponent, ButtonComponent, NotificationService, ToastService } from '@shared/ui';
+import { PermissaoDirective } from '@modules/identity-access/directives';
 
 @Component({
   selector: 'app-revisoes',
@@ -23,6 +24,7 @@ import { BadgeComponent, ButtonComponent, NotificationService, ToastService } fr
     BadgeComponent,
     ButtonComponent,
     TablePaginationComponent,
+    PermissaoDirective,
   ],
   templateUrl: './revisoes.component.html',
   styleUrl: './revisoes.component.css',
@@ -62,6 +64,11 @@ export class RevisoesComponent implements OnInit, OnDestroy {
     return !!revisor && revisor.toLowerCase() === (this.auth.currentUser() ?? '').toLowerCase();
   });
   protected readonly podeAprovar = computed(() => !this.responsavel() || this.souOResponsavel());
+  /** Aprovar/devolver/assumir exigem PAGINA:APROVAR — quem edita também revisa. */
+  protected readonly podeDecidir = computed(() => {
+    const tem = this.auth.tem();
+    return tem('PAGINA:APROVAR') || tem('PAGINA:EDITAR');
+  });
   protected readonly somenteMinhas = signal(false);
 
   ngOnInit(): void {
