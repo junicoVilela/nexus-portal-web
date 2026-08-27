@@ -22,10 +22,14 @@ export class AuthApiService {
 
   login(loginOuEmail: string, senha: string): Observable<LoginResponse> {
     return this.http
-      .post<BackendLoginResponse>(`${this.authBase}/login`, {
-        username: loginOuEmail,
-        password: senha,
-      })
+      .post<BackendLoginResponse>(
+        `${this.authBase}/login`,
+        {
+          username: loginOuEmail,
+          password: senha,
+        },
+        { headers: { 'X-Silent-Error': '1' } },
+      )
       .pipe(
         map(res => ({
           token: res.token,

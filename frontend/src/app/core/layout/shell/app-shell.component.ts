@@ -80,8 +80,12 @@ export class AppShellComponent implements OnInit {
       label: 'Módulos',
       items: [
         { label: 'DocFlow', icon: 'FileText', route: '/doc-flow' },
-        { label: 'Em construção', icon: 'Construction', route: '/em-construcao' },
+        { label: 'Release Orchestrator', icon: 'Tag', route: '/release-orchestrator' },
       ],
+    },
+    {
+      label: 'Segurança',
+      items: [{ label: 'Segurança', icon: 'Shield', route: '/seguranca', permissao: 'USUARIO:LER' }],
     },
   ];
 
@@ -101,11 +105,12 @@ export class AppShellComponent implements OnInit {
       { id: 'nav-home', label: 'Ir para Início', group: 'Navegação', route: '/' },
       { id: 'nav-doc', label: 'Ir para DocFlow', group: 'Navegação', route: '/doc-flow' },
       {
-        id: 'nav-wip',
-        label: 'Ir para Em construção',
+        id: 'nav-rel',
+        label: 'Ir para Release Orchestrator',
         group: 'Navegação',
-        route: '/em-construcao',
+        route: '/release-orchestrator',
       },
+      { id: 'nav-seg', label: 'Ir para Segurança', group: 'Navegação', route: '/seguranca' },
       { id: 'theme', label: 'Alternar tema', group: 'Preferências', action: () => this.theme.toggle() },
       ...(Object.entries(ACCENT_PRESETS) as [AccentPreset, { label: string }][]).map(([id, p]) => ({
         id: `accent-${id}`,
@@ -179,6 +184,8 @@ export class AppShellComponent implements OnInit {
     if (!segs.length) return 'Início';
     const segMap: Record<string, string> = {
       clientes: 'Clientes',
+      hosts: 'Hosts',
+      instalacoes: 'Instalações',
       projetos: 'Projetos',
       modulos: 'Módulos',
       paginas: 'Páginas',
@@ -191,9 +198,14 @@ export class AppShellComponent implements OnInit {
       templates: 'Templates',
       builder: 'Builder',
       guia: 'Guia',
+      entregas: 'Entregas',
+      'proximas-entregas': 'Próximas entregas',
       usuarios: 'Usuários',
       grupos: 'Grupos',
       permissoes: 'Permissões',
+      dominios: 'Domínios',
+      auditoria: 'Auditoria',
+      sessoes: 'Sessões',
       configuracoes: 'Configurações',
       novo: 'Novo',
       nova: 'Nova',
@@ -216,6 +228,8 @@ export class AppShellComponent implements OnInit {
     const firstSegment = url.split(/[?#]/)[0]?.split('/').filter(Boolean)[0];
     const workspaces: Record<string, { label: string; icon: string }> = {
       'doc-flow': { label: 'DocFlow', icon: 'FileText' },
+      'release-orchestrator': { label: 'Release Orchestrator', icon: 'Tag' },
+      seguranca: { label: 'Segurança', icon: 'Shield' },
       'em-construcao': { label: 'Em construção', icon: 'Construction' },
     };
     return workspaces[firstSegment ?? ''] ?? { label: 'Nexus Portal', icon: 'House' };
@@ -223,6 +237,6 @@ export class AppShellComponent implements OnInit {
 
   private hasFullHeightModuleNav(url: string): boolean {
     const path = url.split(/[?#]/)[0] ?? '';
-    return path.startsWith('/doc-flow');
+    return path.startsWith('/doc-flow') || path.startsWith('/release-orchestrator');
   }
 }

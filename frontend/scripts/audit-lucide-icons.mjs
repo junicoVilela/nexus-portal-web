@@ -17,11 +17,17 @@ function collectMatches(source, expression, result) {
 }
 
 function collectDynamicLucideNames(source, result) {
-  for (const tag of source.matchAll(/<lucide-icon\b[\s\S]*?>/g)) {
-    // Valores produzidos por ternários em `[name]`, por exemplo:
-    // [name]="condicao ? 'CircleCheck' : 'CircleHelp'".
+  for (const tag of source.matchAll(/<(?:lucide-icon|ui-button)\b[\s\S]*?>/g)) {
+    // Valores produzidos por ternários em `[name]`/`[icon]`, por exemplo:
+    // [icon]="ativo ? 'EyeOff' : 'Eye'".
     collectMatches(tag[0], /(?:\?|:)\s*'([A-Z][A-Za-z0-9]+)'/g, result);
-    collectMatches(tag[0], /\[name\]="\s*'([A-Z][A-Za-z0-9]+)'\s*"/g, result);
+    collectMatches(tag[0], /\[(?:name|icon)\]="\s*'([A-Z][A-Za-z0-9]+)'\s*"/g, result);
+  }
+  for (const attr of source.matchAll(/\[(?:icon|name)\]="([^"]+)"/g)) {
+    for (const match of attr[1].matchAll(/(===|!==|==)?\s*'([A-Z][A-Za-z0-9]+)'/g)) {
+      if (match[1]) continue;
+      result.add(match[2]);
+    }
   }
 }
 

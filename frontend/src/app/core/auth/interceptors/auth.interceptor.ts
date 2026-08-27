@@ -8,7 +8,8 @@ let redirectingToLogin = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const header = authService.header();
+  const isLogin = req.method === 'POST' && req.url.includes('/auth/login');
+  const header = isLogin ? null : authService.header();
   const request = header ? req.clone({ setHeaders: { Authorization: header } }) : req;
 
   return next(request).pipe(

@@ -28,6 +28,7 @@ describe('AuthApiService', () => {
     const promise = firstValueFrom(service.login('admin', 'admin'));
     const req = httpMock.expectOne(`${environment.authApiUrl}/login`);
     expect(req.request.method).toBe('POST');
+    expect(req.request.headers.get('X-Silent-Error')).toBe('1');
     req.flush({ token: 'jwt-token', username: 'admin' });
 
     const r = await promise;

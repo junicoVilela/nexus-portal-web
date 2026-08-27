@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, isDevMode, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -27,6 +27,7 @@ export class LoginComponent {
 
   protected readonly loading = signal(false);
   protected readonly serverError = signal<string | null>(null);
+  protected readonly ambienteLocal = isDevMode();
 
   protected readonly form = this.fb.nonNullable.group({
     login: ['', [Validators.required, Validators.minLength(1)]],
@@ -41,6 +42,18 @@ export class LoginComponent {
       name: 'DocFlow',
       blurb: 'Manuais versionados por cliente',
       icon: 'FileText',
+    },
+    {
+      id: 'orchestrator',
+      name: 'Release Orchestrator',
+      blurb: 'Releases, entregas e pacotes',
+      icon: 'Tag',
+    },
+    {
+      id: 'seguranca',
+      name: 'Segurança',
+      blurb: 'Usuários, grupos e auditoria',
+      icon: 'Shield',
     },
   ];
 
@@ -82,6 +95,8 @@ export class LoginComponent {
       if (e.status === 0 || e.status === 502 || e.status === 503 || e.status === 504) {
         return 'API indisponível. Verifique se o backend está ativo.';
       }
+      const apiMsg = this.mensagemDaApi(e);
+      if (apiMsg) return apiMsg;
       if (e.status === 401 || e.status === 403) {
         return 'Usuário ou senha inválidos.';
       }
@@ -91,5 +106,13 @@ export class LoginComponent {
       return 'Usuário ou senha inválidos.';
     }
     return 'Erro inesperado. Tente novamente.';
+  }
+
+  private mensagemDaApi(e: HttpErrorResponse): string | null {
+    const body = e.error;
+    if (body && typeof body === 'object' && typeof body.message === 'string' && body.message.trim()) {
+      return body.message;
+    }
+    return null;
   }
 }

@@ -23,9 +23,9 @@
     <div class="login__main">
       <section class="login__showcase" aria-labelledby="login-headline">
         <div class="login__intro login__reveal login__reveal--2">
-          <h1 id="login-headline">Documentação. Um acesso.</h1>
+          <h1 id="login-headline">Portal. Um acesso.</h1>
           <p class="login__lede">
-            Manuais versionados por cliente no DocFlow, com seu login corporativo.
+            DocFlow, Release Orchestrator e Segurança no mesmo login corporativo.
           </p>
         </div>
 
@@ -49,7 +49,10 @@
 
       <section class="login__panel login__reveal login__reveal--3" aria-labelledby="login-form-title">
         <h2 id="login-form-title">Entrar</h2>
-        <p class="login__sub">Use suas credenciais corporativas.</p>
+        <p class="login__sub">Use o usuário e a senha da plataforma.</p>
+        @if (ambienteLocal) {
+          <p class="login__dev-hint">Ambiente local: <code>admin</code> / <code>admin</code></p>
+        }
 
         @if (serverError()) {
           <div class="login__server-error" role="alert">{{ serverError() }}</div>

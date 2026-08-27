@@ -57,9 +57,11 @@ describe('HomeComponent', () => {
   it('renders all registered modules', () => {
     const text = fixture.nativeElement.textContent;
     expect(text).toContain('DocFlow');
+    expect(text).toContain('Release Orchestrator');
+    expect(text).toContain('Segurança');
     expect(text).toContain('Conteúdo estruturado');
     expect(text).toContain('Assistente IA');
-    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.home__module').length).toBe(3);
   });
 
   it('renders the KPI strip with all 4 labels', () => {

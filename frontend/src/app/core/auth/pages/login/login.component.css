@@ -240,6 +240,17 @@
   color: var(--login-ink-soft);
 }
 
+.login__dev-hint {
+  margin: -12px 0 20px;
+  font: 500 0.85rem / 1.4 var(--login-body);
+  color: var(--login-accent-deep);
+}
+
+.login__dev-hint code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+}
+
 .login__server-error {
   background: color-mix(in srgb, #b42318 10%, #fff);
   color: #8a1c14;

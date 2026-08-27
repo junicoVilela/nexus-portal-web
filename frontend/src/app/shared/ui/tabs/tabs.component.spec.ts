@@ -61,4 +61,17 @@ describe('TabsComponent', () => {
     (botoes[0] as HTMLButtonElement).click();
     expect(fixture.componentInstance.changed).toBeNull();
   });
+
+  it('não emite nem seleciona aba desabilitada', () => {
+    fixture.componentInstance.items = [
+      { id: 'a', label: 'Aba A' },
+      { id: 'b', label: 'Aba B', disabled: true },
+      { id: 'c', label: 'Aba C' },
+    ];
+    fixture.detectChanges();
+    const botoes = fixture.nativeElement.querySelectorAll('.ui-tabs__btn') as NodeListOf<HTMLButtonElement>;
+    expect(botoes[1].disabled).toBeTrue();
+    botoes[1].click();
+    expect(fixture.componentInstance.changed).toBeNull();
+  });
 });

@@ -6,6 +6,7 @@ export interface TabItem<T extends string = string> {
   label: string;
   icon?: string;
   count?: number;
+  disabled?: boolean;
 }
 
 @Component({
@@ -20,7 +21,10 @@ export interface TabItem<T extends string = string> {
           role="tab"
           class="ui-tabs__btn"
           [class.ui-tabs__btn--active]="active() === tab.id"
+          [class.ui-tabs__btn--disabled]="!!tab.disabled"
+          [disabled]="!!tab.disabled"
           [attr.aria-selected]="active() === tab.id"
+          [attr.aria-disabled]="!!tab.disabled"
           (click)="select(tab.id)"
         >
           @if (tab.icon) {
@@ -44,6 +48,10 @@ export class TabsComponent<T extends string = string> {
   readonly activeChange = output<T>();
 
   protected select(id: T): void {
-    if (id !== this.active()) this.activeChange.emit(id);
+    const tab = this.items().find(t => t.id === id);
+    if (!tab || tab.disabled || id === this.active()) {
+      return;
+    }
+    this.activeChange.emit(id);
   }
 }

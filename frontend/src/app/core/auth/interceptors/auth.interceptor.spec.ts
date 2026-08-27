@@ -99,4 +99,12 @@ describe('authInterceptor', () => {
     });
     httpMock.expectOne('/api/teste').error(new ProgressEvent('error'), { status: 500 });
   });
+
+  it('does not attach Authorization on POST /auth/login', () => {
+    auth.setHeader('Bearer leftover');
+    http.post('/api/v1/auth/login', { username: 'admin', password: 'admin' }).subscribe();
+    const req = httpMock.expectOne('/api/v1/auth/login');
+    expect(req.request.headers.has('Authorization')).toBe(false);
+    req.flush({ token: 't', username: 'admin' });
+  });
 });

@@ -51,6 +51,20 @@
   font-weight: 600;
 }
 
+.ui-tabs__btn--disabled,
+.ui-tabs__btn:disabled {
+  color: var(--text-muted);
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.ui-tabs__btn--disabled:hover,
+.ui-tabs__btn:disabled:hover {
+  color: var(--text-muted);
+  background: transparent;
+}
+
 .ui-tabs__count {
   display: inline-flex;
   align-items: center;
