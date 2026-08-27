@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ReleaseService } from './release.service';
+import { ReleaseService, versaoPortalDaTag } from './release.service';
 import { Release } from '../models/release.model';
 
 const BASE = '/api/v1/release-orchestrator/releases';
@@ -115,10 +115,52 @@ describe('ReleaseService', () => {
     http.expectOne(`${BASE}/r1/historico`).flush(null);
   });
 
-  it('validarRevisao() hits /validar', () => {
-    service.validarRevisao('r1').subscribe();
-    const req = http.expectOne(`${BASE}/r1/validar`);
+  it('listarManifestos() GET /manifestos', () => {
+    service.listarManifestos('r1').subscribe();
+    const req = http.expectOne(`${BASE}/r1/manifestos`);
     expect(req.request.method).toBe('GET');
-    req.flush({ valida: true, pendencias: [], alertas: [], totalItensCliente: 0, totalItensInternos: 0 });
+    req.flush([]);
+  });
+
+  it('salvarManifesto() PUT /manifestos', () => {
+    service.salvarManifesto('r1', { tipoImplantacao: 'DOCKER_PULL', imagemRef: 'rpa:1' }).subscribe();
+    const req = http.expectOne(`${BASE}/r1/manifestos`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body.imagemRef).toBe('rpa:1');
+    req.flush({});
+  });
+
+  it('listarDisponiveisDeploy() consulta Git + em andamento', () => {
+    service.listarDisponiveisDeploy('p1').subscribe();
+    const req = http.expectOne(r => r.method === 'GET' && r.url === `${BASE}/disponiveis-deploy`);
+    expect(req.request.params.get('produtoId')).toBe('p1');
+    req.flush([]);
+  });
+
+  it('listarFontesBuild() GET /fontes-build', () => {
+    service.listarFontesBuild('r1').subscribe();
+    const req = http.expectOne(`${BASE}/r1/fontes-build`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('X-Silent-Error')).toBe('1');
+    req.flush({ tags: [] });
+  });
+
+  it('dispararBuild() POST /disparar-build com origem e tag', () => {
+    service.dispararBuild('r1', { origem: 'TAG_ESPECIFICA', tag: 'v5.0.0' }).subscribe();
+    const req = http.expectOne(`${BASE}/r1/disparar-build`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ origem: 'TAG_ESPECIFICA', tag: 'v5.0.0' });
+    req.flush({ tag: 'v5.0.0', versao: '5.0.0' });
+  });
+});
+
+describe('versaoPortalDaTag', () => {
+  it('converts branch v5/main to v5-main', () => {
+    expect(versaoPortalDaTag('v5/main')).toBe('v5-main');
+  });
+
+  it('strips leading v from tags', () => {
+    expect(versaoPortalDaTag('v5.4.2')).toBe('5.4.2');
+    expect(versaoPortalDaTag('release/v5.4.1')).toBe('5.4.1');
   });
 });

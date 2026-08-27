@@ -1,7 +1,7 @@
 <div class="wiz">
   <ui-page-header
     title="Nova entrega"
-    subtitle="Assistente em 5 passos: cliente → produto → release → módulos → revisão"
+    subtitle="Assistente em 5 passos: cliente → produto → instalações → release → módulos"
     icon="Rocket"
   >
     <div actions>
@@ -81,7 +81,7 @@
           }
           @case (2) {
             <ui-card padding="md">
-              <h2 class="wiz__title">Passo 2 de 5 · Produto e ambiente</h2>
+              <h2 class="wiz__title">Passo 2 de 5 · Produto, ambiente e instalações</h2>
               <div class="wiz__row">
                 <div class="wiz__field wiz__field--grow-2">
                   <label class="wiz__label">Produto <span class="wiz__req">*</span></label>
@@ -94,7 +94,7 @@
                 </div>
                 <div class="wiz__field wiz__field--grow-1">
                   <label class="wiz__label">Ambiente <span class="wiz__req">*</span></label>
-                  <select class="wiz__input" [(ngModel)]="dados.ambiente">
+                  <select class="wiz__input" [(ngModel)]="dados.ambiente" (change)="onAmbienteChange()">
                     @for (a of ambientes; track a) {
                       <option [value]="a">{{ ambienteLabels[a] }}</option>
                     }
@@ -114,6 +114,46 @@
                     <dd>{{ prod.nome }}</dd>
                   </dl>
                 </div>
+              }
+
+              @if (dados.clienteId && dados.produtoId) {
+                <h3 class="wiz__preview-title"><lucide-icon name="HardDrive" [size]="14" /> Instalações alvo</h3>
+                <p class="wiz__hint">A implantação é por instalação, nunca pelo host. Selecione uma ou mais.</p>
+                @if (carregandoInstalacoes()) {
+                  <ui-skeleton width="100%" height="80px" />
+                } @else if (instalacoes().length === 0) {
+                  <ui-empty-state
+                    icon="HardDrive"
+                    title="Nenhuma instalação neste cliente/produto/ambiente"
+                    description="Cadastre a instalação (mesmo inexistente) antes de gerar a entrega."
+                  >
+                    <ui-button icon="Plus" [routerLink]="['/release-orchestrator/instalacoes/novo']">Cadastrar instalação</ui-button>
+                  </ui-empty-state>
+                } @else {
+                  <div class="wiz__radios">
+                    @for (i of instalacoes(); track i.id) {
+                      <label class="wiz__radio" [class.wiz__radio--selected]="instalacaoMarcada(i.id)">
+                        <input type="checkbox" [checked]="instalacaoMarcada(i.id)" (change)="toggleInstalacao(i.id)" />
+                        <div class="wiz__radio-content">
+                          <div class="wiz__radio-head">
+                            <code class="wiz__radio-versao">{{ i.codigo }}</code>
+                            <ui-badge tone="neutral">{{ i.hostCodigo }}</ui-badge>
+                            <ui-badge [tone]="i.status === 'ATIVA' ? 'success' : 'warn'">{{
+                              statusInstalacaoLabels[i.status]
+                            }}</ui-badge>
+                            <ui-badge [tone]="tomHealth(i.health)">{{ healthLabels[i.health ?? 'DESCONHECIDO'] }}</ui-badge>
+                          </div>
+                          <p class="wiz__radio-titulo">
+                            {{ i.nome }} · {{ tipoInstalacaoLabels[i.tipoImplantacao] }}
+                            @if (i.versaoAtual) {
+                              · versão {{ i.versaoAtual }}
+                            }
+                          </p>
+                        </div>
+                      </label>
+                    }
+                  </div>
+                }
               }
             </ui-card>
           }
@@ -310,6 +350,18 @@
                     }
                     <dt>Ambiente</dt>
                     <dd>{{ ambienteLabels[dados.ambiente] }}</dd>
+                    <dt>Instalações</dt>
+                    <dd>
+                      @if (instalacoesSelecionadas().length === 0) {
+                        —
+                      } @else {
+                        @for (i of instalacoesSelecionadas(); track i.id) {
+                          <div>
+                            <code>{{ i.codigo }}</code> {{ i.nome }} ({{ i.hostCodigo }})
+                          </div>
+                        }
+                      }
+                    </dd>
                     @if (dados.observacoes) {
                       <dt>Observações</dt>
                       <dd>{{ dados.observacoes }}</dd>

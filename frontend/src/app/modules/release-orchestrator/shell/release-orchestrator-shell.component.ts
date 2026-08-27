@@ -33,7 +33,12 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
       route: ['/release-orchestrator', 'builder'],
       permissao: 'RELEASE:CRIAR',
     },
-    { label: 'Releases', icon: 'Tag', route: ['/release-orchestrator', 'releases'], permissao: 'RELEASE:LER' },
+    {
+      label: 'Releases',
+      icon: 'Tag',
+      route: ['/release-orchestrator', 'releases'],
+      permissao: 'RELEASE:LER',
+    },
     {
       label: 'Próximas entregas',
       icon: 'CalendarClock',
@@ -52,7 +57,24 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
       route: ['/release-orchestrator', 'clientes'],
       permissao: 'CLIENTE_RO:LER',
     },
-    { label: 'Produtos', icon: 'Box', route: ['/release-orchestrator', 'produtos'], permissao: 'PRODUTO:LER' },
+    {
+      label: 'Hosts',
+      icon: 'Server',
+      route: ['/release-orchestrator', 'hosts'],
+      permissao: 'HOST:LER',
+    },
+    {
+      label: 'Instalações',
+      icon: 'HardDrive',
+      route: ['/release-orchestrator', 'instalacoes'],
+      permissao: 'INSTALACAO:LER',
+    },
+    {
+      label: 'Produtos',
+      icon: 'Box',
+      route: ['/release-orchestrator', 'produtos'],
+      permissao: 'PRODUTO:LER',
+    },
     {
       label: 'Templates',
       icon: 'FilePen',
@@ -69,6 +91,7 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    void this.auth.carregarMe();
     this.palette.registerMany('release-orchestrator', [
       {
         id: 'rf:dashboard',
@@ -105,6 +128,18 @@ export class ReleaseOrchestratorShellComponent implements OnInit, OnDestroy {
         label: 'Release Orchestrator — Clientes',
         group: 'Release Orchestrator',
         route: '/release-orchestrator/clientes',
+      },
+      {
+        id: 'rf:hosts',
+        label: 'Release Orchestrator — Hosts',
+        group: 'Release Orchestrator',
+        route: '/release-orchestrator/hosts',
+      },
+      {
+        id: 'rf:instalacoes',
+        label: 'Release Orchestrator — Instalações',
+        group: 'Release Orchestrator',
+        route: '/release-orchestrator/instalacoes',
       },
       {
         id: 'rf:produtos',

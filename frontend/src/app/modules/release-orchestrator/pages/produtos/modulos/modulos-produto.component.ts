@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -26,14 +26,23 @@ import { Produto } from '../../../models/produto.model';
 import { ModuloProdutoService } from '../../../services/modulo-produto.service';
 import { ProdutoService } from '../../../services/produto.service';
 
-const TIPOS: { valor: TipoModulo; rotulo: string; cor: string }[] = [
-  { valor: 'WEB', rotulo: 'Web', cor: '#2563eb' },
-  { valor: 'BATCH', rotulo: 'Batch', cor: '#0891b2' },
-  { valor: 'BANCO', rotulo: 'Banco', cor: '#9333ea' },
-  { valor: 'KETTLE', rotulo: 'Kettle', cor: '#16a34a' },
-  { valor: 'FUNCIONALIDADES', rotulo: 'Funcionalidades', cor: '#d97706' },
-  { valor: 'REGRAS', rotulo: 'Regras', cor: '#dc2626' },
+const TIPOS: { valor: TipoModulo; rotulo: string; cor: string; icone: string; hint: string }[] = [
+  { valor: 'WEB', rotulo: 'Web', cor: '#2563eb', icone: 'Globe', hint: 'WAR, JAR, ZIP ou SPA' },
+  { valor: 'BATCH', rotulo: 'Batch', cor: '#0891b2', icone: 'Play', hint: 'JAR ou pacote com scripts' },
+  { valor: 'BANCO', rotulo: 'Banco', cor: '#9333ea', icone: 'HardDrive', hint: 'Scripts SQL com delta' },
+  { valor: 'KETTLE', rotulo: 'Kettle', cor: '#16a34a', icone: 'Layers', hint: 'Jobs .ktr / .kjb' },
+  { valor: 'FUNCIONALIDADES', rotulo: 'Funcionalidades', cor: '#d97706', icone: 'ListChecks', hint: 'Gerado da ficha do cliente' },
+  { valor: 'REGRAS', rotulo: 'Regras', cor: '#dc2626', icone: 'Shield', hint: 'Matriz de permissões' },
 ];
+
+const CONFIG_PLACEHOLDER: Record<TipoModulo, string> = {
+  WEB: '{\n  "destinoPacote": "web/portal/",\n  "extensoesAceitas": [".war"]\n}',
+  BATCH: '{\n  "destinoPacote": "batch/",\n  "extensoesAceitas": [".jar"]\n}',
+  BANCO: '{\n  "diretorioRaiz": "db/scripts",\n  "destinoPacote": "db/"\n}',
+  KETTLE: '{\n  "diretorioRaiz": "etl/jobs",\n  "destinoPacote": "etl/"\n}',
+  FUNCIONALIDADES: '{\n  "destinoPacote": "func/"\n}',
+  REGRAS: '{\n  "destinoPacote": "rules/"\n}',
+};
 
 const CODIGO_REGEX = /^[a-z0-9-]+$/;
 
@@ -76,13 +85,12 @@ export class ModulosProdutoComponent implements OnInit {
 
   protected readonly tipos = TIPOS;
   protected form!: FormGroup;
+  protected readonly tipoAtual = signal<TipoModulo>('WEB');
 
   protected readonly editando = computed(() => this.editId() !== null);
-
-  protected readonly extensoesAceitas = computed(() => {
-    const tipo = this.form?.get('tipo')?.value as TipoModulo | null;
-    return tipo ? TIPO_MODULO_EXTENSOES[tipo] : [];
-  });
+  protected readonly extensoesAceitas = computed(() => TIPO_MODULO_EXTENSOES[this.tipoAtual()] ?? []);
+  protected readonly placeholderConfig = computed(() => CONFIG_PLACEHOLDER[this.tipoAtual()]);
+  protected readonly corAccent = computed(() => this.produto()?.cor || this.corTipo(this.tipoAtual()));
 
   ngOnInit(): void {
     this.buildForm();
@@ -107,7 +115,9 @@ export class ModulosProdutoComponent implements OnInit {
     });
 
     this.form.get('tipo')!.valueChanges.subscribe((tipo: TipoModulo | null) => {
-      if (!tipo || this.editando()) return;
+      if (!tipo) return;
+      this.tipoAtual.set(tipo);
+      if (this.editando()) return;
       const defaults = TIPO_MODULO_DEFAULTS[tipo];
       this.form.patchValue({
         geraDelta: defaults.geraDelta,
@@ -138,17 +148,20 @@ export class ModulosProdutoComponent implements OnInit {
 
   protected abrirNovo(): void {
     this.editId.set(null);
+    const proximaOrdem = this.modulos().reduce((max, m) => Math.max(max, m.ordem), -1) + 1;
     this.form.reset({
       nome: '',
       codigo: '',
       tipo: 'WEB',
-      geraDelta: false,
-      obrigatorio: true,
-      ordem: 0,
+      geraDelta: TIPO_MODULO_DEFAULTS.WEB.geraDelta,
+      obrigatorio: TIPO_MODULO_DEFAULTS.WEB.obrigatorio,
+      ordem: proximaOrdem,
       configEspecifica: '',
     });
+    this.tipoAtual.set('WEB');
     this.form.get('codigo')!.enable();
     this.form.get('tipo')!.enable();
+    this.form.get('ordem')!.enable();
     this.showForm.set(true);
   }
 
@@ -163,13 +176,22 @@ export class ModulosProdutoComponent implements OnInit {
       ordem: m.ordem,
       configEspecifica: m.configEspecifica ?? '',
     });
+    this.tipoAtual.set(m.tipo);
     this.form.get('codigo')!.disable();
     this.form.get('tipo')!.disable();
+    this.form.get('ordem')!.disable();
     this.showForm.set(true);
   }
 
   protected fecharForm(): void {
     this.showForm.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  protected fecharComEscape(): void {
+    if (this.showForm() && !this.salvando()) {
+      this.fecharForm();
+    }
   }
 
   protected salvar(): void {
@@ -233,6 +255,11 @@ export class ModulosProdutoComponent implements OnInit {
 
   protected corTipo(tipo: TipoModulo): string {
     return TIPOS.find(t => t.valor === tipo)?.cor ?? '#666';
+  }
+
+  protected escolherTipo(tipo: TipoModulo): void {
+    if (this.editando()) return;
+    this.form.patchValue({ tipo });
   }
 
   protected fieldError(field: string): boolean {

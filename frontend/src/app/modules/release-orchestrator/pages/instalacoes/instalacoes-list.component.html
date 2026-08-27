@@ -1,0 +1,200 @@
+<div class="host-list">
+  <ui-page-header
+    title="Instalações"
+    subtitle="Cadastre, crie ou atualize no alvo. Pacote de entrega é opcional."
+    icon="HardDrive"
+  >
+    <div actions>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/instalacoes/novo']">Nova instalação</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
+  }
+
+  <div class="host-list__filter">
+    <input
+      class="host-list__search"
+      type="text"
+      placeholder="Buscar por código, nome, cliente, host ou produto…"
+      [(ngModel)]="filtros.q"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onBuscaInput()"
+    />
+    <select
+      class="host-list__status"
+      [(ngModel)]="filtros.tipo"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onFiltroChange()"
+    >
+      <option value="todos">Tipo: todos</option>
+      @for (t of tipos; track t) {
+        <option [value]="t">{{ tipoLabels[t] }}</option>
+      }
+    </select>
+    <select
+      class="host-list__status"
+      [(ngModel)]="filtros.status"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onFiltroChange()"
+    >
+      <option value="todos">Status: todos</option>
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ statusLabels[s] }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando instalações">
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+    </div>
+  } @else if (itens().length === 0) {
+    <ui-empty-state
+      icon="HardDrive"
+      illustration="document"
+      title="Nenhuma instalação encontrada"
+      description="Cadastre a instalação do RPA: Docker baixando imagem, Docker com .tar, Linux manual ou Windows manual."
+    >
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/instalacoes/novo']">Cadastrar instalação</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="host-list__table-wrap ui-table-scroll">
+      <table class="host-list__table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Cliente</th>
+            <th>Host</th>
+            <th>Produto</th>
+            <th>Tipo</th>
+            <th>Ambiente</th>
+            <th>Versão</th>
+            <th>Health</th>
+            <th>Status</th>
+            <th class="host-list__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (g of grupos(); track g.chave) {
+            <tr [class.host-list__row--inativo]="statusGrupo(g) !== 'ATIVA'">
+              <td>
+                <code class="host-list__sigla">{{ g.codigo }}</code>
+              </td>
+              <td>
+                <a
+                  class="host-list__nome-link"
+                  [routerLink]="['/release-orchestrator/instalacoes', principal(g).id, 'editar']"
+                  >{{ g.nome }}</a
+                >
+              </td>
+              <td>{{ g.clienteSigla }}</td>
+              <td>{{ g.hostCodigo }}</td>
+              <td>
+                <span class="host-list__produtos">
+                  @for (p of g.produtos; track p.id) {
+                    <a
+                      class="host-list__produto"
+                      [routerLink]="['/release-orchestrator/instalacoes', p.id, 'editar']"
+                      [title]="p.nome"
+                    >
+                      <ui-badge tone="info">{{ p.produtoSigla }} {{ p.versaoAtual || '—' }}</ui-badge>
+                    </a>
+                  }
+                </span>
+              </td>
+              <td>
+                <span class="host-list__ambiente">{{ tipoLabels[tipoGrupo(g)] }}</span>
+              </td>
+              <td>{{ ambienteLabels[ambienteGrupo(g)] }}</td>
+              <td>
+                @if (siteUnico(g)) {
+                  <code class="host-list__sigla">{{ principal(g).versaoAtual || '—' }}</code>
+                } @else {
+                  <span class="host-list__versao-multi">—</span>
+                }
+              </td>
+              <td>
+                <ui-badge [tone]="tomHealth(healthGrupo(g))" [dot]="true">{{
+                  healthLabels[healthGrupo(g)]
+                }}</ui-badge>
+                @if (erroGrupo(g); as err) {
+                  <span class="host-list__ambiente" title="{{ err }}">erro</span>
+                }
+              </td>
+              <td>
+                <ui-badge [tone]="tomStatus(statusGrupo(g))" [dot]="true">{{
+                  statusLabels[statusGrupo(g)]
+                }}</ui-badge>
+              </td>
+              <td class="host-list__col-actions">
+                @if (siteUnico(g) && podeCicloVida(principal(g))) {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    icon="Play"
+                    [loading]="cicloId() === principal(g).id && cicloOp() === 'INICIAR'"
+                    [disabled]="cicloId() !== null"
+                    (clicked)="executarCiclo(principal(g), 'INICIAR')"
+                    >Iniciar</ui-button
+                  >
+                  <ui-button
+                    variant="ghost"
+                    size="sm"
+                    icon="Pause"
+                    [loading]="cicloId() === principal(g).id && cicloOp() === 'PARAR'"
+                    [disabled]="cicloId() !== null"
+                    (clicked)="executarCiclo(principal(g), 'PARAR')"
+                    >Parar</ui-button
+                  >
+                }
+                <ui-button
+                  variant="secondary"
+                  size="sm"
+                  icon="Pencil"
+                  [routerLink]="['/release-orchestrator/instalacoes', principal(g).id, 'editar']"
+                  >Editar</ui-button
+                >
+                @if (siteUnico(g)) {
+                  <ui-button variant="ghost" size="sm" icon="RefreshCw" (clicked)="toggleStatus(principal(g))">{{
+                    rotuloStatusAction(principal(g).status)
+                  }}</ui-button>
+                  @if (excluindoId() === principal(g).id) {
+                    <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(principal(g))" />
+                    <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+                  } @else {
+                    <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluindoId.set(principal(g).id)" />
+                  }
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="host-list__pagination">
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronLeft"
+          [disabled]="page() === 1"
+          (clicked)="irParaPagina(page() - 1)"
+        />
+        <span class="host-list__paginfo">Página {{ page() }} de {{ totalPaginas() }}</span>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [disabled]="page() === totalPaginas()"
+          (clicked)="irParaPagina(page() + 1)"
+        />
+      </div>
+    }
+  }
+</div>

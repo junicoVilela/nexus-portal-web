@@ -13,6 +13,7 @@ function authMock(permissoes: string[]) {
     me: signal(null),
     permissoes: signal(permissoes),
     grupos: signal([]),
+    carregarMe: () => Promise.resolve(null),
   };
 }
 
@@ -34,22 +35,26 @@ describe('ReleaseOrchestratorShellComponent (filtro de permissão no menu)', () 
     fixture.detectChanges();
   }
 
-  it('admin vê todos os 9 itens', async () => {
+  it('admin vê todos os 11 itens', async () => {
     await configurar([
       'RELEASE:CRIAR',
       'RELEASE:LER',
       'PROXIMA_ENTREGA:LER',
       'ENTREGA:LER',
       'CLIENTE_RO:LER',
+      'HOST:LER',
+      'INSTALACAO:LER',
       'PRODUTO:LER',
       'TEMPLATE:LER',
     ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
-    expect(labels.length).toBe(9);
+    expect(labels.length).toBe(11);
     expect(labels).toContain('Registrar');
     expect(labels).toContain('Entregas');
     expect(labels).toContain('Próximas entregas');
     expect(labels).toContain('Clientes');
+    expect(labels).toContain('Hosts');
+    expect(labels).toContain('Instalações');
   });
 
   it('leitor sem RELEASE:CRIAR não vê Registrar', async () => {

@@ -29,6 +29,13 @@ import { Produto } from '../../../models/produto.model';
 import { Release } from '../../../models/release.model';
 import { ProximaEntrega } from '../../../models/proxima-entrega.model';
 import {
+  HEALTH_INSTALACAO_LABELS,
+  HealthInstalacao,
+  InstalacaoCliente,
+  STATUS_INSTALACAO_LABELS,
+  TIPO_IMPLANTACAO_LABELS,
+} from '../../../models/instalacao-cliente.model';
+import {
   DeltaResumo,
   EntregaModulo,
   TIPO_MODULO_LABELS,
@@ -40,12 +47,13 @@ import { ReleaseService } from '../../../services/release.service';
 import { ProximaEntregaService } from '../../../services/proxima-entrega.service';
 import { EntregaService } from '../../../services/entrega.service';
 import { EntregaModuloService } from '../../../services/entrega-modulo.service';
+import { InstalacaoClienteService } from '../../../services/instalacao-cliente.service';
 
 type Passo = 1 | 2 | 3 | 4 | 5;
 
 const PASSOS: { id: Passo; label: string; icon: string }[] = [
   { id: 1, label: 'Cliente', icon: 'Users' },
-  { id: 2, label: 'Produto', icon: 'Box' },
+  { id: 2, label: 'Alvos', icon: 'HardDrive' },
   { id: 3, label: 'Release', icon: 'Tag' },
   { id: 4, label: 'Módulos', icon: 'Boxes' },
   { id: 5, label: 'Revisão', icon: 'CheckCircle' },
@@ -79,6 +87,7 @@ export class EntregaWizardComponent implements OnInit {
   private readonly proximaService = inject(ProximaEntregaService);
   private readonly service = inject(EntregaService);
   private readonly moduloService = inject(EntregaModuloService);
+  private readonly instalacaoService = inject(InstalacaoClienteService);
 
   protected readonly passo = signal<Passo>(1);
   protected readonly carregandoRefs = signal(false);
@@ -90,6 +99,9 @@ export class EntregaWizardComponent implements OnInit {
   protected readonly produtos = signal<Produto[]>([]);
   protected readonly releases = signal<Release[]>([]);
   protected readonly proximasDoCliente = signal<ProximaEntrega[]>([]);
+  protected readonly instalacoes = signal<InstalacaoCliente[]>([]);
+  protected readonly carregandoInstalacoes = signal(false);
+  protected readonly instalacaoIds = signal<string[]>([]);
 
   protected readonly entregaId = signal<string | null>(null);
   protected readonly modulos = signal<EntregaModulo[]>([]);
@@ -117,6 +129,9 @@ export class EntregaWizardComponent implements OnInit {
   protected readonly ambienteLabels = AMBIENTE_LABELS;
   protected readonly tipoModuloLabels = TIPO_MODULO_LABELS;
   protected readonly tipoModuloTones = TIPO_MODULO_TONES;
+  protected readonly tipoInstalacaoLabels = TIPO_IMPLANTACAO_LABELS;
+  protected readonly statusInstalacaoLabels = STATUS_INSTALACAO_LABELS;
+  protected readonly healthLabels = HEALTH_INSTALACAO_LABELS;
   protected readonly formatarTamanho = formatarTamanho;
 
   protected readonly clienteSelecionado = computed(() =>
@@ -178,12 +193,16 @@ export class EntregaWizardComponent implements OnInit {
     return map;
   });
 
+  protected readonly instalacoesSelecionadas = computed(() =>
+    this.instalacoes().filter(i => this.instalacaoIds().includes(i.id)),
+  );
+
   protected readonly podeAvancar = computed(() => {
     switch (this.passo()) {
       case 1:
         return !!this.dados.clienteId;
       case 2:
-        return !!this.dados.produtoId && !!this.dados.ambiente;
+        return !!this.dados.produtoId && !!this.dados.ambiente && this.instalacaoIds().length > 0;
       case 3:
         return !!this.dados.releaseId;
       case 4:
@@ -235,8 +254,13 @@ export class EntregaWizardComponent implements OnInit {
         this.dados.observacoes = pe.observacoes ?? '';
         this.carregarProximasDoCliente();
         this.carregarReleasesDoProduto();
-        this.passo.set(pe.releaseId ? 4 : 3);
-        if (pe.releaseId) this.persistirRascunho();
+        this.carregarInstalacoes(true, () => {
+          if (pe.releaseId && this.instalacaoIds().length > 0) {
+            this.persistirRascunho();
+          } else {
+            this.passo.set(pe.releaseId && this.instalacaoIds().length === 0 ? 2 : 3);
+          }
+        });
       },
       error: () => this.toast.error('Não foi possível carregar a próxima entrega.'),
     });
@@ -246,7 +270,9 @@ export class EntregaWizardComponent implements OnInit {
     this.dados.produtoId = '';
     this.dados.releaseId = '';
     this.dados.proximaEntregaId = null;
+    this.instalacaoIds.set([]);
     this.releases.set([]);
+    this.instalacoes.set([]);
     this.carregarProximasDoCliente();
   }
 
@@ -263,7 +289,53 @@ export class EntregaWizardComponent implements OnInit {
 
   protected onProdutoChange(): void {
     this.dados.releaseId = '';
+    this.instalacaoIds.set([]);
     this.carregarReleasesDoProduto();
+    this.carregarInstalacoes();
+  }
+
+  protected onAmbienteChange(): void {
+    this.instalacaoIds.set([]);
+    this.carregarInstalacoes();
+  }
+
+  protected toggleInstalacao(id: string): void {
+    const atual = this.instalacaoIds();
+    this.instalacaoIds.set(atual.includes(id) ? atual.filter(x => x !== id) : [...atual, id]);
+  }
+
+  protected instalacaoMarcada(id: string): boolean {
+    return this.instalacaoIds().includes(id);
+  }
+
+  protected tomHealth(health?: HealthInstalacao): 'success' | 'warn' | 'danger' | 'neutral' {
+    if (health === 'SAUDAVEL') return 'success';
+    if (health === 'DEGRADADO') return 'warn';
+    if (health === 'INDISPONIVEL') return 'danger';
+    return 'neutral';
+  }
+
+  private carregarInstalacoes(autoSelecionar = false, then?: () => void): void {
+    if (!this.dados.clienteId || !this.dados.produtoId) {
+      this.instalacoes.set([]);
+      then?.();
+      return;
+    }
+    this.carregandoInstalacoes.set(true);
+    this.instalacaoService
+      .listar(1, 100, undefined, this.dados.clienteId, undefined, this.dados.produtoId, undefined, undefined, this.dados.ambiente)
+      .pipe(catchError(() => of({ items: [] as InstalacaoCliente[], totalItems: 0, page: 1, size: 100 })))
+      .subscribe(r => {
+        this.instalacoes.set(r.items);
+        if (autoSelecionar) {
+          this.instalacaoIds.set(r.items.map(i => i.id));
+        } else {
+          const ids = new Set(r.items.map(i => i.id));
+          this.instalacaoIds.update(atual => atual.filter(id => ids.has(id)));
+        }
+        this.carregandoInstalacoes.set(false);
+        then?.();
+      });
   }
 
   private carregarReleasesDoProduto(): void {
@@ -312,6 +384,7 @@ export class EntregaWizardComponent implements OnInit {
       ambiente: this.dados.ambiente,
       proximaEntregaId: this.dados.proximaEntregaId ?? undefined,
       observacoes: this.dados.observacoes || undefined,
+      instalacaoIds: this.instalacaoIds(),
     };
     this.service
       .criar(form)

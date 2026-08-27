@@ -84,74 +84,96 @@
 
 @if (showForm()) {
   <div class="rf-overlay" (click)="fecharForm()">
-    <div class="rf-modal" (click)="$event.stopPropagation()">
+    <div
+      class="rf-modal rf-modal--produto"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'rf-prod-modal-title'"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="rf-modal__accent" [style.background]="corSelecionada"></div>
       <div class="rf-modal__header">
-        <h2 class="rf-modal__title">{{ editId() ? 'Editar produto' : 'Novo produto' }}</h2>
+        <div class="rf-modal__heading">
+          <h2 id="rf-prod-modal-title" class="rf-modal__title">
+            {{ editId() ? 'Editar produto' : 'Novo produto' }}
+          </h2>
+          <p class="rf-modal__subtitle">
+            Identidade, GitHub e Jenkins no mesmo painel — cada produto tem o próprio build.
+          </p>
+        </div>
         <button type="button" class="rf-modal__close" aria-label="Fechar modal" (click)="fecharForm()">
           <lucide-icon name="X" [size]="16" />
         </button>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="salvar()" class="rf-modal__body">
-        <div class="rf-modal__row">
-          <div class="rf-modal__field u-flex-grow-2">
-            <label class="rf-modal__label">Nome <span class="rf-modal__req">*</span></label>
-            <input
-              class="rf-modal__input"
-              formControlName="nome"
-              placeholder="Ex: NEXUS-LD"
-              [class.rf-modal__input--err]="fieldError('nome')"
-            />
-            @if (fieldError('nome')) {
-              <span class="rf-modal__err">Nome é obrigatório</span>
-            }
-          </div>
-          <div class="rf-modal__field u-flex-grow-1">
-            <label class="rf-modal__label">Sigla <span class="rf-modal__req">*</span></label>
-            <input
-              class="rf-modal__input u-uppercase"
-              formControlName="sigla"
-              placeholder="Ex: NEXUS-LD"
-              [class.rf-modal__input--err]="fieldError('sigla')"
-            />
-            @if (fieldError('sigla')) {
-              <span class="rf-modal__err">Sigla é obrigatória</span>
-            }
-          </div>
-        </div>
+      <form [formGroup]="form" (ngSubmit)="salvar()" class="rf-modal__form">
+        <div class="rf-modal__body">
+          <fieldset class="rf-modal__section rf-modal__section--identidade">
+            <legend class="rf-modal__section-title">
+              <lucide-icon name="Package" [size]="14" /> Identidade
+            </legend>
+            <div class="rf-modal__row">
+              <div class="rf-modal__field rf-modal__field--grow-2">
+                <label class="rf-modal__label">Nome <span class="rf-modal__req">*</span></label>
+                <input
+                  class="rf-modal__input"
+                  formControlName="nome"
+                  placeholder="Ex: Softon V5"
+                  [class.rf-modal__input--err]="fieldError('nome')"
+                />
+                @if (fieldError('nome')) {
+                  <span class="rf-modal__err">Nome é obrigatório</span>
+                }
+              </div>
+              <div class="rf-modal__field rf-modal__field--grow-1">
+                <label class="rf-modal__label">Sigla <span class="rf-modal__req">*</span></label>
+                <input
+                  class="rf-modal__input u-uppercase"
+                  formControlName="sigla"
+                  placeholder="Ex: LD"
+                  [class.rf-modal__input--err]="fieldError('sigla')"
+                />
+                @if (fieldError('sigla')) {
+                  <span class="rf-modal__err">Sigla é obrigatória</span>
+                }
+              </div>
+              <div class="rf-modal__field rf-modal__field--ativo">
+                <label class="rf-modal__label">Status</label>
+                <label class="rf-modal__check rf-modal__check--card">
+                  <input type="checkbox" formControlName="ativo" />
+                  <span>Ativo</span>
+                </label>
+              </div>
+            </div>
 
-        <div class="rf-modal__field">
-          <label class="rf-modal__label">Descrição</label>
-          <input class="rf-modal__input" formControlName="descricao" placeholder="Descrição do produto" />
-        </div>
+            <div class="rf-modal__field">
+              <label class="rf-modal__label">Descrição</label>
+              <input class="rf-modal__input" formControlName="descricao" placeholder="Descrição do produto" />
+            </div>
 
-        <div class="rf-modal__field">
-          <label class="rf-modal__label">Cor de identificação</label>
-          <div class="rf-prod__cor-picker">
-            @for (cor of presetCores; track cor) {
-              <button
-                type="button"
-                class="rf-prod__cor-btn"
-                [style.background]="cor"
-                [class.rf-prod__cor-btn--selected]="cor === corSelecionada"
-                (click)="escolherCor(cor)"
-              ></button>
-            }
-            <input type="color" formControlName="cor" class="rf-prod__cor-custom" title="Cor personalizada" />
-          </div>
-          <div class="rf-prod__cor-preview">
-            <div class="rf-prod__cor-dot" [style.background]="corSelecionada"></div>
-            <span>{{ corSelecionada }}</span>
-          </div>
-        </div>
+            <div class="rf-modal__field">
+              <label class="rf-modal__label">Cor de identificação</label>
+              <div class="rf-prod__cor-picker">
+                @for (cor of presetCores; track cor) {
+                  <button
+                    type="button"
+                    class="rf-prod__cor-btn"
+                    [style.background]="cor"
+                    [class.rf-prod__cor-btn--selected]="cor === corSelecionada"
+                    (click)="escolherCor(cor)"
+                  ></button>
+                }
+                <input type="color" formControlName="cor" class="rf-prod__cor-custom" title="Cor personalizada" />
+                <div class="rf-prod__cor-preview">
+                  <div class="rf-prod__cor-dot" [style.background]="corSelecionada"></div>
+                  <span>{{ corSelecionada }}</span>
+                </div>
+              </div>
+            </div>
+          </fieldset>
 
-        <label class="rf-modal__check">
-          <input type="checkbox" formControlName="ativo" />
-          <span>Produto ativo</span>
-        </label>
-
-        <!-- ===== Integração GitHub (Fase 2) ===== -->
-        <fieldset class="rf-modal__section">
+          <div class="rf-modal__integrations">
+            <fieldset class="rf-modal__section">
           <legend class="rf-modal__section-title">
             <lucide-icon name="Github" [size]="14" /> Integração GitHub (opcional)
           </legend>
@@ -248,7 +270,8 @@
           </legend>
           <p class="rf-modal__hint">
             Visibilidade do build. O portal só consulta o último build — quem
-            dispara é o webhook do GitHub na tag (modo BUILD_ON_TAG).
+            dispara em tag Git (BUILD_ON_TAG). Na ficha da release dá para
+            disparar o job escolhendo a release atual, a última gerada ou uma tag.
           </p>
 
           <div class="rf-modal__row">
@@ -318,7 +341,7 @@
                   Conexão OK — {{ r.jenkinsJob }}
                 </strong>
                 @if (r.ultimoBuild; as b) {
-                  <p class="rf-modal__hint" style="margin-top: 6px;">
+                  <p class="rf-modal__hint rf-modal__hint--spaced">
                     Último build: <strong>#{{ b.number }}</strong>
                     @if (b.building) {
                       <em> (em execução…)</em>
@@ -339,6 +362,8 @@
             }
           }
         </fieldset>
+          </div>
+        </div>
 
         <div class="rf-modal__footer">
           <ui-button variant="ghost" type="button" (clicked)="fecharForm()">Cancelar</ui-button>

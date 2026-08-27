@@ -6,6 +6,129 @@
     </div>
   }
 
+  <section class="art-build" aria-labelledby="art-build-title">
+    <div class="art-build__head">
+      <div>
+        <h3 id="art-build-title" class="art-build__title">
+          <lucide-icon name="Play" [size]="16" />
+          Gerar artefato no Jenkins
+        </h3>
+        <p class="art-build__hint">
+          O portal dispara o job do produto. O Jenkins compila o WAR/JAR e publica o asset.
+        </p>
+      </div>
+      @if (fontes()?.jenkinsJob) {
+        <code class="art-build__job">{{ fontes()!.jenkinsJob }}</code>
+      }
+    </div>
+
+    @if (fontesErro()) {
+      <p class="art-mod__error">{{ fontesErro() }}</p>
+    } @else if (!fontes()) {
+      <ui-skeleton width="100%" height="72px" />
+    } @else if (!fontes()!.jenkinsConfigurado) {
+      <p class="art-mod__hint">{{ fontes()!.aviso || 'Configure Jenkins no cadastro do produto.' }}</p>
+    } @else {
+      @if (fontes()!.githubErro) {
+        <p class="art-mod__hint">GitHub: {{ fontes()!.githubErro }} — dá para usar a release atual ou digitar a tag.</p>
+      }
+
+      <fieldset class="art-build__origens">
+        <legend class="art-build__legend">Origem</legend>
+        <label class="art-build__opt">
+          <input
+            type="radio"
+            name="origem-build"
+            [checked]="origem() === 'RELEASE_ATUAL'"
+            (change)="selecionarOrigem('RELEASE_ATUAL')"
+          />
+          <span>
+            <strong>Release atual</strong>
+            <code>{{ fontes()!.releaseAtual.tag }}</code>
+          </span>
+        </label>
+        <label class="art-build__opt" [class.art-build__opt--disabled]="!fontes()!.ultimaGerada">
+          <input
+            type="radio"
+            name="origem-build"
+            [checked]="origem() === 'ULTIMA_GERADA'"
+            [disabled]="!fontes()!.ultimaGerada"
+            (change)="selecionarOrigem('ULTIMA_GERADA')"
+          />
+          <span>
+            <strong>Última gerada</strong>
+            @if (fontes()!.ultimaGerada; as u) {
+              <code>{{ u.tag }}</code>
+              @if (u.totalAssets != null) {
+                <span class="art-build__meta">{{ u.totalAssets }} asset(s)</span>
+              }
+            } @else {
+              <span class="art-build__meta">nenhuma versão encontrada</span>
+            }
+          </span>
+        </label>
+        <label class="art-build__opt">
+          <input
+            type="radio"
+            name="origem-build"
+            [checked]="origem() === 'TAG_ESPECIFICA'"
+            (change)="selecionarOrigem('TAG_ESPECIFICA')"
+          />
+          <span><strong>Tag específica</strong></span>
+        </label>
+      </fieldset>
+
+      @if (origem() === 'TAG_ESPECIFICA') {
+        <div class="art-build__tag-row">
+          @if (fontes()!.tags.length > 0) {
+            <select
+              class="art-build__select"
+              [ngModel]="tagEscolhida()"
+              (ngModelChange)="tagEscolhida.set($event)"
+            >
+              @for (t of fontes()!.tags; track t.tag) {
+                <option [value]="t.tag">
+                  {{ t.tag }}{{ t.temGithubRelease ? ' · GitHub Release' : '' }}
+                </option>
+              }
+            </select>
+          }
+          <input
+            class="art-build__input"
+            type="text"
+            maxlength="80"
+            placeholder="ou digite a tag (ex: v5.0.0)"
+            [ngModel]="tagDigitada()"
+            (ngModelChange)="tagDigitada.set($event)"
+          />
+        </div>
+      }
+
+      <p class="art-build__preview">
+        Checkout <code>{{ tagEfetiva() || '—' }}</code>
+        @if (avisoVersaoDiferente()) {
+          <span class="art-build__warn">
+            — o status do build vai para a release {{ versaoEfetiva() }}, não esta ficha.
+          </span>
+        }
+      </p>
+
+      <div class="art-build__actions">
+        <ui-button
+          icon="Play"
+          [loading]="disparando()"
+          [disabled]="!podeDisparar() || disparando() || !tagEfetiva()"
+          (clicked)="dispararBuild()"
+        >
+          Disparar build
+        </ui-button>
+        @if (!podeDisparar()) {
+          <span class="art-mod__hint">Sem permissão ou release cancelada.</span>
+        }
+      </div>
+    }
+  </section>
+
   @if (erro()) {
     <ui-error-state
       [variant]="erroVariant()"

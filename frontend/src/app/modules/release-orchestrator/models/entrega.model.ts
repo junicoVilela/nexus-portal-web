@@ -1,7 +1,19 @@
 import { AmbientePadrao } from './cliente.model';
+import { HealthInstalacao, StatusInstalacao } from './instalacao-cliente.model';
 
 export type StatusEntrega = 'RASCUNHO' | 'EM_GERACAO' | 'CONCLUIDA' | 'FALHA' | 'CANCELADA';
 export type StatusPublicacao = 'NAO_APLICAVEL' | 'PENDENTE' | 'OK' | 'FALHA';
+
+export interface InstalacaoAlvoEntrega {
+  id: string;
+  codigo: string;
+  nome: string;
+  hostCodigo: string;
+  tipoImplantacao?: string;
+  status: StatusInstalacao;
+  health: HealthInstalacao;
+  versaoAtual?: string;
+}
 
 export interface Entrega {
   id: string;
@@ -32,6 +44,7 @@ export interface Entrega {
   ultimaFalhaPublicacao?: string;
   dataPublicacao?: string;
   destinoPublicacao?: string;
+  instalacoes?: InstalacaoAlvoEntrega[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -44,6 +57,7 @@ export interface CriarEntregaForm {
   proximaEntregaId?: string;
   responsavelId?: string;
   observacoes?: string;
+  instalacaoIds?: string[];
 }
 
 export interface AtualizarEntregaRascunhoForm {

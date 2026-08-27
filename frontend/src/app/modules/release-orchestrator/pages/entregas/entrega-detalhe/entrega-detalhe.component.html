@@ -170,6 +170,22 @@
               </dd>
               <dt>Ambiente</dt>
               <dd>{{ ambienteLabels[e.ambiente] }}</dd>
+              @if (e.instalacoes?.length) {
+                <dt>Instalações</dt>
+                <dd>
+                  @for (i of e.instalacoes; track i.id) {
+                    <div>
+                      <a [routerLink]="['/release-orchestrator/instalacoes', i.id, 'editar']">
+                        <code>{{ i.codigo }}</code>
+                      </a>
+                      {{ i.nome }} · {{ i.hostCodigo }}
+                      @if (i.versaoAtual) {
+                        · {{ i.versaoAtual }}
+                      }
+                    </div>
+                  }
+                </dd>
+              }
               @if (e.entregaOriginalId) {
                 <dt>Reentrega de</dt>
                 <dd>
@@ -313,6 +329,124 @@
               </tbody>
             </table>
           </ui-card>
+        }
+      }
+      @case ('implantacao') {
+        @if (!e.instalacoes?.length) {
+          <ui-empty-state
+            icon="Rocket"
+            title="Nenhuma instalação alvo"
+            description="Vincule instalações na criação da entrega para simular deploy(releaseId, instalacaoId)."
+          >
+            <ui-button variant="secondary" icon="HardDrive" [routerLink]="['/release-orchestrator/instalacoes']"
+              >Ver instalações</ui-button
+            >
+          </ui-empty-state>
+        } @else {
+          <p class="ent-det__hint">
+            Pacote de entrega é opcional. Dry-run só registra o contrato. Docker pull sobe o container. Linux
+            manual grava o .env e roda install.sh (baixa JDK e Tomcat na primeira vez).
+          </p>
+          @if (podeDeployar()) {
+            <div class="ent-det__actions">
+              <ui-button
+                variant="secondary"
+                icon="Play"
+                [loading]="executandoLote()"
+                [disabled]="executandoLote() || executandoDeployId() !== null"
+                (clicked)="executarLote('DRY_RUN')"
+                >Simular todas</ui-button
+              >
+              <ui-button
+                icon="Rocket"
+                [loading]="executandoLote()"
+                [disabled]="executandoLote() || executandoDeployId() !== null"
+                (clicked)="executarLote('REAL')"
+                >Implantar todas (Docker / Linux)</ui-button
+              >
+            </div>
+          }
+          <ui-card padding="none">
+            <table class="ent-det__table">
+              <thead>
+                <tr>
+                  <th>Instalação</th>
+                  <th>Host</th>
+                  <th>Versão atual</th>
+                  <th>Último deploy</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (i of e.instalacoes; track i.id) {
+                  <tr>
+                    <td>
+                      <a [routerLink]="['/release-orchestrator/instalacoes', i.id, 'editar']">
+                        <code>{{ i.codigo }}</code>
+                      </a>
+                      {{ i.nome }}
+                    </td>
+                    <td>{{ i.hostCodigo }}</td>
+                    <td>{{ i.versaoAtual || '—' }}</td>
+                    <td>
+                      @if (ultimoDeploy(i.id); as d) {
+                        <ui-badge [tone]="statusDeployTones[d.status]">{{ statusDeployLabels[d.status] }}</ui-badge>
+                        <span class="ent-det__pub-meta">
+                          {{ d.releaseVersao }} · {{ d.createdAt | date: 'dd/MM HH:mm' }}
+                        </span>
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td>
+                      @if (podeDeployar()) {
+                        <ui-button
+                          variant="secondary"
+                          size="sm"
+                          icon="Play"
+                          [loading]="executandoDeployId() === i.id"
+                          [disabled]="executandoLote() || executandoDeployId() !== null"
+                          (clicked)="executarDeploy(i.id, 'DRY_RUN')"
+                          >Simular</ui-button
+                        >
+                        @if (i.tipoImplantacao === 'DOCKER_PULL' || i.tipoImplantacao === 'LINUX_MANUAL') {
+                          <ui-button
+                            size="sm"
+                            icon="Rocket"
+                            [loading]="executandoDeployId() === i.id"
+                            [disabled]="executandoLote() || executandoDeployId() !== null"
+                            (clicked)="executarDeploy(i.id, 'REAL')"
+                            >Implantar</ui-button
+                          >
+                        }
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </ui-card>
+          @if (deploys().length) {
+            <ui-card padding="md">
+              <h3 class="ent-det__pane-title"><lucide-icon name="History" [size]="14" /> Histórico</h3>
+              <ul class="ent-det__hist">
+                @for (d of deploys(); track d.id) {
+                  <li>
+                    <ui-badge [tone]="statusDeployTones[d.status]">{{ statusDeployLabels[d.status] }}</ui-badge>
+                    <code>{{ d.instalacaoCodigo }}</code>
+                    {{ operacaoDeployLabels[d.operacao] }}
+                    {{ d.versaoOrigem || '—' }} → {{ d.versaoDestino }}
+                    <span class="ent-det__pub-meta"
+                      >{{ d.createdAt | date: 'dd/MM HH:mm' }} · {{ d.operador || '—' }}</span
+                    >
+                    @if (d.mensagem || d.erro) {
+                      <p class="ent-det__pub-erro">{{ d.erro || d.mensagem }}</p>
+                    }
+                  </li>
+                }
+              </ul>
+            </ui-card>
+          }
         }
       }
     }

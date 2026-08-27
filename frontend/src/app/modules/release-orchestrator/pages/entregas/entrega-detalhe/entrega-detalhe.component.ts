@@ -38,8 +38,17 @@ import {
 } from '../../../models/entrega-modulo.model';
 import { EntregaService } from '../../../services/entrega.service';
 import { EntregaModuloService } from '../../../services/entrega-modulo.service';
+import { DeployInstalacaoService } from '../../../services/deploy-instalacao.service';
+import { AuthService } from '@core/auth/services/auth.service';
+import {
+  DeployInstalacao,
+  ModoDeploy,
+  OPERACAO_DEPLOY_LABELS,
+  STATUS_DEPLOY_LABELS,
+  STATUS_DEPLOY_TONES,
+} from '../../../models/deploy-instalacao.model';
 
-type Aba = 'geral' | 'modulos' | 'delta';
+type Aba = 'geral' | 'modulos' | 'delta' | 'implantacao';
 
 const POLL_INTERVAL_MS = 5000;
 
@@ -68,6 +77,8 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly service = inject(EntregaService);
   private readonly moduloService = inject(EntregaModuloService);
+  private readonly deployService = inject(DeployInstalacaoService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
 
   protected readonly loading = signal(true);
@@ -84,6 +95,13 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
   protected readonly baixandoDoc = signal(false);
   protected readonly baixandoZip = signal(false);
   protected readonly emPolling = signal(false);
+  protected readonly deploys = signal<DeployInstalacao[]>([]);
+  protected readonly executandoDeployId = signal<string | null>(null);
+  protected readonly executandoLote = signal(false);
+  protected readonly podeDeployar = computed(() => this.auth.tem()('INSTALACAO:EDITAR'));
+  protected readonly statusDeployLabels = STATUS_DEPLOY_LABELS;
+  protected readonly statusDeployTones = STATUS_DEPLOY_TONES;
+  protected readonly operacaoDeployLabels = OPERACAO_DEPLOY_LABELS;
 
   protected readonly ambienteLabels = AMBIENTE_LABELS;
   protected readonly statusLabels = STATUS_ENTREGA_LABELS;
@@ -107,6 +125,7 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
     { id: 'geral', label: 'Visão geral', icon: 'LayoutDashboard' },
     { id: 'modulos', label: 'Módulos', icon: 'Boxes', count: this.modulos().length },
     { id: 'delta', label: 'Delta', icon: 'Layers', count: this.artefatos().length },
+    { id: 'implantacao', label: 'Implantação', icon: 'Rocket', count: this.entrega()?.instalacoes?.length ?? 0 },
   ]);
 
   private entregaId!: string;
@@ -140,6 +159,7 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
         this.artefatos.set(artefatos);
         this.resumoDelta.set(resumo);
         this.loading.set(false);
+        this.carregarDeploys();
         if (entrega.status === 'EM_GERACAO') this.iniciarPolling();
       },
       error: err => {
@@ -182,6 +202,68 @@ export class EntregaDetalheComponent implements OnInit, OnDestroy {
       .resumoDelta(this.entregaId)
       .pipe(catchError(() => of(null as DeltaResumo | null)))
       .subscribe(r => this.resumoDelta.set(r));
+  }
+
+  private carregarDeploys(): void {
+    this.deployService
+      .listar(1, 50, { entregaId: this.entregaId })
+      .pipe(catchError(() => of({ items: [] as DeployInstalacao[] })))
+      .subscribe(r => this.deploys.set(r.items ?? []));
+  }
+
+  protected ultimoDeploy(instalacaoId: string): DeployInstalacao | undefined {
+    return this.deploys().find(d => d.instalacaoId === instalacaoId);
+  }
+
+  protected executarDeploy(instalacaoId: string, modo: ModoDeploy, forcar = false): void {
+    const e = this.entrega();
+    if (!e) return;
+    this.executandoDeployId.set(instalacaoId);
+    this.deployService
+      .executar({ releaseId: e.releaseId, instalacaoId, entregaId: e.id, forcar, modo })
+      .subscribe({
+        next: d => {
+          this.executandoDeployId.set(null);
+          if (d.status === 'IGNORADO') {
+            this.toast.info(d.mensagem ?? 'Manifesto já aplicado.');
+          } else if (d.status === 'FALHA') {
+            this.toast.error(d.erro ?? 'Falha na implantação.');
+          } else if (modo === 'REAL') {
+            this.toast.success(d.mensagem ?? 'Instalação aplicada no host.');
+            this.carregar();
+          } else {
+            this.toast.success(d.mensagem ?? 'Dry-run concluído. O host não foi alterado.');
+          }
+          this.carregarDeploys();
+        },
+        error: err => {
+          this.executandoDeployId.set(null);
+          const msg = err?.error?.message ?? 'Não foi possível implantar.';
+          this.toast.error(typeof msg === 'string' ? msg : 'Não foi possível implantar.');
+        },
+      });
+  }
+
+  protected executarLote(modo: ModoDeploy): void {
+    this.executandoLote.set(true);
+    this.deployService.executarLote(this.entregaId, modo).subscribe({
+      next: r => {
+        this.executandoLote.set(false);
+        const partes = [`${r.concluidos} concluído(s)`, `${r.falhas} falha(s)`, `${r.ignorados} ignorado(s)`];
+        if (r.falhas > 0) {
+          this.toast.error(`Lote: ${partes.join(', ')}.`);
+        } else {
+          this.toast.success(`Lote: ${partes.join(', ')}.`);
+        }
+        this.carregar();
+        this.carregarDeploys();
+      },
+      error: err => {
+        this.executandoLote.set(false);
+        const msg = err?.error?.message ?? 'Não foi possível implantar o lote.';
+        this.toast.error(typeof msg === 'string' ? msg : 'Não foi possível implantar o lote.');
+      },
+    });
   }
 
   protected mudarAba(aba: Aba): void {

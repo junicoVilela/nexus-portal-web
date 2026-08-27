@@ -1,0 +1,786 @@
+<div class="host-form">
+  <ui-page-header
+    [title]="editando() ? 'Editar instalação' : 'Nova instalação'"
+    subtitle="Cadastro e implantação direta: release + esta instalação, sem pacote de entrega"
+    icon="HardDrive"
+  >
+    <div actions>
+      <a class="host-form__back" [routerLink]="['/release-orchestrator/instalacoes']">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (carregando()) {
+    <p class="host-form__loading">Carregando instalação…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="host-form__body">
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="FileText" [size]="16" /> Identificação</h2>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Código <span class="host-form__req">*</span></label>
+            <input
+              class="host-form__input host-form__input--upper"
+              formControlName="codigo"
+              placeholder="Ex: ACME-RPA-01"
+              maxlength="40"
+              [class.host-form__input--err]="fieldError('codigo')"
+            />
+            @if (fieldError('codigo')) {
+              <span class="host-form__err">Código obrigatório (letras, números e hífen)</span>
+            }
+          </div>
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Nome <span class="host-form__req">*</span></label>
+            <input
+              class="host-form__input"
+              formControlName="nome"
+              placeholder="Ex: RPA produção ACME"
+              [class.host-form__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="host-form__err">Nome é obrigatório</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="HardDrive" [size]="16" /> Onde instalar</h2>
+        <div class="host-form__dest" role="radiogroup" aria-label="Destino da instalação">
+          <button
+            type="button"
+            class="host-form__dest-opt"
+            role="radio"
+            [class.host-form__dest-opt--active]="destino() === 'LOCAL'"
+            [attr.aria-checked]="destino() === 'LOCAL'"
+            (click)="selecionarDestino('LOCAL')"
+          >
+            <lucide-icon name="House" [size]="18" />
+            <span>
+              <strong>Nesta máquina</strong>
+              <small>Instala localmente em localhost, sem SSH.</small>
+            </span>
+          </button>
+          <button
+            type="button"
+            class="host-form__dest-opt"
+            role="radio"
+            [class.host-form__dest-opt--active]="destino() === 'CADASTRADO'"
+            [attr.aria-checked]="destino() === 'CADASTRADO'"
+            (click)="selecionarDestino('CADASTRADO')"
+          >
+            <lucide-icon name="Server" [size]="18" />
+            <span>
+              <strong>Ambiente cadastrado</strong>
+              <small>Escolhe um host já registrado (homologação, produção…).</small>
+            </span>
+          </button>
+        </div>
+        @if (destinoLocal()) {
+          <p class="host-form__hint">
+            Destino: <strong>localhost</strong>
+            @if (hostLocal(); as h) {
+              — {{ h.codigo }} ({{ soLabels[h.sistemaOperacional] }})
+            } @else {
+              — o portal cria o host local na hora de salvar, se ainda não existir.
+            }
+          </p>
+        }
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Cliente <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="clienteId" [class.host-form__input--err]="fieldError('clienteId')">
+              <option value="">Selecione…</option>
+              @if (!editando()) {
+                <option [value]="clienteNovoId">+ Novo cliente…</option>
+              }
+              @for (c of clientes(); track c.id) {
+                <option [value]="c.id">{{ c.sigla }} — {{ c.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Produto <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="produtoId" [class.host-form__input--err]="fieldError('produtoId')">
+              <option value="">Selecione…</option>
+              @for (p of produtosDoCadastro(); track p.id) {
+                <option [value]="p.id">{{ p.sigla }} — {{ p.nome }}</option>
+              }
+            </select>
+            <span class="host-form__hint">Produto desta ficha. LD e CR neste host se implantam nas abas abaixo, depois de salvar.</span>
+          </div>
+        </div>
+        @if (!destinoLocal()) {
+          <div class="host-form__row">
+            <div class="host-form__field host-form__field--grow-2">
+              <label class="host-form__label">Host cadastrado <span class="host-form__req">*</span></label>
+              <select class="host-form__input" formControlName="hostId" [class.host-form__input--err]="fieldError('hostId')">
+                <option value="">Selecione o ambiente…</option>
+                @for (h of hostsCadastrados(); track h.id) {
+                  <option [value]="h.id">
+                    {{ h.codigo }} — {{ h.nome }} ({{ h.hostname }} · {{ soLabels[h.sistemaOperacional] }} ·
+                    {{ conexaoLabels[h.tipoConexao] }})
+                  </option>
+                }
+              </select>
+              @if (fieldError('hostId')) {
+                <span class="host-form__err">Selecione um host cadastrado</span>
+              }
+              @if (hostsCadastrados().length === 0) {
+                <span class="host-form__hint">
+                  Nenhum host remoto cadastrado para este tipo.
+                  <a routerLink="/release-orchestrator/hosts/novo">Cadastrar host</a>
+                </span>
+              }
+            </div>
+          </div>
+        }
+        @if (criandoCliente()) {
+          <div class="host-form__row">
+            <div class="host-form__field host-form__field--grow-1">
+              <label class="host-form__label">Sigla do cliente <span class="host-form__req">*</span></label>
+              <input
+                class="host-form__input host-form__input--upper"
+                formControlName="novoClienteSigla"
+                placeholder="Ex: ACME"
+                maxlength="20"
+                [class.host-form__input--err]="fieldError('novoClienteSigla')"
+              />
+              @if (fieldError('novoClienteSigla')) {
+                <span class="host-form__err">Sigla obrigatória (letras, números e hífen)</span>
+              }
+            </div>
+            <div class="host-form__field host-form__field--grow-2">
+              <label class="host-form__label">Nome do cliente <span class="host-form__req">*</span></label>
+              <input
+                class="host-form__input"
+                formControlName="novoClienteNome"
+                placeholder="Ex: ACME Ltda"
+                [class.host-form__input--err]="fieldError('novoClienteNome')"
+              />
+              @if (fieldError('novoClienteNome')) {
+                <span class="host-form__err">Nome do cliente é obrigatório</span>
+              }
+            </div>
+          </div>
+          <p class="host-form__hint">O cliente é criado junto com a instalação, usando o ambiente escolhido abaixo.</p>
+        }
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Ambiente <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="ambiente">
+              @for (a of ambientes; track a) {
+                <option [value]="a">{{ ambienteLabels[a] }}</option>
+              }
+            </select>
+            <span class="host-form__hint">Classificação (dev, homologação, produção), não o servidor.</span>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Status <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="status">
+              @for (s of statuses; track s) {
+                <option [value]="s">{{ statusLabels[s] }}</option>
+              }
+            </select>
+            <span class="host-form__hint">Inexistente cadastra o alvo antes do RPA existir no host.</span>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Versão instalada</label>
+            <input class="host-form__input" formControlName="versaoAtual" placeholder="Ex: 1.4.0" maxlength="80" />
+            <span class="host-form__hint">Versão atualmente neste alvo (RF-006).</span>
+          </div>
+        </div>
+      </section>
+
+      @if (editando()) {
+        <section class="host-form__section">
+          <h2 class="host-form__section-title"><lucide-icon name="Activity" [size]="16" /> Situação operacional</h2>
+          <p class="host-form__hint">
+            Health atual:
+            <strong>{{ healthLabels[healthAtual()] }}</strong>
+            @if (ultimaVerificacao()) {
+              · última verificação {{ ultimaVerificacao() }}
+            }
+          </p>
+          @if (ultimoErro()) {
+            <p class="host-form__err">{{ ultimoErro() }}</p>
+          }
+          <div class="host-form__row">
+            <div class="host-form__field host-form__field--grow-1">
+              <label class="host-form__label">Health</label>
+              <select class="host-form__input" [(ngModel)]="healthDraft" [ngModelOptions]="{ standalone: true }">
+                @for (h of healths; track h) {
+                  <option [value]="h">{{ healthLabels[h] }}</option>
+                }
+              </select>
+            </div>
+            <div class="host-form__field host-form__field--grow-2">
+              <label class="host-form__label">Erro da última verificação</label>
+              <input class="host-form__input" [(ngModel)]="healthErroDraft" [ngModelOptions]="{ standalone: true }" placeholder="Vazio se saudável" />
+            </div>
+          </div>
+          <div class="host-form__row">
+            <ui-button type="button" variant="secondary" icon="Activity" [loading]="registrandoHealth()" (clicked)="registrarHealth()">
+              Registrar verificação
+            </ui-button>
+          </div>
+          @if (mostraCicloVida()) {
+            <div class="host-form__ciclo">
+              <p class="host-form__hint">
+                @if (!cicloVidaHabilitado()) {
+                  Crie a instalação no host antes de iniciar ou parar.
+                } @else if (tipoAtual() === 'LINUX_MANUAL') {
+                  Iniciar e parar rodam <code>scripts/start.sh</code> e <code>scripts/stop.sh</code>, sem reinstalar.
+                } @else {
+                  Inicia ou para o container já criado, sem pull de imagem.
+                }
+              </p>
+              <div class="host-form__ciclo-actions">
+                <ui-button
+                  type="button"
+                  variant="secondary"
+                  icon="Play"
+                  [loading]="executandoCiclo() === 'INICIAR'"
+                  [disabled]="ocupadoOperacao() || !cicloVidaHabilitado()"
+                  (clicked)="executarCicloVida('INICIAR')"
+                  >Iniciar</ui-button
+                >
+                <ui-button
+                  type="button"
+                  variant="ghost"
+                  icon="Pause"
+                  [loading]="executandoCiclo() === 'PARAR'"
+                  [disabled]="ocupadoOperacao() || !cicloVidaHabilitado()"
+                  (clicked)="executarCicloVida('PARAR')"
+                  >Parar</ui-button
+                >
+              </div>
+            </div>
+          }
+        </section>
+      }
+
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="Package" [size]="16" /> Tipo de implantação</h2>
+        <div class="host-form__field">
+          <label class="host-form__label">Como o RPA será instalado <span class="host-form__req">*</span></label>
+          <select class="host-form__input" formControlName="tipoImplantacao">
+            @for (t of tipos; track t) {
+              <option [value]="t">{{ tipoLabels[t] }}</option>
+            }
+          </select>
+        </div>
+
+        @if (tipoAtual() === 'DOCKER_PULL') {
+          <div class="host-form__field">
+            <label class="host-form__label">Imagem no registry</label>
+            <input
+              class="host-form__input"
+              formControlName="imagemRef"
+              placeholder="Ex: registry.nexus.local/rpa:1.4.0"
+            />
+            <span class="host-form__hint">Docker baixa esta imagem. Obrigatório quando o status não for Inexistente. Host precisa ter Docker.</span>
+          </div>
+        }
+
+        @if (tipoAtual() === 'DOCKER_TAR') {
+          <div class="host-form__field">
+            <label class="host-form__label">Arquivo da imagem (.tar)</label>
+            <input
+              class="host-form__input"
+              formControlName="arquivoImagemRef"
+              placeholder="Ex: /opt/nexus/imagens/rpa-1.4.0.tar"
+            />
+            <span class="host-form__hint">Caminho ou nome do .tar a carregar no Docker. Host precisa ter Docker.</span>
+          </div>
+        }
+
+        @if (tipoAtual() === 'LINUX_MANUAL' || tipoAtual() === 'WINDOWS_MANUAL') {
+          <div class="host-form__field">
+            <label class="host-form__label">Diretório de instalação</label>
+            <input
+              class="host-form__input"
+              formControlName="diretorioInstalacao"
+              [placeholder]="
+                tipoAtual() === 'WINDOWS_MANUAL'
+                  ? 'Ex: C:\\Nexus\\RPA'
+                  : destinoLocal()
+                    ? 'Ex: /tmp/nexus-lab/acme'
+                    : 'Ex: /opt/nexus/acme'
+              "
+            />
+            <span class="host-form__hint"
+              >@if (destinoLocal()) {
+                Destino nesta máquina. Na primeira vez o portal copia scripts e artefatos, grava o .env e roda
+                install.sh (baixa JDK 8, JDK 17 e Tomcat).
+              } @else {
+                Destino no host remoto via SSH. A pasta precisa ter scripts/ e artifacts/; a cópia automática do
+                instalador só ocorre no local.
+              }
+              Lab: SKIP_START=true baixa o runtime sem subir o Tomcat.</span
+            >
+          </div>
+        }
+      </section>
+
+      <section class="host-form__section" formGroupName="configuracao">
+        <h2 class="host-form__section-title"><lucide-icon name="KeyRound" [size]="16" /> Configuração da instalação</h2>
+        <p class="host-form__hint">
+          Base, portas JDBC e credencial desta instância. Linux manual usa só Oracle ou SQL Server. Senha do banco
+          pela referência de credencial (ou texto no lab).
+        </p>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label"
+              >Tipo de banco @if (tipoAtual() === 'LINUX_MANUAL') {
+                <span class="host-form__req">*</span>
+              }</label
+            >
+            <select class="host-form__input" formControlName="tipoBanco" [class.host-form__input--err]="fieldError('configuracao.tipoBanco')">
+              <option [ngValue]="null">Não informado</option>
+              @for (b of bancosDisponiveis(); track b) {
+                <option [value]="b">{{ bancoLabels[b] }}</option>
+              }
+            </select>
+          </div>
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Host do banco</label>
+            <input class="host-form__input" formControlName="bancoHost" placeholder="Ex: 10.10.10.160" />
+            <span class="host-form__hint">Hostname ou IP do banco. Ex.: <code>10.10.10.160</code> ou <code>db.empresa.local</code></span>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Porta do banco</label>
+            <input
+              class="host-form__input"
+              type="number"
+              formControlName="bancoPorta"
+              min="1"
+              max="65535"
+              placeholder="Ex: 1433"
+            />
+            <span class="host-form__hint">SQL Server: <code>1433</code> · Oracle: <code>1521</code></span>
+          </div>
+        </div>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Nome da base</label>
+            <input class="host-form__input" formControlName="bancoNome" placeholder="Ex: ACME_HML" />
+            <span class="host-form__hint">SQL Server: database. Oracle: service name. Ex.: <code>ACME_HML</code></span>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Usuário</label>
+            <input class="host-form__input" formControlName="bancoUsuario" placeholder="Ex: softon" />
+          </div>
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Referência de credencial</label>
+            <input class="host-form__input" formControlName="bancoCredencialRef" placeholder="Ex: vault://db/acme-rpa" />
+            <span class="host-form__hint">No lab pode ser a senha em texto. Ex.: <code>vault://db/acme-rpa</code></span>
+          </div>
+        </div>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">URL backend</label>
+            <input
+              class="host-form__input"
+              formControlName="urlBackend"
+              [placeholder]="'Ex: ' + exemploUrlBackend()"
+            />
+            <span class="host-form__hint">
+              Protocolo + host + porta do Tomcat. Exemplo:
+              <code>{{ exemploUrlBackend() }}</code>
+              — vira DTEC_BASE_URL e DTEC_LEGACY_PUBLIC_URL. Não use só <code>localhost</code>.
+            </span>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">URL frontend</label>
+            <input
+              class="host-form__input"
+              formControlName="urlFrontend"
+              [placeholder]="'Ex: ' + exemploUrlFrontend()"
+            />
+            <span class="host-form__hint">
+              Protocolo + host + porta da app Spring. Exemplo:
+              <code>{{ exemploUrlFrontend() }}</code>
+              — vira DTEC_APP_BASE_URL. Não use só a porta (<code>4209</code>).
+            </span>
+          </div>
+        </div>
+        <div class="host-form__field">
+          <label class="host-form__label">Parâmetros extras</label>
+          <textarea
+            class="host-form__input host-form__textarea"
+            formControlName="parametros"
+            rows="2"
+            placeholder="Chave=valor ou JSON livre desta instalação."
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="host-form__section">
+        <div class="host-form__section-head">
+          <h2 class="host-form__section-title"><lucide-icon name="Plug" [size]="16" /> Portas no host</h2>
+          <div class="host-form__section-actions">
+            <ui-button variant="secondary" type="button" icon="Sparkles" [loading]="sugerindo()" (clicked)="sugerirPortas()">
+              Sugerir livres
+            </ui-button>
+            <ui-button variant="ghost" type="button" icon="Plus" (clicked)="adicionarPorta()">Adicionar</ui-button>
+          </div>
+        </div>
+        <p class="host-form__hint">
+          Mesmo número de porta em hosts diferentes é permitido. No mesmo host + protocolo, não. Se o campo ficar
+          vazio, o portal consulta o destino (ss/netstat) e preenche a primeira porta livre — ignora as que já
+          estão em uso. Linux: Tomcat legado a partir de 8010, app Spring a partir de 4209.
+        </p>
+        @if (portasArray.length === 0) {
+          <p class="host-form__hint">Nenhuma porta reservada. Ao salvar, o portal procura uma livre no destino.</p>
+        } @else {
+          <div formArrayName="portas" class="inst-portas">
+            @for (group of portasArray.controls; track $index; let i = $index) {
+              <div class="inst-portas__row" [formGroupName]="i">
+                <select class="host-form__input" formControlName="papel">
+                  @for (p of papeisPorta; track p) {
+                    <option [value]="p">{{ papelPortaLabels[p] }}</option>
+                  }
+                </select>
+                <select class="host-form__input" formControlName="tipo">
+                  @for (t of tiposPorta; track t) {
+                    <option [value]="t">{{ tipoPortaLabels[t] }}</option>
+                  }
+                </select>
+                <input class="host-form__input" type="number" formControlName="porta" min="1" max="65535" placeholder="Porta" />
+                <select class="host-form__input" formControlName="protocolo">
+                  @for (p of protocolos; track p) {
+                    <option [value]="p">{{ protocoloLabels[p] }}</option>
+                  }
+                </select>
+                <select class="host-form__input" formControlName="status">
+                  @for (s of statusPorta; track s) {
+                    <option [value]="s">{{ statusPortaLabels[s] }}</option>
+                  }
+                </select>
+                <ui-button variant="ghost" type="button" icon="Trash2" (clicked)="removerPorta(i)" />
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="host-form__section">
+        <div class="host-form__field">
+          <textarea
+            class="host-form__input host-form__textarea"
+            formControlName="observacoes"
+            rows="3"
+            placeholder="Notas internas sobre esta instalação."
+          ></textarea>
+        </div>
+      </section>
+
+      <div class="host-form__footer ui-form-actions">
+        <ui-button variant="ghost" type="button" [routerLink]="['/release-orchestrator/instalacoes']">Cancelar</ui-button>
+        <ui-button type="submit" [loading]="salvando()">
+          {{ editando() ? 'Salvar alterações' : 'Cadastrar instalação' }}
+        </ui-button>
+      </div>
+    </form>
+
+    @if (editando()) {
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="Rocket" [size]="16" /> Implantar versão</h2>
+        @if (abasProduto().length > 0) {
+          <fieldset class="host-form__habilitar">
+            <legend class="host-form__origens-legend">Produtos a criar ou atualizar</legend>
+            <div class="host-form__habilitar-list">
+              @for (a of abasProduto(); track a.id) {
+                <label
+                  class="host-form__habilitar-item"
+                  [class.host-form__habilitar-item--on]="produtoHabilitado(a.id)"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="produtoHabilitado(a.id)"
+                    (change)="onProdutoHabilitar(a.id, $event)"
+                  />
+                  <span>
+                    <strong>{{ a.sigla }}</strong>
+                    <small>{{ rotuloAcaoAba(!!a.instalacaoId) }}</small>
+                  </span>
+                </label>
+              }
+            </div>
+          </fieldset>
+        }
+        @if (abasProdutoTabs().length > 0) {
+          <ui-tabs
+            [items]="abasProdutoTabs()"
+            [active]="abaProdutoId()"
+            (activeChange)="selecionarAbaProduto($event)"
+          />
+        }
+        <p class="host-form__hint">
+          Marque o produto para habilitar a aba: criar a instalação neste host ou atualizar a versão.
+          A aba desmarcada fica inativa.
+        </p>
+        @if (!abaHabilitada() && abasProduto().length > 0) {
+          <p class="host-form__hint">Nenhuma aba habilitada. Marque LD, CR ou outro produto acima.</p>
+        }
+
+        @if (cadastrarIrmaoDestaAba()) {
+          <p class="host-form__hint">
+            {{ abaAtual()?.label }} ainda não tem instalação neste host. Cadastre para escolher a versão
+            e criar/atualizar só este produto, sem mexer no {{ form.get('produtoId')?.value ? 'atual' : 'outro' }}.
+          </p>
+          <ui-button
+            type="button"
+            icon="Plus"
+            [loading]="criandoIrmao()"
+            [disabled]="ocupadoOperacao() || criandoIrmao()"
+            (clicked)="criarInstalacaoDaAba()"
+            >Cadastrar {{ abaAtual()?.sigla }} neste host</ui-button
+          >
+        } @else if (implantarDestaAba()) {
+        @if (fontesVersao(); as f) {
+          <fieldset class="host-form__origens">
+            <legend class="host-form__origens-legend">Versão a instalar</legend>
+            <label class="host-form__origem" [class.host-form__origem--off]="!f.versaoAtual.selecionavel">
+              <input
+                type="radio"
+                name="origem-versao"
+                [checked]="origemVersao() === 'RELEASE_ATUAL'"
+                [disabled]="!f.versaoAtual.selecionavel"
+                (change)="selecionarOrigemVersao('RELEASE_ATUAL')"
+              />
+              <span>
+                <strong>Versão atual</strong>
+                @if (f.versaoAtual.tag) {
+                  <code>{{ f.versaoAtual.tag }}</code>
+                } @else {
+                  <small>{{ f.versaoAtual.aviso }}</small>
+                }
+              </span>
+            </label>
+            <label class="host-form__origem" [class.host-form__origem--off]="!f.ultimaGerada">
+              <input
+                type="radio"
+                name="origem-versao"
+                [checked]="origemVersao() === 'ULTIMA_GERADA'"
+                [disabled]="!f.ultimaGerada"
+                (change)="selecionarOrigemVersao('ULTIMA_GERADA')"
+              />
+              <span>
+                <strong>Última gerada</strong>
+                @if (f.ultimaGerada; as u) {
+                  <code>{{ u.tag }}</code>
+                  @if (u.totalAssets != null) {
+                    <small>{{ u.totalAssets }} asset(s)</small>
+                  }
+                } @else {
+                  <small>nenhuma versão encontrada</small>
+                }
+              </span>
+            </label>
+            <label class="host-form__origem">
+              <input
+                type="radio"
+                name="origem-versao"
+                [checked]="origemVersao() === 'TAG_ESPECIFICA'"
+                (change)="selecionarOrigemVersao('TAG_ESPECIFICA')"
+              />
+              <span><strong>Tag / versão específica</strong></span>
+            </label>
+          </fieldset>
+
+          @if (origemVersao() === 'TAG_ESPECIFICA') {
+            <div class="host-form__row">
+              @if (f.tags.length > 0) {
+                <div class="host-form__field host-form__field--grow-2">
+                  <label class="host-form__label">Tag no Git</label>
+                  <select
+                    class="host-form__input"
+                    [ngModel]="tagEscolhida()"
+                    (ngModelChange)="onTagEspecificaChange($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    @for (t of f.tags; track t.tag) {
+                      <option [value]="t.tag">{{ rotuloTag(t) }}</option>
+                    }
+                  </select>
+                </div>
+              }
+              <div class="host-form__field host-form__field--grow-1">
+                <label class="host-form__label">Ou digite</label>
+                <input
+                  class="host-form__input"
+                  maxlength="80"
+                  placeholder="ex: v5.0.0"
+                  [ngModel]="tagDigitada()"
+                  (ngModelChange)="tagDigitada.set($event); atualizarPreviewDaOrigem()"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </div>
+            </div>
+          }
+
+          <p class="host-form__hint">
+            Checkout <code>{{ tagEfetiva() || '—' }}</code>
+            @if (!releaseDeployId() && tagEfetiva()) {
+              — versão em desenvolvimento
+            }
+          </p>
+          @if (f.githubErro) {
+            <p class="host-form__hint">GitHub: {{ f.githubErro }}</p>
+          }
+
+          @if (alvosBuild().length > 0) {
+            <fieldset class="host-form__alvos">
+              <legend class="host-form__origens-legend">Jobs / artefatos</legend>
+              <p class="host-form__hint">
+                Jobs iguais disparam uma vez. Quando o build terminar, o portal copia cada WAR/JAR para
+                <code>artifacts/</code> desta instalação.
+              </p>
+              @for (a of alvosBuild(); track a.id) {
+                <label class="host-form__alvo" [class.host-form__alvo--off]="!a.jenkinsJob">
+                  <input
+                    type="checkbox"
+                    [checked]="alvoMarcado(a.id)"
+                    [disabled]="!a.jenkinsJob"
+                    (change)="onAlvoChange(a.id, $event)"
+                  />
+                  <span>
+                    <strong>{{ a.produtoSigla }}</strong>
+                    {{ a.nome }}
+                    @if (a.jenkinsJob) {
+                      <code>{{ a.jenkinsJob }}</code>
+                    }
+                    @if (a.nomeArquivo) {
+                      <small>→ {{ a.nomeArquivo }}</small>
+                    }
+                  </span>
+                </label>
+              }
+            </fieldset>
+          }
+
+          @if (buildsArtefato().length > 0) {
+            <ul class="host-form__build-status">
+              @for (b of buildsArtefato(); track b.id) {
+                <li>
+                  <ui-badge [tone]="b.status === 'SUCCESS' ? 'success' : b.status === 'FAILED' ? 'danger' : 'neutral'">
+                    {{ b.status }}
+                  </ui-badge>
+                  <code>{{ b.produtoSigla }}</code>
+                  {{ b.jenkinsJob }}
+                  @if (b.mensagem) {
+                    <span class="host-form__muted"> — {{ b.mensagem }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        } @else if (carregandoFontesVersao()) {
+          <p class="host-form__hint">Carregando versões disponíveis…</p>
+        } @else if (fontesVersaoErro()) {
+          <p class="host-form__hint">{{ fontesVersaoErro() }}</p>
+        }
+
+        <div class="host-form__row">
+          @if (podeDeployar()) {
+            <div class="host-form__field host-form__field--grow-1 host-form__field--end">
+              <ui-button
+                type="button"
+                variant="secondary"
+                icon="Play"
+                [loading]="disparandoBuild()"
+                [disabled]="!origemValida() || ocupadoOperacao() || (alvosBuild().length > 0 ? !temAlvoSelecionado() : !fontesVersao()?.jenkinsConfigurado)"
+                (clicked)="dispararBuildVersao()"
+                >Gerar artefatos</ui-button
+              >
+              <ui-button
+                type="button"
+                variant="secondary"
+                icon="Play"
+                [loading]="executandoDeploy() && executandoModo() === 'DRY_RUN'"
+                [disabled]="!origemValida() || ocupadoOperacao()"
+                (clicked)="executarDeploy('DRY_RUN')"
+                >Simular</ui-button
+              >
+              @if (podeModoReal()) {
+                <ui-button
+                  type="button"
+                  icon="Rocket"
+                  [loading]="executandoDeploy() && executandoModo() === 'REAL'"
+                  [disabled]="!origemValida() || ocupadoOperacao()"
+                  (clicked)="executarDeploy('REAL')"
+                  >{{ form.get('status')?.value === 'INEXISTENTE' ? 'Criar nesta instalação' : 'Atualizar nesta instalação' }}</ui-button
+                >
+              }
+            </div>
+          }
+        </div>
+        @if (carregandoPreview()) {
+          <p class="host-form__hint">Resolvendo manifesto…</p>
+        } @else if (manifestoPreview(); as m) {
+          <div class="host-form__manifesto">
+            <strong>{{ m.resumo }}</strong>
+            @if (m.derivado) {
+              <ui-badge tone="neutral">Derivado</ui-badge>
+            } @else {
+              <ui-badge tone="info">Override da release</ui-badge>
+            }
+            @if (m.imagemRef) {
+              <code>imagem {{ m.imagemRef }}</code>
+            }
+            @if (m.arquivoImagemRef) {
+              <code>tar {{ m.arquivoImagemRef }}</code>
+            }
+            @if (m.diretorioInstalacao) {
+              <code>dir {{ m.diretorioInstalacao }}</code>
+            }
+          </div>
+        }
+        @if (deploysRecentes().length === 0) {
+          <p class="host-form__hint">Nenhuma tentativa registrada nesta instalação.</p>
+        } @else {
+          <p class="host-form__hint">Últimas {{ deploysRecentes().length }} tentativa(s).</p>
+          <table class="host-form__table">
+            <thead>
+              <tr>
+                <th>Quando</th>
+                <th>Release</th>
+                <th>Operação</th>
+                <th>Status</th>
+                <th>Operador</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of deploysRecentes(); track d.id) {
+                <tr>
+                  <td>{{ (d.createdAt || d.iniciadoEm) | date: 'dd/MM HH:mm' }}</td>
+                  <td>
+                    <code>{{ d.releaseVersao }}</code>
+                    @if (d.versaoOrigem) {
+                      <span class="host-form__muted"> de {{ d.versaoOrigem }}</span>
+                    }
+                  </td>
+                  <td>{{ operacaoDeployLabels[d.operacao] }}</td>
+                  <td>
+                    <ui-badge [tone]="statusDeployTones[d.status]">{{ statusDeployLabels[d.status] }}</ui-badge>
+                  </td>
+                  <td>{{ d.operador || '—' }}</td>
+                </tr>
+                @if (d.mensagem || d.erro) {
+                  <tr>
+                    <td colspan="5" class="host-form__muted">{{ d.erro || d.mensagem }}</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        }
+        }
+      </section>
+    }
+  }
+</div>

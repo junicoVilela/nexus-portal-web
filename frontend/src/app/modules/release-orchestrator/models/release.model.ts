@@ -73,6 +73,19 @@ export interface ReleaseForm {
   observacoes?: string;
 }
 
+export interface ReleaseDisponivelDeploy {
+  id: string | null;
+  versao: string;
+  titulo: string;
+  status: ReleaseStatus | null;
+  selecionavel: boolean;
+  noGit: boolean;
+  emAndamento: boolean;
+  rascunhoGit: boolean;
+  preReleaseGit: boolean;
+  tagGit?: string;
+}
+
 export const RELEASE_STATUS_LABELS: Record<ReleaseStatus, string> = {
   RASCUNHO: 'Rascunho',
   EM_DESENVOLVIMENTO: 'Em desenvolvimento',

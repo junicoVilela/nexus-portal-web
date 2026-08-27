@@ -54,6 +54,11 @@
         </div>
       </div>
       <div class="rf-det__actions">
+        @if (release()!.status !== 'CANCELADA') {
+          <ui-button variant="secondary" icon="Play" (clicked)="irParaArtefatos()"
+            >Gerar artefatos</ui-button
+          >
+        }
         @if (podeEditarRelease()) {
           <ui-button
             variant="secondary"
@@ -201,7 +206,47 @@
           [releaseId]="releaseId"
           [produtoId]="release()!.produtoId"
           [releaseStatus]="release()!.status"
+          (buildDisparado)="onBuildDisparado()"
         />
+      </div>
+    }
+
+    @if (activeTab() === 'manifesto') {
+      <div class="rf-det__tab-content">
+        <p class="rf-det__resumo">
+          O que cada tipo de implantação aplica nesta versão. Campos vazios são derivados da instalação no momento do
+          deploy. Dry-run ainda não altera o host.
+        </p>
+        <div class="rf-det__manifestos">
+          @for (m of manifestos(); track m.tipoImplantacao) {
+            <ui-card padding="md">
+              <h3 class="rf-det__pane-title">{{ tipoImplantacaoLabels[m.tipoImplantacao] }}</h3>
+              <p class="rf-det__resumo">{{ m.resumo }}</p>
+              <div class="rf-modal__field">
+                <label class="rf-modal__label">Imagem (Docker pull)</label>
+                <input class="rf-modal__input" [(ngModel)]="m.imagemRef" name="img-{{ m.tipoImplantacao }}" />
+              </div>
+              <div class="rf-modal__field">
+                <label class="rf-modal__label">Arquivo .tar</label>
+                <input class="rf-modal__input" [(ngModel)]="m.arquivoImagemRef" name="tar-{{ m.tipoImplantacao }}" />
+              </div>
+              <div class="rf-modal__field">
+                <label class="rf-modal__label">Diretório</label>
+                <input class="rf-modal__input" [(ngModel)]="m.diretorioInstalacao" name="dir-{{ m.tipoImplantacao }}" />
+              </div>
+              @if (podeEditarManifesto()) {
+                <ui-button
+                  variant="secondary"
+                  size="sm"
+                  icon="Save"
+                  [loading]="salvandoManifestoTipo() === m.tipoImplantacao"
+                  (clicked)="salvarManifesto(m)"
+                  >Salvar tipo</ui-button
+                >
+              }
+            </ui-card>
+          }
+        </div>
       </div>
     }
 

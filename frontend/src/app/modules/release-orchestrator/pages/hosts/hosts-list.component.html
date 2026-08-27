@@ -1,0 +1,156 @@
+<div class="host-list">
+  <ui-page-header title="Hosts" subtitle="Máquinas de execução das instalações do produto por cliente" icon="Server">
+    <div actions>
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/hosts/novo']">Novo host</ui-button>
+    </div>
+  </ui-page-header>
+
+  @if (erro()) {
+    <ui-error-state [variant]="erroVariant()" [description]="erro()" retryLabel="Recarregar" (retry)="carregar()" />
+  }
+
+  <div class="host-list__filter">
+    <input
+      class="host-list__search"
+      type="text"
+      placeholder="Buscar por código, nome, hostname ou IP…"
+      [(ngModel)]="filtros.q"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onBuscaInput()"
+    />
+    <select
+      class="host-list__status"
+      [(ngModel)]="filtros.ativo"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onFiltroChange()"
+    >
+      <option value="todos">Todos</option>
+      <option value="ativos">Apenas ativos</option>
+      <option value="inativos">Apenas inativos</option>
+    </select>
+    <select
+      class="host-list__status"
+      [(ngModel)]="filtros.so"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onFiltroChange()"
+    >
+      <option value="todos">SO: todos</option>
+      <option value="WINDOWS">Windows</option>
+      <option value="LINUX">Linux</option>
+    </select>
+    <select
+      class="host-list__status"
+      [(ngModel)]="filtros.docker"
+      [ngModelOptions]="{ standalone: true }"
+      (ngModelChange)="onFiltroChange()"
+    >
+      <option value="todos">Docker: todos</option>
+      <option value="sim">Com Docker</option>
+      <option value="nao">Sem Docker</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div aria-busy="true" aria-label="Carregando hosts">
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+      <ui-skeleton width="100%" height="48px" />
+    </div>
+  } @else if (hosts().length === 0) {
+    <ui-empty-state
+      icon="Server"
+      illustration="document"
+      title="Nenhum host encontrado"
+      description="Cadastre o primeiro host Windows, Linux ou destinado a Docker."
+    >
+      <ui-button icon="Plus" [routerLink]="['/release-orchestrator/hosts/novo']">Cadastrar host</ui-button>
+    </ui-empty-state>
+  } @else {
+    <div class="host-list__table-wrap ui-table-scroll">
+      <table class="host-list__table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Hostname</th>
+            <th>SO</th>
+            <th>Conexão</th>
+            <th>Docker</th>
+            <th>Status</th>
+            <th class="host-list__col-actions">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (h of hosts(); track h.id) {
+            <tr [class.host-list__row--inativo]="!h.ativo">
+              <td>
+                <code class="host-list__sigla">{{ h.codigo }}</code>
+              </td>
+              <td>
+                <a class="host-list__nome-link" [routerLink]="['/release-orchestrator/hosts', h.id, 'editar']">{{
+                  h.nome
+                }}</a>
+                @if (h.enderecoIp) {
+                  <div class="host-list__razao">{{ h.enderecoIp }}</div>
+                }
+              </td>
+              <td>{{ h.hostname }}</td>
+              <td>
+                <span class="host-list__ambiente">{{ soLabels[h.sistemaOperacional] }}</span>
+              </td>
+              <td>{{ conexaoLabels[h.tipoConexao] }}:{{ h.portaConexao ?? '—' }}</td>
+              <td>
+                <ui-badge [tone]="h.dockerDisponivel ? 'info' : 'neutral'" [dot]="true">{{
+                  h.dockerDisponivel ? 'Sim' : 'Não'
+                }}</ui-badge>
+              </td>
+              <td>
+                <ui-badge [tone]="h.ativo ? 'success' : 'neutral'" [dot]="true">{{
+                  h.ativo ? 'Ativo' : 'Inativo'
+                }}</ui-badge>
+              </td>
+              <td class="host-list__col-actions">
+                <ui-button
+                  variant="secondary"
+                  size="sm"
+                  icon="Pencil"
+                  [routerLink]="['/release-orchestrator/hosts', h.id, 'editar']"
+                  >Editar</ui-button
+                >
+                <ui-button variant="ghost" size="sm" [icon]="h.ativo ? 'EyeOff' : 'Eye'" (clicked)="toggleAtivo(h)">{{
+                  h.ativo ? 'Inativar' : 'Ativar'
+                }}</ui-button>
+                @if (excluindoId() === h.id) {
+                  <ui-button variant="danger" size="sm" icon="Check" (clicked)="excluir(h)" />
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="excluindoId.set(null)" />
+                } @else {
+                  <ui-button variant="danger" size="sm" icon="Trash2" (clicked)="excluindoId.set(h.id)" />
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <div class="host-list__pagination">
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronLeft"
+          [disabled]="page() === 1"
+          (clicked)="irParaPagina(page() - 1)"
+        />
+        <span class="host-list__paginfo">Página {{ page() }} de {{ totalPaginas() }}</span>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          icon="ChevronRight"
+          [disabled]="page() === totalPaginas()"
+          (clicked)="irParaPagina(page() + 1)"
+        />
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,140 @@
+<div class="host-form">
+  <ui-page-header
+    [title]="editando() ? 'Editar host' : 'Novo host'"
+    subtitle="Windows, Linux ou máquina destinada à execução Docker"
+    icon="Server"
+  >
+    <div actions>
+      <a class="host-form__back" [routerLink]="['/release-orchestrator/hosts']">
+        <lucide-icon name="ArrowLeft" [size]="14" /> Voltar
+      </a>
+    </div>
+  </ui-page-header>
+
+  @if (carregando()) {
+    <p class="host-form__loading">Carregando host…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="host-form__body">
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="FileText" [size]="16" /> Identificação</h2>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Código <span class="host-form__req">*</span></label>
+            <input
+              class="host-form__input host-form__input--upper"
+              formControlName="codigo"
+              placeholder="Ex: SRV-WIN-01"
+              maxlength="40"
+              [class.host-form__input--err]="fieldError('codigo')"
+            />
+            @if (fieldError('codigo')) {
+              <span class="host-form__err">Código obrigatório (letras, números e hífen)</span>
+            }
+          </div>
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Nome <span class="host-form__req">*</span></label>
+            <input
+              class="host-form__input"
+              formControlName="nome"
+              placeholder="Ex: Servidor Windows 01"
+              [class.host-form__input--err]="fieldError('nome')"
+            />
+            @if (fieldError('nome')) {
+              <span class="host-form__err">Nome é obrigatório</span>
+            }
+          </div>
+        </div>
+
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Hostname <span class="host-form__req">*</span></label>
+            <input
+              class="host-form__input"
+              formControlName="hostname"
+              placeholder="Ex: srv-windows-01.nexus.local"
+              [class.host-form__input--err]="fieldError('hostname')"
+            />
+            @if (fieldError('hostname')) {
+              <span class="host-form__err">Hostname é obrigatório</span>
+            }
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Endereço IP</label>
+            <input class="host-form__input" formControlName="enderecoIp" placeholder="Ex: 10.0.0.12" />
+          </div>
+        </div>
+
+        <label class="host-form__check">
+          <input type="checkbox" formControlName="ativo" />
+          <span>Host ativo</span>
+        </label>
+      </section>
+
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="Server" [size]="16" /> Sistema e conexão</h2>
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Sistema operacional <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="sistemaOperacional" (change)="onSistemaChange()">
+              @for (so of sistemas; track so) {
+                <option [value]="so">{{ soLabels[so] }}</option>
+              }
+            </select>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Tipo de conexão <span class="host-form__req">*</span></label>
+            <select class="host-form__input" formControlName="tipoConexao" (change)="onTipoConexaoChange()">
+              @for (t of conexoes; track t) {
+                <option [value]="t">{{ conexaoLabels[t] }}</option>
+              }
+            </select>
+          </div>
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Porta</label>
+            <input class="host-form__input" type="number" formControlName="portaConexao" min="1" max="65535" />
+          </div>
+        </div>
+
+        <div class="host-form__row">
+          <div class="host-form__field host-form__field--grow-1">
+            <label class="host-form__label">Usuário de conexão</label>
+            <input class="host-form__input" formControlName="usuarioConexao" placeholder="Ex: nexus-deploy" />
+          </div>
+          <div class="host-form__field host-form__field--grow-2">
+            <label class="host-form__label">Referência de credencial</label>
+            <input
+              class="host-form__input"
+              formControlName="credencialRef"
+              placeholder="Ex: vault://hosts/srv-win-01"
+            />
+            <span class="host-form__hint">Não informe senha. Use a referência do cofre.</span>
+          </div>
+        </div>
+
+        <label class="host-form__check">
+          <input type="checkbox" formControlName="dockerDisponivel" />
+          <span>Host destinado à execução Docker</span>
+        </label>
+      </section>
+
+      <section class="host-form__section">
+        <h2 class="host-form__section-title"><lucide-icon name="MessageSquare" [size]="16" /> Observações</h2>
+        <div class="host-form__field">
+          <textarea
+            class="host-form__input host-form__textarea"
+            formControlName="observacoes"
+            rows="3"
+            placeholder="Notas internas sobre este host."
+          ></textarea>
+        </div>
+      </section>
+
+      <div class="host-form__footer ui-form-actions">
+        <ui-button variant="ghost" type="button" [routerLink]="['/release-orchestrator/hosts']">Cancelar</ui-button>
+        <ui-button type="submit" [loading]="salvando()">
+          {{ editando() ? 'Salvar alterações' : 'Cadastrar host' }}
+        </ui-button>
+      </div>
+    </form>
+  }
+</div>

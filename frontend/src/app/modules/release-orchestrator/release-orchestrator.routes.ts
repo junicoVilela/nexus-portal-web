@@ -83,6 +83,42 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
           ),
       },
       {
+        path: 'hosts',
+        loadComponent: () => import('./pages/hosts/hosts-list.component').then(m => m.HostsListComponent),
+      },
+      {
+        path: 'hosts/novo',
+        loadComponent: () => import('./pages/hosts/host-form.component').then(m => m.HostFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'hosts/:id/editar',
+        loadComponent: () => import('./pages/hosts/host-form.component').then(m => m.HostFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'instalacoes',
+        loadComponent: () =>
+          import('./pages/instalacoes/instalacoes-list.component').then(m => m.InstalacoesListComponent),
+      },
+      {
+        path: 'instalacoes/novo',
+        loadComponent: () =>
+          import('./pages/instalacoes/instalacao-form.component').then(m => m.InstalacaoFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'instalacoes/:id/editar',
+        loadComponent: () =>
+          import('./pages/instalacoes/instalacao-form.component').then(m => m.InstalacaoFormComponent),
+        canDeactivate: [canDeactivateGuard],
+      },
+      {
+        path: 'instalacoes/:id',
+        redirectTo: 'instalacoes/:id/editar',
+        pathMatch: 'full',
+      },
+      {
         path: 'proximas-entregas',
         loadComponent: () =>
           import('./pages/proximas-entregas/proximas-entregas-list.component').then(
@@ -120,9 +156,7 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
       {
         path: 'entregas/:id/delta',
         loadComponent: () =>
-          import('./pages/entregas/entrega-delta/entrega-delta.component').then(
-            m => m.EntregaDeltaComponent,
-          ),
+          import('./pages/entregas/entrega-delta/entrega-delta.component').then(m => m.EntregaDeltaComponent),
       },
       {
         path: 'entregas/:id',
@@ -138,8 +172,7 @@ export const RELEASE_ORCHESTRATOR_ROUTES: Routes = [
       },
       {
         path: 'guia',
-        loadComponent: () =>
-          import('./pages/guia/rf-guia.component').then(m => m.RfGuiaComponent),
+        loadComponent: () => import('./pages/guia/rf-guia.component').then(m => m.RfGuiaComponent),
       },
     ],
   },

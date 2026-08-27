@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, computed, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
@@ -11,6 +11,7 @@ import {
   ErrorStateComponent,
   ErrorVariant,
   SkeletonComponent,
+  ToastService,
 } from '@shared/ui';
 import { classificarErro } from '@shared/utils/error-classifier';
 
@@ -24,6 +25,13 @@ import {
 import { ArtefatoReleaseModuloService } from '../../../../services/artefato-release-modulo.service';
 import { ModuloProdutoService } from '../../../../services/modulo-produto.service';
 import { ReleaseModuloVersaoService } from '../../../../services/release-modulo-versao.service';
+import {
+  FontesBuild,
+  OrigemBuild,
+  ReleaseService,
+  versaoPortalDaTag,
+} from '../../../../services/release.service';
+import { AuthService } from '@core/auth/services/auth.service';
 
 interface ModuloComArtefatos {
   modulo: ModuloProduto;
@@ -56,15 +64,48 @@ export class ArtefatosTabComponent implements OnChanges {
   readonly releaseId = input.required<string>();
   readonly produtoId = input.required<string>();
   readonly releaseStatus = input<string>('');
+  readonly buildDisparado = output<void>();
 
   private readonly moduloService = inject(ModuloProdutoService);
   private readonly artefatoService = inject(ArtefatoReleaseModuloService);
   private readonly versaoService = inject(ReleaseModuloVersaoService);
+  private readonly releaseService = inject(ReleaseService);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
 
   protected readonly loading = signal(true);
   protected readonly erro = signal<string | null>(null);
   protected readonly erroVariant = signal<ErrorVariant>('generic');
   protected readonly grupos = signal<ModuloComArtefatos[]>([]);
+
+  protected readonly fontes = signal<FontesBuild | null>(null);
+  protected readonly fontesErro = signal<string | null>(null);
+  protected readonly origem = signal<OrigemBuild>('RELEASE_ATUAL');
+  protected readonly tagEscolhida = signal('');
+  protected readonly tagDigitada = signal('');
+  protected readonly disparando = signal(false);
+
+  protected readonly podeDisparar = computed(() => {
+    return this.auth.tem()('RELEASE:EDITAR') && this.releaseStatus() !== 'CANCELADA';
+  });
+
+  protected readonly tagEfetiva = computed(() => {
+    const f = this.fontes();
+    if (!f) return '';
+    const origem = this.origem();
+    if (origem === 'RELEASE_ATUAL') return f.releaseAtual?.tag ?? '';
+    if (origem === 'ULTIMA_GERADA') return f.ultimaGerada?.tag ?? '';
+    return (this.tagDigitada().trim() || this.tagEscolhida()).trim();
+  });
+
+  protected readonly versaoEfetiva = computed(() => versaoPortalDaTag(this.tagEfetiva()));
+
+  protected readonly avisoVersaoDiferente = computed(() => {
+    const f = this.fontes();
+    const versao = this.versaoEfetiva();
+    if (!f || !versao) return false;
+    return versao !== f.versaoRelease.replace(/^v/i, '');
+  });
 
   protected readonly imutavel = computed(() => {
     const s = this.releaseStatus();
@@ -74,7 +115,47 @@ export class ArtefatosTabComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['releaseId'] || changes['produtoId']) && this.releaseId() && this.produtoId()) {
       this.carregar();
+      this.carregarFontes();
     }
+  }
+
+  protected selecionarOrigem(origem: OrigemBuild): void {
+    this.origem.set(origem);
+  }
+
+  protected carregarFontes(): void {
+    this.fontesErro.set(null);
+    this.releaseService.listarFontesBuild(this.releaseId()).subscribe({
+      next: f => {
+        this.fontes.set(f);
+        if (!this.tagEscolhida() && f.tags?.length) {
+          this.tagEscolhida.set(f.tags[0].tag);
+        }
+      },
+      error: () => {
+        this.fontesErro.set('Não foi possível carregar as opções de tag/Jenkins.');
+      },
+    });
+  }
+
+  protected dispararBuild(): void {
+    if (!this.podeDisparar() || this.disparando()) return;
+    const origem = this.origem();
+    const tag = origem === 'TAG_ESPECIFICA' ? this.tagEfetiva() : undefined;
+    if (origem === 'TAG_ESPECIFICA' && !tag) {
+      this.toast.error('Escolha ou digite a tag Git.');
+      return;
+    }
+    this.disparando.set(true);
+    this.releaseService.dispararBuild(this.releaseId(), { origem, tag }).subscribe({
+      next: r => {
+        this.disparando.set(false);
+        this.toast.success(`Build enfileirado no Jenkins (${r.tag}).`);
+        if (r.aviso) this.toast.info(r.aviso);
+        this.buildDisparado.emit();
+      },
+      error: () => this.disparando.set(false),
+    });
   }
 
   protected carregar(): void {

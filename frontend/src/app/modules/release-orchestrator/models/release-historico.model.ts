@@ -11,7 +11,8 @@ export type AcaoHistorico =
   | 'REABERTA'
   | 'DUPLICADA'
   | 'PDF_GERADO'
-  | 'ENVIADA_CLIENTE';
+  | 'ENVIADA_CLIENTE'
+  | 'BUILD_DISPARADO';
 
 export interface ReleaseHistorico {
   id: string;
@@ -38,6 +39,7 @@ export const ACAO_HISTORICO_LABELS: Record<AcaoHistorico, string> = {
   DUPLICADA: 'Release duplicada',
   PDF_GERADO: 'PDF gerado',
   ENVIADA_CLIENTE: 'Enviada ao cliente',
+  BUILD_DISPARADO: 'Build Jenkins disparado',
 };
 
 export const ACAO_HISTORICO_ICONES: Record<AcaoHistorico, string> = {
@@ -54,6 +56,7 @@ export const ACAO_HISTORICO_ICONES: Record<AcaoHistorico, string> = {
   DUPLICADA: 'pi-copy',
   PDF_GERADO: 'pi-file-pdf',
   ENVIADA_CLIENTE: 'pi-envelope',
+  BUILD_DISPARADO: 'pi-play',
 };
 
 export const ACAO_HISTORICO_ICONES_LUCIDE: Record<AcaoHistorico, string> = {
@@ -70,6 +73,7 @@ export const ACAO_HISTORICO_ICONES_LUCIDE: Record<AcaoHistorico, string> = {
   DUPLICADA: 'Copy',
   PDF_GERADO: 'FileText',
   ENVIADA_CLIENTE: 'ExternalLink',
+  BUILD_DISPARADO: 'Play',
 };
 
 export const ACAO_HISTORICO_TONS: Record<AcaoHistorico, 'neutral' | 'success' | 'warn' | 'danger' | 'info'> =
@@ -87,4 +91,5 @@ export const ACAO_HISTORICO_TONS: Record<AcaoHistorico, 'neutral' | 'success' | 
     DUPLICADA: 'neutral',
     PDF_GERADO: 'neutral',
     ENVIADA_CLIENTE: 'info',
+    BUILD_DISPARADO: 'info',
   };

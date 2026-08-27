@@ -236,6 +236,29 @@
   opacity: 0.55;
 }
 
+.ent-det__hint {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ent-det__hist {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ent-det__hist li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  font-size: 13px;
+}
+
 @media (max-width: 768px) {
   .ent-det {
     padding: var(--page-block) var(--page-gutter);

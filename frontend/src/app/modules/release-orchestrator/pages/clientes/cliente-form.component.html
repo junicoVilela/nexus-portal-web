@@ -108,6 +108,46 @@
         </div>
       </section>
 
+      <section class="cli-form__section">
+        <h2 class="cli-form__section-title"><lucide-icon name="Package" [size]="16" /> Produtos e módulos</h2>
+        <p class="cli-form__hint">
+          Marque o que este cliente usa. Na instalação isso vira uma aba por produto (LD, CR…),
+          cada uma com versão e implantar independentes.
+        </p>
+        @if (produtosCatalogo().length === 0) {
+          <p class="cli-form__hint">Nenhum produto ativo no catálogo.</p>
+        } @else {
+          <div class="cli-form__produtos">
+            @for (p of produtosCatalogo(); track p.id) {
+              <div class="cli-form__produto">
+                <label class="cli-form__check">
+                  <input
+                    type="checkbox"
+                    [checked]="produtoMarcado(p.id)"
+                    (change)="onProdutoCheck(p.id, $event)"
+                  />
+                  <span><strong>{{ p.sigla }}</strong> — {{ p.nome }}</span>
+                </label>
+                @if (produtoMarcado(p.id) && modulosDoProduto(p.id).length > 0) {
+                  <div class="cli-form__modulos">
+                    @for (m of modulosDoProduto(p.id); track m.id) {
+                      <label class="cli-form__check cli-form__check--nested">
+                        <input
+                          type="checkbox"
+                          [checked]="moduloMarcado(p.id, m.id)"
+                          (change)="onModuloCheck(p.id, m.id, $event)"
+                        />
+                        <span>{{ m.nome }} <code>{{ m.codigo }}</code></span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+
       <!-- Seção: Contatos -->
       <section class="cli-form__section">
         <div class="cli-form__section-head">

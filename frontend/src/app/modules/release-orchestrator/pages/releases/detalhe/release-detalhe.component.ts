@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import { DatePipe, SlicePipe } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -39,11 +39,15 @@ import {
   SkeletonComponent,
   TabItem,
   TabsComponent,
+  ToastService,
 } from '@shared/ui';
+import { AuthService } from '@core/auth/services/auth.service';
 import { classificarErro } from '@shared/utils/error-classifier';
 import { ReleaseStatusBadgeComponent } from '../../../components/release-status-badge';
 import { HistoricoTimelineComponent } from '../../../components/historico-timeline';
 import { ArtefatosTabComponent } from './artefatos-tab/artefatos-tab.component';
+import { ManifestoImplantacao } from '../../../models/deploy-instalacao.model';
+import { TIPO_IMPLANTACAO_LABELS } from '../../../models/instalacao-cliente.model';
 
 @Component({
   selector: 'app-release-detalhe',
@@ -52,6 +56,7 @@ import { ArtefatosTabComponent } from './artefatos-tab/artefatos-tab.component';
     DatePipe,
     SlicePipe,
     ReactiveFormsModule,
+    FormsModule,
     RouterLink,
     LucideAngularModule,
     DragDropModule,
@@ -83,10 +88,11 @@ export class ReleaseDetalheComponent implements OnInit {
   protected readonly editItemId = signal<string | null>(null);
   protected itemForm!: FormGroup;
 
-  protected readonly activeTab = signal<'itens' | 'artefatos' | 'historico'>('itens');
-  protected readonly tabsConfig = computed<TabItem<'itens' | 'artefatos' | 'historico'>[]>(() => [
+  protected readonly activeTab = signal<'itens' | 'artefatos' | 'manifesto' | 'historico'>('itens');
+  protected readonly tabsConfig = computed<TabItem<'itens' | 'artefatos' | 'manifesto' | 'historico'>[]>(() => [
     { id: 'itens', label: 'Itens', icon: 'List', count: this.itens().length },
     { id: 'artefatos', label: 'Artefatos', icon: 'Boxes' },
+    { id: 'manifesto', label: 'Manifesto', icon: 'Rocket' },
     { id: 'historico', label: 'Histórico', icon: 'Clock' },
   ]);
 
@@ -106,6 +112,10 @@ export class ReleaseDetalheComponent implements OnInit {
     VISIBILIDADE_ITEM_LABELS,
   ) as (keyof typeof VISIBILIDADE_ITEM_LABELS)[];
 
+  protected readonly manifestos = signal<ManifestoImplantacao[]>([]);
+  protected readonly salvandoManifestoTipo = signal<string | null>(null);
+  protected readonly tipoImplantacaoLabels = TIPO_IMPLANTACAO_LABELS;
+  protected readonly podeEditarManifesto = computed(() => this.auth.tem()('RELEASE:EDITAR'));
   protected readonly podeEditarRelease = computed(() => {
     const rel = this.release();
     return rel ? podeEditar(rel.status) : false;
@@ -133,6 +143,8 @@ export class ReleaseDetalheComponent implements OnInit {
     private readonly releaseService: ReleaseService,
     private readonly itemService: ReleaseItemService,
     private readonly pdfService: ReleasePdfService,
+    private readonly auth: AuthService,
+    private readonly toast: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +156,7 @@ export class ReleaseDetalheComponent implements OnInit {
       this.loading.set(false);
       this.carregarItens();
       this.carregarHistorico();
+      this.carregarManifestos();
     } else {
       this.carregar();
     }
@@ -173,6 +186,7 @@ export class ReleaseDetalheComponent implements OnInit {
         this.release.set(rel);
         this.carregarItens();
         this.carregarHistorico();
+        this.carregarManifestos();
       },
       error: err => {
         this.erroVariant.set(classificarErro(err));
@@ -203,6 +217,38 @@ export class ReleaseDetalheComponent implements OnInit {
       next: h => this.historico.set(h),
       error: () => this.historico.set([]),
     });
+  }
+
+  private carregarManifestos(): void {
+    this.releaseService.listarManifestos(this.releaseId).subscribe({
+      next: m => this.manifestos.set(m.map(item => ({ ...item }))),
+      error: () => this.manifestos.set([]),
+    });
+  }
+
+  protected salvarManifesto(m: ManifestoImplantacao): void {
+    this.salvandoManifestoTipo.set(m.tipoImplantacao);
+    this.releaseService
+      .salvarManifesto(this.releaseId, {
+        tipoImplantacao: m.tipoImplantacao,
+        imagemRef: m.imagemRef || undefined,
+        arquivoImagemRef: m.arquivoImagemRef || undefined,
+        diretorioInstalacao: m.diretorioInstalacao || undefined,
+        observacoes: m.observacoes || undefined,
+      })
+      .subscribe({
+        next: saved => {
+          this.manifestos.update(list =>
+            list.map(item => (item.tipoImplantacao === saved.tipoImplantacao ? { ...saved } : item)),
+          );
+          this.salvandoManifestoTipo.set(null);
+          this.toast.success('Manifesto salvo para ' + this.tipoImplantacaoLabels[m.tipoImplantacao] + '.');
+        },
+        error: () => {
+          this.salvandoManifestoTipo.set(null);
+          this.toast.error('Não foi possível salvar o manifesto.');
+        },
+      });
   }
 
   protected abrirNovoItem(): void {
@@ -286,6 +332,18 @@ export class ReleaseDetalheComponent implements OnInit {
     if (!rel) return;
     const nome = `${rel.produtoSigla}-${rel.versao}-${tipo.toLowerCase()}.pdf`;
     this.pdfService.download(this.releaseId, tipo, nome);
+  }
+
+  protected irParaArtefatos(): void {
+    this.activeTab.set('artefatos');
+  }
+
+  protected onBuildDisparado(): void {
+    this.releaseService.buscarPorId(this.releaseId).subscribe({
+      next: rel => this.release.set(rel),
+      error: () => undefined,
+    });
+    this.carregarHistorico();
   }
 
   protected irParaRevisao(): void {
