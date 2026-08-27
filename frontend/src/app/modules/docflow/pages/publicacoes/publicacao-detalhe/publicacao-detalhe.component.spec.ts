@@ -17,6 +17,7 @@ describe('PublicacaoDetalheComponent', () => {
     clienteId: 'c1',
     clienteNome: 'Cliente',
     status: 'SUCESSO',
+  cancelamentoSolicitado: false,
     quantidadePaginas: 2,
     quantidadeModulos: 1,
     createdAt: '2026-01-01T00:00:00Z',

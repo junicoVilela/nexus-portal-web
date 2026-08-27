@@ -1,11 +1,14 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { environment } from '@env/environment';
 import { PublicacaoService } from './publicacao.service';
-import { Publicacao } from '../models/publicacao.model';
+import { Publicacao, PublicacaoDiff } from '../models/publicacao.model';
 
 const BASE = '/api/doc-flow';
 const GENERATED_BASE = '/api/v1/docflow';
+// Endpoints chamados via HttpClient usam environment.apiUrl.
+const BASE_API = environment.apiUrl;
 
 describe('PublicacaoService', () => {
   let service: PublicacaoService;
@@ -168,5 +171,53 @@ describe('PublicacaoService', () => {
       { id: 'pai', titulo: 'Operações', ordem: 1, nivel: 0 },
       { id: 'filho', parentId: 'pai', titulo: 'Lista', ordem: 2, nivel: 1 },
     ]);
+  }));
+
+  it('cancelarPublicacao() posta em /publicacoes/:id/cancelar', fakeAsync(() => {
+    let resultado: Publicacao | undefined;
+    service.cancelarPublicacao('p1').subscribe(item => (resultado = item));
+    tick();
+    const req = http.expectOne(`${BASE_API}/publicacoes/p1/cancelar`);
+    expect(req.request.method).toBe('POST');
+    req.flush({ id: 'p1', status: 'GERANDO', cancelamentoSolicitado: true });
+    tick();
+    expect(resultado?.cancelamentoSolicitado).toBe(true);
+  }));
+
+  it('mapearPublicacao() assume false quando a API não manda cancelamentoSolicitado', fakeAsync(() => {
+    let resultado: Publicacao | undefined;
+    service.publicacaoPorId('p1').subscribe(item => (resultado = item));
+    tick();
+    http.expectOne(`${GENERATED_BASE}/publicacoes/p1`).flush({ id: 'p1' });
+    tick();
+    expect(resultado?.cancelamentoSolicitado).toBe(false);
+  }));
+
+  it('diffPublicacao() sem comparadaCom não envia o parâmetro', fakeAsync(() => {
+    service.diffPublicacao('p1').subscribe();
+    tick();
+    const req = http.expectOne(r => r.url === `${BASE_API}/publicacoes/p1/diff`);
+    expect(req.request.params.has('comparadaCom')).toBe(false);
+    req.flush({ publicacaoId: 'p1', versao: '2.0.0', comparadaComId: 'p0', versaoComparada: '1.0.0' });
+    tick();
+  }));
+
+  it('diffPublicacao() repassa comparadaCom e normaliza a resposta', fakeAsync(() => {
+    let resultado: PublicacaoDiff | undefined;
+    service.diffPublicacao('p1', 'p0').subscribe(item => (resultado = item));
+    tick();
+    const req = http.expectOne(r => r.url === `${BASE_API}/publicacoes/p1/diff`);
+    expect(req.request.params.get('comparadaCom')).toBe('p0');
+    req.flush({
+      publicacaoId: 'p1',
+      versao: '2.0.0',
+      comparadaComId: 'p0',
+      versaoComparada: '1.0.0',
+      totaisPorMudanca: { ALTERADA: 2 },
+      itens: [{ paginaId: 'x', titulo: 'Login', codigoTela: 'LOG', mudanca: 'ALTERADA' }],
+    });
+    tick();
+    expect(resultado?.totaisPorMudanca.ALTERADA).toBe(2);
+    expect(resultado?.itens.length).toBe(1);
   }));
 });

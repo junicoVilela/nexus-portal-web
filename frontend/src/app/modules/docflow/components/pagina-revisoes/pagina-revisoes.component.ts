@@ -29,6 +29,7 @@ export class PaginaRevisoesComponent {
     ARQUIVAMENTO: 'Arquivamento',
     DUPLICACAO: 'Duplicação',
     COMENTARIO: 'Comentário editorial',
+    ATRIBUICAO_REVISOR: 'Atribuição de revisor',
   };
   readonly revisoes = input.required<PaginaRevisao[]>();
   readonly totalRevisoes = input.required<number>();

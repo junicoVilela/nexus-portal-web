@@ -25,12 +25,24 @@
           Baixar PDF do manual
         </ui-button>
       }
+      @if (podeCancelar()) {
+        <ui-button
+          variant="danger"
+          size="sm"
+          icon="CircleX"
+          [loading]="cancelando()"
+          (clicked)="cancelar()"
+          *appPermissao="'PUBLICACAO:EDITAR'"
+        >
+          Cancelar geração
+        </ui-button>
+      }
       <ui-button variant="ghost" size="sm" icon="Printer" (clicked)="imprimir()">Imprimir</ui-button>
     </div>
   </ui-page-header>
 
   @if (publicacao()) {
-    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="activeTab.set($event)" />
+    <ui-tabs [items]="tabsConfig()" [active]="activeTab()" (activeChange)="selecionarTab($event)" />
 
     @switch (activeTab()) {
       @case ('visao-geral') {
@@ -51,6 +63,12 @@
             >
           </div>
           <p class="pub-det__meta">{{ publicacao()!.createdAt | date: 'short' }} — {{ publicacao()!.createdBy }}</p>
+
+          @if (publicacao()!.cancelamentoSolicitado) {
+            <div class="df-form__msg df-form__msg--warn pub-det__obs">
+              Cancelamento solicitado. A geração termina a etapa atual e o pacote é descartado.
+            </div>
+          }
 
           @if (publicacao()!.status === 'ERRO' && publicacao()!.observacao) {
             <div class="df-form__msg df-form__msg--err pub-det__obs">{{ publicacao()!.observacao }}</div>
@@ -123,6 +141,68 @@
           }
         </ui-card>
       }
+      @case ('comparar') {
+        <ui-card padding="md">
+          @if (carregandoDiff()) {
+            <p class="pub-det__empty">Comparando com a publicação anterior…</p>
+          } @else if (erroDiff()) {
+            <p class="pub-det__empty">{{ erroDiff() }}</p>
+          } @else if (diff()) {
+            <p class="pub-det__meta">
+              Comparando <strong>{{ diff()!.versao }}</strong> com
+              <strong>{{ diff()!.versaoComparada }}</strong>.
+            </p>
+
+            <div class="pub-det__status-row u-mt-16">
+              @for (mudanca of mudancasRelevantes; track mudanca) {
+                @if (totalDaMudanca(mudanca)) {
+                  <ui-badge
+                    [tone]="
+                      mudanca === 'ADICIONADA'
+                        ? 'success'
+                        : mudanca === 'REMOVIDA'
+                          ? 'danger'
+                          : mudanca === 'ALTERADA'
+                            ? 'warn'
+                            : 'neutral'
+                    "
+                    >{{ mudanca }}: {{ totalDaMudanca(mudanca) }}</ui-badge
+                  >
+                }
+              }
+              @if (totalDaMudanca('INALTERADA')) {
+                <ui-badge tone="neutral">Sem mudança: {{ totalDaMudanca('INALTERADA') }}</ui-badge>
+              }
+            </div>
+
+            @for (mudanca of mudancasRelevantes; track mudanca) {
+              @if (itensDaMudanca(mudanca).length) {
+                <h4 class="pub-det__section-title u-mt-16">{{ mudanca }}</h4>
+                <ul class="pub-det__list">
+                  @for (item of itensDaMudanca(mudanca); track item.paginaId) {
+                    <li>
+                      {{ item.titulo }}
+                      @if (item.codigoTela) {
+                        <span class="pub-det__meta"> · {{ item.codigoTela }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            }
+
+            @if (totalDaMudanca('INDETERMINADA')) {
+              <p class="pub-det__hint u-mt-16">
+                Páginas marcadas como INDETERMINADA vêm de uma publicação gerada antes do
+                registro de conteúdo por página — não dá para afirmar se mudaram.
+              </p>
+            }
+          } @else {
+            <p class="pub-det__empty">Nada para comparar.</p>
+          }
+        </ui-card>
+      }
+
       @case ('downloads') {
         <ui-card padding="md">
           <h3 class="pub-det__section-title">Artefatos disponíveis</h3>

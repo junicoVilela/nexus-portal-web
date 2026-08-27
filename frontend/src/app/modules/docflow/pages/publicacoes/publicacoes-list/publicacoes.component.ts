@@ -56,6 +56,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
   protected readonly loadingHistory = signal(false);
   protected readonly excluindoId = signal<string | null>(null);
   protected readonly statusFiltro = signal<Publicacao['status'] | ''>('');
+  protected readonly cancelandoId = signal<string | null>(null);
   protected readonly reprocessandoFalhas = signal(false);
   protected readonly publicacoesVisiveis = computed(() => this.publicacoes());
   protected readonly falhasVisiveis = computed(() =>
@@ -83,7 +84,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
       this.publicacaoSort = params.get('sort') ?? persistidos?.sort ?? 'createdAt';
       this.publicacaoDir = parseSortDirection(params.get('dir') ?? persistidos?.dir ?? null, 'DESC');
       const status = params.get('status');
-      this.statusFiltro.set(status === 'GERANDO' || status === 'SUCESSO' || status === 'ERRO' ? status : '');
+      this.statusFiltro.set(this.ehStatusValido(status) ? status : '');
       this.publicacoesPage.set(parsePositiveInt(params.get('page'), 1));
       this.publicacoesPageSize.set(parsePositiveInt(params.get('size'), persistidos?.pageSize ?? 10));
       this.carregar();
@@ -152,6 +153,31 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
     return item.status === 'SUCESSO' && !!item.arquivoZipNome;
   }
 
+  /** Só há o que cancelar enquanto gera e sem pedido já registrado. */
+  podeCancelar(item: Publicacao): boolean {
+    return item.status === 'GERANDO' && !item.cancelamentoSolicitado;
+  }
+
+  cancelar(item: Publicacao): void {
+    if (!this.podeCancelar(item) || this.cancelandoId()) return;
+    this.cancelandoId.set(item.id);
+    this.publicacaoService.cancelarPublicacao(item.id).subscribe({
+      next: () => {
+        this.cancelandoId.set(null);
+        this.toast.success('Cancelamento solicitado. A geração será encerrada em instantes.');
+        this.carregar();
+      },
+      error: error => {
+        this.cancelandoId.set(null);
+        this.toast.error(this.errorMessage(error, 'Erro ao cancelar a geração.'));
+      },
+    });
+  }
+
+  private ehStatusValido(status: string | null): status is Publicacao['status'] {
+    return status === 'GERANDO' || status === 'SUCESSO' || status === 'ERRO' || status === 'CANCELADA';
+  }
+
   reprocessar(item: Publicacao): void {
     this.publicacaoService.reprocessarPublicacao(item.id).subscribe({
       next: () => {
@@ -190,7 +216,7 @@ export class PublicacoesComponent implements OnInit, OnDestroy {
   }
 
   alterarFiltroStatus(status: string): void {
-    this.statusFiltro.set(status === 'GERANDO' || status === 'SUCESSO' || status === 'ERRO' ? status : '');
+    this.statusFiltro.set(this.ehStatusValido(status) ? status : '');
     this.atualizarUrl();
   }
 

@@ -11,6 +11,13 @@
 >
   <div actions>
     <ui-badge tone="warn" [dot]="true">{{ total() }} aguardando revisão</ui-badge>
+    <ui-button
+      variant="secondary"
+      size="sm"
+      [icon]="somenteMinhas() ? 'UserCheck' : 'Users'"
+      (clicked)="alternarSomenteMinhas()"
+      >{{ somenteMinhas() ? 'Minhas revisões' : 'Toda a fila' }}</ui-button
+    >
   </div>
 
   <div class="review-layout">
@@ -47,25 +54,42 @@
           <div>
             <span class="review-detail__eyebrow">{{ pagina.codigoTela }}</span>
             <h2>{{ pagina.titulo }}</h2>
+            @if (pagina.revisaoAtrasada) {
+              <span class="review-detail__atrasada">Revisão atrasada</span>
+            }
             <p>
               {{ pagina.projetoNome }} / {{ pagina.moduloNome }}
               @if (responsavel()) {
                 · Responsável: {{ responsavel() }}
               }
+              @if (pagina.prazoRevisao) {
+                · Prazo: {{ pagina.prazoRevisao | date: 'short' }}
+              }
             </p>
           </div>
+          @if (!podeAprovar()) {
+            <p class="review-detail__bloqueio">
+              Revisão atribuída a {{ responsavel() }} — só essa pessoa pode aprovar.
+            </p>
+          }
           <div class="review-detail__actions">
             <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar()">Abrir editor</ui-button>
-            <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="assumir()"
-              >Assumir</ui-button
-            >
+            @if (!souOResponsavel()) {
+              <label class="review-detail__prazo">
+                <span class="sr-only">Prazo da revisão</span>
+                <input type="date" [(ngModel)]="prazo" name="prazoRevisao" />
+              </label>
+              <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="assumir()"
+                >{{ responsavel() ? 'Assumir para mim' : 'Assumir' }}</ui-button
+              >
+            }
             <ui-button variant="secondary" size="sm" [loading]="executandoAcao()" (clicked)="devolver()"
               >Devolver</ui-button
             >
             <ui-button
               size="sm"
               icon="Check"
-              [disabled]="qualidade()?.aptoParaRevisao === false"
+              [disabled]="qualidade()?.aptoParaRevisao === false || !podeAprovar()"
               [loading]="executandoAcao()"
               (clicked)="aprovar()"
               >Aprovar</ui-button

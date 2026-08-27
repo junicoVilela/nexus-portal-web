@@ -159,6 +159,13 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['PAGINA:LER'] },
       },
       {
+        path: 'trechos',
+        loadComponent: () =>
+          import('./pages/trechos/trechos.component').then(component => component.TrechosComponent),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:LER'] },
+      },
+      {
         path: 'midias',
         loadComponent: () =>
           import('./pages/midias/midias.component').then(component => component.MidiasComponent),

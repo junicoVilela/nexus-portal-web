@@ -323,3 +323,29 @@
     border-top: 1px solid var(--border);
   }
 }
+
+.review-detail__atrasada {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #b42318 12%, transparent);
+  color: #b42318;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.review-detail__bloqueio {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.review-detail__prazo input {
+  padding: 4px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  font: inherit;
+  background: var(--surface-default);
+  color: var(--text-primary);
+}

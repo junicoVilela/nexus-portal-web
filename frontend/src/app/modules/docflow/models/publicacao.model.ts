@@ -1,4 +1,4 @@
-export type StatusPublicacao = 'GERANDO' | 'SUCESSO' | 'ERRO';
+export type StatusPublicacao = 'GERANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADA';
 
 export interface Publicacao {
   id: string;
@@ -12,6 +12,8 @@ export interface Publicacao {
   hashPacote?: string;
   observacao?: string;
   relatorioValidacao?: string;
+  /** Cancelamento pedido: o worker ainda está terminando de gerar. */
+  cancelamentoSolicitado: boolean;
   createdAt: string;
   createdBy: string;
   updatedAt?: string;
@@ -23,6 +25,31 @@ export interface ReprocessamentoPublicacoes {
   reprocessadas: number;
   ignoradas: number;
   publicacoes: Publicacao[];
+}
+
+export type MudancaPublicacao =
+  | 'ADICIONADA'
+  | 'REMOVIDA'
+  | 'ALTERADA'
+  | 'MOVIDA'
+  | 'INALTERADA'
+  /** Publicação gerada antes do hash de conteúdo existir: não dá para afirmar se mudou. */
+  | 'INDETERMINADA';
+
+export interface PublicacaoDiffItem {
+  paginaId: string;
+  titulo: string;
+  codigoTela?: string;
+  mudanca: MudancaPublicacao;
+}
+
+export interface PublicacaoDiff {
+  publicacaoId: string;
+  versao: string;
+  comparadaComId: string;
+  versaoComparada: string;
+  totaisPorMudanca: Partial<Record<MudancaPublicacao, number>>;
+  itens: PublicacaoDiffItem[];
 }
 
 export interface PublicacaoPaginaSnapshot {

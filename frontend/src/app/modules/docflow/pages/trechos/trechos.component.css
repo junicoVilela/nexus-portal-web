@@ -1,0 +1,116 @@
+.trechos-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--surface-default);
+}
+
+.trechos-form__linha {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(200px, 2fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.trechos-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.trechos-form input,
+.trechos-form textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font: inherit;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+}
+
+.trechos-form textarea {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+.trechos-form small {
+  color: var(--text-tertiary, var(--text-secondary));
+  font-size: 0.75rem;
+}
+
+.trechos-form__ativo {
+  align-self: center;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.trechos-form__ativo small {
+  grid-column: 1 / -1;
+}
+
+.trechos-form__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.trechos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.trecho-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--surface-default);
+}
+
+.trecho-card--inativo {
+  opacity: 0.65;
+}
+
+.trecho-card__head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.trecho-card__head div {
+  display: grid;
+  gap: 2px;
+}
+
+.trecho-card__head code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.trecho-card__descricao {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.trecho-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+  .trechos-form__linha {
+    grid-template-columns: 1fr;
+  }
+}

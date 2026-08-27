@@ -19,6 +19,10 @@ export interface Pagina {
   parentTitulo?: string;
   templateOrigemId?: string;
   templateOrigemVersao?: number;
+  /** Responsável pela revisão; quando definido, é quem aprova a página. */
+  revisorUsername?: string;
+  prazoRevisao?: string;
+  revisaoAtrasada?: boolean;
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -52,7 +56,8 @@ export interface PaginaRevisao {
     | 'PUBLICACAO'
     | 'ARQUIVAMENTO'
     | 'DUPLICACAO'
-    | 'COMENTARIO';
+    | 'COMENTARIO'
+    | 'ATRIBUICAO_REVISOR';
   descricao?: string;
   resumo?: string;
   conteudoHtml?: string;
@@ -142,4 +147,28 @@ export interface ChangelogItem {
   paginaTitulo: string;
   tipoMudanca: 'ADICIONADO' | 'ATUALIZADO' | 'REMOVIDO';
   createdAt: string;
+}
+
+/** Trecho de HTML reutilizável, referenciado nas páginas por `{{snippet:CODIGO}}`. */
+export interface PaginaSnippet {
+  id: string;
+  codigo: string;
+  /** A referência pronta para colar no editor. */
+  referencia: string;
+  titulo: string;
+  descricao?: string;
+  conteudoHtml: string;
+  ativo: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+export interface PaginaSnippetCriacao {
+  codigo: string;
+  titulo: string;
+  descricao?: string;
+  conteudoHtml: string;
+  ativo?: boolean;
 }

@@ -51,12 +51,18 @@ export class RevisoesComponent implements OnInit, OnDestroy {
   protected readonly diffConteudoAtual = signal('');
   protected readonly modoDiff = signal<DiffModo>('unificado');
   protected comentario = '';
+  /** Prazo opcional (input date) aplicado ao assumir a revisão. */
+  protected prazo = '';
 
   protected readonly comentarios = computed(() => this.revisoes().filter(item => item.tipo === 'COMENTARIO'));
-  protected readonly responsavel = computed(
-    () =>
-      this.comentarios().find(item => item.descricao?.startsWith('Revisão assumida por '))?.createdBy ?? null,
-  );
+  /** Vem do campo da página; antes era inferido do texto de um comentário. */
+  protected readonly responsavel = computed(() => this.selecionada()?.revisorUsername ?? null);
+  protected readonly souOResponsavel = computed(() => {
+    const revisor = this.responsavel();
+    return !!revisor && revisor.toLowerCase() === (this.auth.currentUser() ?? '').toLowerCase();
+  });
+  protected readonly podeAprovar = computed(() => !this.responsavel() || this.souOResponsavel());
+  protected readonly somenteMinhas = signal(false);
 
   ngOnInit(): void {
     this.carregar();
@@ -104,14 +110,16 @@ export class RevisoesComponent implements OnInit, OnDestroy {
 
   protected carregar(): void {
     this.loading.set(true);
-    this.paginaService
-      .listarPaginas({
-        status: 'EM_REVISAO',
-        page: this.page(),
-        size: this.pageSize(),
-        sort: 'updatedAt',
-        dir: 'ASC',
-      })
+    const consulta = this.somenteMinhas()
+      ? this.paginaService.minhasRevisoes({ page: this.page(), size: this.pageSize() })
+      : this.paginaService.listarPaginas({
+          status: 'EM_REVISAO',
+          page: this.page(),
+          size: this.pageSize(),
+          sort: 'updatedAt',
+          dir: 'ASC',
+        });
+    consulta
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: response => {
@@ -188,8 +196,30 @@ export class RevisoesComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Assume a revisão de verdade: a página passa a exigir este usuário para aprovar. */
   protected assumir(): void {
-    this.comentar(`Revisão assumida por ${this.auth.currentUser() || 'revisor'}.`);
+    const pagina = this.selecionada();
+    const usuario = this.auth.currentUser();
+    if (!pagina || !usuario || this.executandoAcao()) return;
+    this.executandoAcao.set(true);
+    this.paginaService
+      .atribuirRevisorPagina(pagina.id, { revisorUsername: usuario, prazoRevisao: this.prazo || null })
+      .pipe(finalize(() => this.executandoAcao.set(false)))
+      .subscribe({
+        next: atualizada => {
+          this.selecionada.set(atualizada);
+          this.paginas.update(items => items.map(item => (item.id === atualizada.id ? atualizada : item)));
+          this.toast.success('Revisão atribuída a você.');
+        },
+        error: (erro: { error?: { message?: string } }) =>
+          this.toast.error(erro?.error?.message ?? 'Não foi possível assumir a revisão.'),
+      });
+  }
+
+  protected alternarSomenteMinhas(): void {
+    this.somenteMinhas.update(valor => !valor);
+    this.page.set(1);
+    this.carregar();
   }
 
   protected editar(): void {

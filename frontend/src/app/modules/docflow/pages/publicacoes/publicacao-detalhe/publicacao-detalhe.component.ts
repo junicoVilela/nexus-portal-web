@@ -5,7 +5,12 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
-import { Publicacao, PublicacaoPaginaSnapshot } from '@modules/docflow/models/publicacao.model';
+import {
+  MudancaPublicacao,
+  Publicacao,
+  PublicacaoDiff,
+  PublicacaoPaginaSnapshot,
+} from '@modules/docflow/models/publicacao.model';
 import { ChangelogItem } from '@modules/docflow/models/pagina.model';
 import {
   PageHeaderComponent,
@@ -19,7 +24,7 @@ import {
 } from '@shared/ui';
 import { PermissaoDirective } from '@modules/identity-access/directives';
 
-type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'downloads';
+type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'comparar' | 'downloads';
 
 interface PaginaChangelogResumo {
   paginaTitulo: string;
@@ -63,6 +68,18 @@ export class PublicacaoDetalheComponent implements OnInit {
   protected readonly excluindo = signal(false);
   protected readonly baixandoZip = signal(false);
   protected readonly baixandoPdf = signal(false);
+  protected readonly cancelando = signal(false);
+  protected readonly diff = signal<PublicacaoDiff | null>(null);
+  protected readonly carregandoDiff = signal(false);
+  protected readonly erroDiff = signal<string | null>(null);
+  /** Mudanças que valem destaque; INALTERADA fica no rodapé como contagem. */
+  readonly mudancasRelevantes: MudancaPublicacao[] = [
+    'ADICIONADA',
+    'ALTERADA',
+    'REMOVIDA',
+    'MOVIDA',
+    'INDETERMINADA',
+  ];
   protected readonly activeTab = signal<PublicacaoDetalheTab>('visao-geral');
   readonly mudancaTipos = ['ADICIONADO', 'ATUALIZADO', 'REMOVIDO'] as const;
 
@@ -111,6 +128,7 @@ export class PublicacaoDetalheComponent implements OnInit {
       count: this.paginasArvore().length || undefined,
     },
     { id: 'changelog', label: 'Changelog', icon: 'List', count: this.changelog().length || undefined },
+    { id: 'comparar', label: 'Comparar', icon: 'GitCompare' },
     { id: 'downloads', label: 'Downloads', icon: 'Download' },
   ]);
 
@@ -143,6 +161,72 @@ export class PublicacaoDetalheComponent implements OnInit {
       },
       error: () => this.toast.error('Não foi possível carregar a publicação.'),
     });
+  }
+
+  /** O cancelamento só faz sentido enquanto a geração não terminou. */
+  podeCancelar(): boolean {
+    const pub = this.publicacao();
+    return !!pub && pub.status === 'GERANDO' && !pub.cancelamentoSolicitado;
+  }
+
+  async cancelar(): Promise<void> {
+    const pub = this.publicacao();
+    if (!pub || !this.podeCancelar() || this.cancelando()) return;
+    const confirmado = await this.confirm.confirm({
+      title: 'Cancelar a geração?',
+      message: `A geração da versão ${pub.versao} será interrompida e o pacote descartado. `
+        + 'O cancelamento não é imediato: o worker termina a etapa atual antes de parar.',
+      acceptLabel: 'Cancelar geração',
+      variant: 'danger',
+      icon: 'CircleX',
+    });
+    if (!confirmado) return;
+
+    this.cancelando.set(true);
+    this.publicacaoService.cancelarPublicacao(this.id).subscribe({
+      next: atualizada => {
+        this.publicacao.set(atualizada);
+        this.cancelando.set(false);
+        this.toast.success('Cancelamento solicitado. A publicação será encerrada em instantes.');
+      },
+      error: () => {
+        this.cancelando.set(false);
+        this.toast.error('Não foi possível cancelar a geração.');
+      },
+    });
+  }
+
+  /** A comparação é carregada só quando a aba é aberta. */
+  protected selecionarTab(tab: PublicacaoDetalheTab): void {
+    this.activeTab.set(tab);
+    if (tab === 'comparar' && !this.diff() && !this.erroDiff()) this.carregarDiff();
+  }
+
+  carregarDiff(comparadaCom?: string): void {
+    if (this.carregandoDiff()) return;
+    this.carregandoDiff.set(true);
+    this.erroDiff.set(null);
+    this.publicacaoService.diffPublicacao(this.id, comparadaCom).subscribe({
+      next: resultado => {
+        this.diff.set(resultado);
+        this.carregandoDiff.set(false);
+      },
+      error: (erro: { error?: { message?: string } }) => {
+        this.diff.set(null);
+        this.carregandoDiff.set(false);
+        this.erroDiff.set(
+          erro?.error?.message ?? 'Não foi possível comparar com a publicação anterior.',
+        );
+      },
+    });
+  }
+
+  itensDaMudanca(mudanca: MudancaPublicacao) {
+    return this.diff()?.itens.filter(item => item.mudanca === mudanca) ?? [];
+  }
+
+  totalDaMudanca(mudanca: MudancaPublicacao): number {
+    return this.diff()?.totaisPorMudanca?.[mudanca] ?? 0;
   }
 
   podeBaixar(): boolean {

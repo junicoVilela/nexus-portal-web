@@ -84,6 +84,13 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
       permissao: 'PAGINA:LER',
     },
     {
+      helpId: 'trechos',
+      label: 'Trechos',
+      icon: 'Blocks',
+      route: ['/doc-flow', 'trechos'],
+      permissao: 'PAGINA:LER',
+    },
+    {
       helpId: 'midias',
       label: 'Mídia',
       icon: 'Image',
@@ -148,6 +155,12 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
         label: 'DocFlow — Central de revisão',
         group: 'DocFlow',
         route: '/doc-flow/revisoes',
+      },
+      {
+        id: 'df:trechos',
+        label: 'DocFlow — Trechos reutilizáveis',
+        group: 'DocFlow',
+        route: '/doc-flow/trechos',
       },
       {
         id: 'df:midias',

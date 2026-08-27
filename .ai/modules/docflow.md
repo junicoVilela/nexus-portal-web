@@ -98,7 +98,8 @@ Para spec frontend completa, ver `docs/docflow/` (00-06 + 99).
 /paginas/:id/editar        → editor HTML
 /publicacoes               → histórico de publicações
 /publicacoes/novo          → geração de pacote
-/publicacoes/:id/detalhe   → detalhe + changelog
+/publicacoes/:id/detalhe   → detalhe + changelog + comparação entre publicações
+/trechos                   → CRUD de trechos reutilizáveis ({{snippet:CODIGO}})
 /busca                     → busca full-text em páginas
 ```
 

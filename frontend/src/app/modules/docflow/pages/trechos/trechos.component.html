@@ -1,0 +1,107 @@
+<ui-list-page
+  title="Trechos reutilizáveis"
+  subtitle="Escreva uma vez e cite em várias páginas. O conteúdo é resolvido na geração do manual."
+  icon="Blocks"
+  [loading]="loading()"
+  [isEmpty]="!loading() && snippets().length === 0"
+  emptyTitle="Nenhum trecho cadastrado"
+  emptyDescription="Crie um trecho para reaproveitar avisos e blocos comuns entre as páginas."
+  emptyIllustration="inbox"
+  emptyIcon="Blocks"
+>
+  <div actions>
+    <ui-badge tone="info" [dot]="true">{{ totalAtivos() }} ativo(s)</ui-badge>
+    <ui-button variant="secondary" size="sm" (clicked)="alternarInativos()">
+      {{ incluirInativos() ? 'Ocultar inativos' : 'Mostrar inativos' }}
+    </ui-button>
+    <ui-button *appPermissao="'PAGINA:CRIAR'" size="sm" icon="Plus" (clicked)="novo()">Novo trecho</ui-button>
+  </div>
+
+  @if (formAberto()) {
+    <form class="trechos-form" (ngSubmit)="salvar()">
+      <div class="trechos-form__linha">
+        <label>
+          <span>Código</span>
+          <input
+            [(ngModel)]="form.codigo"
+            name="codigo"
+            [disabled]="!!editando()"
+            placeholder="AVISO-LGPD"
+            maxlength="60"
+            required
+          />
+          <small>Usado na referência; não muda depois de criado.</small>
+        </label>
+        <label>
+          <span>Título</span>
+          <input [(ngModel)]="form.titulo" name="titulo" maxlength="200" required />
+        </label>
+        <label class="trechos-form__ativo">
+          <input type="checkbox" [(ngModel)]="form.ativo" name="ativo" />
+          <span>Ativo</span>
+          <small>Trecho inativo vira aviso de indisponível no manual.</small>
+        </label>
+      </div>
+
+      <label>
+        <span>Descrição</span>
+        <input [(ngModel)]="form.descricao" name="descricao" maxlength="300" />
+      </label>
+
+      <label>
+        <span>Conteúdo HTML</span>
+        <textarea [(ngModel)]="form.conteudoHtml" name="conteudoHtml" rows="8" required></textarea>
+        <small>Scripts são removidos ao salvar.</small>
+      </label>
+
+      <div class="trechos-form__acoes">
+        <ui-button variant="ghost" size="sm" type="button" (clicked)="fechar()">Cancelar</ui-button>
+        <ui-button size="sm" type="submit" [loading]="salvando()">
+          {{ editando() ? 'Salvar alterações' : 'Criar trecho' }}
+        </ui-button>
+      </div>
+    </form>
+  }
+
+  <div class="trechos-grid">
+    @for (snippet of snippets(); track snippet.id) {
+      <article class="trecho-card" [class.trecho-card--inativo]="!snippet.ativo">
+        <header class="trecho-card__head">
+          <div>
+            <strong>{{ snippet.titulo }}</strong>
+            <code>{{ snippet.referencia }}</code>
+          </div>
+          <ui-badge [tone]="snippet.ativo ? 'success' : 'neutral'">
+            {{ snippet.ativo ? 'Ativo' : 'Inativo' }}
+          </ui-badge>
+        </header>
+
+        @if (snippet.descricao) {
+          <p class="trecho-card__descricao">{{ snippet.descricao }}</p>
+        }
+
+        <div class="trecho-card__acoes">
+          <ui-button variant="ghost" size="sm" icon="Copy" (clicked)="copiarReferencia(snippet)">
+            Copiar referência
+          </ui-button>
+          <ui-button
+            *appPermissao="'PAGINA:EDITAR'"
+            variant="secondary"
+            size="sm"
+            icon="Pencil"
+            (clicked)="editar(snippet)"
+            >Editar</ui-button
+          >
+          <ui-button
+            *appPermissao="'PAGINA:EXCLUIR'"
+            variant="danger-soft"
+            size="sm"
+            icon="Trash2"
+            (clicked)="excluir(snippet)"
+            >Excluir</ui-button
+          >
+        </div>
+      </article>
+    }
+  </div>
+</ui-list-page>

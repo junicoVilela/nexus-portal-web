@@ -30,6 +30,7 @@
         <option value="GERANDO">Em andamento</option>
         <option value="SUCESSO">Concluídas</option>
         <option value="ERRO">Com falha</option>
+        <option value="CANCELADA">Canceladas</option>
       </select>
     </label>
     <span class="pubs__stats">
@@ -131,6 +132,9 @@
             @if (item.status === 'GERANDO') {
               <span class="pubs__progress" aria-label="Geração em andamento"><i></i></span>
             }
+            @if (item.cancelamentoSolicitado) {
+              <small class="pubs__filemeta">cancelamento pedido</small>
+            }
           </td>
           <td class="pubs__td">{{ item.quantidadePaginas }}</td>
           <td class="pubs__td"><app-audit-stamp [user]="item.createdBy" [date]="item.createdAt" /></td>
@@ -165,6 +169,17 @@
                 [disabled]="item.status === 'GERANDO'"
                 (clicked)="reprocessar(item)"
                 >Reprocessar</ui-button
+              >
+              <ui-button
+                *appPermissao="'PUBLICACAO:EDITAR'"
+                variant="menu"
+                size="sm"
+                icon="CircleX"
+                [fullWidth]="true"
+                [disabled]="!podeCancelar(item)"
+                [loading]="cancelandoId() === item.id"
+                (clicked)="cancelar(item)"
+                >Cancelar geração</ui-button
               >
               <div class="ui-more-actions__sep" role="separator"></div>
               <ui-button

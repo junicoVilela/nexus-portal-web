@@ -1,8 +1,10 @@
-import { Injectable, Injector } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, Injector } from '@angular/core';
 import { defer, map, Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '@env/environment';
 import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
+import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
   anexar as anexarPaginaSdk,
@@ -51,6 +53,8 @@ import {
   PaginaAnexo,
   PaginaQualidade,
   PaginaRevisao,
+  PaginaSnippet,
+  PaginaSnippetCriacao,
   PaginaTemplate,
   PaginaTemplateAplicacao,
   PaginaTemplateAplicada,
@@ -68,7 +72,60 @@ export class PaginaService {
     { expiresAt: number; request: Observable<PaginaTemplate[]> }
   >();
 
+  private readonly http = inject(HttpClient);
+
   constructor(private readonly injector: Injector) {}
+
+  /**
+   * Define quem responde pela revisão. Com responsável definido, só ele aprova
+   * a página.
+   */
+  atribuirRevisorPagina(
+    id: string,
+    payload: { revisorUsername: string; prazoRevisao?: string | null },
+  ): Observable<Pagina> {
+    return this.http
+      .post<PaginaResponse>(`${this.base}/paginas/${id}/revisor`, {
+        revisorUsername: payload.revisorUsername,
+        prazoRevisao: payload.prazoRevisao ?? null,
+      })
+      .pipe(map(resposta => this.mapearPagina(resposta)));
+  }
+
+  /** Fila de revisão do usuário autenticado. */
+  minhasRevisoes(params: { page?: number; size?: number } = {}): Observable<PageResult<Pagina>> {
+    return this.http
+      .get<{
+        items?: PaginaResponse[];
+        totalItems?: number;
+        totalPages?: number;
+        page?: number;
+        size?: number;
+        first?: boolean;
+        last?: boolean;
+      }>(`${this.base}/paginas/minhas-revisoes`, {
+        params: buildQueryParams({ page: params.page, size: params.size }),
+      })
+      .pipe(map(resposta => this.mapearPageResult(resposta, params.size, item => this.mapearPagina(item))));
+  }
+
+  snippetsPagina(incluirInativos = false): Observable<PaginaSnippet[]> {
+    return this.http.get<PaginaSnippet[]>(`${this.base}/paginas/snippets`, {
+      params: buildQueryParams({ incluirInativos }),
+    });
+  }
+
+  criarSnippetPagina(payload: PaginaSnippetCriacao): Observable<PaginaSnippet> {
+    return this.http.post<PaginaSnippet>(`${this.base}/paginas/snippets`, payload);
+  }
+
+  atualizarSnippetPagina(id: string, payload: PaginaSnippetCriacao): Observable<PaginaSnippet> {
+    return this.http.put<PaginaSnippet>(`${this.base}/paginas/snippets/${id}`, payload);
+  }
+
+  excluirSnippetPagina(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/paginas/snippets/${id}`);
+  }
 
   eventosPagina(): Observable<PaginaEventoResponse> {
     return new Observable(observer => {

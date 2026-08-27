@@ -1,6 +1,7 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { environment } from '@env/environment';
 import { PaginaService } from './pagina.service';
 import { Pagina, PaginaAnexo } from '../models/pagina.model';
 
@@ -330,6 +331,81 @@ describe('PaginaService', () => {
     const req = http.expectOne(`${GENERATED_BASE}/paginas/reordenar`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ paginaIds: ['a', 'b'] });
+    req.flush(null);
+    tick();
+  }));
+
+  it('atribuirRevisorPagina() posta revisor e prazo', fakeAsync(() => {
+    service
+      .atribuirRevisorPagina('pg1', { revisorUsername: 'ana', prazoRevisao: '2026-09-01' })
+      .subscribe();
+    tick();
+    const req = http.expectOne(`${environment.apiUrl}/paginas/pg1/revisor`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ revisorUsername: 'ana', prazoRevisao: '2026-09-01' });
+    req.flush({ id: 'pg1', revisorUsername: 'ana' });
+    tick();
+  }));
+
+  it('atribuirRevisorPagina() manda prazo nulo quando não informado', fakeAsync(() => {
+    service.atribuirRevisorPagina('pg1', { revisorUsername: 'ana' }).subscribe();
+    tick();
+    const req = http.expectOne(`${environment.apiUrl}/paginas/pg1/revisor`);
+    expect(req.request.body.prazoRevisao).toBeNull();
+    req.flush({ id: 'pg1' });
+    tick();
+  }));
+
+  it('minhasRevisoes() pagina e devolve o envelope normalizado', fakeAsync(() => {
+    let resultado: { items: unknown[]; totalItems: number } | undefined;
+    service.minhasRevisoes({ page: 2, size: 5 }).subscribe(r => (resultado = r));
+    tick();
+    const req = http.expectOne(r => r.url === `${environment.apiUrl}/paginas/minhas-revisoes`);
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('size')).toBe('5');
+    req.flush({ items: [{ id: 'pg1' }], totalItems: 1, page: 2, size: 5, totalPages: 1 });
+    tick();
+    expect(resultado?.totalItems).toBe(1);
+    expect(resultado?.items.length).toBe(1);
+  }));
+
+  it('snippetsPagina() envia incluirInativos', fakeAsync(() => {
+    service.snippetsPagina(true).subscribe();
+    tick();
+    const req = http.expectOne(r => r.url === `${environment.apiUrl}/paginas/snippets`);
+    expect(req.request.params.get('incluirInativos')).toBe('true');
+    req.flush([]);
+    tick();
+  }));
+
+  it('criarSnippetPagina() posta o payload', fakeAsync(() => {
+    service
+      .criarSnippetPagina({ codigo: 'AVISO', titulo: 'Aviso', conteudoHtml: '<p>x</p>' })
+      .subscribe();
+    tick();
+    const req = http.expectOne(`${environment.apiUrl}/paginas/snippets`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.codigo).toBe('AVISO');
+    req.flush({ id: 's1', codigo: 'AVISO', referencia: '{{snippet:AVISO}}' });
+    tick();
+  }));
+
+  it('atualizarSnippetPagina() usa PUT no id', fakeAsync(() => {
+    service
+      .atualizarSnippetPagina('s1', { codigo: 'AVISO', titulo: 'Aviso', conteudoHtml: '<p>x</p>' })
+      .subscribe();
+    tick();
+    const req = http.expectOne(`${environment.apiUrl}/paginas/snippets/s1`);
+    expect(req.request.method).toBe('PUT');
+    req.flush({ id: 's1' });
+    tick();
+  }));
+
+  it('excluirSnippetPagina() usa DELETE no id', fakeAsync(() => {
+    service.excluirSnippetPagina('s1').subscribe();
+    tick();
+    const req = http.expectOne(`${environment.apiUrl}/paginas/snippets/s1`);
+    expect(req.request.method).toBe('DELETE');
     req.flush(null);
     tick();
   }));

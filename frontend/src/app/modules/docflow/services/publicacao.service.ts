@@ -28,7 +28,12 @@ import type {
 } from '../../../api/generated/types.gen';
 import { ChangelogItem } from '../models/pagina.model';
 import { Pagina } from '../models/pagina.model';
-import { Publicacao, PublicacaoPaginaSnapshot, ReprocessamentoPublicacoes } from '../models/publicacao.model';
+import {
+  Publicacao,
+  PublicacaoDiff,
+  PublicacaoPaginaSnapshot,
+  ReprocessamentoPublicacoes,
+} from '../models/publicacao.model';
 
 @Injectable({ providedIn: 'root' })
 export class PublicacaoService {
@@ -42,7 +47,7 @@ export class PublicacaoService {
   eventosPublicacao(): Observable<{
     id: string;
     clienteId: string;
-    status: 'GERANDO' | 'SUCESSO' | 'ERRO';
+    status: Publicacao['status'];
     versao: string;
   }> {
     return new Observable(observer => {
@@ -174,6 +179,28 @@ export class PublicacaoService {
     ).pipe(map(resposta => this.mapearPublicacao(resposta.data)));
   }
 
+  /**
+   * Pede o cancelamento da geração. O worker termina o que está fazendo,
+   * descarta o pacote e a publicação fica CANCELADA — não é imediato.
+   */
+  cancelarPublicacao(publicacaoId: string): Observable<Publicacao> {
+    return this.http
+      .post<PublicacaoResponse>(`${this.base}/publicacoes/${publicacaoId}/cancelar`, {})
+      .pipe(map(resposta => this.mapearPublicacao(resposta)));
+  }
+
+  /**
+   * @param comparadaCom publicação de referência; sem ela, a API compara com a
+   *   publicação concluída imediatamente anterior do mesmo cliente.
+   */
+  diffPublicacao(publicacaoId: string, comparadaCom?: string): Observable<PublicacaoDiff> {
+    return this.http
+      .get<PublicacaoDiff>(`${this.base}/publicacoes/${publicacaoId}/diff`, {
+        params: buildQueryParams({ comparadaCom }),
+      })
+      .pipe(map(resposta => this.mapearDiff(resposta)));
+  }
+
   reprocessarPublicacoes(ids: string[]): Observable<ReprocessamentoPublicacoes> {
     return defer(() =>
       reprocessarLoteSdk({ body: { ids }, injector: this.injector }),
@@ -254,10 +281,22 @@ export class PublicacaoService {
       hashPacote: item.hashPacote,
       observacao: item.observacao,
       relatorioValidacao: item.relatorioValidacao,
+      cancelamentoSolicitado: (item as { cancelamentoSolicitado?: boolean }).cancelamentoSolicitado ?? false,
       createdAt: item.createdAt ?? '',
       createdBy: item.createdBy ?? '',
       updatedAt: item.updatedAt,
       updatedBy: item.updatedBy,
+    };
+  }
+
+  private mapearDiff(resposta: PublicacaoDiff): PublicacaoDiff {
+    return {
+      publicacaoId: resposta.publicacaoId ?? '',
+      versao: resposta.versao ?? '',
+      comparadaComId: resposta.comparadaComId ?? '',
+      versaoComparada: resposta.versaoComparada ?? '',
+      totaisPorMudanca: resposta.totaisPorMudanca ?? {},
+      itens: resposta.itens ?? [],
     };
   }
 
