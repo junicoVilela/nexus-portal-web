@@ -1,7 +1,7 @@
 import { Injectable, Injector, inject } from '@angular/core';
 import { Observable, defer, map, shareReplay } from 'rxjs';
 
-import { blocos as listarBlocosSdk } from '../../../api/generated/sdk.gen';
+import { docflowPaginaBlocos as listarBlocosSdk } from '../../../api/generated/sdk.gen';
 import type { PaginaBlocoResponse } from '../../../api/generated/types.gen';
 import {
   BlocoPagina,

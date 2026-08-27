@@ -114,3 +114,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+.trecho-card__estado {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.trecho-card__alerta {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #b54708 10%, transparent);
+  color: #b54708;
+  font-size: 0.8rem;
+}

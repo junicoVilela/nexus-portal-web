@@ -4,11 +4,11 @@ import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
 import { SortDirection } from '@shared/utils/query-state';
 import {
-  atualizar15 as atualizarProjetoSdk,
-  buscar13 as buscarProjetoSdk,
-  criar14 as criarProjetoSdk,
-  excluir10 as excluirProjetoSdk,
-  listar19 as listarProjetosSdk,
+  docflowProjetoAtualizar as atualizarProjetoSdk,
+  docflowProjetoBuscar as buscarProjetoSdk,
+  docflowProjetoCriar as criarProjetoSdk,
+  docflowProjetoExcluir as excluirProjetoSdk,
+  docflowProjetoListar as listarProjetosSdk,
 } from '../../../api/generated/sdk.gen';
 import type { ProjetoRequest, ProjetoResponse } from '../../../api/generated/types.gen';
 import { Projeto } from '../models/projeto.model';

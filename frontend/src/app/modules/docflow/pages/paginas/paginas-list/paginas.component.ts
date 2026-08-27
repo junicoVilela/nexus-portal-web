@@ -214,7 +214,7 @@ export class PaginasComponent implements OnInit, OnDestroy {
     id: string;
     titulo: string;
     status: StatusPagina;
-    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER';
+    acao: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER' | 'ATRIBUIR_REVISOR';
     usuario?: string;
   }): void {
     this.carregar();
@@ -226,6 +226,7 @@ export class PaginasComponent implements OnInit, OnDestroy {
       PUBLICAR: `Página "${evento.titulo}" publicada`,
       ARQUIVAR: `Página "${evento.titulo}" arquivada`,
       DEVOLVER: `Página "${evento.titulo}" devolvida para rascunho`,
+      ATRIBUIR_REVISOR: `Revisão de "${evento.titulo}" atribuída`,
     };
     this.notifications.add('info', mensagens[evento.acao], {
       href: docFlowRouterCommands(['paginas', evento.id, 'editar']).join('/'),

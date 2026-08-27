@@ -71,13 +71,25 @@
             <strong>{{ snippet.titulo }}</strong>
             <code>{{ snippet.referencia }}</code>
           </div>
-          <ui-badge [tone]="snippet.ativo ? 'success' : 'neutral'">
-            {{ snippet.ativo ? 'Ativo' : 'Inativo' }}
-          </ui-badge>
+          <div class="trecho-card__estado">
+            <ui-badge [tone]="snippet.ativo ? 'success' : 'neutral'">
+              {{ snippet.ativo ? 'Ativo' : 'Inativo' }}
+            </ui-badge>
+            <ui-badge [tone]="snippet.paginasQueUsam ? 'info' : 'neutral'">
+              {{ snippet.paginasQueUsam }} página(s)
+            </ui-badge>
+          </div>
         </header>
 
         @if (snippet.descricao) {
           <p class="trecho-card__descricao">{{ snippet.descricao }}</p>
+        }
+
+        @if (!snippet.ativo && snippet.paginasQueUsam) {
+          <p class="trecho-card__alerta">
+            {{ snippet.paginasQueUsam }} página(s) ainda citam este trecho e sairão com aviso de
+            indisponível no manual.
+          </p>
         }
 
         <div class="trecho-card__acoes">

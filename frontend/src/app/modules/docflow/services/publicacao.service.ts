@@ -6,23 +6,23 @@ import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
-  arvorePaginas as arvorePaginasPublicacaoSdk,
-  buscar18 as buscarPublicacaoSdk,
-  changelog as changelogPublicacaoSdk,
-  diagnostico as diagnosticoPublicacaoSdk,
-  emitirTokenDownload as emitirTokenDownloadSdk,
-  excluir14 as excluirPublicacaoSdk,
-  gerar as gerarPublicacaoSdk,
-  listar18 as listarPublicacoesSdk,
-  preview1 as previewPublicacaoSdk,
-  previewHtml as previewPublicacaoHtmlSdk,
-  reprocessar as reprocessarPublicacaoSdk,
-  reprocessarLote as reprocessarLoteSdk,
+  docflowPublicacaoArvorePaginas as arvorePaginasPublicacaoSdk,
+  docflowPublicacaoBuscar as buscarPublicacaoSdk,
+  docflowPublicacaoChangelog as changelogPublicacaoSdk,
+  docflowPublicacaoDiagnostico as diagnosticoPublicacaoSdk,
+  docflowPublicacaoEmitirTokenDownload as emitirTokenDownloadSdk,
+  docflowPublicacaoExcluir as excluirPublicacaoSdk,
+  docflowPublicacaoGerar as gerarPublicacaoSdk,
+  docflowPublicacaoListar as listarPublicacoesSdk,
+  docflowPublicacaoPreview as previewPublicacaoSdk,
+  docflowPublicacaoPreviewHtml as previewPublicacaoHtmlSdk,
+  docflowPublicacaoReprocessar as reprocessarPublicacaoSdk,
+  docflowPublicacaoReprocessarLote as reprocessarLoteSdk,
 } from '../../../api/generated/sdk.gen';
 import type {
   ChangelogItemResponse,
   DownloadTokenResponse,
-  Listar18Data,
+  DocflowPublicacaoListarData,
   PublicacaoPaginaSnapshotItem,
   PublicacaoResponse,
 } from '../../../api/generated/types.gen';
@@ -105,7 +105,7 @@ export class PublicacaoService {
           page: params.page,
           size: params.size,
           ...(params.status ? { status: params.status } : {}),
-        } as Listar18Data['query'],
+        } as DocflowPublicacaoListarData['query'],
         injector: this.injector,
       }),
     ).pipe(
@@ -199,6 +199,16 @@ export class PublicacaoService {
         params: buildQueryParams({ comparadaCom }),
       })
       .pipe(map(resposta => this.mapearDiff(resposta)));
+  }
+
+  /**
+   * HTML da página como saiu naquela publicação. O snapshot guarda só o hash;
+   * o conteúdo vem do pacote já gerado.
+   */
+  htmlDaPaginaPublicada(publicacaoId: string, paginaId: string): Observable<string> {
+    return this.http.get(`${this.base}/publicacoes/${publicacaoId}/paginas/${paginaId}/html`, {
+      responseType: 'text',
+    });
   }
 
   reprocessarPublicacoes(ids: string[]): Observable<ReprocessamentoPublicacoes> {

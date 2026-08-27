@@ -4,13 +4,13 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { AJUDA_CONTEUDOS_PADRAO } from '../data/ajuda-defaults';
 import {
-  atualizarAjuda as atualizarAjudaSdk,
-  criarAjuda as criarAjudaSdk,
-  excluirAjuda as excluirAjudaSdk,
-  listarAjuda as listarAjudaSdk,
-  listarAjudaAdmin as listarAjudaAdminSdk,
-  metricasAjuda as metricasAjudaSdk,
-  registrarAjudaEvento as registrarAjudaEventoSdk,
+  docflowAjudaAtualizar as atualizarAjudaSdk,
+  docflowAjudaCriar as criarAjudaSdk,
+  docflowAjudaExcluir as excluirAjudaSdk,
+  docflowAjudaListar as listarAjudaSdk,
+  docflowAjudaListarAdministracao as listarAjudaAdminSdk,
+  docflowAjudaMetricas as metricasAjudaSdk,
+  docflowAjudaRegistrar as registrarAjudaEventoSdk,
 } from '../../../api/generated/sdk.gen';
 import type {
   AjudaConteudoRequest as AjudaConteudoRequestSdk,

@@ -58,7 +58,7 @@ describe('PublicacaoDetalheComponent', () => {
     http.expectOne('/api/v1/docflow/publicacoes/pub1/changelog').flush([
       { id: 'c1', paginaId: 'filho', paginaTitulo: 'Lista', tipoMudanca: 'ATUALIZADO', createdAt: '2026-01-01' },
     ]);
-    http.expectOne('/api/doc-flow/publicacoes/pub1/paginas').flush([
+    http.expectOne('/api/v1/docflow/publicacoes/pub1/paginas').flush([
       { id: 'pai', titulo: 'Operações', ordem: 1, nivel: 0 },
       { id: 'filho', parentId: 'pai', titulo: 'Lista', ordem: 2, nivel: 1 },
     ]);

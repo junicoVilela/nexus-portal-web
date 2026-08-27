@@ -11,492 +11,599 @@ import {
 } from './client';
 import { client } from './client.gen';
 import type {
-  AdicionarData,
-  AdicionarResponses,
-  AlterarBloqueioData,
-  AlterarBloqueioResponses,
-  AlterarSelecaoData,
-  AlterarSelecaoResponses,
-  AlterarSenhaData,
-  AlterarSenhaResponses,
-  AlterarStatus1Data,
-  AlterarStatus1Responses,
-  AlterarStatus2Data,
-  AlterarStatus2Responses,
-  AlterarStatus3Data,
-  AlterarStatus3Responses,
-  AlterarStatus4Data,
-  AlterarStatus4Responses,
-  AlterarStatus5Data,
-  AlterarStatus5Responses,
-  AlterarStatus6Data,
-  AlterarStatus6Responses,
-  AlterarStatus7Data,
-  AlterarStatus7Responses,
-  AlterarStatus8Data,
-  AlterarStatus8Responses,
-  AlterarStatus9Data,
-  AlterarStatus9Responses,
-  AlterarStatusData,
-  AlterarStatusResponses,
-  AnexarData,
-  AnexarResponses,
-  AnexosData,
-  AnexosResponses,
-  AplicarData,
-  AplicarResponses,
-  AplicarTemplateData,
-  AplicarTemplateResponses,
-  AprovarData,
-  AprovarResponses,
-  ArquivarData,
-  ArquivarResponses,
-  ArquivarTemplateData,
-  ArquivarTemplateResponses,
-  ArvorePaginasData,
-  ArvorePaginasResponses,
-  AtualData,
-  Atualizar10Data,
-  Atualizar10Responses,
-  Atualizar11Data,
-  Atualizar11Responses,
-  Atualizar12Data,
-  Atualizar12Responses,
-  Atualizar13Data,
-  Atualizar13Responses,
-  Atualizar14Data,
-  Atualizar14Responses,
-  Atualizar15Data,
-  Atualizar15Responses,
-  Atualizar16Data,
-  Atualizar16Responses,
-  Atualizar17Data,
-  Atualizar17Responses,
-  Atualizar18Data,
-  Atualizar18Responses,
-  Atualizar1Data,
-  Atualizar1Responses,
-  Atualizar2Data,
-  Atualizar2Responses,
-  Atualizar3Data,
-  Atualizar3Responses,
-  Atualizar4Data,
-  Atualizar4Responses,
-  Atualizar5Data,
-  Atualizar5Responses,
-  Atualizar6Data,
-  Atualizar6Responses,
-  Atualizar7Data,
-  Atualizar7Responses,
-  Atualizar8Data,
-  Atualizar8Responses,
-  Atualizar9Data,
-  Atualizar9Responses,
-  AtualizarAjudaData,
-  AtualizarAjudaResponses,
-  AtualizarData,
-  AtualizarRascunhoData,
-  AtualizarRascunhoResponses,
-  AtualizarResponses,
-  AtualizarTemplateData,
-  AtualizarTemplateResponses,
-  AtualResponses,
-  AutosaveData,
-  AutosaveResponses,
-  BaixarAnexoData,
-  BaixarAnexoResponses,
-  BibliotecaAnexosData,
-  BibliotecaAnexosResponses,
-  BibliotecaData,
-  BibliotecaResponses,
-  BlocosData,
-  BlocosResponses,
-  BlueprintsData,
-  BlueprintsResponses,
-  Buscar10Data,
-  Buscar10Responses,
-  Buscar11Data,
-  Buscar11Responses,
-  Buscar12Data,
-  Buscar12Responses,
-  Buscar13Data,
-  Buscar13Responses,
-  Buscar14Data,
-  Buscar14Responses,
-  Buscar15Data,
-  Buscar15Responses,
-  Buscar16Data,
-  Buscar16Responses,
-  Buscar17Data,
-  Buscar17Responses,
-  Buscar18Data,
-  Buscar18Responses,
-  Buscar19Data,
-  Buscar19Responses,
-  Buscar1Data,
-  Buscar1Responses,
-  Buscar2Data,
-  Buscar2Responses,
-  Buscar3Data,
-  Buscar3Responses,
-  Buscar4Data,
-  Buscar4Responses,
-  Buscar5Data,
-  Buscar5Responses,
-  Buscar6Data,
-  Buscar6Responses,
-  Buscar7Data,
-  Buscar7Responses,
-  Buscar8Data,
-  Buscar8Responses,
-  Buscar9Data,
-  Buscar9Responses,
-  BuscarData,
-  BuscarResponses,
-  CalcularData,
-  CalcularResponses,
-  Cancelar1Data,
-  Cancelar1Responses,
-  Cancelar2Data,
-  Cancelar2Responses,
-  CancelarData,
-  CancelarResponses,
-  ChangelogData,
-  ChangelogResponses,
-  ComentarRevisaoData,
-  ComentarRevisaoResponses,
-  ContratarData,
-  ContratarResponses,
-  CopiarVinculosData,
-  CopiarVinculosResponses,
-  Criar10Data,
-  Criar10Responses,
-  Criar11Data,
-  Criar11Responses,
-  Criar12Data,
-  Criar12Responses,
-  Criar13Data,
-  Criar13Responses,
-  Criar14Data,
-  Criar14Responses,
-  Criar15Data,
-  Criar15Responses,
-  Criar16Data,
-  Criar16Responses,
-  Criar17Data,
-  Criar17Responses,
-  Criar19Data,
-  Criar19Responses,
-  Criar1Data,
-  Criar1Responses,
-  Criar2Data,
-  Criar2Responses,
-  Criar3Data,
-  Criar3Responses,
-  Criar4Data,
-  Criar4Responses,
-  Criar5Data,
-  Criar5Responses,
-  Criar6Data,
-  Criar6Responses,
-  Criar7Data,
-  Criar7Responses,
-  Criar8Data,
-  Criar8Responses,
-  Criar9Data,
-  Criar9Responses,
-  CriarAjudaData,
-  CriarAjudaResponses,
-  CriarData,
-  CriarResponses,
-  CriarTemplateData,
-  CriarTemplateResponses,
-  DeleteLogo1Data,
-  DeleteLogo1Responses,
-  DeleteLogoData,
-  DeleteLogoResponses,
-  DiagnosticoData,
-  DiagnosticoResponses,
-  DominiosData,
-  DominiosResponses,
-  Download1Data,
-  Download1Responses,
-  DownloadData,
-  DownloadPacoteData,
-  DownloadPacoteResponses,
-  DownloadPdfData,
-  DownloadPdfResponses,
-  DownloadResponses,
-  DownloadZipData,
-  DownloadZipResponses,
-  Duplicar1Data,
-  Duplicar1Responses,
-  Duplicar2Data,
-  Duplicar2Responses,
-  DuplicarData,
-  DuplicarResponses,
-  DuplicarTemplateData,
-  DuplicarTemplateResponses,
-  EmitirTokenDownloadData,
-  EmitirTokenDownloadResponses,
-  EnviarMensagemData,
-  EnviarMensagemResponses,
-  EnviarRevisaoData,
-  EnviarRevisaoResponses,
-  EventosPaginaData,
-  EventosPaginaResponse,
-  EventosPaginaResponses,
-  EventosPublicacaoData,
-  EventosPublicacaoResponse,
-  EventosPublicacaoResponses,
-  Excluir10Data,
-  Excluir10Responses,
-  Excluir11Data,
-  Excluir11Responses,
-  Excluir12Data,
-  Excluir12Responses,
-  Excluir13Data,
-  Excluir13Responses,
-  Excluir14Data,
-  Excluir14Responses,
-  Excluir15Data,
-  Excluir15Responses,
-  Excluir1Data,
-  Excluir1Responses,
-  Excluir2Data,
-  Excluir2Responses,
-  Excluir3Data,
-  Excluir3Responses,
-  Excluir4Data,
-  Excluir4Responses,
-  Excluir5Data,
-  Excluir5Responses,
-  Excluir6Data,
-  Excluir6Responses,
-  Excluir7Data,
-  Excluir7Responses,
-  Excluir8Data,
-  Excluir8Responses,
-  Excluir9Data,
-  Excluir9Responses,
-  ExcluirAjudaData,
-  ExcluirAjudaResponses,
-  ExcluirAnexoData,
-  ExcluirAnexoResponses,
-  ExcluirData,
-  ExcluirResponses,
-  ExcluirTemplateData,
-  ExcluirTemplateResponses,
-  FuncionalidadesData,
-  FuncionalidadesResponses,
-  Gerar12Data,
-  Gerar12Responses,
-  Gerar1Data,
-  Gerar1Responses,
-  Gerar2Data,
-  Gerar2Responses,
-  GerarData,
-  GerarResponses,
-  GerarTokenData,
-  GerarTokenResponses,
-  GetLogo1Data,
-  GetLogo1Responses,
-  GetLogoData,
-  GetLogoResponses,
-  HistoricoData,
-  HistoricoResponses,
-  InicializarData,
-  InicializarResponses,
-  IniciarData,
-  IniciarResponses,
-  Listar10Data,
-  Listar10Responses,
-  Listar11Data,
-  Listar11Responses,
-  Listar12Data,
-  Listar12Responses,
-  Listar13Data,
-  Listar13Responses,
-  Listar14Data,
-  Listar14Responses,
-  Listar15Data,
-  Listar15Responses,
-  Listar16Data,
-  Listar16Responses,
-  Listar17Data,
-  Listar17Responses,
-  Listar18Data,
-  Listar18Responses,
-  Listar19Data,
-  Listar19Responses,
-  Listar1Data,
-  Listar1Responses,
-  Listar20Data,
-  Listar20Responses,
-  Listar21Data,
-  Listar21Responses,
-  Listar22Data,
-  Listar22Responses,
-  Listar23Data,
-  Listar23Responses,
-  Listar24Data,
-  Listar24Responses,
-  Listar25Data,
-  Listar25Responses,
-  Listar26Data,
-  Listar26Responses,
-  Listar27Data,
-  Listar27Responses,
-  Listar28Data,
-  Listar28Responses,
-  Listar29Data,
-  Listar29Responses,
-  Listar2Data,
-  Listar2Responses,
-  Listar3Data,
-  Listar3Responses,
-  Listar4Data,
-  Listar4Responses,
-  Listar5Data,
-  Listar5Responses,
-  Listar6Data,
-  Listar6Responses,
-  Listar7Data,
-  Listar7Responses,
-  Listar8Data,
-  Listar8Responses,
-  Listar9Data,
-  Listar9Responses,
-  ListarAjudaAdminData,
-  ListarAjudaAdminResponses,
-  ListarAjudaData,
-  ListarAjudaResponses,
-  ListarData,
-  ListarGruposData,
-  ListarGruposResponses,
-  ListarMembrosData,
-  ListarMembrosResponses,
-  ListarPermissoesData,
-  ListarPermissoesResponses,
-  ListarResponses,
-  LoginData,
-  LoginResponses,
-  MeData,
-  MeResponses,
-  MetricasAjudaData,
-  MetricasAjudaResponses,
-  PermissoesData,
-  PermissoesResponses,
-  Preview1Data,
-  Preview1Responses,
-  Preview2Data,
-  Preview2Responses,
-  PreviewData,
-  PreviewHtmlData,
-  PreviewHtmlResponses,
-  PreviewResponses,
-  PropostaData,
-  PropostaResponses,
-  Publicar1Data,
-  Publicar1Responses,
-  PublicarData,
-  PublicarResponses,
-  QualidadeData,
-  QualidadeResponses,
-  ReagendarPublicacaoData,
-  ReagendarPublicacaoResponses,
-  ReativarTemplateData,
-  ReativarTemplateResponses,
-  ReceberData,
-  ReceberResponses,
-  RecentesData,
-  RecentesResponses,
-  RecomendarData,
-  RecomendarResponses,
-  ReentregarData,
-  ReentregarResponses,
-  RegistrarAjudaEventoData,
-  RegistrarAjudaEventoResponses,
-  Remover1Data,
-  Remover1Responses,
-  Remover2Data,
-  Remover2Responses,
-  Remover3Data,
-  Remover3Responses,
-  Remover4Data,
-  Remover4Responses,
-  RemoverData,
-  RemoverResponses,
-  Reordenar1Data,
-  Reordenar1Responses,
-  ReordenarData,
-  ReordenarResponses,
-  ReprocessarData,
-  ReprocessarLoteData,
-  ReprocessarLoteResponses,
-  ReprocessarResponses,
-  RescindirData,
-  RescindirResponses,
-  RestaurarVersaoTemplateData,
-  RestaurarVersaoTemplateResponses,
-  Resumo2Data,
-  Resumo2Responses,
-  ResumoData,
-  ResumoPorStatusGlobalData,
-  ResumoPorStatusGlobalResponses,
-  ResumoResponses,
-  RevisoesData,
-  RevisoesResponses,
-  Revogar1Data,
-  Revogar1Responses,
-  Revogar2Data,
-  Revogar2Responses,
-  RevogarData,
-  RevogarResponses,
-  Salvar1Data,
-  Salvar1Responses,
-  Salvar2Data,
-  Salvar2Responses,
-  Salvar3Data,
-  Salvar3Responses,
-  SalvarData,
-  SalvarGruposData,
-  SalvarGruposResponses,
-  SalvarMembrosData,
-  SalvarMembrosResponses,
-  SalvarPermissoesData,
-  SalvarPermissoesResponses,
-  SalvarRascunhoData,
-  SalvarRascunhoResponses,
-  SalvarResponses,
-  StatusData,
-  StatusResponses,
-  TemplatesData,
-  TemplatesResponses,
-  TestarData,
-  TestarGithubData,
-  TestarGithubResponses,
-  TestarJenkinsData,
-  TestarJenkinsResponses,
-  TestarResponses,
-  UploadData,
-  UploadLogo1Data,
-  UploadLogo1Responses,
-  UploadLogoData,
-  UploadLogoResponses,
-  UploadResponses,
-  ValidarData,
-  ValidarResponses,
-  VersoesTemplateData,
-  VersoesTemplateResponses,
-  VincularModulosData,
-  VincularModulosResponses,
-  VincularPaginasData,
-  VincularPaginasResponses,
-  VincularProjetosData,
-  VincularProjetosResponses,
-  VinculosData,
-  VinculosResponses,
+  AiAiDocumentoImportacaoAceitarPaginaImportadaData,
+  AiAiDocumentoImportacaoAceitarPaginaImportadaResponses,
+  AiAiDocumentoImportacaoAceitarSugestaoDocumentoData,
+  AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses,
+  AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData,
+  AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses,
+  AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData,
+  AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses,
+  AiAiDocumentoImportacaoBuscarImportacaoDocumentoData,
+  AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses,
+  AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData,
+  AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses,
+  AiAiDocumentoImportacaoEstimarLoteDocumentoData,
+  AiAiDocumentoImportacaoEstimarLoteDocumentoResponses,
+  AiAiDocumentoImportacaoGerarLoteDocumentoData,
+  AiAiDocumentoImportacaoGerarLoteDocumentoResponses,
+  AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData,
+  AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses,
+  AiAiDocumentoImportacaoImportarDocumentoData,
+  AiAiDocumentoImportacaoImportarDocumentoResponses,
+  AiAiDocumentoImportacaoReordenarEstruturaDocumentoData,
+  AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses,
+  AiAiDocumentoImportacaoSelecionarPaginaImportadaData,
+  AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses,
+  AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData,
+  AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses,
+  AiAiDocumentoImportacaoVincularPaginaImportadaData,
+  AiAiDocumentoImportacaoVincularPaginaImportadaResponses,
+  AiAiEventEventosData,
+  AiAiEventEventosResponse,
+  AiAiEventEventosResponses,
+  AiAiSessaoAplicarData,
+  AiAiSessaoAplicarResponses,
+  AiAiSessaoBuscarData,
+  AiAiSessaoBuscarResponses,
+  AiAiSessaoCancelarData,
+  AiAiSessaoCancelarResponses,
+  AiAiSessaoCriarData,
+  AiAiSessaoCriarResponses,
+  AiAiSessaoEnviarMensagemData,
+  AiAiSessaoEnviarMensagemResponses,
+  AiAiSessaoGerarData,
+  AiAiSessaoGerarResponses,
+  AiAiSessaoPropostaData,
+  AiAiSessaoPropostaResponses,
+  AiAiStatusStatusData,
+  AiAiStatusStatusResponses,
+  AiAiTemplateRecomendarData,
+  AiAiTemplateRecomendarResponses,
+  DocflowAjudaAtualizarData,
+  DocflowAjudaAtualizarResponses,
+  DocflowAjudaCriarData,
+  DocflowAjudaCriarResponses,
+  DocflowAjudaExcluirData,
+  DocflowAjudaExcluirResponses,
+  DocflowAjudaListarAdministracaoData,
+  DocflowAjudaListarAdministracaoResponses,
+  DocflowAjudaListarData,
+  DocflowAjudaListarResponses,
+  DocflowAjudaMetricasData,
+  DocflowAjudaMetricasResponses,
+  DocflowAjudaRegistrarData,
+  DocflowAjudaRegistrarResponses,
+  DocflowClienteAtualizarData,
+  DocflowClienteAtualizarResponses,
+  DocflowClienteBuscarData,
+  DocflowClienteBuscarResponses,
+  DocflowClienteCopiarVinculosData,
+  DocflowClienteCopiarVinculosResponses,
+  DocflowClienteCriarData,
+  DocflowClienteCriarResponses,
+  DocflowClienteDeleteLogoData,
+  DocflowClienteDeleteLogoResponses,
+  DocflowClienteExcluirData,
+  DocflowClienteExcluirResponses,
+  DocflowClienteGetLogoData,
+  DocflowClienteGetLogoResponses,
+  DocflowClienteListarData,
+  DocflowClienteListarResponses,
+  DocflowClienteUploadLogoData,
+  DocflowClienteUploadLogoResponses,
+  DocflowClienteVincularModulosData,
+  DocflowClienteVincularModulosResponses,
+  DocflowClienteVincularPaginasData,
+  DocflowClienteVincularPaginasResponses,
+  DocflowClienteVincularProjetosData,
+  DocflowClienteVincularProjetosResponses,
+  DocflowClienteVinculosData,
+  DocflowClienteVinculosResponses,
+  DocflowDocFlowDashboardResumoData,
+  DocflowDocFlowDashboardResumoResponses,
+  DocflowEmpresaDeleteLogoData,
+  DocflowEmpresaDeleteLogoResponses,
+  DocflowEmpresaGetLogoData,
+  DocflowEmpresaGetLogoResponses,
+  DocflowEmpresaUploadLogoData,
+  DocflowEmpresaUploadLogoResponses,
+  DocflowModuloAtualizarData,
+  DocflowModuloAtualizarResponses,
+  DocflowModuloBuscarData,
+  DocflowModuloBuscarResponses,
+  DocflowModuloCriarData,
+  DocflowModuloCriarResponses,
+  DocflowModuloExcluirData,
+  DocflowModuloExcluirResponses,
+  DocflowModuloListarData,
+  DocflowModuloListarResponses,
+  DocflowPaginaAnexarData,
+  DocflowPaginaAnexarResponses,
+  DocflowPaginaAnexosData,
+  DocflowPaginaAnexosResponses,
+  DocflowPaginaAplicarTemplateData,
+  DocflowPaginaAplicarTemplateResponses,
+  DocflowPaginaAprovarData,
+  DocflowPaginaAprovarResponses,
+  DocflowPaginaArquivarData,
+  DocflowPaginaArquivarResponses,
+  DocflowPaginaArquivarTemplateData,
+  DocflowPaginaArquivarTemplateResponses,
+  DocflowPaginaAtribuirRevisorData,
+  DocflowPaginaAtribuirRevisorResponses,
+  DocflowPaginaAtualizarData,
+  DocflowPaginaAtualizarResponses,
+  DocflowPaginaAtualizarSnippetData,
+  DocflowPaginaAtualizarSnippetResponses,
+  DocflowPaginaAtualizarTemplateData,
+  DocflowPaginaAtualizarTemplateResponses,
+  DocflowPaginaAutosaveData,
+  DocflowPaginaAutosaveResponses,
+  DocflowPaginaBaixarAnexoData,
+  DocflowPaginaBaixarAnexoResponses,
+  DocflowPaginaBibliotecaAnexosData,
+  DocflowPaginaBibliotecaAnexosResponses,
+  DocflowPaginaBibliotecaData,
+  DocflowPaginaBibliotecaResponses,
+  DocflowPaginaBlocosData,
+  DocflowPaginaBlocosResponses,
+  DocflowPaginaBlueprintsData,
+  DocflowPaginaBlueprintsResponses,
+  DocflowPaginaBuscarData,
+  DocflowPaginaBuscarResponses,
+  DocflowPaginaComentarRevisaoData,
+  DocflowPaginaComentarRevisaoResponses,
+  DocflowPaginaCriarData,
+  DocflowPaginaCriarResponses,
+  DocflowPaginaCriarSnippetData,
+  DocflowPaginaCriarSnippetResponses,
+  DocflowPaginaCriarTemplateData,
+  DocflowPaginaCriarTemplateResponses,
+  DocflowPaginaDuplicarData,
+  DocflowPaginaDuplicarResponses,
+  DocflowPaginaDuplicarTemplateData,
+  DocflowPaginaDuplicarTemplateResponses,
+  DocflowPaginaEnviarRevisaoData,
+  DocflowPaginaEnviarRevisaoResponses,
+  DocflowPaginaEventosData,
+  DocflowPaginaEventosResponse,
+  DocflowPaginaEventosResponses,
+  DocflowPaginaExcluirAnexoData,
+  DocflowPaginaExcluirAnexoResponses,
+  DocflowPaginaExcluirData,
+  DocflowPaginaExcluirResponses,
+  DocflowPaginaExcluirSnippetData,
+  DocflowPaginaExcluirSnippetResponses,
+  DocflowPaginaExcluirTemplateData,
+  DocflowPaginaExcluirTemplateResponses,
+  DocflowPaginaListarData,
+  DocflowPaginaListarResponses,
+  DocflowPaginaMinhasRevisoesData,
+  DocflowPaginaMinhasRevisoesResponses,
+  DocflowPaginaPreviewData,
+  DocflowPaginaPreviewResponses,
+  DocflowPaginaPublicarData,
+  DocflowPaginaPublicarResponses,
+  DocflowPaginaQualidadeData,
+  DocflowPaginaQualidadeResponses,
+  DocflowPaginaReativarTemplateData,
+  DocflowPaginaReativarTemplateResponses,
+  DocflowPaginaReordenarData,
+  DocflowPaginaReordenarResponses,
+  DocflowPaginaRestaurarVersaoTemplateData,
+  DocflowPaginaRestaurarVersaoTemplateResponses,
+  DocflowPaginaResumoPorStatusGlobalData,
+  DocflowPaginaResumoPorStatusGlobalResponses,
+  DocflowPaginaRevisoesData,
+  DocflowPaginaRevisoesResponses,
+  DocflowPaginaSalvarRascunhoData,
+  DocflowPaginaSalvarRascunhoResponses,
+  DocflowPaginaSnippetsData,
+  DocflowPaginaSnippetsResponses,
+  DocflowPaginaTemplatesData,
+  DocflowPaginaTemplatesResponses,
+  DocflowPaginaVersoesTemplateData,
+  DocflowPaginaVersoesTemplateResponses,
+  DocflowPreviewGerarTokenData,
+  DocflowPreviewGerarTokenResponses,
+  DocflowPreviewListarData,
+  DocflowPreviewListarResponses,
+  DocflowPreviewPreviewData,
+  DocflowPreviewPreviewResponses,
+  DocflowPreviewRevogarData,
+  DocflowPreviewRevogarResponses,
+  DocflowProjetoAtualizarData,
+  DocflowProjetoAtualizarResponses,
+  DocflowProjetoBuscarData,
+  DocflowProjetoBuscarResponses,
+  DocflowProjetoCriarData,
+  DocflowProjetoCriarResponses,
+  DocflowProjetoExcluirData,
+  DocflowProjetoExcluirResponses,
+  DocflowProjetoListarData,
+  DocflowProjetoListarResponses,
+  DocflowPublicacaoArvorePaginasData,
+  DocflowPublicacaoArvorePaginasResponses,
+  DocflowPublicacaoBuscarData,
+  DocflowPublicacaoBuscarResponses,
+  DocflowPublicacaoCancelarData,
+  DocflowPublicacaoCancelarResponses,
+  DocflowPublicacaoChangelogData,
+  DocflowPublicacaoChangelogResponses,
+  DocflowPublicacaoDiagnosticoData,
+  DocflowPublicacaoDiagnosticoResponses,
+  DocflowPublicacaoDiffData,
+  DocflowPublicacaoDiffResponses,
+  DocflowPublicacaoDownloadData,
+  DocflowPublicacaoDownloadPdfData,
+  DocflowPublicacaoDownloadPdfResponses,
+  DocflowPublicacaoDownloadResponses,
+  DocflowPublicacaoEmitirTokenDownloadData,
+  DocflowPublicacaoEmitirTokenDownloadResponses,
+  DocflowPublicacaoEventosData,
+  DocflowPublicacaoEventosResponse,
+  DocflowPublicacaoEventosResponses,
+  DocflowPublicacaoExcluirData,
+  DocflowPublicacaoExcluirResponses,
+  DocflowPublicacaoGerarData,
+  DocflowPublicacaoGerarResponses,
+  DocflowPublicacaoHtmlDaPaginaData,
+  DocflowPublicacaoHtmlDaPaginaResponses,
+  DocflowPublicacaoListarData,
+  DocflowPublicacaoListarResponses,
+  DocflowPublicacaoPreviewData,
+  DocflowPublicacaoPreviewHtmlData,
+  DocflowPublicacaoPreviewHtmlResponses,
+  DocflowPublicacaoPreviewResponses,
+  DocflowPublicacaoReprocessarData,
+  DocflowPublicacaoReprocessarLoteData,
+  DocflowPublicacaoReprocessarLoteResponses,
+  DocflowPublicacaoReprocessarResponses,
+  DocflowPublicDownloadDownloadZipData,
+  DocflowPublicDownloadDownloadZipResponses,
+  IdentityaccessAcessoTemporarioCriarData,
+  IdentityaccessAcessoTemporarioCriarResponses,
+  IdentityaccessAcessoTemporarioListarData,
+  IdentityaccessAcessoTemporarioListarResponses,
+  IdentityaccessAcessoTemporarioRevogarData,
+  IdentityaccessAcessoTemporarioRevogarResponses,
+  IdentityaccessAuditoriaRecentesData,
+  IdentityaccessAuditoriaRecentesResponses,
+  IdentityaccessAuthLoginData,
+  IdentityaccessAuthLoginResponses,
+  IdentityaccessAuthMeData,
+  IdentityaccessAuthMeResponses,
+  IdentityaccessCatalogoDominiosData,
+  IdentityaccessCatalogoDominiosResponses,
+  IdentityaccessCatalogoFuncionalidadesData,
+  IdentityaccessCatalogoFuncionalidadesResponses,
+  IdentityaccessCatalogoPermissoesData,
+  IdentityaccessCatalogoPermissoesResponses,
+  IdentityaccessEscopoAcessoAlterarStatusData,
+  IdentityaccessEscopoAcessoAlterarStatusResponses,
+  IdentityaccessEscopoAcessoAtualizarData,
+  IdentityaccessEscopoAcessoAtualizarResponses,
+  IdentityaccessEscopoAcessoCriarData,
+  IdentityaccessEscopoAcessoCriarResponses,
+  IdentityaccessEscopoAcessoListarData,
+  IdentityaccessEscopoAcessoListarResponses,
+  IdentityaccessEscopoAcessoRemoverData,
+  IdentityaccessEscopoAcessoRemoverResponses,
+  IdentityaccessGrupoAlterarStatusData,
+  IdentityaccessGrupoAlterarStatusResponses,
+  IdentityaccessGrupoAtualizarData,
+  IdentityaccessGrupoAtualizarResponses,
+  IdentityaccessGrupoBuscarData,
+  IdentityaccessGrupoBuscarResponses,
+  IdentityaccessGrupoCriarData,
+  IdentityaccessGrupoCriarResponses,
+  IdentityaccessGrupoExcluirData,
+  IdentityaccessGrupoExcluirResponses,
+  IdentityaccessGrupoListarData,
+  IdentityaccessGrupoListarMembrosData,
+  IdentityaccessGrupoListarMembrosResponses,
+  IdentityaccessGrupoListarPermissoesData,
+  IdentityaccessGrupoListarPermissoesResponses,
+  IdentityaccessGrupoListarResponses,
+  IdentityaccessGrupoSalvarMembrosData,
+  IdentityaccessGrupoSalvarMembrosResponses,
+  IdentityaccessGrupoSalvarPermissoesData,
+  IdentityaccessGrupoSalvarPermissoesResponses,
+  IdentityaccessHistoricoLoginListarData,
+  IdentityaccessHistoricoLoginListarResponses,
+  IdentityaccessPoliticaSenhaAtualData,
+  IdentityaccessPoliticaSenhaAtualizarData,
+  IdentityaccessPoliticaSenhaAtualizarResponses,
+  IdentityaccessPoliticaSenhaAtualResponses,
+  IdentityaccessSessaoListarData,
+  IdentityaccessSessaoListarResponses,
+  IdentityaccessSessaoRevogarData,
+  IdentityaccessSessaoRevogarResponses,
+  IdentityaccessUsuarioAlterarBloqueioData,
+  IdentityaccessUsuarioAlterarBloqueioResponses,
+  IdentityaccessUsuarioAlterarSenhaData,
+  IdentityaccessUsuarioAlterarSenhaResponses,
+  IdentityaccessUsuarioAtualizarData,
+  IdentityaccessUsuarioAtualizarResponses,
+  IdentityaccessUsuarioBuscarData,
+  IdentityaccessUsuarioBuscarResponses,
+  IdentityaccessUsuarioCriarData,
+  IdentityaccessUsuarioCriarResponses,
+  IdentityaccessUsuarioListarData,
+  IdentityaccessUsuarioListarGruposData,
+  IdentityaccessUsuarioListarGruposResponses,
+  IdentityaccessUsuarioListarResponses,
+  IdentityaccessUsuarioSalvarGruposData,
+  IdentityaccessUsuarioSalvarGruposResponses,
+  ReleaseorchestratorArtefatoReleaseModuloDownloadData,
+  ReleaseorchestratorArtefatoReleaseModuloDownloadResponses,
+  ReleaseorchestratorArtefatoReleaseModuloExcluirData,
+  ReleaseorchestratorArtefatoReleaseModuloExcluirResponses,
+  ReleaseorchestratorArtefatoReleaseModuloListarData,
+  ReleaseorchestratorArtefatoReleaseModuloListarResponses,
+  ReleaseorchestratorArtefatoReleaseModuloUploadData,
+  ReleaseorchestratorArtefatoReleaseModuloUploadResponses,
+  ReleaseorchestratorClienteAlterarStatusData,
+  ReleaseorchestratorClienteAlterarStatusResponses,
+  ReleaseorchestratorClienteAtualizarData,
+  ReleaseorchestratorClienteAtualizarResponses,
+  ReleaseorchestratorClienteBuscarData,
+  ReleaseorchestratorClienteBuscarResponses,
+  ReleaseorchestratorClienteCriarData,
+  ReleaseorchestratorClienteCriarResponses,
+  ReleaseorchestratorClienteExcluirData,
+  ReleaseorchestratorClienteExcluirResponses,
+  ReleaseorchestratorClienteFuncionalidadeListarData,
+  ReleaseorchestratorClienteFuncionalidadeListarResponses,
+  ReleaseorchestratorClienteFuncionalidadeRemoverData,
+  ReleaseorchestratorClienteFuncionalidadeRemoverResponses,
+  ReleaseorchestratorClienteFuncionalidadeSalvarData,
+  ReleaseorchestratorClienteFuncionalidadeSalvarResponses,
+  ReleaseorchestratorClienteListarData,
+  ReleaseorchestratorClienteListarResponses,
+  ReleaseorchestratorClienteProdutoAtualizarData,
+  ReleaseorchestratorClienteProdutoAtualizarResponses,
+  ReleaseorchestratorClienteProdutoBuscarData,
+  ReleaseorchestratorClienteProdutoBuscarResponses,
+  ReleaseorchestratorClienteProdutoContratarData,
+  ReleaseorchestratorClienteProdutoContratarResponses,
+  ReleaseorchestratorClienteProdutoListarData,
+  ReleaseorchestratorClienteProdutoListarResponses,
+  ReleaseorchestratorClienteProdutoModuloListarData,
+  ReleaseorchestratorClienteProdutoModuloListarResponses,
+  ReleaseorchestratorClienteProdutoModuloRemoverData,
+  ReleaseorchestratorClienteProdutoModuloRemoverResponses,
+  ReleaseorchestratorClienteProdutoModuloSalvarData,
+  ReleaseorchestratorClienteProdutoModuloSalvarResponses,
+  ReleaseorchestratorClienteProdutoRescindirData,
+  ReleaseorchestratorClienteProdutoRescindirResponses,
+  ReleaseorchestratorConfigEntregaBuscarData,
+  ReleaseorchestratorConfigEntregaBuscarResponses,
+  ReleaseorchestratorConfigEntregaSalvarData,
+  ReleaseorchestratorConfigEntregaSalvarResponses,
+  ReleaseorchestratorConfigEntregaTestarData,
+  ReleaseorchestratorConfigEntregaTestarResponses,
+  ReleaseorchestratorContatoAtualizarData,
+  ReleaseorchestratorContatoAtualizarResponses,
+  ReleaseorchestratorContatoBuscarData,
+  ReleaseorchestratorContatoBuscarResponses,
+  ReleaseorchestratorContatoCriarData,
+  ReleaseorchestratorContatoCriarResponses,
+  ReleaseorchestratorContatoExcluirData,
+  ReleaseorchestratorContatoExcluirResponses,
+  ReleaseorchestratorContatoListarData,
+  ReleaseorchestratorContatoListarResponses,
+  ReleaseorchestratorDeltaEntregaCalcularData,
+  ReleaseorchestratorDeltaEntregaCalcularResponses,
+  ReleaseorchestratorDeltaEntregaListarData,
+  ReleaseorchestratorDeltaEntregaListarResponses,
+  ReleaseorchestratorDeltaEntregaResumoData,
+  ReleaseorchestratorDeltaEntregaResumoResponses,
+  ReleaseorchestratorDeployInstalacaoBuscarData,
+  ReleaseorchestratorDeployInstalacaoBuscarResponses,
+  ReleaseorchestratorDeployInstalacaoExecutarData,
+  ReleaseorchestratorDeployInstalacaoExecutarLoteData,
+  ReleaseorchestratorDeployInstalacaoExecutarLoteResponses,
+  ReleaseorchestratorDeployInstalacaoExecutarResponses,
+  ReleaseorchestratorDeployInstalacaoListarData,
+  ReleaseorchestratorDeployInstalacaoListarResponses,
+  ReleaseorchestratorDeployInstalacaoPreviewData,
+  ReleaseorchestratorDeployInstalacaoPreviewResponses,
+  ReleaseorchestratorDocumentoEntregaGerarData,
+  ReleaseorchestratorDocumentoEntregaGerarResponses,
+  ReleaseorchestratorDominioProdutoAlterarStatusData,
+  ReleaseorchestratorDominioProdutoAlterarStatusResponses,
+  ReleaseorchestratorDominioProdutoAtualizarData,
+  ReleaseorchestratorDominioProdutoAtualizarResponses,
+  ReleaseorchestratorDominioProdutoBuscarData,
+  ReleaseorchestratorDominioProdutoBuscarResponses,
+  ReleaseorchestratorDominioProdutoCriarData,
+  ReleaseorchestratorDominioProdutoCriarResponses,
+  ReleaseorchestratorDominioProdutoExcluirData,
+  ReleaseorchestratorDominioProdutoExcluirResponses,
+  ReleaseorchestratorDominioProdutoListarData,
+  ReleaseorchestratorDominioProdutoListarResponses,
+  ReleaseorchestratorEntregaAtualizarRascunhoData,
+  ReleaseorchestratorEntregaAtualizarRascunhoResponses,
+  ReleaseorchestratorEntregaBuscarData,
+  ReleaseorchestratorEntregaBuscarResponses,
+  ReleaseorchestratorEntregaCancelarData,
+  ReleaseorchestratorEntregaCancelarResponses,
+  ReleaseorchestratorEntregaCriarData,
+  ReleaseorchestratorEntregaCriarResponses,
+  ReleaseorchestratorEntregaDownloadPacoteData,
+  ReleaseorchestratorEntregaDownloadPacoteResponses,
+  ReleaseorchestratorEntregaListarData,
+  ReleaseorchestratorEntregaListarResponses,
+  ReleaseorchestratorEntregaModuloAlterarSelecaoData,
+  ReleaseorchestratorEntregaModuloAlterarSelecaoResponses,
+  ReleaseorchestratorEntregaModuloInicializarData,
+  ReleaseorchestratorEntregaModuloInicializarResponses,
+  ReleaseorchestratorEntregaModuloListarData,
+  ReleaseorchestratorEntregaModuloListarResponses,
+  ReleaseorchestratorEntregaReagendarPublicacaoData,
+  ReleaseorchestratorEntregaReagendarPublicacaoResponses,
+  ReleaseorchestratorEntregaReentregarData,
+  ReleaseorchestratorEntregaReentregarResponses,
+  ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData,
+  ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses,
+  ReleaseorchestratorFuncionalidadeProdutoAtualizarData,
+  ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses,
+  ReleaseorchestratorFuncionalidadeProdutoBuscarData,
+  ReleaseorchestratorFuncionalidadeProdutoBuscarResponses,
+  ReleaseorchestratorFuncionalidadeProdutoCriarData,
+  ReleaseorchestratorFuncionalidadeProdutoCriarResponses,
+  ReleaseorchestratorFuncionalidadeProdutoExcluirData,
+  ReleaseorchestratorFuncionalidadeProdutoExcluirResponses,
+  ReleaseorchestratorFuncionalidadeProdutoListarData,
+  ReleaseorchestratorFuncionalidadeProdutoListarResponses,
+  ReleaseorchestratorGeracaoEntregaIniciarData,
+  ReleaseorchestratorGeracaoEntregaIniciarResponses,
+  ReleaseorchestratorHostAlterarStatusData,
+  ReleaseorchestratorHostAlterarStatusResponses,
+  ReleaseorchestratorHostAtualizarData,
+  ReleaseorchestratorHostAtualizarResponses,
+  ReleaseorchestratorHostBuscarData,
+  ReleaseorchestratorHostBuscarResponses,
+  ReleaseorchestratorHostCriarData,
+  ReleaseorchestratorHostCriarResponses,
+  ReleaseorchestratorHostExcluirData,
+  ReleaseorchestratorHostExcluirResponses,
+  ReleaseorchestratorHostListarData,
+  ReleaseorchestratorHostListarResponses,
+  ReleaseorchestratorInstalacaoClienteAlterarStatusData,
+  ReleaseorchestratorInstalacaoClienteAlterarStatusResponses,
+  ReleaseorchestratorInstalacaoClienteAtualizarData,
+  ReleaseorchestratorInstalacaoClienteAtualizarResponses,
+  ReleaseorchestratorInstalacaoClienteBuscarData,
+  ReleaseorchestratorInstalacaoClienteBuscarResponses,
+  ReleaseorchestratorInstalacaoClienteCriarData,
+  ReleaseorchestratorInstalacaoClienteCriarResponses,
+  ReleaseorchestratorInstalacaoClienteDispararBuildData,
+  ReleaseorchestratorInstalacaoClienteDispararBuildResponses,
+  ReleaseorchestratorInstalacaoClienteExcluirData,
+  ReleaseorchestratorInstalacaoClienteExcluirResponses,
+  ReleaseorchestratorInstalacaoClienteFontesVersaoData,
+  ReleaseorchestratorInstalacaoClienteFontesVersaoResponses,
+  ReleaseorchestratorInstalacaoClienteIniciarData,
+  ReleaseorchestratorInstalacaoClienteIniciarResponses,
+  ReleaseorchestratorInstalacaoClienteListarData,
+  ReleaseorchestratorInstalacaoClienteListarResponses,
+  ReleaseorchestratorInstalacaoClientePararData,
+  ReleaseorchestratorInstalacaoClientePararResponses,
+  ReleaseorchestratorInstalacaoClienteRegistrarHealthData,
+  ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses,
+  ReleaseorchestratorInstalacaoClienteResolverVersaoData,
+  ReleaseorchestratorInstalacaoClienteResolverVersaoResponses,
+  ReleaseorchestratorInstalacaoClienteSugerirPortasData,
+  ReleaseorchestratorInstalacaoClienteSugerirPortasResponses,
+  ReleaseorchestratorJenkinsWebhookReceberData,
+  ReleaseorchestratorJenkinsWebhookReceberResponses,
+  ReleaseorchestratorModuloProdutoAlterarStatusData,
+  ReleaseorchestratorModuloProdutoAlterarStatusResponses,
+  ReleaseorchestratorModuloProdutoAtualizarData,
+  ReleaseorchestratorModuloProdutoAtualizarResponses,
+  ReleaseorchestratorModuloProdutoBuscarData,
+  ReleaseorchestratorModuloProdutoBuscarResponses,
+  ReleaseorchestratorModuloProdutoCriarData,
+  ReleaseorchestratorModuloProdutoCriarResponses,
+  ReleaseorchestratorModuloProdutoExcluirData,
+  ReleaseorchestratorModuloProdutoExcluirResponses,
+  ReleaseorchestratorModuloProdutoListarData,
+  ReleaseorchestratorModuloProdutoListarResponses,
+  ReleaseorchestratorProdutoRhAlterarStatusData,
+  ReleaseorchestratorProdutoRhAlterarStatusResponses,
+  ReleaseorchestratorProdutoRhAtualizarData,
+  ReleaseorchestratorProdutoRhAtualizarResponses,
+  ReleaseorchestratorProdutoRhBuscarData,
+  ReleaseorchestratorProdutoRhBuscarResponses,
+  ReleaseorchestratorProdutoRhCriarData,
+  ReleaseorchestratorProdutoRhCriarResponses,
+  ReleaseorchestratorProdutoRhExcluirData,
+  ReleaseorchestratorProdutoRhExcluirResponses,
+  ReleaseorchestratorProdutoRhListarData,
+  ReleaseorchestratorProdutoRhListarResponses,
+  ReleaseorchestratorProdutoRhTestarGithubData,
+  ReleaseorchestratorProdutoRhTestarGithubResponses,
+  ReleaseorchestratorProdutoRhTestarJenkinsData,
+  ReleaseorchestratorProdutoRhTestarJenkinsResponses,
+  ReleaseorchestratorProximaEntregaAlterarStatusData,
+  ReleaseorchestratorProximaEntregaAlterarStatusResponses,
+  ReleaseorchestratorProximaEntregaAtualizarData,
+  ReleaseorchestratorProximaEntregaAtualizarResponses,
+  ReleaseorchestratorProximaEntregaBuscarData,
+  ReleaseorchestratorProximaEntregaBuscarResponses,
+  ReleaseorchestratorProximaEntregaCriarData,
+  ReleaseorchestratorProximaEntregaCriarResponses,
+  ReleaseorchestratorProximaEntregaExcluirData,
+  ReleaseorchestratorProximaEntregaExcluirResponses,
+  ReleaseorchestratorProximaEntregaListarData,
+  ReleaseorchestratorProximaEntregaListarResponses,
+  ReleaseorchestratorReleaseAlterarStatusData,
+  ReleaseorchestratorReleaseAlterarStatusResponses,
+  ReleaseorchestratorReleaseAtualizarData,
+  ReleaseorchestratorReleaseAtualizarResponses,
+  ReleaseorchestratorReleaseBuscarData,
+  ReleaseorchestratorReleaseBuscarResponses,
+  ReleaseorchestratorReleaseCancelarData,
+  ReleaseorchestratorReleaseCancelarResponses,
+  ReleaseorchestratorReleaseCriarData,
+  ReleaseorchestratorReleaseCriarResponses,
+  ReleaseorchestratorReleaseDispararBuildData,
+  ReleaseorchestratorReleaseDispararBuildResponses,
+  ReleaseorchestratorReleaseDisponiveisDeployData,
+  ReleaseorchestratorReleaseDisponiveisDeployResponses,
+  ReleaseorchestratorReleaseDuplicarData,
+  ReleaseorchestratorReleaseDuplicarResponses,
+  ReleaseorchestratorReleaseExcluirData,
+  ReleaseorchestratorReleaseExcluirResponses,
+  ReleaseorchestratorReleaseFontesBuildData,
+  ReleaseorchestratorReleaseFontesBuildResponses,
+  ReleaseorchestratorReleaseHistoricoData,
+  ReleaseorchestratorReleaseHistoricoResponses,
+  ReleaseorchestratorReleaseItemAdicionarData,
+  ReleaseorchestratorReleaseItemAdicionarResponses,
+  ReleaseorchestratorReleaseItemAtualizarData,
+  ReleaseorchestratorReleaseItemAtualizarResponses,
+  ReleaseorchestratorReleaseItemDuplicarData,
+  ReleaseorchestratorReleaseItemDuplicarResponses,
+  ReleaseorchestratorReleaseItemListarData,
+  ReleaseorchestratorReleaseItemListarResponses,
+  ReleaseorchestratorReleaseItemRemoverData,
+  ReleaseorchestratorReleaseItemRemoverResponses,
+  ReleaseorchestratorReleaseItemReordenarData,
+  ReleaseorchestratorReleaseItemReordenarResponses,
+  ReleaseorchestratorReleaseListarData,
+  ReleaseorchestratorReleaseListarManifestosData,
+  ReleaseorchestratorReleaseListarManifestosResponses,
+  ReleaseorchestratorReleaseListarResponses,
+  ReleaseorchestratorReleaseModuloVersaoListarData,
+  ReleaseorchestratorReleaseModuloVersaoListarResponses,
+  ReleaseorchestratorReleaseModuloVersaoRemoverData,
+  ReleaseorchestratorReleaseModuloVersaoRemoverResponses,
+  ReleaseorchestratorReleaseModuloVersaoSalvarData,
+  ReleaseorchestratorReleaseModuloVersaoSalvarResponses,
+  ReleaseorchestratorReleasePdfGerarData,
+  ReleaseorchestratorReleasePdfGerarResponses,
+  ReleaseorchestratorReleasePublicarData,
+  ReleaseorchestratorReleasePublicarResponses,
+  ReleaseorchestratorReleaseSalvarManifestoData,
+  ReleaseorchestratorReleaseSalvarManifestoResponses,
+  ReleaseorchestratorReleaseTemplateAlterarStatusData,
+  ReleaseorchestratorReleaseTemplateAlterarStatusResponses,
+  ReleaseorchestratorReleaseTemplateAtualizarData,
+  ReleaseorchestratorReleaseTemplateAtualizarResponses,
+  ReleaseorchestratorReleaseTemplateBuscarData,
+  ReleaseorchestratorReleaseTemplateBuscarResponses,
+  ReleaseorchestratorReleaseTemplateCriarData,
+  ReleaseorchestratorReleaseTemplateCriarResponses,
+  ReleaseorchestratorReleaseTemplateExcluirData,
+  ReleaseorchestratorReleaseTemplateExcluirResponses,
+  ReleaseorchestratorReleaseTemplateListarData,
+  ReleaseorchestratorReleaseTemplateListarResponses,
+  ReleaseorchestratorReleaseValidarData,
+  ReleaseorchestratorReleaseValidarResponses,
 } from './types.gen';
 
 export type Options<
@@ -517,50 +624,64 @@ export type Options<
   meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
 
-export const excluir = <ThrowOnError extends boolean = true>(
-  options: Options<ExcluirData, ThrowOnError>,
-): RequestResult<ExcluirResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<ExcluirResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseTemplateExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorReleaseTemplateExcluirResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/templates/{id}',
     ...options,
   });
 
-export const buscar = <ThrowOnError extends boolean = true>(
-  options: Options<BuscarData, ThrowOnError>,
-): RequestResult<BuscarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<BuscarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseTemplateBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseTemplateBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/templates/{id}',
     ...options,
   });
 
-export const atualizar = <ThrowOnError extends boolean = true>(
-  options: Options<AtualizarData, ThrowOnError>,
-): RequestResult<AtualizarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<AtualizarResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/templates/{id}',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
+export const releaseorchestratorReleaseTemplateAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseTemplateAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorReleaseTemplateAtualizarResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/templates/{id}',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
     },
-  });
+  );
 
-export const remover = <ThrowOnError extends boolean = true>(
-  options: Options<RemoverData, ThrowOnError>,
-): RequestResult<RemoverResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<RemoverResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseModuloVersaoRemover = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoRemoverData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseModuloVersaoRemoverResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorReleaseModuloVersaoRemoverResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}',
     ...options,
   });
 
-export const salvar = <ThrowOnError extends boolean = true>(
-  options: Options<SalvarData, ThrowOnError>,
-): RequestResult<SalvarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<SalvarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseModuloVersaoSalvar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoSalvarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseModuloVersaoSalvarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    ReleaseorchestratorReleaseModuloVersaoSalvarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}',
     ...options,
@@ -570,19 +691,19 @@ export const salvar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const remover1 = <ThrowOnError extends boolean = true>(
-  options: Options<Remover1Data, ThrowOnError>,
-): RequestResult<Remover1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Remover1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemRemover = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemRemoverData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemRemoverResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorReleaseItemRemoverResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}',
     ...options,
   });
 
-export const atualizar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar1Data, ThrowOnError>,
-): RequestResult<Atualizar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorReleaseItemAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}',
     ...options,
@@ -592,10 +713,10 @@ export const atualizar1 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const reordenar = <ThrowOnError extends boolean = true>(
-  options: Options<ReordenarData, ThrowOnError>,
-): RequestResult<ReordenarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<ReordenarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemReordenar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemReordenarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemReordenarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorReleaseItemReordenarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/reordenar',
     ...options,
@@ -605,28 +726,28 @@ export const reordenar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir1 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir1Data, ThrowOnError>,
-): RequestResult<Excluir1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorReleaseExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
   });
 
-export const buscar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar1Data, ThrowOnError>,
-): RequestResult<Buscar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
   });
 
-export const atualizar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar2Data, ThrowOnError>,
-): RequestResult<Atualizar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorReleaseAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
@@ -636,28 +757,52 @@ export const atualizar2 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir2 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir2Data, ThrowOnError>,
-): RequestResult<Excluir2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseListarManifestos = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseListarManifestosData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseListarManifestosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseListarManifestosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/manifestos',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseSalvarManifesto = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseSalvarManifestoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseSalvarManifestoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorReleaseSalvarManifestoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/manifestos',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorProximaEntregaExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProximaEntregaExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorProximaEntregaExcluirResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorProximaEntregaBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProximaEntregaBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorProximaEntregaBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
     ...options,
   });
 
-export const buscar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar2Data, ThrowOnError>,
-): RequestResult<Buscar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
-    ...options,
-  });
-
-export const atualizar3 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar3Data, ThrowOnError>,
-): RequestResult<Atualizar3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProximaEntregaAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProximaEntregaAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorProximaEntregaAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
     ...options,
@@ -667,28 +812,28 @@ export const atualizar3 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir3 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir3Data, ThrowOnError>,
-): RequestResult<Excluir3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorModuloProdutoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorModuloProdutoExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
     ...options,
   });
 
-export const buscar3 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar3Data, ThrowOnError>,
-): RequestResult<Buscar3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorModuloProdutoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorModuloProdutoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
     ...options,
   });
 
-export const atualizar4 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar4Data, ThrowOnError>,
-): RequestResult<Atualizar4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar4Responses, unknown, ThrowOnError>({
+export const releaseorchestratorModuloProdutoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorModuloProdutoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
     ...options,
@@ -698,28 +843,30 @@ export const atualizar4 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir4 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir4Data, ThrowOnError>,
-): RequestResult<Excluir4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir4Responses, unknown, ThrowOnError>({
+export const releaseorchestratorDominioProdutoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorDominioProdutoExcluirResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorDominioProdutoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDominioProdutoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
     ...options,
   });
 
-export const buscar4 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar4Data, ThrowOnError>,
-): RequestResult<Buscar4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar4Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
-    ...options,
-  });
-
-export const atualizar5 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar5Data, ThrowOnError>,
-): RequestResult<Atualizar5Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar5Responses, unknown, ThrowOnError>({
+export const releaseorchestratorDominioProdutoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorDominioProdutoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
     ...options,
@@ -729,28 +876,40 @@ export const atualizar5 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir5 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir5Data, ThrowOnError>,
-): RequestResult<Excluir5Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir5Responses, unknown, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorFuncionalidadeProdutoExcluirResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
   });
 
-export const buscar5 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar5Data, ThrowOnError>,
-): RequestResult<Buscar5Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar5Responses, unknown, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorFuncionalidadeProdutoBuscarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
   });
 
-export const atualizar6 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar6Data, ThrowOnError>,
-): RequestResult<Atualizar6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar6Responses, unknown, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
@@ -760,28 +919,28 @@ export const atualizar6 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir6 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir6Data, ThrowOnError>,
-): RequestResult<Excluir6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir6Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorProdutoRhExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
   });
 
-export const buscar6 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar6Data, ThrowOnError>,
-): RequestResult<Buscar6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar6Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorProdutoRhBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
   });
 
-export const atualizar7 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar7Data, ThrowOnError>,
-): RequestResult<Atualizar7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar7Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorProdutoRhAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
@@ -791,12 +950,38 @@ export const atualizar7 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const atualizarRascunho = <ThrowOnError extends boolean = true>(
-  options: Options<AtualizarRascunhoData, ThrowOnError>,
-): RequestResult<AtualizarRascunhoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<AtualizarRascunhoResponses, unknown, ThrowOnError>({
+export const releaseorchestratorInstalacaoClienteExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorInstalacaoClienteExcluirResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{id}/rascunho',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorInstalacaoClienteBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    ReleaseorchestratorInstalacaoClienteAtualizarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -804,28 +989,74 @@ export const atualizarRascunho = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir7 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir7Data, ThrowOnError>,
-): RequestResult<Excluir7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir7Responses, unknown, ThrowOnError>({
+export const releaseorchestratorHostExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorHostExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorHostExcluirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorHostBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorHostBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorHostBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorHostAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorHostAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorHostAtualizarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorEntregaAtualizarRascunho = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaAtualizarRascunhoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaAtualizarRascunhoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorEntregaAtualizarRascunhoResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/entregas/{id}/rascunho',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    },
+  );
+
+export const releaseorchestratorClienteExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorClienteExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
   });
 
-export const buscar7 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar7Data, ThrowOnError>,
-): RequestResult<Buscar7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar7Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorClienteBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
   });
 
-export const atualizar8 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar8Data, ThrowOnError>,
-): RequestResult<Atualizar8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar8Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorClienteAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
@@ -835,28 +1066,32 @@ export const atualizar8 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const rescindir = <ThrowOnError extends boolean = true>(
-  options: Options<RescindirData, ThrowOnError>,
-): RequestResult<RescindirResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<RescindirResponses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoRescindir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoRescindirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoRescindirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorClienteProdutoRescindirResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
   });
 
-export const buscar8 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar8Data, ThrowOnError>,
-): RequestResult<Buscar8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar8Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorClienteProdutoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
   });
 
-export const atualizar9 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar9Data, ThrowOnError>,
-): RequestResult<Atualizar9Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar9Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorClienteProdutoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
@@ -866,19 +1101,27 @@ export const atualizar9 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const remover2 = <ThrowOnError extends boolean = true>(
-  options: Options<Remover2Data, ThrowOnError>,
-): RequestResult<Remover2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Remover2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoModuloRemover = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloRemoverData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoModuloRemoverResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorClienteProdutoModuloRemoverResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}',
     ...options,
   });
 
-export const salvar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Salvar1Data, ThrowOnError>,
-): RequestResult<Salvar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Salvar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoModuloSalvar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloSalvarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoModuloSalvarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    ReleaseorchestratorClienteProdutoModuloSalvarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}',
     ...options,
@@ -888,19 +1131,27 @@ export const salvar1 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const remover3 = <ThrowOnError extends boolean = true>(
-  options: Options<Remover3Data, ThrowOnError>,
-): RequestResult<Remover3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Remover3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteFuncionalidadeRemover = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeRemoverData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteFuncionalidadeRemoverResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorClienteFuncionalidadeRemoverResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}',
     ...options,
   });
 
-export const salvar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Salvar2Data, ThrowOnError>,
-): RequestResult<Salvar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Salvar2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteFuncionalidadeSalvar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeSalvarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteFuncionalidadeSalvarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    ReleaseorchestratorClienteFuncionalidadeSalvarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}',
     ...options,
@@ -910,28 +1161,28 @@ export const salvar2 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir8 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir8Data, ThrowOnError>,
-): RequestResult<Excluir8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir8Responses, unknown, ThrowOnError>({
+export const releaseorchestratorContatoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorContatoExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorContatoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<ReleaseorchestratorContatoExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
   });
 
-export const buscar9 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar9Data, ThrowOnError>,
-): RequestResult<Buscar9Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar9Responses, unknown, ThrowOnError>({
+export const releaseorchestratorContatoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorContatoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorContatoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorContatoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
   });
 
-export const atualizar10 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar10Data, ThrowOnError>,
-): RequestResult<Atualizar10Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar10Responses, unknown, ThrowOnError>({
+export const releaseorchestratorContatoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorContatoAtualizarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorContatoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorContatoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
@@ -941,19 +1192,19 @@ export const atualizar10 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const buscar10 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar10Data, ThrowOnError>,
-): RequestResult<Buscar10Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar10Responses, unknown, ThrowOnError>({
+export const releaseorchestratorConfigEntregaBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorConfigEntregaBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorConfigEntregaBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorConfigEntregaBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega',
     ...options,
   });
 
-export const salvar3 = <ThrowOnError extends boolean = true>(
-  options: Options<Salvar3Data, ThrowOnError>,
-): RequestResult<Salvar3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Salvar3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorConfigEntregaSalvar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorConfigEntregaSalvarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorConfigEntregaSalvarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<ReleaseorchestratorConfigEntregaSalvarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega',
     ...options,
@@ -963,19 +1214,19 @@ export const salvar3 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const buscar11 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar11Data, ThrowOnError>,
-): RequestResult<Buscar11Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar11Responses, unknown, ThrowOnError>({
+export const identityaccessUsuarioBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioBuscarData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<IdentityaccessUsuarioBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}',
     ...options,
   });
 
-export const atualizar11 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar11Data, ThrowOnError>,
-): RequestResult<Atualizar11Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar11Responses, unknown, ThrowOnError>({
+export const identityaccessUsuarioAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioAtualizarData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessUsuarioAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}',
     ...options,
@@ -985,19 +1236,19 @@ export const atualizar11 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listarGrupos = <ThrowOnError extends boolean = true>(
-  options: Options<ListarGruposData, ThrowOnError>,
-): RequestResult<ListarGruposResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ListarGruposResponses, unknown, ThrowOnError>({
+export const identityaccessUsuarioListarGrupos = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioListarGruposData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioListarGruposResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<IdentityaccessUsuarioListarGruposResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}/grupos',
     ...options,
   });
 
-export const salvarGrupos = <ThrowOnError extends boolean = true>(
-  options: Options<SalvarGruposData, ThrowOnError>,
-): RequestResult<SalvarGruposResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<SalvarGruposResponses, unknown, ThrowOnError>({
+export const identityaccessUsuarioSalvarGrupos = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioSalvarGruposData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioSalvarGruposResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessUsuarioSalvarGruposResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}/grupos',
     ...options,
@@ -1007,19 +1258,19 @@ export const salvarGrupos = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const atual = <ThrowOnError extends boolean = true>(
-  options?: Options<AtualData, ThrowOnError>,
-): RequestResult<AtualResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<AtualResponses, unknown, ThrowOnError>({
+export const identityaccessPoliticaSenhaAtual = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessPoliticaSenhaAtualData, ThrowOnError>,
+): RequestResult<IdentityaccessPoliticaSenhaAtualResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessPoliticaSenhaAtualResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/politica-senha',
     ...options,
   });
 
-export const atualizar12 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar12Data, ThrowOnError>,
-): RequestResult<Atualizar12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar12Responses, unknown, ThrowOnError>({
+export const identityaccessPoliticaSenhaAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessPoliticaSenhaAtualizarData, ThrowOnError>,
+): RequestResult<IdentityaccessPoliticaSenhaAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessPoliticaSenhaAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/politica-senha',
     ...options,
@@ -1029,28 +1280,28 @@ export const atualizar12 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir9 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir9Data, ThrowOnError>,
-): RequestResult<Excluir9Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir9Responses, unknown, ThrowOnError>({
+export const identityaccessGrupoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoExcluirData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<IdentityaccessGrupoExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
   });
 
-export const buscar12 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar12Data, ThrowOnError>,
-): RequestResult<Buscar12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar12Responses, unknown, ThrowOnError>({
+export const identityaccessGrupoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoBuscarData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<IdentityaccessGrupoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
   });
 
-export const atualizar13 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar13Data, ThrowOnError>,
-): RequestResult<Atualizar13Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar13Responses, unknown, ThrowOnError>({
+export const identityaccessGrupoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoAtualizarData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessGrupoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
@@ -1060,19 +1311,19 @@ export const atualizar13 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listarMembros = <ThrowOnError extends boolean = true>(
-  options: Options<ListarMembrosData, ThrowOnError>,
-): RequestResult<ListarMembrosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ListarMembrosResponses, unknown, ThrowOnError>({
+export const identityaccessGrupoListarMembros = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoListarMembrosData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoListarMembrosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<IdentityaccessGrupoListarMembrosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}/usuarios',
     ...options,
   });
 
-export const salvarMembros = <ThrowOnError extends boolean = true>(
-  options: Options<SalvarMembrosData, ThrowOnError>,
-): RequestResult<SalvarMembrosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<SalvarMembrosResponses, unknown, ThrowOnError>({
+export const identityaccessGrupoSalvarMembros = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoSalvarMembrosData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoSalvarMembrosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessGrupoSalvarMembrosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}/usuarios',
     ...options,
@@ -1082,19 +1333,19 @@ export const salvarMembros = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listarPermissoes = <ThrowOnError extends boolean = true>(
-  options: Options<ListarPermissoesData, ThrowOnError>,
-): RequestResult<ListarPermissoesResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ListarPermissoesResponses, unknown, ThrowOnError>({
+export const identityaccessGrupoListarPermissoes = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoListarPermissoesData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoListarPermissoesResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<IdentityaccessGrupoListarPermissoesResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}/permissoes',
     ...options,
   });
 
-export const salvarPermissoes = <ThrowOnError extends boolean = true>(
-  options: Options<SalvarPermissoesData, ThrowOnError>,
-): RequestResult<SalvarPermissoesResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<SalvarPermissoesResponses, unknown, ThrowOnError>({
+export const identityaccessGrupoSalvarPermissoes = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoSalvarPermissoesData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoSalvarPermissoesResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessGrupoSalvarPermissoesResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos/{id}/permissoes',
     ...options,
@@ -1104,19 +1355,19 @@ export const salvarPermissoes = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const remover4 = <ThrowOnError extends boolean = true>(
-  options: Options<Remover4Data, ThrowOnError>,
-): RequestResult<Remover4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Remover4Responses, unknown, ThrowOnError>({
+export const identityaccessEscopoAcessoRemover = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessEscopoAcessoRemoverData, ThrowOnError>,
+): RequestResult<IdentityaccessEscopoAcessoRemoverResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<IdentityaccessEscopoAcessoRemoverResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos/{id}',
     ...options,
   });
 
-export const atualizar14 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar14Data, ThrowOnError>,
-): RequestResult<Atualizar14Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar14Responses, unknown, ThrowOnError>({
+export const identityaccessEscopoAcessoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessEscopoAcessoAtualizarData, ThrowOnError>,
+): RequestResult<IdentityaccessEscopoAcessoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<IdentityaccessEscopoAcessoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos/{id}',
     ...options,
@@ -1126,28 +1377,28 @@ export const atualizar14 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir10 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir10Data, ThrowOnError>,
-): RequestResult<Excluir10Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir10Responses, unknown, ThrowOnError>({
+export const docflowProjetoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowProjetoExcluirData, ThrowOnError>,
+): RequestResult<DocflowProjetoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowProjetoExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
   });
 
-export const buscar13 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar13Data, ThrowOnError>,
-): RequestResult<Buscar13Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar13Responses, unknown, ThrowOnError>({
+export const docflowProjetoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowProjetoBuscarData, ThrowOnError>,
+): RequestResult<DocflowProjetoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowProjetoBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
   });
 
-export const atualizar15 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar15Data, ThrowOnError>,
-): RequestResult<Atualizar15Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar15Responses, unknown, ThrowOnError>({
+export const docflowProjetoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowProjetoAtualizarData, ThrowOnError>,
+): RequestResult<DocflowProjetoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowProjetoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
@@ -1157,28 +1408,28 @@ export const atualizar15 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir11 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir11Data, ThrowOnError>,
-): RequestResult<Excluir11Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir11Responses, unknown, ThrowOnError>({
+export const docflowPaginaExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaExcluirData, ThrowOnError>,
+): RequestResult<DocflowPaginaExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPaginaExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
   });
 
-export const buscar14 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar14Data, ThrowOnError>,
-): RequestResult<Buscar14Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar14Responses, unknown, ThrowOnError>({
+export const docflowPaginaBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaBuscarData, ThrowOnError>,
+): RequestResult<DocflowPaginaBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
   });
 
-export const atualizar16 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar16Data, ThrowOnError>,
-): RequestResult<Atualizar16Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar16Responses, unknown, ThrowOnError>({
+export const docflowPaginaAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAtualizarData, ThrowOnError>,
+): RequestResult<DocflowPaginaAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowPaginaAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
@@ -1188,10 +1439,10 @@ export const atualizar16 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const autosave = <ThrowOnError extends boolean = true>(
-  options: Options<AutosaveData, ThrowOnError>,
-): RequestResult<AutosaveResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<AutosaveResponses, unknown, ThrowOnError>({
+export const docflowPaginaAutosave = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAutosaveData, ThrowOnError>,
+): RequestResult<DocflowPaginaAutosaveResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowPaginaAutosaveResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/autosave',
     ...options,
@@ -1201,19 +1452,19 @@ export const autosave = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluirTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<ExcluirTemplateData, ThrowOnError>,
-): RequestResult<ExcluirTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<ExcluirTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaExcluirTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaExcluirTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaExcluirTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPaginaExcluirTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}',
     ...options,
   });
 
-export const atualizarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<AtualizarTemplateData, ThrowOnError>,
-): RequestResult<AtualizarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<AtualizarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaAtualizarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAtualizarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaAtualizarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowPaginaAtualizarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}',
     ...options,
@@ -1223,28 +1474,50 @@ export const atualizarTemplate = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir12 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir12Data, ThrowOnError>,
-): RequestResult<Excluir12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir12Responses, unknown, ThrowOnError>({
+export const docflowPaginaExcluirSnippet = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaExcluirSnippetData, ThrowOnError>,
+): RequestResult<DocflowPaginaExcluirSnippetResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPaginaExcluirSnippetResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/snippets/{snippetId}',
+    ...options,
+  });
+
+export const docflowPaginaAtualizarSnippet = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAtualizarSnippetData, ThrowOnError>,
+): RequestResult<DocflowPaginaAtualizarSnippetResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowPaginaAtualizarSnippetResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/snippets/{snippetId}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowModuloExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowModuloExcluirData, ThrowOnError>,
+): RequestResult<DocflowModuloExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowModuloExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
   });
 
-export const buscar15 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar15Data, ThrowOnError>,
-): RequestResult<Buscar15Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar15Responses, unknown, ThrowOnError>({
+export const docflowModuloBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowModuloBuscarData, ThrowOnError>,
+): RequestResult<DocflowModuloBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowModuloBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
   });
 
-export const atualizar17 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar17Data, ThrowOnError>,
-): RequestResult<Atualizar17Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar17Responses, unknown, ThrowOnError>({
+export const docflowModuloAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowModuloAtualizarData, ThrowOnError>,
+): RequestResult<DocflowModuloAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowModuloAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
@@ -1254,28 +1527,28 @@ export const atualizar17 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const excluir13 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir13Data, ThrowOnError>,
-): RequestResult<Excluir13Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir13Responses, unknown, ThrowOnError>({
+export const docflowClienteExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteExcluirData, ThrowOnError>,
+): RequestResult<DocflowClienteExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowClienteExcluirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
   });
 
-export const buscar16 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar16Data, ThrowOnError>,
-): RequestResult<Buscar16Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar16Responses, unknown, ThrowOnError>({
+export const docflowClienteBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteBuscarData, ThrowOnError>,
+): RequestResult<DocflowClienteBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowClienteBuscarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
   });
 
-export const atualizar18 = <ThrowOnError extends boolean = true>(
-  options: Options<Atualizar18Data, ThrowOnError>,
-): RequestResult<Atualizar18Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<Atualizar18Responses, unknown, ThrowOnError>({
+export const docflowClienteAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteAtualizarData, ThrowOnError>,
+): RequestResult<DocflowClienteAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowClienteAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
@@ -1285,10 +1558,10 @@ export const atualizar18 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const vincularProjetos = <ThrowOnError extends boolean = true>(
-  options: Options<VincularProjetosData, ThrowOnError>,
-): RequestResult<VincularProjetosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<VincularProjetosResponses, unknown, ThrowOnError>({
+export const docflowClienteVincularProjetos = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteVincularProjetosData, ThrowOnError>,
+): RequestResult<DocflowClienteVincularProjetosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowClienteVincularProjetosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/projetos',
     ...options,
@@ -1298,10 +1571,10 @@ export const vincularProjetos = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const vincularPaginas = <ThrowOnError extends boolean = true>(
-  options: Options<VincularPaginasData, ThrowOnError>,
-): RequestResult<VincularPaginasResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<VincularPaginasResponses, unknown, ThrowOnError>({
+export const docflowClienteVincularPaginas = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteVincularPaginasData, ThrowOnError>,
+): RequestResult<DocflowClienteVincularPaginasResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowClienteVincularPaginasResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/paginas',
     ...options,
@@ -1311,10 +1584,10 @@ export const vincularPaginas = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const vincularModulos = <ThrowOnError extends boolean = true>(
-  options: Options<VincularModulosData, ThrowOnError>,
-): RequestResult<VincularModulosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<VincularModulosResponses, unknown, ThrowOnError>({
+export const docflowClienteVincularModulos = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteVincularModulosData, ThrowOnError>,
+): RequestResult<DocflowClienteVincularModulosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowClienteVincularModulosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/modulos',
     ...options,
@@ -1324,10 +1597,68 @@ export const vincularModulos = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const receber = <ThrowOnError extends boolean = true>(
-  options: Options<ReceberData, ThrowOnError>,
-): RequestResult<ReceberResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReceberResponses, unknown, ThrowOnError>({
+export const docflowAjudaExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowAjudaExcluirData, ThrowOnError>,
+): RequestResult<DocflowAjudaExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowAjudaExcluirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const docflowAjudaAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowAjudaAtualizarData, ThrowOnError>,
+): RequestResult<DocflowAjudaAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowAjudaAtualizarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiDocumentoImportacaoAtualizarComposicaoPaginaImportada = <
+  ThrowOnError extends boolean = true,
+>(
+  options: Options<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/composicao',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiDocumentoImportacaoReordenarEstruturaDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoReordenarEstruturaDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<
+    AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/estrutura/rascunho',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorJenkinsWebhookReceber = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorJenkinsWebhookReceberData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorJenkinsWebhookReceberResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorJenkinsWebhookReceberResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/webhooks/jenkins',
     ...options,
@@ -1337,19 +1668,19 @@ export const receber = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar = <ThrowOnError extends boolean = true>(
-  options?: Options<ListarData, ThrowOnError>,
-): RequestResult<ListarResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<ListarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorReleaseTemplateListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorReleaseTemplateListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/templates',
     ...options,
   });
 
-export const criar = <ThrowOnError extends boolean = true>(
-  options: Options<CriarData, ThrowOnError>,
-): RequestResult<CriarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CriarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseTemplateCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseTemplateCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/templates',
     ...options,
@@ -1359,19 +1690,19 @@ export const criar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar1 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar1Data, ThrowOnError>,
-): RequestResult<Listar1Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorReleaseListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorReleaseListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases',
     ...options,
   });
 
-export const criar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar1Data, ThrowOnError>,
-): RequestResult<Criar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases',
     ...options,
@@ -1381,19 +1712,27 @@ export const criar1 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar2Data, ThrowOnError>,
-): RequestResult<Listar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorArtefatoReleaseModuloListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorArtefatoReleaseModuloListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorArtefatoReleaseModuloListarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos',
     ...options,
   });
 
-export const upload = <ThrowOnError extends boolean = true>(
-  options: Options<UploadData, ThrowOnError>,
-): RequestResult<UploadResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<UploadResponses, unknown, ThrowOnError>({
+export const releaseorchestratorArtefatoReleaseModuloUpload = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloUploadData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorArtefatoReleaseModuloUploadResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorArtefatoReleaseModuloUploadResponses,
+    unknown,
+    ThrowOnError
+  >({
     ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos',
@@ -1404,19 +1743,19 @@ export const upload = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar3 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar3Data, ThrowOnError>,
-): RequestResult<Listar3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseItemListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens',
     ...options,
   });
 
-export const adicionar = <ThrowOnError extends boolean = true>(
-  options: Options<AdicionarData, ThrowOnError>,
-): RequestResult<AdicionarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AdicionarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemAdicionar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemAdicionarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemAdicionarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseItemAdicionarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens',
     ...options,
@@ -1426,37 +1765,50 @@ export const adicionar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const duplicar = <ThrowOnError extends boolean = true>(
-  options: Options<DuplicarData, ThrowOnError>,
-): RequestResult<DuplicarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<DuplicarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseItemDuplicar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseItemDuplicarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseItemDuplicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseItemDuplicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}/duplicar',
     ...options,
   });
 
-export const publicar = <ThrowOnError extends boolean = true>(
-  options: Options<PublicarData, ThrowOnError>,
-): RequestResult<PublicarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<PublicarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleasePublicar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleasePublicarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleasePublicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleasePublicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}/publicar',
     ...options,
   });
 
-export const duplicar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Duplicar1Data, ThrowOnError>,
-): RequestResult<Duplicar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Duplicar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseDuplicar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseDuplicarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseDuplicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseDuplicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}/duplicar',
     ...options,
   });
 
-export const cancelar = <ThrowOnError extends boolean = true>(
-  options: Options<CancelarData, ThrowOnError>,
-): RequestResult<CancelarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CancelarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorReleaseDispararBuild = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseDispararBuildData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseDispararBuildResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseDispararBuildResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/disparar-build',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorReleaseCancelar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseCancelarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseCancelarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorReleaseCancelarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/releases/{id}/cancelar',
     ...options,
@@ -1466,19 +1818,19 @@ export const cancelar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar4 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar4Data, ThrowOnError>,
-): RequestResult<Listar4Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar4Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProximaEntregaListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorProximaEntregaListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorProximaEntregaListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/proximas-entregas',
     ...options,
   });
 
-export const criar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar2Data, ThrowOnError>,
-): RequestResult<Criar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar2Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProximaEntregaCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProximaEntregaCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorProximaEntregaCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/proximas-entregas',
     ...options,
@@ -1488,19 +1840,19 @@ export const criar2 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar5 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar5Data, ThrowOnError>,
-): RequestResult<Listar5Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar5Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorProdutoRhListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorProdutoRhListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos',
     ...options,
   });
 
-export const criar3 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar3Data, ThrowOnError>,
-): RequestResult<Criar3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar3Responses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorProdutoRhCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos',
     ...options,
@@ -1510,19 +1862,19 @@ export const criar3 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar6 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar6Data, ThrowOnError>,
-): RequestResult<Listar6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar6Responses, unknown, ThrowOnError>({
+export const releaseorchestratorModuloProdutoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorModuloProdutoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos',
     ...options,
   });
 
-export const criar4 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar4Data, ThrowOnError>,
-): RequestResult<Criar4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar4Responses, unknown, ThrowOnError>({
+export const releaseorchestratorModuloProdutoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorModuloProdutoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos',
     ...options,
@@ -1532,19 +1884,19 @@ export const criar4 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar7 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar7Data, ThrowOnError>,
-): RequestResult<Listar7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar7Responses, unknown, ThrowOnError>({
+export const releaseorchestratorDominioProdutoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDominioProdutoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios',
     ...options,
   });
 
-export const criar5 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar5Data, ThrowOnError>,
-): RequestResult<Criar5Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar5Responses, unknown, ThrowOnError>({
+export const releaseorchestratorDominioProdutoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorDominioProdutoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios',
     ...options,
@@ -1554,19 +1906,27 @@ export const criar5 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar8 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar8Data, ThrowOnError>,
-): RequestResult<Listar8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar8Responses, unknown, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorFuncionalidadeProdutoListarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades',
     ...options,
   });
 
-export const criar6 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar6Data, ThrowOnError>,
-): RequestResult<Criar6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar6Responses, unknown, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorFuncionalidadeProdutoCriarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades',
     ...options,
@@ -1576,10 +1936,10 @@ export const criar6 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const testarJenkins = <ThrowOnError extends boolean = true>(
-  options: Options<TestarJenkinsData, ThrowOnError>,
-): RequestResult<TestarJenkinsResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<TestarJenkinsResponses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhTestarJenkins = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhTestarJenkinsData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhTestarJenkinsResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorProdutoRhTestarJenkinsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{id}/testar-jenkins',
     ...options,
@@ -1589,10 +1949,10 @@ export const testarJenkins = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const testarGithub = <ThrowOnError extends boolean = true>(
-  options: Options<TestarGithubData, ThrowOnError>,
-): RequestResult<TestarGithubResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<TestarGithubResponses, unknown, ThrowOnError>({
+export const releaseorchestratorProdutoRhTestarGithub = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhTestarGithubData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhTestarGithubResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorProdutoRhTestarGithubResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/produtos/{id}/testar-github',
     ...options,
@@ -1602,19 +1962,129 @@ export const testarGithub = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar9 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar9Data, ThrowOnError>,
-): RequestResult<Listar9Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar9Responses, unknown, ThrowOnError>({
+export const releaseorchestratorInstalacaoClienteListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorInstalacaoClienteListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorInstalacaoClienteListarResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/instalacoes',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorInstalacaoClienteCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorInstalacaoClienteCriarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorInstalacaoClienteParar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClientePararData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClientePararResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorInstalacaoClientePararResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/stop',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorInstalacaoClienteIniciar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteIniciarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteIniciarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorInstalacaoClienteIniciarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/start',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorInstalacaoClienteResolverVersao = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteResolverVersaoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteResolverVersaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorInstalacaoClienteResolverVersaoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/resolver-versao',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorInstalacaoClienteDispararBuild = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteDispararBuildData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteDispararBuildResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorInstalacaoClienteDispararBuildResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/disparar-build',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorHostListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorHostListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorHostListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts',
+    ...options,
+  });
+
+export const releaseorchestratorHostCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorHostCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorHostCriarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorEntregaListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorEntregaListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorEntregaListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas',
     ...options,
   });
 
-export const criar7 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar7Data, ThrowOnError>,
-): RequestResult<Criar7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar7Responses, unknown, ThrowOnError>({
+export const releaseorchestratorEntregaCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorEntregaCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas',
     ...options,
@@ -1624,55 +2094,63 @@ export const criar7 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const reentregar = <ThrowOnError extends boolean = true>(
-  options: Options<ReentregarData, ThrowOnError>,
-): RequestResult<ReentregarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReentregarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorEntregaReentregar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaReentregarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaReentregarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorEntregaReentregarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{id}/reentregar',
     ...options,
   });
 
-export const reagendarPublicacao = <ThrowOnError extends boolean = true>(
-  options: Options<ReagendarPublicacaoData, ThrowOnError>,
-): RequestResult<ReagendarPublicacaoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReagendarPublicacaoResponses, unknown, ThrowOnError>({
+export const releaseorchestratorEntregaReagendarPublicacao = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaReagendarPublicacaoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaReagendarPublicacaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorEntregaReagendarPublicacaoResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{id}/publicacao/reagendar',
     ...options,
   });
 
-export const cancelar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Cancelar1Data, ThrowOnError>,
-): RequestResult<Cancelar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Cancelar1Responses, unknown, ThrowOnError>({
+export const releaseorchestratorEntregaCancelar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaCancelarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaCancelarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorEntregaCancelarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{id}/cancelar',
     ...options,
   });
 
-export const inicializar = <ThrowOnError extends boolean = true>(
-  options: Options<InicializarData, ThrowOnError>,
-): RequestResult<InicializarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<InicializarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorEntregaModuloInicializar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaModuloInicializarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaModuloInicializarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorEntregaModuloInicializarResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/inicializar',
     ...options,
   });
 
-export const iniciar = <ThrowOnError extends boolean = true>(
-  options: Options<IniciarData, ThrowOnError>,
-): RequestResult<IniciarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<IniciarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorGeracaoEntregaIniciar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorGeracaoEntregaIniciarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorGeracaoEntregaIniciarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorGeracaoEntregaIniciarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/geracao/iniciar',
     ...options,
   });
 
-export const calcular = <ThrowOnError extends boolean = true>(
-  options: Options<CalcularData, ThrowOnError>,
-): RequestResult<CalcularResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CalcularResponses, unknown, ThrowOnError>({
+export const releaseorchestratorDeltaEntregaCalcular = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeltaEntregaCalcularData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeltaEntregaCalcularResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorDeltaEntregaCalcularResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/calcular',
     ...options,
@@ -1682,19 +2160,62 @@ export const calcular = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar10 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar10Data, ThrowOnError>,
-): RequestResult<Listar10Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar10Responses, unknown, ThrowOnError>({
+export const releaseorchestratorDeployInstalacaoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorDeployInstalacaoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeployInstalacaoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorDeployInstalacaoListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/deploys',
+    ...options,
+  });
+
+export const releaseorchestratorDeployInstalacaoExecutar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeployInstalacaoExecutarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeployInstalacaoExecutarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorDeployInstalacaoExecutarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/deploys',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorDeployInstalacaoExecutarLote = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeployInstalacaoExecutarLoteData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeployInstalacaoExecutarLoteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    ReleaseorchestratorDeployInstalacaoExecutarLoteResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/deploys/lote',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorClienteListar = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorClienteListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<ReleaseorchestratorClienteListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes',
     ...options,
   });
 
-export const criar8 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar8Data, ThrowOnError>,
-): RequestResult<Criar8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar8Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorClienteCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes',
     ...options,
@@ -1704,21 +2225,45 @@ export const criar8 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar11 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar11Data, ThrowOnError>,
-): RequestResult<Listar11Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar11Responses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorClienteProdutoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos',
     ...options,
   });
 
-export const contratar = <ThrowOnError extends boolean = true>(
-  options: Options<ContratarData, ThrowOnError>,
-): RequestResult<ContratarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ContratarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorClienteProdutoContratar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoContratarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoContratarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorClienteProdutoContratarResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    },
+  );
+
+export const releaseorchestratorContatoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorContatoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorContatoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorContatoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos',
+    url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
+    ...options,
+  });
+
+export const releaseorchestratorContatoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorContatoCriarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorContatoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorContatoCriarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1726,50 +2271,28 @@ export const contratar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar12 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar12Data, ThrowOnError>,
-): RequestResult<Listar12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar12Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
-    ...options,
-  });
-
-export const criar9 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar9Data, ThrowOnError>,
-): RequestResult<Criar9Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar9Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const testar = <ThrowOnError extends boolean = true>(
-  options: Options<TestarData, ThrowOnError>,
-): RequestResult<TestarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<TestarResponses, unknown, ThrowOnError>({
+export const releaseorchestratorConfigEntregaTestar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorConfigEntregaTestarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorConfigEntregaTestarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<ReleaseorchestratorConfigEntregaTestarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega/testar',
     ...options,
   });
 
-export const listar13 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar13Data, ThrowOnError>,
-): RequestResult<Listar13Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar13Responses, unknown, ThrowOnError>({
+export const identityaccessUsuarioListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessUsuarioListarData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessUsuarioListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios',
     ...options,
   });
 
-export const criar10 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar10Data, ThrowOnError>,
-): RequestResult<Criar10Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar10Responses, unknown, ThrowOnError>({
+export const identityaccessUsuarioCriar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioCriarData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessUsuarioCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios',
     ...options,
@@ -1779,10 +2302,10 @@ export const criar10 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const alterarBloqueio = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarBloqueioData, ThrowOnError>,
-): RequestResult<AlterarBloqueioResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AlterarBloqueioResponses, unknown, ThrowOnError>({
+export const identityaccessUsuarioAlterarBloqueio = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioAlterarBloqueioData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioAlterarBloqueioResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessUsuarioAlterarBloqueioResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}/bloqueio',
     ...options,
@@ -1792,10 +2315,10 @@ export const alterarBloqueio = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const alterarSenha = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarSenhaData, ThrowOnError>,
-): RequestResult<AlterarSenhaResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AlterarSenhaResponses, unknown, ThrowOnError>({
+export const identityaccessUsuarioAlterarSenha = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessUsuarioAlterarSenhaData, ThrowOnError>,
+): RequestResult<IdentityaccessUsuarioAlterarSenhaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessUsuarioAlterarSenhaResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/usuarios/{id}/alterar-senha',
     ...options,
@@ -1805,28 +2328,28 @@ export const alterarSenha = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const revogar = <ThrowOnError extends boolean = true>(
-  options: Options<RevogarData, ThrowOnError>,
-): RequestResult<RevogarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<RevogarResponses, unknown, ThrowOnError>({
+export const identityaccessSessaoRevogar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessSessaoRevogarData, ThrowOnError>,
+): RequestResult<IdentityaccessSessaoRevogarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessSessaoRevogarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/sessoes/{id}/revogar',
     ...options,
   });
 
-export const listar14 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar14Data, ThrowOnError>,
-): RequestResult<Listar14Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar14Responses, unknown, ThrowOnError>({
+export const identityaccessGrupoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessGrupoListarData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessGrupoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos',
     ...options,
   });
 
-export const criar11 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar11Data, ThrowOnError>,
-): RequestResult<Criar11Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar11Responses, unknown, ThrowOnError>({
+export const identityaccessGrupoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoCriarData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessGrupoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/grupos',
     ...options,
@@ -1836,19 +2359,19 @@ export const criar11 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar15 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar15Data, ThrowOnError>,
-): RequestResult<Listar15Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar15Responses, unknown, ThrowOnError>({
+export const identityaccessEscopoAcessoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessEscopoAcessoListarData, ThrowOnError>,
+): RequestResult<IdentityaccessEscopoAcessoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessEscopoAcessoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos',
     ...options,
   });
 
-export const criar12 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar12Data, ThrowOnError>,
-): RequestResult<Criar12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar12Responses, unknown, ThrowOnError>({
+export const identityaccessEscopoAcessoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessEscopoAcessoCriarData, ThrowOnError>,
+): RequestResult<IdentityaccessEscopoAcessoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessEscopoAcessoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos',
     ...options,
@@ -1858,19 +2381,19 @@ export const criar12 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar16 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar16Data, ThrowOnError>,
-): RequestResult<Listar16Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar16Responses, unknown, ThrowOnError>({
+export const identityaccessAcessoTemporarioListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessAcessoTemporarioListarData, ThrowOnError>,
+): RequestResult<IdentityaccessAcessoTemporarioListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessAcessoTemporarioListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/acessos-temporarios',
     ...options,
   });
 
-export const criar13 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar13Data, ThrowOnError>,
-): RequestResult<Criar13Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar13Responses, unknown, ThrowOnError>({
+export const identityaccessAcessoTemporarioCriar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessAcessoTemporarioCriarData, ThrowOnError>,
+): RequestResult<IdentityaccessAcessoTemporarioCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessAcessoTemporarioCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/acessos-temporarios',
     ...options,
@@ -1880,46 +2403,46 @@ export const criar13 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const revogar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Revogar1Data, ThrowOnError>,
-): RequestResult<Revogar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Revogar1Responses, unknown, ThrowOnError>({
+export const identityaccessAcessoTemporarioRevogar = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessAcessoTemporarioRevogarData, ThrowOnError>,
+): RequestResult<IdentityaccessAcessoTemporarioRevogarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessAcessoTemporarioRevogarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/acessos-temporarios/{id}/revogar',
     ...options,
   });
 
-export const listar17 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar17Data, ThrowOnError>,
-): RequestResult<Listar17Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar17Responses, unknown, ThrowOnError>({
+export const docflowPreviewListar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPreviewListarData, ThrowOnError>,
+): RequestResult<DocflowPreviewListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPreviewListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/preview-tokens',
     ...options,
   });
 
-export const gerarToken = <ThrowOnError extends boolean = true>(
-  options: Options<GerarTokenData, ThrowOnError>,
-): RequestResult<GerarTokenResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<GerarTokenResponses, unknown, ThrowOnError>({
+export const docflowPreviewGerarToken = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPreviewGerarTokenData, ThrowOnError>,
+): RequestResult<DocflowPreviewGerarTokenResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPreviewGerarTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/preview-tokens',
     ...options,
   });
 
-export const listar18 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar18Data, ThrowOnError>,
-): RequestResult<Listar18Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar18Responses, unknown, ThrowOnError>({
+export const docflowPublicacaoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPublicacaoListarData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPublicacaoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes',
     ...options,
   });
 
-export const gerar = <ThrowOnError extends boolean = true>(
-  options: Options<GerarData, ThrowOnError>,
-): RequestResult<GerarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<GerarResponses, unknown, ThrowOnError>({
+export const docflowPublicacaoGerar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoGerarData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoGerarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPublicacaoGerarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes',
     ...options,
@@ -1929,28 +2452,50 @@ export const gerar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const reprocessar = <ThrowOnError extends boolean = true>(
-  options: Options<ReprocessarData, ThrowOnError>,
-): RequestResult<ReprocessarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReprocessarResponses, unknown, ThrowOnError>({
+export const docflowPublicacaoReprocessar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoReprocessarData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoReprocessarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPublicacaoReprocessarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes/{id}/reprocessar',
     ...options,
   });
 
-export const listar19 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar19Data, ThrowOnError>,
-): RequestResult<Listar19Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar19Responses, unknown, ThrowOnError>({
+export const docflowPublicacaoCancelar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoCancelarData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoCancelarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPublicacaoCancelarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/cancelar',
+    ...options,
+  });
+
+export const docflowPublicacaoReprocessarLote = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoReprocessarLoteData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoReprocessarLoteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPublicacaoReprocessarLoteResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowProjetoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowProjetoListarData, ThrowOnError>,
+): RequestResult<DocflowProjetoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowProjetoListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/projetos',
     ...options,
   });
 
-export const criar14 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar14Data, ThrowOnError>,
-): RequestResult<Criar14Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar14Responses, unknown, ThrowOnError>({
+export const docflowProjetoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowProjetoCriarData, ThrowOnError>,
+): RequestResult<DocflowProjetoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowProjetoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/projetos',
     ...options,
@@ -1960,19 +2505,19 @@ export const criar14 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar20 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar20Data, ThrowOnError>,
-): RequestResult<Listar20Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar20Responses, unknown, ThrowOnError>({
+export const docflowPaginaListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaListarData, ThrowOnError>,
+): RequestResult<DocflowPaginaListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas',
     ...options,
   });
 
-export const criar15 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar15Data, ThrowOnError>,
-): RequestResult<Criar15Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar15Responses, unknown, ThrowOnError>({
+export const docflowPaginaCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaCriarData, ThrowOnError>,
+): RequestResult<DocflowPaginaCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas',
     ...options,
@@ -1982,73 +2527,99 @@ export const criar15 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const salvarRascunho = <ThrowOnError extends boolean = true>(
-  options: Options<SalvarRascunhoData, ThrowOnError>,
-): RequestResult<SalvarRascunhoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<SalvarRascunhoResponses, unknown, ThrowOnError>({
+export const docflowPaginaSalvarRascunho = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaSalvarRascunhoData, ThrowOnError>,
+): RequestResult<DocflowPaginaSalvarRascunhoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaSalvarRascunhoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/salvar-rascunho',
     ...options,
   });
 
-export const publicar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Publicar1Data, ThrowOnError>,
-): RequestResult<Publicar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Publicar1Responses, unknown, ThrowOnError>({
+export const docflowPaginaAtribuirRevisor = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAtribuirRevisorData, ThrowOnError>,
+): RequestResult<DocflowPaginaAtribuirRevisorResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaAtribuirRevisorResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/revisor',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowPaginaComentarRevisao = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaComentarRevisaoData, ThrowOnError>,
+): RequestResult<DocflowPaginaComentarRevisaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaComentarRevisaoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowPaginaPublicar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaPublicarData, ThrowOnError>,
+): RequestResult<DocflowPaginaPublicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaPublicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/publicar',
     ...options,
   });
 
-export const enviarRevisao = <ThrowOnError extends boolean = true>(
-  options: Options<EnviarRevisaoData, ThrowOnError>,
-): RequestResult<EnviarRevisaoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<EnviarRevisaoResponses, unknown, ThrowOnError>({
+export const docflowPaginaEnviarRevisao = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaEnviarRevisaoData, ThrowOnError>,
+): RequestResult<DocflowPaginaEnviarRevisaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaEnviarRevisaoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/enviar-revisao',
     ...options,
   });
 
-export const duplicar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Duplicar2Data, ThrowOnError>,
-): RequestResult<Duplicar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Duplicar2Responses, unknown, ThrowOnError>({
+export const docflowPaginaDuplicar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaDuplicarData, ThrowOnError>,
+): RequestResult<DocflowPaginaDuplicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaDuplicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/duplicar',
     ...options,
   });
 
-export const arquivar = <ThrowOnError extends boolean = true>(
-  options: Options<ArquivarData, ThrowOnError>,
-): RequestResult<ArquivarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ArquivarResponses, unknown, ThrowOnError>({
+export const docflowPaginaArquivar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaArquivarData, ThrowOnError>,
+): RequestResult<DocflowPaginaArquivarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaArquivarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/arquivar',
     ...options,
   });
 
-export const aprovar = <ThrowOnError extends boolean = true>(
-  options: Options<AprovarData, ThrowOnError>,
-): RequestResult<AprovarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AprovarResponses, unknown, ThrowOnError>({
+export const docflowPaginaAprovar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAprovarData, ThrowOnError>,
+): RequestResult<DocflowPaginaAprovarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaAprovarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/aprovar',
     ...options,
   });
 
-export const anexos = <ThrowOnError extends boolean = true>(
-  options: Options<AnexosData, ThrowOnError>,
-): RequestResult<AnexosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<AnexosResponses, unknown, ThrowOnError>({
+export const docflowPaginaAnexos = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAnexosData, ThrowOnError>,
+): RequestResult<DocflowPaginaAnexosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaAnexosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/anexos',
     ...options,
   });
 
-export const anexar = <ThrowOnError extends boolean = true>(
-  options: Options<AnexarData, ThrowOnError>,
-): RequestResult<AnexarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AnexarResponses, unknown, ThrowOnError>({
+export const docflowPaginaAnexar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAnexarData, ThrowOnError>,
+): RequestResult<DocflowPaginaAnexarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaAnexarResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{id}/anexos',
@@ -2059,19 +2630,19 @@ export const anexar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const templates = <ThrowOnError extends boolean = true>(
-  options?: Options<TemplatesData, ThrowOnError>,
-): RequestResult<TemplatesResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<TemplatesResponses, unknown, ThrowOnError>({
+export const docflowPaginaTemplates = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaTemplatesData, ThrowOnError>,
+): RequestResult<DocflowPaginaTemplatesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaTemplatesResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates',
     ...options,
   });
 
-export const criarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<CriarTemplateData, ThrowOnError>,
-): RequestResult<CriarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CriarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaCriarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaCriarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaCriarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaCriarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates',
     ...options,
@@ -2081,28 +2652,28 @@ export const criarTemplate = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const restaurarVersaoTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<RestaurarVersaoTemplateData, ThrowOnError>,
-): RequestResult<RestaurarVersaoTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<RestaurarVersaoTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaRestaurarVersaoTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaRestaurarVersaoTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaRestaurarVersaoTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaRestaurarVersaoTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}/versoes/{numero}/restaurar',
     ...options,
   });
 
-export const reativarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<ReativarTemplateData, ThrowOnError>,
-): RequestResult<ReativarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReativarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaReativarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaReativarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaReativarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaReativarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}/reativar',
     ...options,
   });
 
-export const duplicarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<DuplicarTemplateData, ThrowOnError>,
-): RequestResult<DuplicarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<DuplicarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaDuplicarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaDuplicarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaDuplicarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaDuplicarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}/duplicar',
     ...options,
@@ -2112,19 +2683,19 @@ export const duplicarTemplate = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const arquivarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<ArquivarTemplateData, ThrowOnError>,
-): RequestResult<ArquivarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ArquivarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaArquivarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaArquivarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaArquivarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaArquivarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}/arquivar',
     ...options,
   });
 
-export const aplicarTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<AplicarTemplateData, ThrowOnError>,
-): RequestResult<AplicarTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AplicarTemplateResponses, unknown, ThrowOnError>({
+export const docflowPaginaAplicarTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaAplicarTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaAplicarTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaAplicarTemplateResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/templates/{templateId}/aplicar',
     ...options,
@@ -2134,10 +2705,32 @@ export const aplicarTemplate = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const reordenar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Reordenar1Data, ThrowOnError>,
-): RequestResult<Reordenar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Reordenar1Responses, unknown, ThrowOnError>({
+export const docflowPaginaSnippets = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaSnippetsData, ThrowOnError>,
+): RequestResult<DocflowPaginaSnippetsResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaSnippetsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/snippets',
+    ...options,
+  });
+
+export const docflowPaginaCriarSnippet = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaCriarSnippetData, ThrowOnError>,
+): RequestResult<DocflowPaginaCriarSnippetResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaCriarSnippetResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/snippets',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowPaginaReordenar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaReordenarData, ThrowOnError>,
+): RequestResult<DocflowPaginaReordenarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowPaginaReordenarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/reordenar',
     ...options,
@@ -2147,19 +2740,19 @@ export const reordenar1 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar21 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar21Data, ThrowOnError>,
-): RequestResult<Listar21Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar21Responses, unknown, ThrowOnError>({
+export const docflowModuloListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowModuloListarData, ThrowOnError>,
+): RequestResult<DocflowModuloListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowModuloListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/modulos',
     ...options,
   });
 
-export const criar16 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar16Data, ThrowOnError>,
-): RequestResult<Criar16Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar16Responses, unknown, ThrowOnError>({
+export const docflowModuloCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowModuloCriarData, ThrowOnError>,
+): RequestResult<DocflowModuloCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowModuloCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/modulos',
     ...options,
@@ -2169,28 +2762,28 @@ export const criar16 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const deleteLogo = <ThrowOnError extends boolean = true>(
-  options?: Options<DeleteLogoData, ThrowOnError>,
-): RequestResult<DeleteLogoResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).delete<DeleteLogoResponses, unknown, ThrowOnError>({
+export const docflowEmpresaDeleteLogo = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowEmpresaDeleteLogoData, ThrowOnError>,
+): RequestResult<DocflowEmpresaDeleteLogoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).delete<DocflowEmpresaDeleteLogoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/empresa/logo',
     ...options,
   });
 
-export const getLogo = <ThrowOnError extends boolean = true>(
-  options?: Options<GetLogoData, ThrowOnError>,
-): RequestResult<GetLogoResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<GetLogoResponses, unknown, ThrowOnError>({
+export const docflowEmpresaGetLogo = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowEmpresaGetLogoData, ThrowOnError>,
+): RequestResult<DocflowEmpresaGetLogoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowEmpresaGetLogoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/empresa/logo',
     ...options,
   });
 
-export const uploadLogo = <ThrowOnError extends boolean = true>(
-  options?: Options<UploadLogoData, ThrowOnError>,
-): RequestResult<UploadLogoResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).post<UploadLogoResponses, unknown, ThrowOnError>({
+export const docflowEmpresaUploadLogo = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowEmpresaUploadLogoData, ThrowOnError>,
+): RequestResult<DocflowEmpresaUploadLogoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).post<DocflowEmpresaUploadLogoResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/empresa/logo',
@@ -2201,19 +2794,19 @@ export const uploadLogo = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const listar22 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar22Data, ThrowOnError>,
-): RequestResult<Listar22Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar22Responses, unknown, ThrowOnError>({
+export const docflowClienteListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowClienteListarData, ThrowOnError>,
+): RequestResult<DocflowClienteListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowClienteListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes',
     ...options,
   });
 
-export const criar17 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar17Data, ThrowOnError>,
-): RequestResult<Criar17Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar17Responses, unknown, ThrowOnError>({
+export const docflowClienteCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteCriarData, ThrowOnError>,
+): RequestResult<DocflowClienteCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowClienteCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes',
     ...options,
@@ -2223,28 +2816,28 @@ export const criar17 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const deleteLogo1 = <ThrowOnError extends boolean = true>(
-  options: Options<DeleteLogo1Data, ThrowOnError>,
-): RequestResult<DeleteLogo1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<DeleteLogo1Responses, unknown, ThrowOnError>({
+export const docflowClienteDeleteLogo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteDeleteLogoData, ThrowOnError>,
+): RequestResult<DocflowClienteDeleteLogoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowClienteDeleteLogoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/logo',
     ...options,
   });
 
-export const getLogo1 = <ThrowOnError extends boolean = true>(
-  options: Options<GetLogo1Data, ThrowOnError>,
-): RequestResult<GetLogo1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<GetLogo1Responses, unknown, ThrowOnError>({
+export const docflowClienteGetLogo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteGetLogoData, ThrowOnError>,
+): RequestResult<DocflowClienteGetLogoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowClienteGetLogoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/logo',
     ...options,
   });
 
-export const uploadLogo1 = <ThrowOnError extends boolean = true>(
-  options: Options<UploadLogo1Data, ThrowOnError>,
-): RequestResult<UploadLogo1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<UploadLogo1Responses, unknown, ThrowOnError>({
+export const docflowClienteUploadLogo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteUploadLogoData, ThrowOnError>,
+): RequestResult<DocflowClienteUploadLogoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowClienteUploadLogoResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/logo',
@@ -2255,10 +2848,10 @@ export const uploadLogo1 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const copiarVinculos = <ThrowOnError extends boolean = true>(
-  options: Options<CopiarVinculosData, ThrowOnError>,
-): RequestResult<CopiarVinculosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CopiarVinculosResponses, unknown, ThrowOnError>({
+export const docflowClienteCopiarVinculos = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteCopiarVinculosData, ThrowOnError>,
+): RequestResult<DocflowClienteCopiarVinculosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowClienteCopiarVinculosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/copiar-vinculos',
     ...options,
@@ -2268,637 +2861,10 @@ export const copiarVinculos = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const login = <ThrowOnError extends boolean = true>(
-  options: Options<LoginData, ThrowOnError>,
-): RequestResult<LoginResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<LoginResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/login',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatusData, ThrowOnError>,
-): RequestResult<AlterarStatusResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatusResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/templates/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus1 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus1Data, ThrowOnError>,
-): RequestResult<AlterarStatus1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus1Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus2 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus2Data, ThrowOnError>,
-): RequestResult<AlterarStatus2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/proximas-entregas/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus3 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus3Data, ThrowOnError>,
-): RequestResult<AlterarStatus3Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus3Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus4 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus4Data, ThrowOnError>,
-): RequestResult<AlterarStatus4Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus4Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus5 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus5Data, ThrowOnError>,
-): RequestResult<AlterarStatus5Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus5Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus6 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus6Data, ThrowOnError>,
-): RequestResult<AlterarStatus6Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus6Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/produtos/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarSelecao = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarSelecaoData, ThrowOnError>,
-): RequestResult<AlterarSelecaoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarSelecaoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/{moduloProdutoId}/selecao',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus7 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus7Data, ThrowOnError>,
-): RequestResult<AlterarStatus7Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus7Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus8 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus8Data, ThrowOnError>,
-): RequestResult<AlterarStatus8Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus8Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/grupos/{id}/status',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const alterarStatus9 = <ThrowOnError extends boolean = true>(
-  options: Options<AlterarStatus9Data, ThrowOnError>,
-): RequestResult<AlterarStatus9Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).patch<AlterarStatus9Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/escopos/{id}/status',
-    ...options,
-  });
-
-export const gerar1 = <ThrowOnError extends boolean = true>(
-  options: Options<Gerar1Data, ThrowOnError>,
-): RequestResult<Gerar1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Gerar1Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{releaseId}/pdf',
-    ...options,
-  });
-
-export const download = <ThrowOnError extends boolean = true>(
-  options: Options<DownloadData, ThrowOnError>,
-): RequestResult<DownloadResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<DownloadResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}/download',
-    ...options,
-  });
-
-export const listar23 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar23Data, ThrowOnError>,
-): RequestResult<Listar23Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar23Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao',
-    ...options,
-  });
-
-export const validar = <ThrowOnError extends boolean = true>(
-  options: Options<ValidarData, ThrowOnError>,
-): RequestResult<ValidarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ValidarResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{id}/validar',
-    ...options,
-  });
-
-export const historico = <ThrowOnError extends boolean = true>(
-  options: Options<HistoricoData, ThrowOnError>,
-): RequestResult<HistoricoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<HistoricoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{id}/historico',
-    ...options,
-  });
-
-export const buscar17 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar17Data, ThrowOnError>,
-): RequestResult<Buscar17Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar17Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{id}',
-    ...options,
-  });
-
-export const downloadPacote = <ThrowOnError extends boolean = true>(
-  options: Options<DownloadPacoteData, ThrowOnError>,
-): RequestResult<DownloadPacoteResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<DownloadPacoteResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{id}/pacote/download',
-    ...options,
-  });
-
-export const listar24 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar24Data, ThrowOnError>,
-): RequestResult<Listar24Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar24Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos',
-    ...options,
-  });
-
-export const gerar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Gerar2Data, ThrowOnError>,
-): RequestResult<Gerar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Gerar2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{entregaId}/documento',
-    ...options,
-  });
-
-export const listar25 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar25Data, ThrowOnError>,
-): RequestResult<Listar25Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar25Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta',
-    ...options,
-  });
-
-export const resumo = <ThrowOnError extends boolean = true>(
-  options: Options<ResumoData, ThrowOnError>,
-): RequestResult<ResumoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ResumoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/resumo',
-    ...options,
-  });
-
-export const listar26 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar26Data, ThrowOnError>,
-): RequestResult<Listar26Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar26Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos',
-    ...options,
-  });
-
-export const listar27 = <ThrowOnError extends boolean = true>(
-  options: Options<Listar27Data, ThrowOnError>,
-): RequestResult<Listar27Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Listar27Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades',
-    ...options,
-  });
-
-export const listar28 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar28Data, ThrowOnError>,
-): RequestResult<Listar28Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar28Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/sessoes',
-    ...options,
-  });
-
-export const listar29 = <ThrowOnError extends boolean = true>(
-  options?: Options<Listar29Data, ThrowOnError>,
-): RequestResult<Listar29Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Listar29Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/historico-login',
-    ...options,
-  });
-
-export const permissoes = <ThrowOnError extends boolean = true>(
-  options?: Options<PermissoesData, ThrowOnError>,
-): RequestResult<PermissoesResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<PermissoesResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/catalogo/permissoes',
-    ...options,
-  });
-
-export const funcionalidades = <ThrowOnError extends boolean = true>(
-  options?: Options<FuncionalidadesData, ThrowOnError>,
-): RequestResult<FuncionalidadesResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<FuncionalidadesResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/catalogo/funcionalidades',
-    ...options,
-  });
-
-export const dominios = <ThrowOnError extends boolean = true>(
-  options?: Options<DominiosData, ThrowOnError>,
-): RequestResult<DominiosResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<DominiosResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/catalogo/dominios',
-    ...options,
-  });
-
-export const recentes = <ThrowOnError extends boolean = true>(
-  options?: Options<RecentesData, ThrowOnError>,
-): RequestResult<RecentesResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<RecentesResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/rbac/auditoria',
-    ...options,
-  });
-
-export const downloadZip = <ThrowOnError extends boolean = true>(
-  options: Options<DownloadZipData, ThrowOnError>,
-): RequestResult<DownloadZipResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<DownloadZipResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/public/publicacoes/download',
-    ...options,
-  });
-
-export const preview = <ThrowOnError extends boolean = true>(
-  options: Options<PreviewData, ThrowOnError>,
-): RequestResult<PreviewResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<PreviewResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/preview/{token}',
-    ...options,
-  });
-
-export const excluir14 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir14Data, ThrowOnError>,
-): RequestResult<Excluir14Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir14Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}',
-    ...options,
-  });
-
-export const buscar18 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar18Data, ThrowOnError>,
-): RequestResult<Buscar18Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar18Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}',
-    ...options,
-  });
-
-export const download1 = <ThrowOnError extends boolean = true>(
-  options: Options<Download1Data, ThrowOnError>,
-): RequestResult<Download1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Download1Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}/download',
-    ...options,
-  });
-
-export const emitirTokenDownload = <ThrowOnError extends boolean = true>(
-  options: Options<EmitirTokenDownloadData, ThrowOnError>,
-): RequestResult<EmitirTokenDownloadResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<EmitirTokenDownloadResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}/download-token',
-    ...options,
-  });
-
-export const downloadPdf = <ThrowOnError extends boolean = true>(
-  options: Options<DownloadPdfData, ThrowOnError>,
-): RequestResult<DownloadPdfResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<DownloadPdfResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}/download-pdf',
-    ...options,
-  });
-
-export const changelog = <ThrowOnError extends boolean = true>(
-  options: Options<ChangelogData, ThrowOnError>,
-): RequestResult<ChangelogResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ChangelogResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}/changelog',
-    ...options,
-  });
-
-export const preview1 = <ThrowOnError extends boolean = true>(
-  options: Options<Preview1Data, ThrowOnError>,
-): RequestResult<Preview1Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Preview1Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/preview',
-    ...options,
-  });
-
-export const previewHtml = <ThrowOnError extends boolean = true>(
-  options: Options<PreviewHtmlData, ThrowOnError>,
-): RequestResult<PreviewHtmlResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<PreviewHtmlResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/preview-html',
-    ...options,
-  });
-
-export const diagnostico = <ThrowOnError extends boolean = true>(
-  options: Options<DiagnosticoData, ThrowOnError>,
-): RequestResult<DiagnosticoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<DiagnosticoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/diagnostico',
-    ...options,
-  });
-
-export const baixarAnexo = <ThrowOnError extends boolean = true>(
-  options: Options<BaixarAnexoData, ThrowOnError>,
-): RequestResult<BaixarAnexoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<BaixarAnexoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}/download',
-    ...options,
-  });
-
-export const revisoes = <ThrowOnError extends boolean = true>(
-  options: Options<RevisoesData, ThrowOnError>,
-): RequestResult<RevisoesResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<RevisoesResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{id}/revisoes',
-    ...options,
-  });
-
-export const qualidade = <ThrowOnError extends boolean = true>(
-  options: Options<QualidadeData, ThrowOnError>,
-): RequestResult<QualidadeResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<QualidadeResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{id}/qualidade',
-    ...options,
-  });
-
-export const preview2 = <ThrowOnError extends boolean = true>(
-  options: Options<Preview2Data, ThrowOnError>,
-): RequestResult<Preview2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Preview2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{id}/preview',
-    ...options,
-  });
-
-export const versoesTemplate = <ThrowOnError extends boolean = true>(
-  options: Options<VersoesTemplateData, ThrowOnError>,
-): RequestResult<VersoesTemplateResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<VersoesTemplateResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/templates/{templateId}/versoes',
-    ...options,
-  });
-
-export const resumoPorStatusGlobal = <ThrowOnError extends boolean = true>(
-  options?: Options<ResumoPorStatusGlobalData, ThrowOnError>,
-): RequestResult<ResumoPorStatusGlobalResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<ResumoPorStatusGlobalResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/resumo-por-status',
-    ...options,
-  });
-
-export const vinculos = <ThrowOnError extends boolean = true>(
-  options: Options<VinculosData, ThrowOnError>,
-): RequestResult<VinculosResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<VinculosResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/clientes/{id}/vinculos',
-    ...options,
-  });
-
-export const me = <ThrowOnError extends boolean = true>(
-  options?: Options<MeData, ThrowOnError>,
-): RequestResult<MeResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<MeResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/me',
-    ...options,
-  });
-
-export const excluir15 = <ThrowOnError extends boolean = true>(
-  options: Options<Excluir15Data, ThrowOnError>,
-): RequestResult<Excluir15Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Excluir15Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}',
-    ...options,
-  });
-
-export const revogar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Revogar2Data, ThrowOnError>,
-): RequestResult<Revogar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<Revogar2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/preview-tokens/{id}',
-    ...options,
-  });
-
-export const excluirAnexo = <ThrowOnError extends boolean = true>(
-  options: Options<ExcluirAnexoData, ThrowOnError>,
-): RequestResult<ExcluirAnexoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<ExcluirAnexoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
-    ...options,
-  });
-
-export const arvorePaginas = <ThrowOnError extends boolean = true>(
-  options: Options<ArvorePaginasData, ThrowOnError>,
-): RequestResult<ArvorePaginasResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<ArvorePaginasResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/{id}/paginas',
-    ...options,
-  });
-
-export const reprocessarLote = <ThrowOnError extends boolean = true>(
-  options: Options<ReprocessarLoteData, ThrowOnError>,
-): RequestResult<ReprocessarLoteResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ReprocessarLoteResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const bibliotecaAnexos = <ThrowOnError extends boolean = true>(
-  options?: Options<BibliotecaAnexosData, ThrowOnError>,
-): RequestResult<BibliotecaAnexosResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<BibliotecaAnexosResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/anexos',
-    ...options,
-  });
-
-export const comentarRevisao = <ThrowOnError extends boolean = true>(
-  options: Options<ComentarRevisaoData, ThrowOnError>,
-): RequestResult<ComentarRevisaoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<ComentarRevisaoResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const resumo2 = <ThrowOnError extends boolean = true>(
-  options?: Options<Resumo2Data, ThrowOnError>,
-): RequestResult<Resumo2Responses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<Resumo2Responses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/dashboard/resumo',
-    ...options,
-  });
-
-export const listarAjuda = <ThrowOnError extends boolean = true>(
-  options?: Options<ListarAjudaData, ThrowOnError>,
-): RequestResult<ListarAjudaResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<ListarAjudaResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/conteudos',
-    ...options,
-  });
-
-export const criarAjuda = <ThrowOnError extends boolean = true>(
-  options: Options<CriarAjudaData, ThrowOnError>,
-): RequestResult<CriarAjudaResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<CriarAjudaResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/conteudos',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const listarAjudaAdmin = <ThrowOnError extends boolean = true>(
-  options?: Options<ListarAjudaAdminData, ThrowOnError>,
-): RequestResult<ListarAjudaAdminResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<ListarAjudaAdminResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/conteudos/admin',
-    ...options,
-  });
-
-export const excluirAjuda = <ThrowOnError extends boolean = true>(
-  options: Options<ExcluirAjudaData, ThrowOnError>,
-): RequestResult<ExcluirAjudaResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).delete<ExcluirAjudaResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/conteudos/{id}',
-    ...options,
-  });
-
-export const atualizarAjuda = <ThrowOnError extends boolean = true>(
-  options: Options<AtualizarAjudaData, ThrowOnError>,
-): RequestResult<AtualizarAjudaResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).put<AtualizarAjudaResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/conteudos/{id}',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const registrarAjudaEvento = <ThrowOnError extends boolean = true>(
-  options: Options<RegistrarAjudaEventoData, ThrowOnError>,
-): RequestResult<RegistrarAjudaEventoResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<RegistrarAjudaEventoResponses, unknown, ThrowOnError>({
+export const docflowAjudaRegistrar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowAjudaRegistrarData, ThrowOnError>,
+): RequestResult<DocflowAjudaRegistrarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowAjudaRegistrarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/ajuda/eventos',
     ...options,
@@ -2908,37 +2874,45 @@ export const registrarAjudaEvento = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const metricasAjuda = <ThrowOnError extends boolean = true>(
-  options?: Options<MetricasAjudaData, ThrowOnError>,
-): RequestResult<MetricasAjudaResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<MetricasAjudaResponses, unknown, ThrowOnError>({
+export const docflowAjudaListar = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowAjudaListarData, ThrowOnError>,
+): RequestResult<DocflowAjudaListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowAjudaListarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/ajuda/metricas',
+    url: '/api/v1/docflow/ajuda/conteudos',
     ...options,
   });
 
-export const eventosPagina = <ThrowOnError extends boolean = true>(
-  options?: Options<EventosPaginaData, ThrowOnError, EventosPaginaResponse>,
-): Promise<ServerSentEventsResult<EventosPaginaResponses>> =>
-  (options?.client ?? client).sse.get<EventosPaginaResponses, unknown, ThrowOnError>({
+export const docflowAjudaCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowAjudaCriarData, ThrowOnError>,
+): RequestResult<DocflowAjudaCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowAjudaCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/eventos',
+    url: '/api/v1/docflow/ajuda/conteudos',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
-export const eventosPublicacao = <ThrowOnError extends boolean = true>(
-  options?: Options<EventosPublicacaoData, ThrowOnError, EventosPublicacaoResponse>,
-): Promise<ServerSentEventsResult<EventosPublicacaoResponses>> =>
-  (options?.client ?? client).sse.get<EventosPublicacaoResponses, unknown, ThrowOnError>({
+export const identityaccessAuthLogin = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessAuthLoginData, ThrowOnError>,
+): RequestResult<IdentityaccessAuthLoginResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<IdentityaccessAuthLoginResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/publicacoes/eventos',
+    url: '/api/v1/auth/login',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
-export const recomendar = <ThrowOnError extends boolean = true>(
-  options: Options<RecomendarData, ThrowOnError>,
-): RequestResult<RecomendarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<RecomendarResponses, unknown, ThrowOnError>({
+export const aiAiTemplateRecomendar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiTemplateRecomendarData, ThrowOnError>,
+): RequestResult<AiAiTemplateRecomendarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiTemplateRecomendarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/templates/recomendacao',
     ...options,
@@ -2948,19 +2922,10 @@ export const recomendar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const blocos = <ThrowOnError extends boolean = true>(
-  options?: Options<BlocosData, ThrowOnError>,
-): RequestResult<BlocosResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<BlocosResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/docflow/paginas/blocos',
-    ...options,
-  });
-
-export const criar19 = <ThrowOnError extends boolean = true>(
-  options: Options<Criar19Data, ThrowOnError>,
-): RequestResult<Criar19Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Criar19Responses, unknown, ThrowOnError>({
+export const aiAiSessaoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoCriarData, ThrowOnError>,
+): RequestResult<AiAiSessaoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes',
     ...options,
@@ -2970,10 +2935,10 @@ export const criar19 = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const enviarMensagem = <ThrowOnError extends boolean = true>(
-  options: Options<EnviarMensagemData, ThrowOnError>,
-): RequestResult<EnviarMensagemResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<EnviarMensagemResponses, unknown, ThrowOnError>({
+export const aiAiSessaoEnviarMensagem = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
+): RequestResult<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/mensagens',
     ...options,
@@ -2983,28 +2948,28 @@ export const enviarMensagem = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const gerar12 = <ThrowOnError extends boolean = true>(
-  options: Options<Gerar12Data, ThrowOnError>,
-): RequestResult<Gerar12Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Gerar12Responses, unknown, ThrowOnError>({
+export const aiAiSessaoGerar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoGerarData, ThrowOnError>,
+): RequestResult<AiAiSessaoGerarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoGerarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/gerar',
     ...options,
   });
 
-export const cancelar2 = <ThrowOnError extends boolean = true>(
-  options: Options<Cancelar2Data, ThrowOnError>,
-): RequestResult<Cancelar2Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<Cancelar2Responses, unknown, ThrowOnError>({
+export const aiAiSessaoCancelar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoCancelarData, ThrowOnError>,
+): RequestResult<AiAiSessaoCancelarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoCancelarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/cancelar',
     ...options,
   });
 
-export const aplicar = <ThrowOnError extends boolean = true>(
-  options: Options<AplicarData, ThrowOnError>,
-): RequestResult<AplicarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AplicarResponses, unknown, ThrowOnError>({
+export const aiAiSessaoAplicar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoAplicarData, ThrowOnError>,
+): RequestResult<AiAiSessaoAplicarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoAplicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/aplicar',
     ...options,
@@ -3014,47 +2979,985 @@ export const aplicar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const status = <ThrowOnError extends boolean = true>(
-  options?: Options<StatusData, ThrowOnError>,
-): RequestResult<StatusResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<StatusResponses, unknown, ThrowOnError>({
+export const aiAiDocumentoImportacaoImportarDocumento = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiDocumentoImportacaoImportarDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoImportarDocumentoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).post<AiAiDocumentoImportacaoImportarDocumentoResponses, unknown, ThrowOnError>({
+    ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/status',
+    url: '/api/v1/ai/importacoes',
+    ...options,
+    headers: {
+      'Content-Type': null,
+      ...options?.headers,
+    },
+  });
+
+export const aiAiDocumentoImportacaoIgnorarSugestaoDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/ignorar',
     ...options,
   });
 
-export const buscar19 = <ThrowOnError extends boolean = true>(
-  options: Options<Buscar19Data, ThrowOnError>,
-): RequestResult<Buscar19Responses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<Buscar19Responses, unknown, ThrowOnError>({
+export const aiAiDocumentoImportacaoAceitarSugestaoDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoAceitarSugestaoDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/sessoes/{id}',
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/aceitar',
     ...options,
   });
 
-export const proposta = <ThrowOnError extends boolean = true>(
-  options: Options<PropostaData, ThrowOnError>,
-): RequestResult<PropostaResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).get<PropostaResponses, unknown, ThrowOnError>({
+export const aiAiDocumentoImportacaoAplicarSugestoesSegurasDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/sessoes/{id}/proposta',
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/aplicar-seguras',
     ...options,
   });
 
-export const blueprints = <ThrowOnError extends boolean = true>(
-  options?: Options<BlueprintsData, ThrowOnError>,
-): RequestResult<BlueprintsResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<BlueprintsResponses, unknown, ThrowOnError>({
+export const aiAiDocumentoImportacaoSincronizarImportacaoDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/sincronizar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoVincularPaginaImportada = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoVincularPaginaImportadaData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoVincularPaginaImportadaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoVincularPaginaImportadaResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/vincular/{paginaId}',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoSelecionarPaginaImportada = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoSelecionarPaginaImportadaData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/selecionar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoAceitarPaginaImportada = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoAceitarPaginaImportadaData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoAceitarPaginaImportadaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoAceitarPaginaImportadaResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/aceitar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoGerarLoteDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoGerarLoteDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoGerarLoteDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiDocumentoImportacaoGerarLoteDocumentoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/lote/gerar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiDocumentoImportacaoEstimarLoteDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoEstimarLoteDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoEstimarLoteDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoEstimarLoteDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/lote/estimar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiDocumentoImportacaoConfirmarEstruturaDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}/estrutura/confirmar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorReleaseTemplateAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseTemplateAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseTemplateAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorReleaseTemplateAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/templates/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorReleaseAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<ReleaseorchestratorReleaseAlterarStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorProximaEntregaAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProximaEntregaAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProximaEntregaAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorProximaEntregaAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/proximas-entregas/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorModuloProdutoAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorModuloProdutoAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorModuloProdutoAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorModuloProdutoAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorDominioProdutoAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDominioProdutoAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDominioProdutoAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorDominioProdutoAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorFuncionalidadeProdutoAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorProdutoRhAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorProdutoRhAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorProdutoRhAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<ReleaseorchestratorProdutoRhAlterarStatusResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/produtos/{id}/status',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    },
+  );
+
+export const releaseorchestratorInstalacaoClienteAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorInstalacaoClienteAlterarStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorInstalacaoClienteRegistrarHealth = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteRegistrarHealthData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/health',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorHostAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorHostAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorHostAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<ReleaseorchestratorHostAlterarStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/hosts/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorEntregaModuloAlterarSelecao = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaModuloAlterarSelecaoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaModuloAlterarSelecaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    ReleaseorchestratorEntregaModuloAlterarSelecaoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/{moduloProdutoId}/selecao',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const releaseorchestratorClienteAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteAlterarStatusData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<ReleaseorchestratorClienteAlterarStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/clientes/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const identityaccessGrupoAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessGrupoAlterarStatusData, ThrowOnError>,
+): RequestResult<IdentityaccessGrupoAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<IdentityaccessGrupoAlterarStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/grupos/{id}/status',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const identityaccessEscopoAcessoAlterarStatus = <ThrowOnError extends boolean = true>(
+  options: Options<IdentityaccessEscopoAcessoAlterarStatusData, ThrowOnError>,
+): RequestResult<IdentityaccessEscopoAcessoAlterarStatusResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<IdentityaccessEscopoAcessoAlterarStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/escopos/{id}/status',
+    ...options,
+  });
+
+export const releaseorchestratorReleasePdfGerar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleasePdfGerarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleasePdfGerarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleasePdfGerarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{releaseId}/pdf',
+    ...options,
+  });
+
+export const releaseorchestratorArtefatoReleaseModuloDownload = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloDownloadData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorArtefatoReleaseModuloDownloadResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorArtefatoReleaseModuloDownloadResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}/download',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseModuloVersaoListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseModuloVersaoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorReleaseModuloVersaoListarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseValidar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseValidarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseValidarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseValidarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/validar',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseHistorico = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseHistoricoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseHistoricoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseHistoricoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/historico',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseFontesBuild = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseFontesBuildData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseFontesBuildResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseFontesBuildResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{id}/fontes-build',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseDisponiveisDeploy = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorReleaseDisponiveisDeployData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorReleaseDisponiveisDeployResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorReleaseDisponiveisDeployResponses, unknown, ThrowOnError>(
+    {
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/v1/release-orchestrator/releases/disponiveis-deploy',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorInstalacaoClienteFontesVersao = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorInstalacaoClienteFontesVersaoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteFontesVersaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorInstalacaoClienteFontesVersaoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/fontes-versao',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteSugerirPortas = <ThrowOnError extends boolean = true>(
+  options?: Options<ReleaseorchestratorInstalacaoClienteSugerirPortasData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorInstalacaoClienteSugerirPortasResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ReleaseorchestratorInstalacaoClienteSugerirPortasResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/instalacoes/portas-sugeridas',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorEntregaBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaDownloadPacote = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaDownloadPacoteData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaDownloadPacoteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorEntregaDownloadPacoteResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{id}/pacote/download',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaModuloListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorEntregaModuloListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorEntregaModuloListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorEntregaModuloListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos',
+    ...options,
+  });
+
+export const releaseorchestratorDocumentoEntregaGerar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDocumentoEntregaGerarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDocumentoEntregaGerarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDocumentoEntregaGerarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{entregaId}/documento',
+    ...options,
+  });
+
+export const releaseorchestratorDeltaEntregaListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeltaEntregaListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeltaEntregaListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDeltaEntregaListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta',
+    ...options,
+  });
+
+export const releaseorchestratorDeltaEntregaResumo = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeltaEntregaResumoData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeltaEntregaResumoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDeltaEntregaResumoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/resumo',
+    ...options,
+  });
+
+export const releaseorchestratorDeployInstalacaoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeployInstalacaoBuscarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeployInstalacaoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDeployInstalacaoBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/deploys/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorDeployInstalacaoPreview = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorDeployInstalacaoPreviewData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorDeployInstalacaoPreviewResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<ReleaseorchestratorDeployInstalacaoPreviewResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/deploys/preview',
+    ...options,
+  });
+
+export const releaseorchestratorClienteProdutoModuloListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteProdutoModuloListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorClienteProdutoModuloListarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos',
+    ...options,
+  });
+
+export const releaseorchestratorClienteFuncionalidadeListar = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeListarData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorClienteFuncionalidadeListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    ReleaseorchestratorClienteFuncionalidadeListarResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades',
+    ...options,
+  });
+
+export const identityaccessSessaoListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessSessaoListarData, ThrowOnError>,
+): RequestResult<IdentityaccessSessaoListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessSessaoListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/sessoes',
+    ...options,
+  });
+
+export const identityaccessHistoricoLoginListar = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessHistoricoLoginListarData, ThrowOnError>,
+): RequestResult<IdentityaccessHistoricoLoginListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessHistoricoLoginListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/historico-login',
+    ...options,
+  });
+
+export const identityaccessCatalogoPermissoes = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessCatalogoPermissoesData, ThrowOnError>,
+): RequestResult<IdentityaccessCatalogoPermissoesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessCatalogoPermissoesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/catalogo/permissoes',
+    ...options,
+  });
+
+export const identityaccessCatalogoFuncionalidades = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessCatalogoFuncionalidadesData, ThrowOnError>,
+): RequestResult<IdentityaccessCatalogoFuncionalidadesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessCatalogoFuncionalidadesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/catalogo/funcionalidades',
+    ...options,
+  });
+
+export const identityaccessCatalogoDominios = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessCatalogoDominiosData, ThrowOnError>,
+): RequestResult<IdentityaccessCatalogoDominiosResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessCatalogoDominiosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/catalogo/dominios',
+    ...options,
+  });
+
+export const identityaccessAuditoriaRecentes = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessAuditoriaRecentesData, ThrowOnError>,
+): RequestResult<IdentityaccessAuditoriaRecentesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessAuditoriaRecentesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/rbac/auditoria',
+    ...options,
+  });
+
+export const docflowPublicDownloadDownloadZip = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicDownloadDownloadZipData, ThrowOnError>,
+): RequestResult<DocflowPublicDownloadDownloadZipResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicDownloadDownloadZipResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/public/publicacoes/download',
+    ...options,
+  });
+
+export const docflowPreviewPreview = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPreviewPreviewData, ThrowOnError>,
+): RequestResult<DocflowPreviewPreviewResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPreviewPreviewResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/preview/{token}',
+    ...options,
+  });
+
+export const docflowPublicacaoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoExcluirData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPublicacaoExcluirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}',
+    ...options,
+  });
+
+export const docflowPublicacaoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoBuscarData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}',
+    ...options,
+  });
+
+export const docflowPublicacaoArvorePaginas = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoArvorePaginasData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoArvorePaginasResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoArvorePaginasResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/paginas',
+    ...options,
+  });
+
+export const docflowPublicacaoHtmlDaPagina = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoHtmlDaPaginaData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoHtmlDaPaginaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoHtmlDaPaginaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/paginas/{paginaId}/html',
+    ...options,
+  });
+
+export const docflowPublicacaoDownload = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoDownloadData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoDownloadResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoDownloadResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/download',
+    ...options,
+  });
+
+export const docflowPublicacaoEmitirTokenDownload = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoEmitirTokenDownloadData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoEmitirTokenDownloadResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoEmitirTokenDownloadResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/download-token',
+    ...options,
+  });
+
+export const docflowPublicacaoDownloadPdf = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoDownloadPdfData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoDownloadPdfResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoDownloadPdfResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/download-pdf',
+    ...options,
+  });
+
+export const docflowPublicacaoDiff = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoDiffData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoDiffResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoDiffResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/diff',
+    ...options,
+  });
+
+export const docflowPublicacaoChangelog = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoChangelogData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoChangelogResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoChangelogResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/{id}/changelog',
+    ...options,
+  });
+
+export const docflowPublicacaoPreview = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoPreviewData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoPreviewResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoPreviewResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/preview',
+    ...options,
+  });
+
+export const docflowPublicacaoPreviewHtml = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoPreviewHtmlData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoPreviewHtmlResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoPreviewHtmlResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/preview-html',
+    ...options,
+  });
+
+export const docflowPublicacaoEventos = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPublicacaoEventosData, ThrowOnError, DocflowPublicacaoEventosResponse>,
+): Promise<ServerSentEventsResult<DocflowPublicacaoEventosResponses>> =>
+  (options?.client ?? client).sse.get<DocflowPublicacaoEventosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/eventos',
+    ...options,
+  });
+
+export const docflowPublicacaoDiagnostico = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPublicacaoDiagnosticoData, ThrowOnError>,
+): RequestResult<DocflowPublicacaoDiagnosticoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPublicacaoDiagnosticoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/publicacoes/diagnostico',
+    ...options,
+  });
+
+export const docflowPaginaBaixarAnexo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaBaixarAnexoData, ThrowOnError>,
+): RequestResult<DocflowPaginaBaixarAnexoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaBaixarAnexoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}/download',
+    ...options,
+  });
+
+export const docflowPaginaRevisoes = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaRevisoesData, ThrowOnError>,
+): RequestResult<DocflowPaginaRevisoesResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaRevisoesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/revisoes',
+    ...options,
+  });
+
+export const docflowPaginaQualidade = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaQualidadeData, ThrowOnError>,
+): RequestResult<DocflowPaginaQualidadeResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaQualidadeResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/qualidade',
+    ...options,
+  });
+
+export const docflowPaginaPreview = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaPreviewData, ThrowOnError>,
+): RequestResult<DocflowPaginaPreviewResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaPreviewResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/preview',
+    ...options,
+  });
+
+export const docflowPaginaVersoesTemplate = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaVersoesTemplateData, ThrowOnError>,
+): RequestResult<DocflowPaginaVersoesTemplateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowPaginaVersoesTemplateResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/templates/{templateId}/versoes',
+    ...options,
+  });
+
+export const docflowPaginaResumoPorStatusGlobal = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaResumoPorStatusGlobalData, ThrowOnError>,
+): RequestResult<DocflowPaginaResumoPorStatusGlobalResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaResumoPorStatusGlobalResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/resumo-por-status',
+    ...options,
+  });
+
+export const docflowPaginaMinhasRevisoes = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaMinhasRevisoesData, ThrowOnError>,
+): RequestResult<DocflowPaginaMinhasRevisoesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaMinhasRevisoesResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/minhas-revisoes',
+    ...options,
+  });
+
+export const docflowPaginaEventos = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaEventosData, ThrowOnError, DocflowPaginaEventosResponse>,
+): Promise<ServerSentEventsResult<DocflowPaginaEventosResponses>> =>
+  (options?.client ?? client).sse.get<DocflowPaginaEventosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/eventos',
+    ...options,
+  });
+
+export const docflowPaginaBlueprints = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaBlueprintsData, ThrowOnError>,
+): RequestResult<DocflowPaginaBlueprintsResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaBlueprintsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/blueprints',
     ...options,
   });
 
-export const biblioteca = <ThrowOnError extends boolean = true>(
-  options?: Options<BibliotecaData, ThrowOnError>,
-): RequestResult<BibliotecaResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<BibliotecaResponses, unknown, ThrowOnError>({
+export const docflowPaginaBlocos = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaBlocosData, ThrowOnError>,
+): RequestResult<DocflowPaginaBlocosResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaBlocosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/blocos',
+    ...options,
+  });
+
+export const docflowPaginaBiblioteca = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaBibliotecaData, ThrowOnError>,
+): RequestResult<DocflowPaginaBibliotecaResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaBibliotecaResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/biblioteca',
+    ...options,
+  });
+
+export const docflowPaginaBibliotecaAnexos = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowPaginaBibliotecaAnexosData, ThrowOnError>,
+): RequestResult<DocflowPaginaBibliotecaAnexosResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowPaginaBibliotecaAnexosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/anexos',
+    ...options,
+  });
+
+export const docflowDocFlowDashboardResumo = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowDocFlowDashboardResumoData, ThrowOnError>,
+): RequestResult<DocflowDocFlowDashboardResumoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowDocFlowDashboardResumoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/dashboard/resumo',
+    ...options,
+  });
+
+export const docflowClienteVinculos = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowClienteVinculosData, ThrowOnError>,
+): RequestResult<DocflowClienteVinculosResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowClienteVinculosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/clientes/{id}/vinculos',
+    ...options,
+  });
+
+export const docflowAjudaMetricas = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowAjudaMetricasData, ThrowOnError>,
+): RequestResult<DocflowAjudaMetricasResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowAjudaMetricasResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/metricas',
+    ...options,
+  });
+
+export const docflowAjudaListarAdministracao = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowAjudaListarAdministracaoData, ThrowOnError>,
+): RequestResult<DocflowAjudaListarAdministracaoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowAjudaListarAdministracaoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/ajuda/conteudos/admin',
+    ...options,
+  });
+
+export const identityaccessAuthMe = <ThrowOnError extends boolean = true>(
+  options?: Options<IdentityaccessAuthMeData, ThrowOnError>,
+): RequestResult<IdentityaccessAuthMeResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<IdentityaccessAuthMeResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/me',
+    ...options,
+  });
+
+export const aiAiStatusStatus = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiStatusStatusData, ThrowOnError>,
+): RequestResult<AiAiStatusStatusResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<AiAiStatusStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/status',
+    ...options,
+  });
+
+export const aiAiSessaoBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoBuscarData, ThrowOnError>,
+): RequestResult<AiAiSessaoBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<AiAiSessaoBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}',
+    ...options,
+  });
+
+export const aiAiSessaoProposta = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoPropostaData, ThrowOnError>,
+): RequestResult<AiAiSessaoPropostaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<AiAiSessaoPropostaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoBuscarImportacaoDocumento = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiDocumentoImportacaoBuscarImportacaoDocumentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<
+    AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes/{id}',
+    ...options,
+  });
+
+export const aiAiEventEventos = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiEventEventosData, ThrowOnError, AiAiEventEventosResponse>,
+): Promise<ServerSentEventsResult<AiAiEventEventosResponses>> =>
+  (options?.client ?? client).sse.get<AiAiEventEventosResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/eventos',
+    ...options,
+  });
+
+export const releaseorchestratorArtefatoReleaseModuloExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloExcluirData, ThrowOnError>,
+): RequestResult<ReleaseorchestratorArtefatoReleaseModuloExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    ReleaseorchestratorArtefatoReleaseModuloExcluirResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}',
+    ...options,
+  });
+
+export const docflowPreviewRevogar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPreviewRevogarData, ThrowOnError>,
+): RequestResult<DocflowPreviewRevogarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPreviewRevogarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/preview-tokens/{id}',
+    ...options,
+  });
+
+export const docflowPaginaExcluirAnexo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaExcluirAnexoData, ThrowOnError>,
+): RequestResult<DocflowPaginaExcluirAnexoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowPaginaExcluirAnexoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
     ...options,
   });

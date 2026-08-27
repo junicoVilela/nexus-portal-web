@@ -9,8 +9,10 @@ import {
   MudancaPublicacao,
   Publicacao,
   PublicacaoDiff,
+  PublicacaoDiffItem,
   PublicacaoPaginaSnapshot,
 } from '@modules/docflow/models/publicacao.model';
+import { DiffLinha, diffLinhasPalavras } from '@modules/docflow/utils/diff.util';
 import { ChangelogItem } from '@modules/docflow/models/pagina.model';
 import {
   PageHeaderComponent,
@@ -72,6 +74,9 @@ export class PublicacaoDetalheComponent implements OnInit {
   protected readonly diff = signal<PublicacaoDiff | null>(null);
   protected readonly carregandoDiff = signal(false);
   protected readonly erroDiff = signal<string | null>(null);
+  protected readonly paginaComparada = signal<PublicacaoDiffItem | null>(null);
+  protected readonly linhasConteudo = signal<DiffLinha[]>([]);
+  protected readonly carregandoConteudo = signal(false);
   /** Mudanças que valem destaque; INALTERADA fica no rodapé como contagem. */
   readonly mudancasRelevantes: MudancaPublicacao[] = [
     'ADICIONADA',
@@ -219,6 +224,40 @@ export class PublicacaoDetalheComponent implements OnInit {
         );
       },
     });
+  }
+
+  /**
+   * Compara o HTML da página nas duas publicações. Só faz sentido para o que
+   * mudou de fato — o botão só aparece em ALTERADA.
+   */
+  compararConteudo(item: PublicacaoDiffItem): void {
+    const diff = this.diff();
+    if (!diff || this.carregandoConteudo()) return;
+    this.paginaComparada.set(item);
+    this.carregandoConteudo.set(true);
+    this.linhasConteudo.set([]);
+    forkJoin({
+      anterior: this.publicacaoService
+        .htmlDaPaginaPublicada(diff.comparadaComId, item.paginaId)
+        .pipe(catchError(() => of(''))),
+      atual: this.publicacaoService
+        .htmlDaPaginaPublicada(diff.publicacaoId, item.paginaId)
+        .pipe(catchError(() => of(''))),
+    }).subscribe({
+      next: async ({ anterior, atual }) => {
+        this.linhasConteudo.set(await diffLinhasPalavras(anterior, atual));
+        this.carregandoConteudo.set(false);
+      },
+      error: () => {
+        this.carregandoConteudo.set(false);
+        this.toast.error('Não foi possível carregar o conteúdo arquivado da página.');
+      },
+    });
+  }
+
+  fecharComparacao(): void {
+    this.paginaComparada.set(null);
+    this.linhasConteudo.set([]);
   }
 
   itensDaMudanca(mudanca: MudancaPublicacao) {

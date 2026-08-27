@@ -131,6 +131,27 @@ export type ReleaseResponse = {
   updatedAt?: string;
 };
 
+export type ManifestoImplantacaoRequest = {
+  tipoImplantacao: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  imagemRef?: string;
+  arquivoImagemRef?: string;
+  diretorioInstalacao?: string;
+  observacoes?: string;
+};
+
+export type ManifestoImplantacaoResponse = {
+  releaseId?: string;
+  releaseVersao?: string;
+  tipoImplantacao?: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  imagemRef?: string;
+  arquivoImagemRef?: string;
+  diretorioInstalacao?: string;
+  observacoes?: string;
+  resumo?: string;
+  derivado?: boolean;
+  fingerprint?: string;
+};
+
 export type ProximaEntregaRequest = {
   clienteId: string;
   produtoId: string;
@@ -270,6 +291,129 @@ export type ProdutoRhResponse = {
   updatedAt?: string;
 };
 
+export type ConfiguracaoInstalacaoRequest = {
+  tipoBanco?: 'ORACLE' | 'SQLSERVER' | 'POSTGRES';
+  bancoHost?: string;
+  bancoPorta?: number;
+  bancoNome?: string;
+  bancoUsuario?: string;
+  bancoCredencialRef?: string;
+  urlBackend?: string;
+  urlFrontend?: string;
+  parametros?: string;
+};
+
+export type InstalacaoClienteRequest = {
+  codigo: string;
+  nome: string;
+  clienteId: string;
+  hostId: string;
+  produtoId: string;
+  tipoImplantacao: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  status?: 'INEXISTENTE' | 'ATIVA' | 'INATIVA';
+  ambiente: 'PROD' | 'HOM' | 'DEV' | 'TEST';
+  imagemRef?: string;
+  arquivoImagemRef?: string;
+  diretorioInstalacao?: string;
+  observacoes?: string;
+  versaoAtual?: string;
+  configuracao?: ConfiguracaoInstalacaoRequest;
+  portas?: Array<ReservaPortaRequest>;
+};
+
+export type ReservaPortaRequest = {
+  tipo: 'HTTP' | 'HTTPS' | 'AJP' | 'TOMCAT_SHUTDOWN' | 'DEBUG' | 'JMX' | 'BANCO' | 'OUTRO';
+  papel: 'BACKEND' | 'FRONTEND' | 'OUTRO';
+  porta: number;
+  protocolo?: 'TCP' | 'UDP';
+  status?: 'DISPONIVEL' | 'RESERVADA' | 'EM_USO' | 'LIBERADA' | 'BLOQUEADA';
+};
+
+export type ConfiguracaoInstalacaoResponse = {
+  id?: string;
+  tipoBanco?: 'ORACLE' | 'SQLSERVER' | 'POSTGRES';
+  bancoHost?: string;
+  bancoPorta?: number;
+  bancoNome?: string;
+  bancoUsuario?: string;
+  bancoCredencialRef?: string;
+  urlBackend?: string;
+  urlFrontend?: string;
+  parametros?: string;
+};
+
+export type InstalacaoClienteResponse = {
+  id?: string;
+  codigo?: string;
+  nome?: string;
+  clienteId?: string;
+  clienteNome?: string;
+  clienteSigla?: string;
+  hostId?: string;
+  hostCodigo?: string;
+  hostNome?: string;
+  produtoId?: string;
+  produtoNome?: string;
+  produtoSigla?: string;
+  tipoImplantacao?: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  status?: 'INEXISTENTE' | 'ATIVA' | 'INATIVA';
+  ambiente?: 'PROD' | 'HOM' | 'DEV' | 'TEST';
+  imagemRef?: string;
+  arquivoImagemRef?: string;
+  diretorioInstalacao?: string;
+  observacoes?: string;
+  versaoAtual?: string;
+  health?: 'DESCONHECIDO' | 'SAUDAVEL' | 'DEGRADADO' | 'INDISPONIVEL';
+  ultimaVerificacao?: string;
+  ultimoErro?: string;
+  configuracao?: ConfiguracaoInstalacaoResponse;
+  portas?: Array<ReservaPortaResponse>;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type ReservaPortaResponse = {
+  id?: string;
+  tipo?: 'HTTP' | 'HTTPS' | 'AJP' | 'TOMCAT_SHUTDOWN' | 'DEBUG' | 'JMX' | 'BANCO' | 'OUTRO';
+  papel?: 'BACKEND' | 'FRONTEND' | 'OUTRO';
+  porta?: number;
+  protocolo?: 'TCP' | 'UDP';
+  status?: 'DISPONIVEL' | 'RESERVADA' | 'EM_USO' | 'LIBERADA' | 'BLOQUEADA';
+};
+
+export type HostRequest = {
+  codigo: string;
+  nome: string;
+  hostname: string;
+  enderecoIp?: string;
+  sistemaOperacional: 'WINDOWS' | 'LINUX';
+  dockerDisponivel?: boolean;
+  tipoConexao?: 'SSH' | 'WINRM' | 'DOCKER';
+  portaConexao?: number;
+  usuarioConexao?: string;
+  credencialRef?: string;
+  observacoes?: string;
+  ativo?: boolean;
+};
+
+export type HostResponse = {
+  id?: string;
+  codigo?: string;
+  nome?: string;
+  hostname?: string;
+  enderecoIp?: string;
+  sistemaOperacional?: 'WINDOWS' | 'LINUX';
+  dockerDisponivel?: boolean;
+  tipoConexao?: 'SSH' | 'WINRM' | 'DOCKER';
+  portaConexao?: number;
+  usuarioConexao?: string;
+  credencialRef?: string;
+  ativo?: boolean;
+  observacoes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type AtualizarEntregaRascunhoRequest = {
   ambiente: 'PROD' | 'HOM' | 'DEV' | 'TEST';
   responsavelId?: string;
@@ -304,8 +448,20 @@ export type EntregaResponse = {
   ultimaFalhaPublicacao?: string;
   dataPublicacao?: string;
   destinoPublicacao?: string;
+  instalacoes?: Array<InstalacaoAlvoResponse>;
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type InstalacaoAlvoResponse = {
+  id?: string;
+  codigo?: string;
+  nome?: string;
+  hostCodigo?: string;
+  tipoImplantacao?: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  status?: 'INEXISTENTE' | 'ATIVA' | 'INATIVA';
+  health?: 'DESCONHECIDO' | 'SAUDAVEL' | 'DEGRADADO' | 'INDISPONIVEL';
+  versaoAtual?: string;
 };
 
 export type ClienteRequest = {
@@ -605,6 +761,9 @@ export type PaginaResponse = {
   parentTitulo?: string;
   templateOrigemId?: string;
   templateOrigemVersao?: number;
+  revisorUsername?: string;
+  prazoRevisao?: string;
+  revisaoAtrasada?: boolean;
   publishedAt?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -638,6 +797,29 @@ export type PaginaTemplateResponse = {
   clienteNome?: string;
 };
 
+export type PaginaSnippetRequest = {
+  codigo: string;
+  titulo: string;
+  descricao?: string;
+  conteudoHtml: string;
+  ativo?: boolean;
+};
+
+export type PaginaSnippetResponse = {
+  id?: string;
+  codigo?: string;
+  referencia?: string;
+  titulo?: string;
+  descricao?: string;
+  conteudoHtml?: string;
+  ativo?: boolean;
+  paginasQueUsam?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+};
+
 export type ModuloRequest = {
   nome: string;
   slug?: string;
@@ -668,6 +850,131 @@ export type VinculosRequest = {
   paginaIds?: Array<string>;
 };
 
+export type AjudaConteudoRequest = {
+  codigo: string;
+  tipo: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
+  jornadaCodigo?: string;
+  titulo: string;
+  resumo?: string;
+  conteudo?: string;
+  rotaContexto?: string;
+  rotaAcao?: string;
+  rotuloAcao?: string;
+  icone?: string;
+  seletorAlvo?: string;
+  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
+  mediaUrls?: Array<string>;
+  mediaAlt?: string;
+  ordem?: number;
+  ativo?: boolean;
+};
+
+export type AjudaConteudoResponse = {
+  id?: string;
+  codigo?: string;
+  tipo?: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
+  jornadaCodigo?: string;
+  titulo?: string;
+  resumo?: string;
+  conteudo?: string;
+  rotaContexto?: string;
+  rotaAcao?: string;
+  rotuloAcao?: string;
+  icone?: string;
+  seletorAlvo?: string;
+  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
+  mediaUrls?: Array<string>;
+  mediaAlt?: string;
+  ordem?: number;
+  ativo?: boolean;
+  updatedAt?: string;
+  updatedBy?: string;
+};
+
+export type AiAtualizarComposicaoDocumentoRequest = {
+  version: number;
+  componentesSelecionados: Array<string>;
+};
+
+export type AiImportacaoDocumentoResponse = {
+  id?: string;
+  nomeArquivo?: string;
+  tipoArquivo?: 'DOC' | 'DOCX' | 'PDF' | 'TXT';
+  mimeType?: string;
+  tamanhoBytes?: number;
+  caracteresExtraidos?: number;
+  totalPaginasOrigem?: number;
+  status?: 'ANALISANDO_ESTRUTURA' | 'PRONTO_PARA_REVISAO' | 'EM_REVISAO' | 'CONCLUIDA';
+  version?: number;
+  projetoNome?: string;
+  projetoDescricao?: string;
+  projetoId?: string;
+  clienteId?: string;
+  estruturaConfirmada?: boolean;
+  projetoNomesSugeridos?: Array<string>;
+  analiseOrigem?: 'ESTRUTURAL' | 'LLM';
+  analiseMensagem?: string;
+  tokensEntradaAnalise?: number;
+  tokensSaidaAnalise?: number;
+  sugestoes?: Array<Sugestao>;
+  modulos?: Array<Modulo>;
+  avisos?: Array<string>;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type Modulo = {
+  id?: string;
+  moduloId?: string;
+  nome?: string;
+  ordem?: number;
+  paginas?: Array<Pagina>;
+};
+
+export type Pagina = {
+  id?: string;
+  titulo?: string;
+  ordem?: number;
+  briefing?: string;
+  templateId?: string;
+  templateCodigo?: string;
+  templateNome?: string;
+  confiancaTemplate?: number;
+  motivoTemplate?: string;
+  status?: 'PENDENTE' | 'EM_EDICAO' | 'EM_GERACAO' | 'GERADA' | 'REVISADA' | 'ERRO';
+  paginaId?: string;
+  sessaoId?: string;
+  erroMensagem?: string;
+  origem?: 'DOCUMENTO' | 'IA' | 'MANUAL' | 'DIVISAO' | 'MESCLAGEM';
+  ajustadaManualmente?: boolean;
+  blueprintId?: string;
+  blueprintNome?: string;
+  componentesSelecionados?: Array<string>;
+  componentesObrigatorios?: Array<string>;
+  composicaoAjustadaManualmente?: boolean;
+};
+
+export type Sugestao = {
+  id?: string;
+  tipo?: 'ADICIONAR_PAGINA' | 'RENOMEAR_PAGINA' | 'MOVER_PAGINA' | 'MESCLAR_PAGINAS' | 'RENOMEAR_MODULO';
+  titulo?: string;
+  justificativa?: string;
+  confianca?: number;
+  status?: 'PENDENTE' | 'APLICADA' | 'IGNORADA';
+  aplicacaoSegura?: boolean;
+  paginaOrigemId?: string;
+  paginaDestinoId?: string;
+  moduloOrigemId?: string;
+  moduloDestinoId?: string;
+  valorSugerido?: string;
+  conteudoSugerido?: string;
+};
+
+export type AiReordenarEstruturaDocumentoRequest = {
+  version: number;
+  modulos: Array<Modulo>;
+};
+
 export type JenkinsWebhookRequest = {
   produtoSigla: string;
   versao: string;
@@ -686,6 +993,34 @@ export type ArtefatoReleaseModuloResponse = {
   observacao?: string;
   uploadedBy?: string;
   uploadedAt?: string;
+};
+
+export type DispararBuildRequest = {
+  origem: 'RELEASE_ATUAL' | 'TAG_ESPECIFICA' | 'ULTIMA_GERADA';
+  tag?: string;
+  alvoIds?: Array<string>;
+};
+
+export type DispararBuildResponse = {
+  origem?: string;
+  tag?: string;
+  versao?: string;
+  releaseId?: string;
+  releaseIdAfetada?: string;
+  jenkinsJob?: string;
+  queueUrl?: string;
+  ultimoBuildStatus?: string;
+  aviso?: string;
+  jobs?: Array<JobEnfileirado>;
+};
+
+export type JobEnfileirado = {
+  alvoId?: string;
+  produtoSigla?: string;
+  jenkinsJob?: string;
+  tag?: string;
+  queueUrl?: string;
+  aviso?: string;
 };
 
 export type CancelarReleaseRequest = {
@@ -745,6 +1080,52 @@ export type TestarGithubResponse = {
   releasesRecentes?: Array<ReleaseResumo>;
 };
 
+export type ExecutarCicloVidaRequest = {
+  modo?: 'DRY_RUN' | 'REAL';
+};
+
+export type DeployInstalacaoResponse = {
+  id?: string;
+  releaseId?: string;
+  releaseVersao?: string;
+  instalacaoId?: string;
+  instalacaoCodigo?: string;
+  instalacaoNome?: string;
+  hostCodigo?: string;
+  entregaId?: string;
+  tipoImplantacao?: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+  operacao?: 'CRIAR' | 'ATUALIZAR' | 'INICIAR' | 'PARAR';
+  modo?: 'DRY_RUN' | 'REAL';
+  status?: 'PENDENTE' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'FALHA' | 'IGNORADO';
+  versaoOrigem?: string;
+  versaoDestino?: string;
+  imagemRef?: string;
+  arquivoImagemRef?: string;
+  diretorioInstalacao?: string;
+  fingerprint?: string;
+  mensagem?: string;
+  erro?: string;
+  operador?: string;
+  reutilizado?: boolean;
+  iniciadoEm?: string;
+  concluidoEm?: string;
+  createdAt?: string;
+};
+
+export type ResolverVersaoInstalacaoRequest = {
+  origem: 'RELEASE_ATUAL' | 'TAG_ESPECIFICA' | 'ULTIMA_GERADA';
+  tag?: string;
+};
+
+export type ResolverVersaoInstalacaoResponse = {
+  releaseId?: string;
+  tag?: string;
+  versao?: string;
+  origem?: string;
+  criada?: boolean;
+  aviso?: string;
+};
+
 export type CriarEntregaRequest = {
   proximaEntregaId?: string;
   clienteId?: string;
@@ -754,6 +1135,7 @@ export type CriarEntregaRequest = {
   responsavelId?: string;
   observacoes?: string;
   entregaOriginalId?: string;
+  instalacaoIds?: Array<string>;
 };
 
 export type EntregaModuloResponse = {
@@ -797,6 +1179,27 @@ export type ModuloResumo = {
   versaoTo?: string;
   quantidadeArtefatos?: number;
   tamanhoBytes?: number;
+};
+
+export type ExecutarDeployRequest = {
+  releaseId: string;
+  instalacaoId: string;
+  entregaId?: string;
+  forcar?: boolean;
+  modo?: 'DRY_RUN' | 'REAL';
+};
+
+export type ExecutarDeployLoteRequest = {
+  entregaId: string;
+  forcar?: boolean;
+  modo?: 'DRY_RUN' | 'REAL';
+};
+
+export type DeployLoteResponse = {
+  itens?: Array<DeployInstalacaoResponse>;
+  concluidos?: number;
+  falhas?: number;
+  ignorados?: number;
 };
 
 export type ContratarProdutoRequest = {
@@ -876,22 +1279,67 @@ export type PublicacaoResponse = {
   clienteId?: string;
   clienteNome?: string;
   versao?: string;
-  status?: 'GERANDO' | 'SUCESSO' | 'ERRO';
+  status?: 'GERANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADA';
   quantidadePaginas?: number;
   quantidadeModulos?: number;
   arquivoZipNome?: string;
   hashPacote?: string;
   observacao?: string;
   relatorioValidacao?: string;
+  cancelamentoSolicitado?: boolean;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
   updatedBy?: string;
 };
 
+export type ReprocessarPublicacoesRequest = {
+  ids: Array<string>;
+};
+
+export type ReprocessamentoPublicacoesResponse = {
+  solicitadas?: number;
+  reprocessadas?: number;
+  ignoradas?: number;
+  publicacoes?: Array<PublicacaoResponse>;
+};
+
+export type AtribuirRevisorRequest = {
+  revisorUsername: string;
+  prazoRevisao?: string;
+};
+
+export type ComentarioRevisaoRequest = {
+  comentario: string;
+};
+
+export type PaginaRevisaoResponse = {
+  id?: string;
+  numero?: number;
+  titulo?: string;
+  status?: 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO' | 'ARQUIVADO';
+  tipo?:
+    | 'CRIACAO'
+    | 'SALVAMENTO_MANUAL'
+    | 'RETORNO_RASCUNHO'
+    | 'ENVIO_REVISAO'
+    | 'APROVACAO'
+    | 'PUBLICACAO'
+    | 'ARQUIVAMENTO'
+    | 'DUPLICACAO'
+    | 'COMENTARIO'
+    | 'ATRIBUICAO_REVISOR';
+  descricao?: string;
+  resumo?: string;
+  conteudoHtml?: string;
+  createdAt?: string;
+  createdBy?: string;
+};
+
 export type PaginaAnexoResponse = {
   id?: string;
   paginaId?: string;
+  paginaTitulo?: string;
   nomeOriginal?: string;
   contentType?: string;
   tamanhoBytes?: number;
@@ -933,6 +1381,23 @@ export type CopiarVinculosRequest = {
   origemClienteId: string;
 };
 
+export type AjudaEventoRequest = {
+  tipo:
+    | 'BUSCA'
+    | 'BUSCA_SEM_RESULTADO'
+    | 'CONTEUDO_ABERTO'
+    | 'ETAPA_CONCLUIDA'
+    | 'TOUR_INICIADO'
+    | 'TOUR_CONCLUIDO'
+    | 'TOUR_ABANDONADO'
+    | 'ONBOARDING_CONCLUIDO';
+  conteudoCodigo?: string;
+  termo?: string;
+  rota?: string;
+  sessaoId?: string;
+  resultadoQuantidade?: number;
+};
+
 export type LoginRequest = {
   username: string;
   password: string;
@@ -941,6 +1406,176 @@ export type LoginRequest = {
 export type LoginResponse = {
   token?: string;
   username?: string;
+};
+
+export type AiTemplateRecomendacaoRequest = {
+  briefing: string;
+  projetoId?: string;
+  clienteId?: string;
+  templateId?: string;
+};
+
+export type AiComponenteCandidatoResponse = {
+  id?: string;
+  nome?: string;
+  descricao?: string;
+  categoria?: string;
+  visual?: string;
+  necessidade?: string;
+  obrigatorio?: boolean;
+  motivo?: string;
+};
+
+export type AiTemplateCandidatoResponse = {
+  templateId?: string;
+  codigo?: string;
+  nome?: string;
+  descricao?: string;
+  confianca?: number;
+  motivo?: string;
+};
+
+export type AiTemplateRecomendacaoResponse = {
+  recomendado?: AiTemplateCandidatoResponse;
+  candidatos?: Array<AiTemplateCandidatoResponse>;
+  exigeConfirmacao?: boolean;
+  blueprintId?: string;
+  blueprintNome?: string;
+  totalBiblioteca?: number;
+  componentes?: Array<AiComponenteCandidatoResponse>;
+};
+
+export type CriarAiSessaoRequest = {
+  objetivo: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
+  briefing: string;
+  projetoId?: string;
+  moduloId?: string;
+  clienteId?: string;
+  templateId?: string;
+  paginaId?: string;
+  componentesSelecionados?: Array<string>;
+};
+
+export type AiJobResponse = {
+  id?: string;
+  sessaoId?: string;
+  tipo?: 'TRIAGEM' | 'GERAR_RASCUNHO' | 'AJUSTAR';
+  status?: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADO';
+  etapa?:
+    | 'AGUARDANDO'
+    | 'PREPARANDO_CONTEXTO'
+    | 'SELECIONANDO_ESTRUTURA'
+    | 'GERANDO_CONTEUDO'
+    | 'VALIDANDO_QUALIDADE'
+    | 'FINALIZANDO'
+    | 'CONCLUIDA'
+    | 'CANCELADA'
+    | 'FALHA';
+  progresso?: number;
+  tentativa?: number;
+  erroMensagem?: string;
+  diagnosticoId?: string;
+  modelo?: string;
+  tokensEntrada?: number;
+  tokensSaida?: number;
+  duracaoMs?: number;
+  startedAt?: string;
+  finishedAt?: string;
+  heartbeatAt?: string;
+  cancelRequestedAt?: string;
+};
+
+export type AiMensagemResponse = {
+  id?: string;
+  papel?: 'USUARIO' | 'ASSISTENTE' | 'SISTEMA';
+  conteudo?: string;
+  perguntas?: Array<AiPerguntaResponse>;
+  ordem?: number;
+  createdAt?: string;
+};
+
+export type AiPerguntaResponse = {
+  id?: string;
+  texto?: string;
+  opcoes?: Array<string>;
+  obrigatoria?: boolean;
+};
+
+export type AiSessaoResponse = {
+  id?: string;
+  objetivo?: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
+  status?:
+    | 'ABERTA'
+    | 'AGUARDANDO_USUARIO'
+    | 'PRONTA_PARA_GERAR'
+    | 'GERANDO'
+    | 'PRONTA'
+    | 'APLICADA'
+    | 'CANCELADA'
+    | 'ERRO';
+  projetoId?: string;
+  moduloId?: string;
+  clienteId?: string;
+  paginaId?: string;
+  templateId?: string;
+  componentesSelecionados?: Array<string>;
+  briefing?: string;
+  mensagens?: Array<AiMensagemResponse>;
+  jobAtual?: AiJobResponse;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AiMensagemRequest = {
+  conteudo: string;
+  respostas?: {
+    [key: string]: string;
+  };
+};
+
+export type AplicarAiPropostaRequest = {
+  modo: 'FORM' | 'PERSISTIR';
+  moduloId?: string;
+  parentId?: string;
+  ordem?: number;
+};
+
+export type AiAplicacaoResponse = {
+  modo?: string;
+  propostaId?: string;
+  paginaId?: string;
+  titulo?: string;
+  slug?: string;
+  codigoTela?: string;
+  resumo?: string;
+  conteudoHtml?: string;
+  templateOrigemId?: string;
+  templateOrigemVersao?: number;
+  moduloId?: string;
+};
+
+export type AiGerarLoteDocumentoRequest = {
+  paginas: Array<string>;
+};
+
+export type AiEstimativaLoteDocumentoResponse = {
+  paginas?: number;
+  caracteresEntrada?: number;
+  tokensEntradaEstimados?: number;
+  tokensSaidaEstimados?: number;
+  modelo?: string;
+  observacao?: string;
+};
+
+export type AiConfirmarEstruturaDocumentoRequest = {
+  modoProjeto: 'NOVO_PROJETO' | 'PROJETO_EXISTENTE';
+  modoCliente: 'SEM_CLIENTE' | 'CLIENTE_EXISTENTE' | 'NOVO_CLIENTE';
+  projetoId?: string;
+  clienteId?: string;
+  clienteNome?: string;
+  projetoNome?: string;
+  projetoDescricao?: string;
+  modulos: Array<Modulo>;
 };
 
 export type AlterarStatusTemplateRequest = {
@@ -965,6 +1600,20 @@ export type AlterarStatusCatalogoRequest = {
 };
 
 export type AlterarStatusProdutoRequest = {
+  ativo: boolean;
+};
+
+export type AlterarStatusInstalacaoRequest = {
+  status: 'INEXISTENTE' | 'ATIVA' | 'INATIVA';
+};
+
+export type RegistrarHealthInstalacaoRequest = {
+  health?: 'DESCONHECIDO' | 'SAUDAVEL' | 'DEGRADADO' | 'INDISPONIVEL';
+  versaoAtual?: string;
+  ultimoErro?: string;
+};
+
+export type AlterarStatusHostRequest = {
   ativo: boolean;
 };
 
@@ -1023,12 +1672,55 @@ export type ReleaseHistoricoResponse = {
     | 'CANCELADA'
     | 'REABERTA'
     | 'DUPLICADA'
-    | 'PDF_GERADO';
+    | 'PDF_GERADO'
+    | 'BUILD_DISPARADO';
   descricao?: string;
   statusAnterior?: 'RASCUNHO' | 'EM_DESENVOLVIMENTO' | 'EM_REVISAO' | 'APROVADA' | 'PUBLICADA' | 'CANCELADA';
   statusNovo?: 'RASCUNHO' | 'EM_DESENVOLVIMENTO' | 'EM_REVISAO' | 'APROVADA' | 'PUBLICADA' | 'CANCELADA';
   usuario?: string;
   createdAt?: string;
+};
+
+export type FonteBuild = {
+  origem?: string;
+  tag?: string;
+  versao?: string;
+  totalAssets?: number;
+  publishedAt?: string;
+};
+
+export type FontesBuildResponse = {
+  releaseId?: string;
+  versaoRelease?: string;
+  jenkinsConfigurado?: boolean;
+  githubConfigurado?: boolean;
+  jenkinsUrl?: string;
+  jenkinsJob?: string;
+  aviso?: string;
+  githubErro?: string;
+  releaseAtual?: FonteBuild;
+  ultimaGerada?: FonteBuild;
+  tags?: Array<TagBuild>;
+};
+
+export type TagBuild = {
+  tag?: string;
+  versao?: string;
+  temGithubRelease?: boolean;
+  totalAssets?: number;
+};
+
+export type ReleaseDisponivelDeployResponse = {
+  id?: string;
+  versao?: string;
+  titulo?: string;
+  status?: 'RASCUNHO' | 'EM_DESENVOLVIMENTO' | 'EM_REVISAO' | 'APROVADA' | 'PUBLICADA' | 'CANCELADA';
+  selecionavel?: boolean;
+  noGit?: boolean;
+  emAndamento?: boolean;
+  rascunhoGit?: boolean;
+  preReleaseGit?: boolean;
+  tagGit?: string;
 };
 
 export type PageResponseProximaEntregaResponse = {
@@ -1043,6 +1735,85 @@ export type PageResponseProximaEntregaResponse = {
 
 export type PageResponseProdutoRhResponse = {
   items?: Array<ProdutoRhResponse>;
+  page?: number;
+  size?: number;
+  totalItems?: number;
+  totalPages?: number;
+  first?: boolean;
+  last?: boolean;
+};
+
+export type PageResponseInstalacaoClienteResponse = {
+  items?: Array<InstalacaoClienteResponse>;
+  page?: number;
+  size?: number;
+  totalItems?: number;
+  totalPages?: number;
+  first?: boolean;
+  last?: boolean;
+};
+
+export type AlvoBuild = {
+  id?: string;
+  codigo?: string;
+  nome?: string;
+  tipo?: string;
+  produtoId?: string;
+  produtoSigla?: string;
+  jenkinsJob?: string;
+  nomeArquivo?: string;
+  padraoAsset?: string;
+  doProdutoDaInstalacao?: boolean;
+  selecionadoPadrao?: boolean;
+};
+
+export type BuildArtefatoStatus = {
+  id?: string;
+  alvoId?: string;
+  produtoSigla?: string;
+  jenkinsJob?: string;
+  status?: string;
+  nomeArquivo?: string;
+  mensagem?: string;
+  createdAt?: string;
+};
+
+export type FontesVersaoInstalacaoResponse = {
+  instalacaoId?: string;
+  produtoId?: string;
+  versaoInstalada?: string;
+  jenkinsConfigurado?: boolean;
+  githubConfigurado?: boolean;
+  jenkinsJob?: string;
+  aviso?: string;
+  githubErro?: string;
+  versaoAtual?: OpcaoVersao;
+  ultimaGerada?: OpcaoVersao;
+  tags?: Array<OpcaoVersao>;
+  alvos?: Array<AlvoBuild>;
+  buildsRecentes?: Array<BuildArtefatoStatus>;
+};
+
+export type OpcaoVersao = {
+  origem?: string;
+  tag?: string;
+  versao?: string;
+  releaseId?: string;
+  selecionavel?: boolean;
+  titulo?: string;
+  aviso?: string;
+  totalAssets?: number;
+};
+
+export type PortasSugeridasResponse = {
+  backend?: Array<number>;
+  frontend?: Array<number>;
+  emUsoNoHost?: Array<number>;
+  verificouHost?: boolean;
+};
+
+export type PageResponseHostResponse = {
+  items?: Array<HostResponse>;
   page?: number;
   size?: number;
   totalItems?: number;
@@ -1073,6 +1844,16 @@ export type EntregaModuloArtefatoResponse = {
   sha256?: string;
   tamanhoBytes?: number;
   ordem?: number;
+};
+
+export type PageResponseDeployInstalacaoResponse = {
+  items?: Array<DeployInstalacaoResponse>;
+  page?: number;
+  size?: number;
+  totalItems?: number;
+  totalPages?: number;
+  first?: boolean;
+  last?: boolean;
 };
 
 export type PageResponseClienteResponse = {
@@ -1211,10 +1992,39 @@ export type PageResponsePublicacaoResponse = {
   last?: boolean;
 };
 
+export type PublicacaoPaginaSnapshotItem = {
+  id?: string;
+  parentId?: string;
+  titulo?: string;
+  codigoTela?: string;
+  slug?: string;
+  ordem?: number;
+  nivel?: number;
+  conteudoHash?: string;
+};
+
 export type DownloadTokenResponse = {
   token?: string;
   validadeSegundos?: number;
   urlPath?: string;
+};
+
+export type PublicacaoDiffItemResponse = {
+  paginaId?: string;
+  titulo?: string;
+  codigoTela?: string;
+  mudanca?: string;
+};
+
+export type PublicacaoDiffResponse = {
+  publicacaoId?: string;
+  versao?: string;
+  comparadaComId?: string;
+  versaoComparada?: string;
+  totaisPorMudanca?: {
+    [key: string]: number;
+  };
+  itens?: Array<PublicacaoDiffItemResponse>;
 };
 
 export type ChangelogItemResponse = {
@@ -1223,6 +2033,10 @@ export type ChangelogItemResponse = {
   paginaTitulo?: string;
   tipoMudanca?: string;
   createdAt?: string;
+};
+
+export type SseEmitter = {
+  timeout?: number;
 };
 
 export type DiagnosticoPublicacao = {
@@ -1262,27 +2076,6 @@ export type PageResponsePaginaRevisaoResponse = {
   last?: boolean;
 };
 
-export type PaginaRevisaoResponse = {
-  id?: string;
-  numero?: number;
-  titulo?: string;
-  status?: 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO' | 'ARQUIVADO';
-  tipo?:
-    | 'CRIACAO'
-    | 'SALVAMENTO_MANUAL'
-    | 'RETORNO_RASCUNHO'
-    | 'ENVIO_REVISAO'
-    | 'APROVACAO'
-    | 'PUBLICACAO'
-    | 'ARQUIVAMENTO'
-    | 'DUPLICACAO';
-  descricao?: string;
-  resumo?: string;
-  conteudoHtml?: string;
-  createdAt?: string;
-  createdBy?: string;
-};
-
 export type ItemQualidadeResponse = {
   codigo?: string;
   titulo?: string;
@@ -1312,8 +2105,56 @@ export type PaginaTemplateVersaoResponse = {
   createdBy?: string;
 };
 
-export type PageResponseModuloResponse = {
-  items?: Array<ModuloResponse>;
+export type PaginaBlueprintResponse = {
+  id?: string;
+  nome?: string;
+  descricao?: string;
+  tipoConteudo?: string;
+  versao?: number;
+  status?: string;
+  minimoComponentes?: number;
+  maximoComponentes?: number;
+  templatesCompativeis?: Array<string>;
+  secoes?: Array<PaginaBlueprintSecaoResponse>;
+};
+
+export type PaginaBlueprintSecaoResponse = {
+  slot?: string;
+  componenteId?: string;
+  necessidade?: string;
+  repetivel?: boolean;
+  maximoInstancias?: number;
+  alternativas?: Array<string>;
+};
+
+export type PaginaBlocoResponse = {
+  id?: string;
+  nome?: string;
+  descricao?: string;
+  categoria?: string;
+  visual?: string;
+  html?: string;
+  parametrizacao?: string;
+  versao?: number;
+  slots?: Array<PaginaBlocoSlotResponse>;
+};
+
+export type PaginaBlocoSlotResponse = {
+  id?: string;
+  elemento?: string;
+  classeCss?: string;
+  textoPadrao?: string;
+};
+
+export type PaginaBibliotecaResponse = {
+  id?: string;
+  schemaVersion?: number;
+  componentes?: Array<PaginaBlocoResponse>;
+  blueprints?: Array<PaginaBlueprintResponse>;
+};
+
+export type PageResponsePaginaAnexoResponse = {
+  items?: Array<PaginaAnexoResponse>;
   page?: number;
   size?: number;
   totalItems?: number;
@@ -1322,48 +2163,8 @@ export type PageResponseModuloResponse = {
   last?: boolean;
 };
 
-export type GrupoMeResponse = {
-  id?: string;
-  codigo?: string;
-  nome?: string;
-};
-
-export type MeResponse = {
-  id?: string;
-  username?: string;
-  nome?: string;
-  email?: string;
-  grupos?: Array<GrupoMeResponse>;
-  permissoes?: Array<string>;
-};
-
-export type PublicacaoPaginaSnapshotItem = {
-  id: string;
-  parentId?: string;
-  titulo: string;
-  codigoTela?: string;
-  slug?: string;
-  ordem: number;
-  nivel: number;
-};
-
-export type ReprocessarPublicacoesRequest = {
-  ids: Array<string>;
-};
-
-export type ReprocessamentoPublicacoesResponse = {
-  solicitadas?: number;
-  reprocessadas?: number;
-  ignoradas?: number;
-  publicacoes?: Array<PublicacaoResponse>;
-};
-
-export type ComentarioRevisaoRequest = {
-  comentario: string;
-};
-
-export type PageResponsePaginaAnexoResponse = {
-  items?: Array<PaginaAnexoResponse>;
+export type PageResponseModuloResponse = {
+  items?: Array<ModuloResponse>;
   page?: number;
   size?: number;
   totalItems?: number;
@@ -1391,64 +2192,6 @@ export type DocFlowDashboardResponse = {
   };
 };
 
-export type AjudaConteudoResponse = {
-  id?: string;
-  codigo?: string;
-  tipo?: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
-  jornadaCodigo?: string;
-  titulo?: string;
-  resumo?: string;
-  conteudo?: string;
-  rotaContexto?: string;
-  rotaAcao?: string;
-  rotuloAcao?: string;
-  icone?: string;
-  seletorAlvo?: string;
-  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
-  mediaUrls?: Array<string>;
-  mediaAlt?: string;
-  ordem?: number;
-  ativo?: boolean;
-  updatedAt?: string;
-  updatedBy?: string;
-};
-
-export type AjudaConteudoRequest = {
-  codigo: string;
-  tipo: 'JORNADA' | 'ETAPA' | 'FAQ' | 'ARTIGO' | 'TOUR_PASSO' | 'ONBOARDING';
-  jornadaCodigo?: string;
-  titulo: string;
-  resumo?: string;
-  conteudo?: string;
-  rotaContexto?: string;
-  rotaAcao?: string;
-  rotuloAcao?: string;
-  icone?: string;
-  seletorAlvo?: string;
-  mediaTipo?: 'NENHUMA' | 'IMAGEM' | 'GIF' | 'VIDEO' | 'GALERIA';
-  mediaUrls?: Array<string>;
-  mediaAlt?: string;
-  ordem?: number;
-  ativo?: boolean;
-};
-
-export type AjudaEventoRequest = {
-  tipo:
-    | 'BUSCA'
-    | 'BUSCA_SEM_RESULTADO'
-    | 'CONTEUDO_ABERTO'
-    | 'ETAPA_CONCLUIDA'
-    | 'TOUR_INICIADO'
-    | 'TOUR_CONCLUIDO'
-    | 'TOUR_ABANDONADO'
-    | 'ONBOARDING_CONCLUIDO';
-  conteudoCodigo?: string;
-  termo?: string;
-  rota?: string;
-  sessaoId?: string;
-  resultadoQuantidade?: number;
-};
-
 export type AjudaMetricaItemResponse = {
   chave?: string;
   rotulo?: string;
@@ -1467,59 +2210,27 @@ export type AjudaMetricasResponse = {
   buscasFrequentes?: Array<AjudaMetricaItemResponse>;
 };
 
-export type PaginaEventoResponse = {
+export type GrupoMeResponse = {
   id?: string;
-  titulo?: string;
-  status?: 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO' | 'ARQUIVADO';
-  acao?: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER';
-  usuario?: string;
-};
-
-export type PublicacaoEventoResponse = {
-  id?: string;
-  clienteId?: string;
-  status?: 'GERANDO' | 'SUCESSO' | 'ERRO';
-  versao?: string;
-};
-
-export type AiTemplateCandidatoResponse = {
-  templateId?: string;
   codigo?: string;
   nome?: string;
-  descricao?: string;
-  confianca?: number;
-  motivo?: string;
 };
 
-export type AiTemplateRecomendacaoRequest = {
-  briefing: string;
-  projetoId?: string;
-  clienteId?: string;
-};
-
-export type AiTemplateRecomendacaoResponse = {
-  recomendado?: AiTemplateCandidatoResponse;
-  candidatos?: Array<AiTemplateCandidatoResponse>;
-  exigeConfirmacao?: boolean;
-};
-
-export type PaginaBlocoResponse = {
+export type MeResponse = {
   id?: string;
+  username?: string;
   nome?: string;
-  descricao?: string;
-  categoria?: string;
-  visual?: string;
-  html?: string;
-  parametrizacao?: string;
-  versao?: number;
-  slots?: Array<PaginaBlocoSlotResponse>;
+  email?: string;
+  grupos?: Array<GrupoMeResponse>;
+  permissoes?: Array<string>;
 };
 
-export type PaginaBlocoSlotResponse = {
-  id?: string;
-  elemento?: string;
-  classeCss?: string;
-  textoPadrao?: string;
+export type AiStatusResponse = {
+  enabled?: boolean;
+  prontoParaGerar?: boolean;
+  provider?: string;
+  model?: string;
+  mensagem?: string;
 };
 
 export type AiPropostaResponse = {
@@ -1550,150 +2261,7 @@ export type AiQualidadeItemResponse = {
   severidade?: string;
 };
 
-export type CriarAiSessaoRequest = {
-  objetivo: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
-  briefing: string;
-  projetoId?: string;
-  moduloId?: string;
-  clienteId?: string;
-  templateId?: string;
-  paginaId?: string;
-};
-
-export type AiMensagemResponse = {
-  id?: string;
-  papel?: 'USUARIO' | 'ASSISTENTE' | 'SISTEMA';
-  conteudo?: string;
-  perguntas?: Array<AiPerguntaResponse>;
-  ordem?: number;
-  createdAt?: string;
-};
-
-export type AiPerguntaResponse = {
-  id?: string;
-  texto?: string;
-  opcoes?: Array<string>;
-  obrigatoria?: boolean;
-};
-
-export type AiSessaoResponse = {
-  id?: string;
-  objetivo?: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
-  status?:
-    | 'ABERTA'
-    | 'AGUARDANDO_USUARIO'
-    | 'PRONTA_PARA_GERAR'
-    | 'GERANDO'
-    | 'PRONTA'
-    | 'APLICADA'
-    | 'CANCELADA'
-    | 'ERRO';
-  projetoId?: string;
-  moduloId?: string;
-  clienteId?: string;
-  paginaId?: string;
-  templateId?: string;
-  briefing?: string;
-  mensagens?: Array<AiMensagemResponse>;
-  createdAt?: string;
-  updatedAt?: string;
-  jobAtual?: AiJobResponse;
-};
-
-export type AiMensagemRequest = {
-  conteudo: string;
-  respostas?: {
-    [key: string]: string;
-  };
-};
-
-export type AiJobResponse = {
-  id?: string;
-  sessaoId?: string;
-  tipo?: 'TRIAGEM' | 'GERAR_RASCUNHO' | 'AJUSTAR';
-  status?: 'PENDENTE' | 'PROCESSANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADO';
-  erroMensagem?: string;
-  modelo?: string;
-  startedAt?: string;
-  finishedAt?: string;
-  etapa?:
-    | 'AGUARDANDO'
-    | 'PREPARANDO_CONTEXTO'
-    | 'SELECIONANDO_ESTRUTURA'
-    | 'GERANDO_CONTEUDO'
-    | 'VALIDANDO_QUALIDADE'
-    | 'FINALIZANDO'
-    | 'CONCLUIDA'
-    | 'CANCELADA'
-    | 'FALHA';
-  progresso?: number;
-  tentativa?: number;
-  diagnosticoId?: string;
-  tokensEntrada?: number;
-  tokensSaida?: number;
-  duracaoMs?: number;
-  heartbeatAt?: string;
-  cancelRequestedAt?: string;
-};
-
-export type AplicarAiPropostaRequest = {
-  modo: 'FORM' | 'PERSISTIR';
-  moduloId?: string;
-  parentId?: string;
-};
-
-export type AiAplicacaoResponse = {
-  modo?: string;
-  propostaId?: string;
-  paginaId?: string;
-  titulo?: string;
-  slug?: string;
-  codigoTela?: string;
-  resumo?: string;
-  conteudoHtml?: string;
-  templateOrigemId?: string;
-  templateOrigemVersao?: number;
-  moduloId?: string;
-};
-
-export type AiStatusResponse = {
-  enabled?: boolean;
-  prontoParaGerar?: boolean;
-  provider?: string;
-  model?: string;
-  mensagem?: string;
-};
-
-export type PaginaBibliotecaResponse = {
-  id?: string;
-  schemaVersion?: number;
-  componentes?: Array<PaginaBlocoResponse>;
-  blueprints?: Array<PaginaBlueprintResponse>;
-};
-
-export type PaginaBlueprintResponse = {
-  id?: string;
-  nome?: string;
-  descricao?: string;
-  tipoConteudo?: string;
-  versao?: number;
-  status?: string;
-  minimoComponentes?: number;
-  maximoComponentes?: number;
-  templatesCompativeis?: Array<string>;
-  secoes?: Array<PaginaBlueprintSecaoResponse>;
-};
-
-export type PaginaBlueprintSecaoResponse = {
-  slot?: string;
-  componenteId?: string;
-  necessidade?: string;
-  repetivel?: boolean;
-  maximoInstancias?: number;
-  alternativas?: Array<string>;
-};
-
-export type ExcluirData = {
+export type ReleaseorchestratorReleaseTemplateExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -1702,16 +2270,17 @@ export type ExcluirData = {
   url: '/api/v1/release-orchestrator/templates/{id}';
 };
 
-export type ExcluirResponses = {
+export type ReleaseorchestratorReleaseTemplateExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type ExcluirResponse = ExcluirResponses[keyof ExcluirResponses];
+export type ReleaseorchestratorReleaseTemplateExcluirResponse =
+  ReleaseorchestratorReleaseTemplateExcluirResponses[keyof ReleaseorchestratorReleaseTemplateExcluirResponses];
 
-export type BuscarData = {
+export type ReleaseorchestratorReleaseTemplateBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -1720,16 +2289,17 @@ export type BuscarData = {
   url: '/api/v1/release-orchestrator/templates/{id}';
 };
 
-export type BuscarResponses = {
+export type ReleaseorchestratorReleaseTemplateBuscarResponses = {
   /**
    * OK
    */
   200: ReleaseTemplateResponse;
 };
 
-export type BuscarResponse = BuscarResponses[keyof BuscarResponses];
+export type ReleaseorchestratorReleaseTemplateBuscarResponse =
+  ReleaseorchestratorReleaseTemplateBuscarResponses[keyof ReleaseorchestratorReleaseTemplateBuscarResponses];
 
-export type AtualizarData = {
+export type ReleaseorchestratorReleaseTemplateAtualizarData = {
   body: ReleaseTemplateRequest;
   path: {
     id: string;
@@ -1738,16 +2308,17 @@ export type AtualizarData = {
   url: '/api/v1/release-orchestrator/templates/{id}';
 };
 
-export type AtualizarResponses = {
+export type ReleaseorchestratorReleaseTemplateAtualizarResponses = {
   /**
    * OK
    */
   200: ReleaseTemplateResponse;
 };
 
-export type AtualizarResponse = AtualizarResponses[keyof AtualizarResponses];
+export type ReleaseorchestratorReleaseTemplateAtualizarResponse =
+  ReleaseorchestratorReleaseTemplateAtualizarResponses[keyof ReleaseorchestratorReleaseTemplateAtualizarResponses];
 
-export type RemoverData = {
+export type ReleaseorchestratorReleaseModuloVersaoRemoverData = {
   body?: never;
   path: {
     releaseId: string;
@@ -1757,16 +2328,17 @@ export type RemoverData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}';
 };
 
-export type RemoverResponses = {
+export type ReleaseorchestratorReleaseModuloVersaoRemoverResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type RemoverResponse = RemoverResponses[keyof RemoverResponses];
+export type ReleaseorchestratorReleaseModuloVersaoRemoverResponse =
+  ReleaseorchestratorReleaseModuloVersaoRemoverResponses[keyof ReleaseorchestratorReleaseModuloVersaoRemoverResponses];
 
-export type SalvarData = {
+export type ReleaseorchestratorReleaseModuloVersaoSalvarData = {
   body: SalvarVersaoModuloRequest;
   path: {
     releaseId: string;
@@ -1776,16 +2348,17 @@ export type SalvarData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}';
 };
 
-export type SalvarResponses = {
+export type ReleaseorchestratorReleaseModuloVersaoSalvarResponses = {
   /**
    * OK
    */
   200: ReleaseModuloVersaoResponse;
 };
 
-export type SalvarResponse = SalvarResponses[keyof SalvarResponses];
+export type ReleaseorchestratorReleaseModuloVersaoSalvarResponse =
+  ReleaseorchestratorReleaseModuloVersaoSalvarResponses[keyof ReleaseorchestratorReleaseModuloVersaoSalvarResponses];
 
-export type Remover1Data = {
+export type ReleaseorchestratorReleaseItemRemoverData = {
   body?: never;
   path: {
     releaseId: string;
@@ -1795,16 +2368,17 @@ export type Remover1Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}';
 };
 
-export type Remover1Responses = {
+export type ReleaseorchestratorReleaseItemRemoverResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Remover1Response = Remover1Responses[keyof Remover1Responses];
+export type ReleaseorchestratorReleaseItemRemoverResponse =
+  ReleaseorchestratorReleaseItemRemoverResponses[keyof ReleaseorchestratorReleaseItemRemoverResponses];
 
-export type Atualizar1Data = {
+export type ReleaseorchestratorReleaseItemAtualizarData = {
   body: ReleaseItemRequest;
   path: {
     releaseId: string;
@@ -1814,16 +2388,17 @@ export type Atualizar1Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}';
 };
 
-export type Atualizar1Responses = {
+export type ReleaseorchestratorReleaseItemAtualizarResponses = {
   /**
    * OK
    */
   200: ReleaseItemResponse;
 };
 
-export type Atualizar1Response = Atualizar1Responses[keyof Atualizar1Responses];
+export type ReleaseorchestratorReleaseItemAtualizarResponse =
+  ReleaseorchestratorReleaseItemAtualizarResponses[keyof ReleaseorchestratorReleaseItemAtualizarResponses];
 
-export type ReordenarData = {
+export type ReleaseorchestratorReleaseItemReordenarData = {
   body: ReordenarItensRequest;
   path: {
     releaseId: string;
@@ -1832,16 +2407,17 @@ export type ReordenarData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/reordenar';
 };
 
-export type ReordenarResponses = {
+export type ReleaseorchestratorReleaseItemReordenarResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type ReordenarResponse = ReordenarResponses[keyof ReordenarResponses];
+export type ReleaseorchestratorReleaseItemReordenarResponse =
+  ReleaseorchestratorReleaseItemReordenarResponses[keyof ReleaseorchestratorReleaseItemReordenarResponses];
 
-export type Excluir1Data = {
+export type ReleaseorchestratorReleaseExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -1850,16 +2426,17 @@ export type Excluir1Data = {
   url: '/api/v1/release-orchestrator/releases/{id}';
 };
 
-export type Excluir1Responses = {
+export type ReleaseorchestratorReleaseExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir1Response = Excluir1Responses[keyof Excluir1Responses];
+export type ReleaseorchestratorReleaseExcluirResponse =
+  ReleaseorchestratorReleaseExcluirResponses[keyof ReleaseorchestratorReleaseExcluirResponses];
 
-export type Buscar1Data = {
+export type ReleaseorchestratorReleaseBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -1868,16 +2445,17 @@ export type Buscar1Data = {
   url: '/api/v1/release-orchestrator/releases/{id}';
 };
 
-export type Buscar1Responses = {
+export type ReleaseorchestratorReleaseBuscarResponses = {
   /**
    * OK
    */
   200: ReleaseResponse;
 };
 
-export type Buscar1Response = Buscar1Responses[keyof Buscar1Responses];
+export type ReleaseorchestratorReleaseBuscarResponse =
+  ReleaseorchestratorReleaseBuscarResponses[keyof ReleaseorchestratorReleaseBuscarResponses];
 
-export type Atualizar2Data = {
+export type ReleaseorchestratorReleaseAtualizarData = {
   body: ReleaseRequest;
   path: {
     id: string;
@@ -1886,16 +2464,55 @@ export type Atualizar2Data = {
   url: '/api/v1/release-orchestrator/releases/{id}';
 };
 
-export type Atualizar2Responses = {
+export type ReleaseorchestratorReleaseAtualizarResponses = {
   /**
    * OK
    */
   200: ReleaseResponse;
 };
 
-export type Atualizar2Response = Atualizar2Responses[keyof Atualizar2Responses];
+export type ReleaseorchestratorReleaseAtualizarResponse =
+  ReleaseorchestratorReleaseAtualizarResponses[keyof ReleaseorchestratorReleaseAtualizarResponses];
 
-export type Excluir2Data = {
+export type ReleaseorchestratorReleaseListarManifestosData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/releases/{id}/manifestos';
+};
+
+export type ReleaseorchestratorReleaseListarManifestosResponses = {
+  /**
+   * OK
+   */
+  200: Array<ManifestoImplantacaoResponse>;
+};
+
+export type ReleaseorchestratorReleaseListarManifestosResponse =
+  ReleaseorchestratorReleaseListarManifestosResponses[keyof ReleaseorchestratorReleaseListarManifestosResponses];
+
+export type ReleaseorchestratorReleaseSalvarManifestoData = {
+  body: ManifestoImplantacaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/releases/{id}/manifestos';
+};
+
+export type ReleaseorchestratorReleaseSalvarManifestoResponses = {
+  /**
+   * OK
+   */
+  200: ManifestoImplantacaoResponse;
+};
+
+export type ReleaseorchestratorReleaseSalvarManifestoResponse =
+  ReleaseorchestratorReleaseSalvarManifestoResponses[keyof ReleaseorchestratorReleaseSalvarManifestoResponses];
+
+export type ReleaseorchestratorProximaEntregaExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -1904,16 +2521,17 @@ export type Excluir2Data = {
   url: '/api/v1/release-orchestrator/proximas-entregas/{id}';
 };
 
-export type Excluir2Responses = {
+export type ReleaseorchestratorProximaEntregaExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir2Response = Excluir2Responses[keyof Excluir2Responses];
+export type ReleaseorchestratorProximaEntregaExcluirResponse =
+  ReleaseorchestratorProximaEntregaExcluirResponses[keyof ReleaseorchestratorProximaEntregaExcluirResponses];
 
-export type Buscar2Data = {
+export type ReleaseorchestratorProximaEntregaBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -1922,16 +2540,17 @@ export type Buscar2Data = {
   url: '/api/v1/release-orchestrator/proximas-entregas/{id}';
 };
 
-export type Buscar2Responses = {
+export type ReleaseorchestratorProximaEntregaBuscarResponses = {
   /**
    * OK
    */
   200: ProximaEntregaResponse;
 };
 
-export type Buscar2Response = Buscar2Responses[keyof Buscar2Responses];
+export type ReleaseorchestratorProximaEntregaBuscarResponse =
+  ReleaseorchestratorProximaEntregaBuscarResponses[keyof ReleaseorchestratorProximaEntregaBuscarResponses];
 
-export type Atualizar3Data = {
+export type ReleaseorchestratorProximaEntregaAtualizarData = {
   body: ProximaEntregaRequest;
   path: {
     id: string;
@@ -1940,16 +2559,17 @@ export type Atualizar3Data = {
   url: '/api/v1/release-orchestrator/proximas-entregas/{id}';
 };
 
-export type Atualizar3Responses = {
+export type ReleaseorchestratorProximaEntregaAtualizarResponses = {
   /**
    * OK
    */
   200: ProximaEntregaResponse;
 };
 
-export type Atualizar3Response = Atualizar3Responses[keyof Atualizar3Responses];
+export type ReleaseorchestratorProximaEntregaAtualizarResponse =
+  ReleaseorchestratorProximaEntregaAtualizarResponses[keyof ReleaseorchestratorProximaEntregaAtualizarResponses];
 
-export type Excluir3Data = {
+export type ReleaseorchestratorModuloProdutoExcluirData = {
   body?: never;
   path: {
     produtoId: string;
@@ -1959,16 +2579,17 @@ export type Excluir3Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}';
 };
 
-export type Excluir3Responses = {
+export type ReleaseorchestratorModuloProdutoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir3Response = Excluir3Responses[keyof Excluir3Responses];
+export type ReleaseorchestratorModuloProdutoExcluirResponse =
+  ReleaseorchestratorModuloProdutoExcluirResponses[keyof ReleaseorchestratorModuloProdutoExcluirResponses];
 
-export type Buscar3Data = {
+export type ReleaseorchestratorModuloProdutoBuscarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -1978,16 +2599,17 @@ export type Buscar3Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}';
 };
 
-export type Buscar3Responses = {
+export type ReleaseorchestratorModuloProdutoBuscarResponses = {
   /**
    * OK
    */
   200: ModuloProdutoResponse;
 };
 
-export type Buscar3Response = Buscar3Responses[keyof Buscar3Responses];
+export type ReleaseorchestratorModuloProdutoBuscarResponse =
+  ReleaseorchestratorModuloProdutoBuscarResponses[keyof ReleaseorchestratorModuloProdutoBuscarResponses];
 
-export type Atualizar4Data = {
+export type ReleaseorchestratorModuloProdutoAtualizarData = {
   body: AtualizarModuloProdutoRequest;
   path: {
     produtoId: string;
@@ -1997,16 +2619,17 @@ export type Atualizar4Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}';
 };
 
-export type Atualizar4Responses = {
+export type ReleaseorchestratorModuloProdutoAtualizarResponses = {
   /**
    * OK
    */
   200: ModuloProdutoResponse;
 };
 
-export type Atualizar4Response = Atualizar4Responses[keyof Atualizar4Responses];
+export type ReleaseorchestratorModuloProdutoAtualizarResponse =
+  ReleaseorchestratorModuloProdutoAtualizarResponses[keyof ReleaseorchestratorModuloProdutoAtualizarResponses];
 
-export type Excluir4Data = {
+export type ReleaseorchestratorDominioProdutoExcluirData = {
   body?: never;
   path: {
     produtoId: string;
@@ -2016,16 +2639,17 @@ export type Excluir4Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}';
 };
 
-export type Excluir4Responses = {
+export type ReleaseorchestratorDominioProdutoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir4Response = Excluir4Responses[keyof Excluir4Responses];
+export type ReleaseorchestratorDominioProdutoExcluirResponse =
+  ReleaseorchestratorDominioProdutoExcluirResponses[keyof ReleaseorchestratorDominioProdutoExcluirResponses];
 
-export type Buscar4Data = {
+export type ReleaseorchestratorDominioProdutoBuscarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -2035,16 +2659,17 @@ export type Buscar4Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}';
 };
 
-export type Buscar4Responses = {
+export type ReleaseorchestratorDominioProdutoBuscarResponses = {
   /**
    * OK
    */
   200: DominioProdutoResponse;
 };
 
-export type Buscar4Response = Buscar4Responses[keyof Buscar4Responses];
+export type ReleaseorchestratorDominioProdutoBuscarResponse =
+  ReleaseorchestratorDominioProdutoBuscarResponses[keyof ReleaseorchestratorDominioProdutoBuscarResponses];
 
-export type Atualizar5Data = {
+export type ReleaseorchestratorDominioProdutoAtualizarData = {
   body: DominioProdutoRequest;
   path: {
     produtoId: string;
@@ -2054,16 +2679,17 @@ export type Atualizar5Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}';
 };
 
-export type Atualizar5Responses = {
+export type ReleaseorchestratorDominioProdutoAtualizarResponses = {
   /**
    * OK
    */
   200: DominioProdutoResponse;
 };
 
-export type Atualizar5Response = Atualizar5Responses[keyof Atualizar5Responses];
+export type ReleaseorchestratorDominioProdutoAtualizarResponse =
+  ReleaseorchestratorDominioProdutoAtualizarResponses[keyof ReleaseorchestratorDominioProdutoAtualizarResponses];
 
-export type Excluir5Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoExcluirData = {
   body?: never;
   path: {
     produtoId: string;
@@ -2074,16 +2700,17 @@ export type Excluir5Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}';
 };
 
-export type Excluir5Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir5Response = Excluir5Responses[keyof Excluir5Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoExcluirResponse =
+  ReleaseorchestratorFuncionalidadeProdutoExcluirResponses[keyof ReleaseorchestratorFuncionalidadeProdutoExcluirResponses];
 
-export type Buscar5Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoBuscarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -2094,16 +2721,17 @@ export type Buscar5Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}';
 };
 
-export type Buscar5Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoBuscarResponses = {
   /**
    * OK
    */
   200: FuncionalidadeProdutoResponse;
 };
 
-export type Buscar5Response = Buscar5Responses[keyof Buscar5Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoBuscarResponse =
+  ReleaseorchestratorFuncionalidadeProdutoBuscarResponses[keyof ReleaseorchestratorFuncionalidadeProdutoBuscarResponses];
 
-export type Atualizar6Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoAtualizarData = {
   body: FuncionalidadeProdutoRequest;
   path: {
     produtoId: string;
@@ -2114,16 +2742,17 @@ export type Atualizar6Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}';
 };
 
-export type Atualizar6Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses = {
   /**
    * OK
    */
   200: FuncionalidadeProdutoResponse;
 };
 
-export type Atualizar6Response = Atualizar6Responses[keyof Atualizar6Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoAtualizarResponse =
+  ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses[keyof ReleaseorchestratorFuncionalidadeProdutoAtualizarResponses];
 
-export type Excluir6Data = {
+export type ReleaseorchestratorProdutoRhExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2132,16 +2761,17 @@ export type Excluir6Data = {
   url: '/api/v1/release-orchestrator/produtos/{id}';
 };
 
-export type Excluir6Responses = {
+export type ReleaseorchestratorProdutoRhExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir6Response = Excluir6Responses[keyof Excluir6Responses];
+export type ReleaseorchestratorProdutoRhExcluirResponse =
+  ReleaseorchestratorProdutoRhExcluirResponses[keyof ReleaseorchestratorProdutoRhExcluirResponses];
 
-export type Buscar6Data = {
+export type ReleaseorchestratorProdutoRhBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2150,16 +2780,17 @@ export type Buscar6Data = {
   url: '/api/v1/release-orchestrator/produtos/{id}';
 };
 
-export type Buscar6Responses = {
+export type ReleaseorchestratorProdutoRhBuscarResponses = {
   /**
    * OK
    */
   200: ProdutoRhResponse;
 };
 
-export type Buscar6Response = Buscar6Responses[keyof Buscar6Responses];
+export type ReleaseorchestratorProdutoRhBuscarResponse =
+  ReleaseorchestratorProdutoRhBuscarResponses[keyof ReleaseorchestratorProdutoRhBuscarResponses];
 
-export type Atualizar7Data = {
+export type ReleaseorchestratorProdutoRhAtualizarData = {
   body: ProdutoRhRequest;
   path: {
     id: string;
@@ -2168,16 +2799,131 @@ export type Atualizar7Data = {
   url: '/api/v1/release-orchestrator/produtos/{id}';
 };
 
-export type Atualizar7Responses = {
+export type ReleaseorchestratorProdutoRhAtualizarResponses = {
   /**
    * OK
    */
   200: ProdutoRhResponse;
 };
 
-export type Atualizar7Response = Atualizar7Responses[keyof Atualizar7Responses];
+export type ReleaseorchestratorProdutoRhAtualizarResponse =
+  ReleaseorchestratorProdutoRhAtualizarResponses[keyof ReleaseorchestratorProdutoRhAtualizarResponses];
 
-export type AtualizarRascunhoData = {
+export type ReleaseorchestratorInstalacaoClienteExcluirData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}';
+};
+
+export type ReleaseorchestratorInstalacaoClienteExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type ReleaseorchestratorInstalacaoClienteExcluirResponse =
+  ReleaseorchestratorInstalacaoClienteExcluirResponses[keyof ReleaseorchestratorInstalacaoClienteExcluirResponses];
+
+export type ReleaseorchestratorInstalacaoClienteBuscarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}';
+};
+
+export type ReleaseorchestratorInstalacaoClienteBuscarResponses = {
+  /**
+   * OK
+   */
+  200: InstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteBuscarResponse =
+  ReleaseorchestratorInstalacaoClienteBuscarResponses[keyof ReleaseorchestratorInstalacaoClienteBuscarResponses];
+
+export type ReleaseorchestratorInstalacaoClienteAtualizarData = {
+  body: InstalacaoClienteRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}';
+};
+
+export type ReleaseorchestratorInstalacaoClienteAtualizarResponses = {
+  /**
+   * OK
+   */
+  200: InstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteAtualizarResponse =
+  ReleaseorchestratorInstalacaoClienteAtualizarResponses[keyof ReleaseorchestratorInstalacaoClienteAtualizarResponses];
+
+export type ReleaseorchestratorHostExcluirData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/hosts/{id}';
+};
+
+export type ReleaseorchestratorHostExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type ReleaseorchestratorHostExcluirResponse =
+  ReleaseorchestratorHostExcluirResponses[keyof ReleaseorchestratorHostExcluirResponses];
+
+export type ReleaseorchestratorHostBuscarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/hosts/{id}';
+};
+
+export type ReleaseorchestratorHostBuscarResponses = {
+  /**
+   * OK
+   */
+  200: HostResponse;
+};
+
+export type ReleaseorchestratorHostBuscarResponse =
+  ReleaseorchestratorHostBuscarResponses[keyof ReleaseorchestratorHostBuscarResponses];
+
+export type ReleaseorchestratorHostAtualizarData = {
+  body: HostRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/hosts/{id}';
+};
+
+export type ReleaseorchestratorHostAtualizarResponses = {
+  /**
+   * OK
+   */
+  200: HostResponse;
+};
+
+export type ReleaseorchestratorHostAtualizarResponse =
+  ReleaseorchestratorHostAtualizarResponses[keyof ReleaseorchestratorHostAtualizarResponses];
+
+export type ReleaseorchestratorEntregaAtualizarRascunhoData = {
   body: AtualizarEntregaRascunhoRequest;
   path: {
     id: string;
@@ -2186,16 +2932,17 @@ export type AtualizarRascunhoData = {
   url: '/api/v1/release-orchestrator/entregas/{id}/rascunho';
 };
 
-export type AtualizarRascunhoResponses = {
+export type ReleaseorchestratorEntregaAtualizarRascunhoResponses = {
   /**
    * OK
    */
   200: EntregaResponse;
 };
 
-export type AtualizarRascunhoResponse = AtualizarRascunhoResponses[keyof AtualizarRascunhoResponses];
+export type ReleaseorchestratorEntregaAtualizarRascunhoResponse =
+  ReleaseorchestratorEntregaAtualizarRascunhoResponses[keyof ReleaseorchestratorEntregaAtualizarRascunhoResponses];
 
-export type Excluir7Data = {
+export type ReleaseorchestratorClienteExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2204,16 +2951,17 @@ export type Excluir7Data = {
   url: '/api/v1/release-orchestrator/clientes/{id}';
 };
 
-export type Excluir7Responses = {
+export type ReleaseorchestratorClienteExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir7Response = Excluir7Responses[keyof Excluir7Responses];
+export type ReleaseorchestratorClienteExcluirResponse =
+  ReleaseorchestratorClienteExcluirResponses[keyof ReleaseorchestratorClienteExcluirResponses];
 
-export type Buscar7Data = {
+export type ReleaseorchestratorClienteBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2222,16 +2970,17 @@ export type Buscar7Data = {
   url: '/api/v1/release-orchestrator/clientes/{id}';
 };
 
-export type Buscar7Responses = {
+export type ReleaseorchestratorClienteBuscarResponses = {
   /**
    * OK
    */
   200: ClienteResponse;
 };
 
-export type Buscar7Response = Buscar7Responses[keyof Buscar7Responses];
+export type ReleaseorchestratorClienteBuscarResponse =
+  ReleaseorchestratorClienteBuscarResponses[keyof ReleaseorchestratorClienteBuscarResponses];
 
-export type Atualizar8Data = {
+export type ReleaseorchestratorClienteAtualizarData = {
   body: ClienteRequest;
   path: {
     id: string;
@@ -2240,16 +2989,17 @@ export type Atualizar8Data = {
   url: '/api/v1/release-orchestrator/clientes/{id}';
 };
 
-export type Atualizar8Responses = {
+export type ReleaseorchestratorClienteAtualizarResponses = {
   /**
    * OK
    */
   200: ClienteResponse;
 };
 
-export type Atualizar8Response = Atualizar8Responses[keyof Atualizar8Responses];
+export type ReleaseorchestratorClienteAtualizarResponse =
+  ReleaseorchestratorClienteAtualizarResponses[keyof ReleaseorchestratorClienteAtualizarResponses];
 
-export type RescindirData = {
+export type ReleaseorchestratorClienteProdutoRescindirData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2259,16 +3009,17 @@ export type RescindirData = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}';
 };
 
-export type RescindirResponses = {
+export type ReleaseorchestratorClienteProdutoRescindirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type RescindirResponse = RescindirResponses[keyof RescindirResponses];
+export type ReleaseorchestratorClienteProdutoRescindirResponse =
+  ReleaseorchestratorClienteProdutoRescindirResponses[keyof ReleaseorchestratorClienteProdutoRescindirResponses];
 
-export type Buscar8Data = {
+export type ReleaseorchestratorClienteProdutoBuscarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2278,16 +3029,17 @@ export type Buscar8Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}';
 };
 
-export type Buscar8Responses = {
+export type ReleaseorchestratorClienteProdutoBuscarResponses = {
   /**
    * OK
    */
   200: ClienteProdutoResponse;
 };
 
-export type Buscar8Response = Buscar8Responses[keyof Buscar8Responses];
+export type ReleaseorchestratorClienteProdutoBuscarResponse =
+  ReleaseorchestratorClienteProdutoBuscarResponses[keyof ReleaseorchestratorClienteProdutoBuscarResponses];
 
-export type Atualizar9Data = {
+export type ReleaseorchestratorClienteProdutoAtualizarData = {
   body: AtualizarClienteProdutoRequest;
   path: {
     clienteId: string;
@@ -2297,16 +3049,17 @@ export type Atualizar9Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}';
 };
 
-export type Atualizar9Responses = {
+export type ReleaseorchestratorClienteProdutoAtualizarResponses = {
   /**
    * OK
    */
   200: ClienteProdutoResponse;
 };
 
-export type Atualizar9Response = Atualizar9Responses[keyof Atualizar9Responses];
+export type ReleaseorchestratorClienteProdutoAtualizarResponse =
+  ReleaseorchestratorClienteProdutoAtualizarResponses[keyof ReleaseorchestratorClienteProdutoAtualizarResponses];
 
-export type Remover2Data = {
+export type ReleaseorchestratorClienteProdutoModuloRemoverData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2317,16 +3070,17 @@ export type Remover2Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}';
 };
 
-export type Remover2Responses = {
+export type ReleaseorchestratorClienteProdutoModuloRemoverResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Remover2Response = Remover2Responses[keyof Remover2Responses];
+export type ReleaseorchestratorClienteProdutoModuloRemoverResponse =
+  ReleaseorchestratorClienteProdutoModuloRemoverResponses[keyof ReleaseorchestratorClienteProdutoModuloRemoverResponses];
 
-export type Salvar1Data = {
+export type ReleaseorchestratorClienteProdutoModuloSalvarData = {
   body: SalvarClienteProdutoModuloRequest;
   path: {
     clienteId: string;
@@ -2337,16 +3091,17 @@ export type Salvar1Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}';
 };
 
-export type Salvar1Responses = {
+export type ReleaseorchestratorClienteProdutoModuloSalvarResponses = {
   /**
    * OK
    */
   200: ClienteProdutoModuloResponse;
 };
 
-export type Salvar1Response = Salvar1Responses[keyof Salvar1Responses];
+export type ReleaseorchestratorClienteProdutoModuloSalvarResponse =
+  ReleaseorchestratorClienteProdutoModuloSalvarResponses[keyof ReleaseorchestratorClienteProdutoModuloSalvarResponses];
 
-export type Remover3Data = {
+export type ReleaseorchestratorClienteFuncionalidadeRemoverData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2356,16 +3111,17 @@ export type Remover3Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}';
 };
 
-export type Remover3Responses = {
+export type ReleaseorchestratorClienteFuncionalidadeRemoverResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Remover3Response = Remover3Responses[keyof Remover3Responses];
+export type ReleaseorchestratorClienteFuncionalidadeRemoverResponse =
+  ReleaseorchestratorClienteFuncionalidadeRemoverResponses[keyof ReleaseorchestratorClienteFuncionalidadeRemoverResponses];
 
-export type Salvar2Data = {
+export type ReleaseorchestratorClienteFuncionalidadeSalvarData = {
   body: SalvarClienteFuncionalidadeRequest;
   path: {
     clienteId: string;
@@ -2375,16 +3131,17 @@ export type Salvar2Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}';
 };
 
-export type Salvar2Responses = {
+export type ReleaseorchestratorClienteFuncionalidadeSalvarResponses = {
   /**
    * OK
    */
   200: ClienteFuncionalidadeResponse;
 };
 
-export type Salvar2Response = Salvar2Responses[keyof Salvar2Responses];
+export type ReleaseorchestratorClienteFuncionalidadeSalvarResponse =
+  ReleaseorchestratorClienteFuncionalidadeSalvarResponses[keyof ReleaseorchestratorClienteFuncionalidadeSalvarResponses];
 
-export type Excluir8Data = {
+export type ReleaseorchestratorContatoExcluirData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2394,16 +3151,17 @@ export type Excluir8Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}';
 };
 
-export type Excluir8Responses = {
+export type ReleaseorchestratorContatoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir8Response = Excluir8Responses[keyof Excluir8Responses];
+export type ReleaseorchestratorContatoExcluirResponse =
+  ReleaseorchestratorContatoExcluirResponses[keyof ReleaseorchestratorContatoExcluirResponses];
 
-export type Buscar9Data = {
+export type ReleaseorchestratorContatoBuscarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2413,16 +3171,17 @@ export type Buscar9Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}';
 };
 
-export type Buscar9Responses = {
+export type ReleaseorchestratorContatoBuscarResponses = {
   /**
    * OK
    */
   200: ContatoResponse;
 };
 
-export type Buscar9Response = Buscar9Responses[keyof Buscar9Responses];
+export type ReleaseorchestratorContatoBuscarResponse =
+  ReleaseorchestratorContatoBuscarResponses[keyof ReleaseorchestratorContatoBuscarResponses];
 
-export type Atualizar10Data = {
+export type ReleaseorchestratorContatoAtualizarData = {
   body: ContatoRequest;
   path: {
     clienteId: string;
@@ -2432,16 +3191,17 @@ export type Atualizar10Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}';
 };
 
-export type Atualizar10Responses = {
+export type ReleaseorchestratorContatoAtualizarResponses = {
   /**
    * OK
    */
   200: ContatoResponse;
 };
 
-export type Atualizar10Response = Atualizar10Responses[keyof Atualizar10Responses];
+export type ReleaseorchestratorContatoAtualizarResponse =
+  ReleaseorchestratorContatoAtualizarResponses[keyof ReleaseorchestratorContatoAtualizarResponses];
 
-export type Buscar10Data = {
+export type ReleaseorchestratorConfigEntregaBuscarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -2450,16 +3210,17 @@ export type Buscar10Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega';
 };
 
-export type Buscar10Responses = {
+export type ReleaseorchestratorConfigEntregaBuscarResponses = {
   /**
    * OK
    */
   200: ConfigEntregaResponse;
 };
 
-export type Buscar10Response = Buscar10Responses[keyof Buscar10Responses];
+export type ReleaseorchestratorConfigEntregaBuscarResponse =
+  ReleaseorchestratorConfigEntregaBuscarResponses[keyof ReleaseorchestratorConfigEntregaBuscarResponses];
 
-export type Salvar3Data = {
+export type ReleaseorchestratorConfigEntregaSalvarData = {
   body: ConfigEntregaRequest;
   path: {
     clienteId: string;
@@ -2468,16 +3229,17 @@ export type Salvar3Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega';
 };
 
-export type Salvar3Responses = {
+export type ReleaseorchestratorConfigEntregaSalvarResponses = {
   /**
    * OK
    */
   200: ConfigEntregaResponse;
 };
 
-export type Salvar3Response = Salvar3Responses[keyof Salvar3Responses];
+export type ReleaseorchestratorConfigEntregaSalvarResponse =
+  ReleaseorchestratorConfigEntregaSalvarResponses[keyof ReleaseorchestratorConfigEntregaSalvarResponses];
 
-export type Buscar11Data = {
+export type IdentityaccessUsuarioBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2486,16 +3248,17 @@ export type Buscar11Data = {
   url: '/api/v1/rbac/usuarios/{id}';
 };
 
-export type Buscar11Responses = {
+export type IdentityaccessUsuarioBuscarResponses = {
   /**
    * OK
    */
   200: UsuarioResponse;
 };
 
-export type Buscar11Response = Buscar11Responses[keyof Buscar11Responses];
+export type IdentityaccessUsuarioBuscarResponse =
+  IdentityaccessUsuarioBuscarResponses[keyof IdentityaccessUsuarioBuscarResponses];
 
-export type Atualizar11Data = {
+export type IdentityaccessUsuarioAtualizarData = {
   body: AtualizarUsuarioRequest;
   path: {
     id: string;
@@ -2504,16 +3267,17 @@ export type Atualizar11Data = {
   url: '/api/v1/rbac/usuarios/{id}';
 };
 
-export type Atualizar11Responses = {
+export type IdentityaccessUsuarioAtualizarResponses = {
   /**
    * OK
    */
   200: UsuarioResponse;
 };
 
-export type Atualizar11Response = Atualizar11Responses[keyof Atualizar11Responses];
+export type IdentityaccessUsuarioAtualizarResponse =
+  IdentityaccessUsuarioAtualizarResponses[keyof IdentityaccessUsuarioAtualizarResponses];
 
-export type ListarGruposData = {
+export type IdentityaccessUsuarioListarGruposData = {
   body?: never;
   path: {
     id: string;
@@ -2522,16 +3286,17 @@ export type ListarGruposData = {
   url: '/api/v1/rbac/usuarios/{id}/grupos';
 };
 
-export type ListarGruposResponses = {
+export type IdentityaccessUsuarioListarGruposResponses = {
   /**
    * OK
    */
   200: Array<string>;
 };
 
-export type ListarGruposResponse = ListarGruposResponses[keyof ListarGruposResponses];
+export type IdentityaccessUsuarioListarGruposResponse =
+  IdentityaccessUsuarioListarGruposResponses[keyof IdentityaccessUsuarioListarGruposResponses];
 
-export type SalvarGruposData = {
+export type IdentityaccessUsuarioSalvarGruposData = {
   body: UsuarioGruposRequest;
   path: {
     id: string;
@@ -2540,48 +3305,51 @@ export type SalvarGruposData = {
   url: '/api/v1/rbac/usuarios/{id}/grupos';
 };
 
-export type SalvarGruposResponses = {
+export type IdentityaccessUsuarioSalvarGruposResponses = {
   /**
    * OK
    */
   200: Array<string>;
 };
 
-export type SalvarGruposResponse = SalvarGruposResponses[keyof SalvarGruposResponses];
+export type IdentityaccessUsuarioSalvarGruposResponse =
+  IdentityaccessUsuarioSalvarGruposResponses[keyof IdentityaccessUsuarioSalvarGruposResponses];
 
-export type AtualData = {
+export type IdentityaccessPoliticaSenhaAtualData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/politica-senha';
 };
 
-export type AtualResponses = {
+export type IdentityaccessPoliticaSenhaAtualResponses = {
   /**
    * OK
    */
   200: PoliticaSenhaResponse;
 };
 
-export type AtualResponse = AtualResponses[keyof AtualResponses];
+export type IdentityaccessPoliticaSenhaAtualResponse =
+  IdentityaccessPoliticaSenhaAtualResponses[keyof IdentityaccessPoliticaSenhaAtualResponses];
 
-export type Atualizar12Data = {
+export type IdentityaccessPoliticaSenhaAtualizarData = {
   body: PoliticaSenhaRequest;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/politica-senha';
 };
 
-export type Atualizar12Responses = {
+export type IdentityaccessPoliticaSenhaAtualizarResponses = {
   /**
    * OK
    */
   200: PoliticaSenhaResponse;
 };
 
-export type Atualizar12Response = Atualizar12Responses[keyof Atualizar12Responses];
+export type IdentityaccessPoliticaSenhaAtualizarResponse =
+  IdentityaccessPoliticaSenhaAtualizarResponses[keyof IdentityaccessPoliticaSenhaAtualizarResponses];
 
-export type Excluir9Data = {
+export type IdentityaccessGrupoExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2590,16 +3358,17 @@ export type Excluir9Data = {
   url: '/api/v1/rbac/grupos/{id}';
 };
 
-export type Excluir9Responses = {
+export type IdentityaccessGrupoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir9Response = Excluir9Responses[keyof Excluir9Responses];
+export type IdentityaccessGrupoExcluirResponse =
+  IdentityaccessGrupoExcluirResponses[keyof IdentityaccessGrupoExcluirResponses];
 
-export type Buscar12Data = {
+export type IdentityaccessGrupoBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2608,16 +3377,17 @@ export type Buscar12Data = {
   url: '/api/v1/rbac/grupos/{id}';
 };
 
-export type Buscar12Responses = {
+export type IdentityaccessGrupoBuscarResponses = {
   /**
    * OK
    */
   200: GrupoResponse;
 };
 
-export type Buscar12Response = Buscar12Responses[keyof Buscar12Responses];
+export type IdentityaccessGrupoBuscarResponse =
+  IdentityaccessGrupoBuscarResponses[keyof IdentityaccessGrupoBuscarResponses];
 
-export type Atualizar13Data = {
+export type IdentityaccessGrupoAtualizarData = {
   body: GrupoRequest;
   path: {
     id: string;
@@ -2626,16 +3396,17 @@ export type Atualizar13Data = {
   url: '/api/v1/rbac/grupos/{id}';
 };
 
-export type Atualizar13Responses = {
+export type IdentityaccessGrupoAtualizarResponses = {
   /**
    * OK
    */
   200: GrupoResponse;
 };
 
-export type Atualizar13Response = Atualizar13Responses[keyof Atualizar13Responses];
+export type IdentityaccessGrupoAtualizarResponse =
+  IdentityaccessGrupoAtualizarResponses[keyof IdentityaccessGrupoAtualizarResponses];
 
-export type ListarMembrosData = {
+export type IdentityaccessGrupoListarMembrosData = {
   body?: never;
   path: {
     id: string;
@@ -2644,16 +3415,17 @@ export type ListarMembrosData = {
   url: '/api/v1/rbac/grupos/{id}/usuarios';
 };
 
-export type ListarMembrosResponses = {
+export type IdentityaccessGrupoListarMembrosResponses = {
   /**
    * OK
    */
   200: Array<string>;
 };
 
-export type ListarMembrosResponse = ListarMembrosResponses[keyof ListarMembrosResponses];
+export type IdentityaccessGrupoListarMembrosResponse =
+  IdentityaccessGrupoListarMembrosResponses[keyof IdentityaccessGrupoListarMembrosResponses];
 
-export type SalvarMembrosData = {
+export type IdentityaccessGrupoSalvarMembrosData = {
   body: GrupoUsuariosRequest;
   path: {
     id: string;
@@ -2662,16 +3434,17 @@ export type SalvarMembrosData = {
   url: '/api/v1/rbac/grupos/{id}/usuarios';
 };
 
-export type SalvarMembrosResponses = {
+export type IdentityaccessGrupoSalvarMembrosResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type SalvarMembrosResponse = SalvarMembrosResponses[keyof SalvarMembrosResponses];
+export type IdentityaccessGrupoSalvarMembrosResponse =
+  IdentityaccessGrupoSalvarMembrosResponses[keyof IdentityaccessGrupoSalvarMembrosResponses];
 
-export type ListarPermissoesData = {
+export type IdentityaccessGrupoListarPermissoesData = {
   body?: never;
   path: {
     id: string;
@@ -2680,16 +3453,17 @@ export type ListarPermissoesData = {
   url: '/api/v1/rbac/grupos/{id}/permissoes';
 };
 
-export type ListarPermissoesResponses = {
+export type IdentityaccessGrupoListarPermissoesResponses = {
   /**
    * OK
    */
   200: Array<string>;
 };
 
-export type ListarPermissoesResponse = ListarPermissoesResponses[keyof ListarPermissoesResponses];
+export type IdentityaccessGrupoListarPermissoesResponse =
+  IdentityaccessGrupoListarPermissoesResponses[keyof IdentityaccessGrupoListarPermissoesResponses];
 
-export type SalvarPermissoesData = {
+export type IdentityaccessGrupoSalvarPermissoesData = {
   body: GrupoPermissoesRequest;
   path: {
     id: string;
@@ -2698,16 +3472,17 @@ export type SalvarPermissoesData = {
   url: '/api/v1/rbac/grupos/{id}/permissoes';
 };
 
-export type SalvarPermissoesResponses = {
+export type IdentityaccessGrupoSalvarPermissoesResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type SalvarPermissoesResponse = SalvarPermissoesResponses[keyof SalvarPermissoesResponses];
+export type IdentityaccessGrupoSalvarPermissoesResponse =
+  IdentityaccessGrupoSalvarPermissoesResponses[keyof IdentityaccessGrupoSalvarPermissoesResponses];
 
-export type Remover4Data = {
+export type IdentityaccessEscopoAcessoRemoverData = {
   body?: never;
   path: {
     id: string;
@@ -2716,16 +3491,17 @@ export type Remover4Data = {
   url: '/api/v1/rbac/escopos/{id}';
 };
 
-export type Remover4Responses = {
+export type IdentityaccessEscopoAcessoRemoverResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Remover4Response = Remover4Responses[keyof Remover4Responses];
+export type IdentityaccessEscopoAcessoRemoverResponse =
+  IdentityaccessEscopoAcessoRemoverResponses[keyof IdentityaccessEscopoAcessoRemoverResponses];
 
-export type Atualizar14Data = {
+export type IdentityaccessEscopoAcessoAtualizarData = {
   body: EscopoAcessoRequest;
   path: {
     id: string;
@@ -2734,16 +3510,17 @@ export type Atualizar14Data = {
   url: '/api/v1/rbac/escopos/{id}';
 };
 
-export type Atualizar14Responses = {
+export type IdentityaccessEscopoAcessoAtualizarResponses = {
   /**
    * OK
    */
   200: EscopoAcessoResponse;
 };
 
-export type Atualizar14Response = Atualizar14Responses[keyof Atualizar14Responses];
+export type IdentityaccessEscopoAcessoAtualizarResponse =
+  IdentityaccessEscopoAcessoAtualizarResponses[keyof IdentityaccessEscopoAcessoAtualizarResponses];
 
-export type Excluir10Data = {
+export type DocflowProjetoExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2752,16 +3529,17 @@ export type Excluir10Data = {
   url: '/api/v1/docflow/projetos/{id}';
 };
 
-export type Excluir10Responses = {
+export type DocflowProjetoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir10Response = Excluir10Responses[keyof Excluir10Responses];
+export type DocflowProjetoExcluirResponse =
+  DocflowProjetoExcluirResponses[keyof DocflowProjetoExcluirResponses];
 
-export type Buscar13Data = {
+export type DocflowProjetoBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2770,16 +3548,16 @@ export type Buscar13Data = {
   url: '/api/v1/docflow/projetos/{id}';
 };
 
-export type Buscar13Responses = {
+export type DocflowProjetoBuscarResponses = {
   /**
    * OK
    */
   200: ProjetoResponse;
 };
 
-export type Buscar13Response = Buscar13Responses[keyof Buscar13Responses];
+export type DocflowProjetoBuscarResponse = DocflowProjetoBuscarResponses[keyof DocflowProjetoBuscarResponses];
 
-export type Atualizar15Data = {
+export type DocflowProjetoAtualizarData = {
   body: ProjetoRequest;
   path: {
     id: string;
@@ -2788,16 +3566,17 @@ export type Atualizar15Data = {
   url: '/api/v1/docflow/projetos/{id}';
 };
 
-export type Atualizar15Responses = {
+export type DocflowProjetoAtualizarResponses = {
   /**
    * OK
    */
   200: ProjetoResponse;
 };
 
-export type Atualizar15Response = Atualizar15Responses[keyof Atualizar15Responses];
+export type DocflowProjetoAtualizarResponse =
+  DocflowProjetoAtualizarResponses[keyof DocflowProjetoAtualizarResponses];
 
-export type Excluir11Data = {
+export type DocflowPaginaExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2806,16 +3585,16 @@ export type Excluir11Data = {
   url: '/api/v1/docflow/paginas/{id}';
 };
 
-export type Excluir11Responses = {
+export type DocflowPaginaExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir11Response = Excluir11Responses[keyof Excluir11Responses];
+export type DocflowPaginaExcluirResponse = DocflowPaginaExcluirResponses[keyof DocflowPaginaExcluirResponses];
 
-export type Buscar14Data = {
+export type DocflowPaginaBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2824,16 +3603,16 @@ export type Buscar14Data = {
   url: '/api/v1/docflow/paginas/{id}';
 };
 
-export type Buscar14Responses = {
+export type DocflowPaginaBuscarResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type Buscar14Response = Buscar14Responses[keyof Buscar14Responses];
+export type DocflowPaginaBuscarResponse = DocflowPaginaBuscarResponses[keyof DocflowPaginaBuscarResponses];
 
-export type Atualizar16Data = {
+export type DocflowPaginaAtualizarData = {
   body: PaginaRequest;
   path: {
     id: string;
@@ -2842,16 +3621,17 @@ export type Atualizar16Data = {
   url: '/api/v1/docflow/paginas/{id}';
 };
 
-export type Atualizar16Responses = {
+export type DocflowPaginaAtualizarResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type Atualizar16Response = Atualizar16Responses[keyof Atualizar16Responses];
+export type DocflowPaginaAtualizarResponse =
+  DocflowPaginaAtualizarResponses[keyof DocflowPaginaAtualizarResponses];
 
-export type AutosaveData = {
+export type DocflowPaginaAutosaveData = {
   body: PaginaRequest;
   path: {
     id: string;
@@ -2860,16 +3640,17 @@ export type AutosaveData = {
   url: '/api/v1/docflow/paginas/{id}/autosave';
 };
 
-export type AutosaveResponses = {
+export type DocflowPaginaAutosaveResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type AutosaveResponse = AutosaveResponses[keyof AutosaveResponses];
+export type DocflowPaginaAutosaveResponse =
+  DocflowPaginaAutosaveResponses[keyof DocflowPaginaAutosaveResponses];
 
-export type ExcluirTemplateData = {
+export type DocflowPaginaExcluirTemplateData = {
   body?: never;
   path: {
     templateId: string;
@@ -2878,16 +3659,17 @@ export type ExcluirTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}';
 };
 
-export type ExcluirTemplateResponses = {
+export type DocflowPaginaExcluirTemplateResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type ExcluirTemplateResponse = ExcluirTemplateResponses[keyof ExcluirTemplateResponses];
+export type DocflowPaginaExcluirTemplateResponse =
+  DocflowPaginaExcluirTemplateResponses[keyof DocflowPaginaExcluirTemplateResponses];
 
-export type AtualizarTemplateData = {
+export type DocflowPaginaAtualizarTemplateData = {
   body: PaginaTemplateRequest;
   path: {
     templateId: string;
@@ -2896,34 +3678,55 @@ export type AtualizarTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}';
 };
 
-export type AtualizarTemplateResponses = {
+export type DocflowPaginaAtualizarTemplateResponses = {
   /**
    * OK
    */
   200: PaginaTemplateResponse;
 };
 
-export type AtualizarTemplateResponse = AtualizarTemplateResponses[keyof AtualizarTemplateResponses];
+export type DocflowPaginaAtualizarTemplateResponse =
+  DocflowPaginaAtualizarTemplateResponses[keyof DocflowPaginaAtualizarTemplateResponses];
 
-export type Excluir12Data = {
+export type DocflowPaginaExcluirSnippetData = {
   body?: never;
   path: {
-    id: string;
+    snippetId: string;
   };
   query?: never;
-  url: '/api/v1/docflow/modulos/{id}';
+  url: '/api/v1/docflow/paginas/snippets/{snippetId}';
 };
 
-export type Excluir12Responses = {
+export type DocflowPaginaExcluirSnippetResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir12Response = Excluir12Responses[keyof Excluir12Responses];
+export type DocflowPaginaExcluirSnippetResponse =
+  DocflowPaginaExcluirSnippetResponses[keyof DocflowPaginaExcluirSnippetResponses];
 
-export type Buscar15Data = {
+export type DocflowPaginaAtualizarSnippetData = {
+  body: PaginaSnippetRequest;
+  path: {
+    snippetId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/snippets/{snippetId}';
+};
+
+export type DocflowPaginaAtualizarSnippetResponses = {
+  /**
+   * OK
+   */
+  200: PaginaSnippetResponse;
+};
+
+export type DocflowPaginaAtualizarSnippetResponse =
+  DocflowPaginaAtualizarSnippetResponses[keyof DocflowPaginaAtualizarSnippetResponses];
+
+export type DocflowModuloExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2932,16 +3735,34 @@ export type Buscar15Data = {
   url: '/api/v1/docflow/modulos/{id}';
 };
 
-export type Buscar15Responses = {
+export type DocflowModuloExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowModuloExcluirResponse = DocflowModuloExcluirResponses[keyof DocflowModuloExcluirResponses];
+
+export type DocflowModuloBuscarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/modulos/{id}';
+};
+
+export type DocflowModuloBuscarResponses = {
   /**
    * OK
    */
   200: ModuloResponse;
 };
 
-export type Buscar15Response = Buscar15Responses[keyof Buscar15Responses];
+export type DocflowModuloBuscarResponse = DocflowModuloBuscarResponses[keyof DocflowModuloBuscarResponses];
 
-export type Atualizar17Data = {
+export type DocflowModuloAtualizarData = {
   body: ModuloRequest;
   path: {
     id: string;
@@ -2950,16 +3771,17 @@ export type Atualizar17Data = {
   url: '/api/v1/docflow/modulos/{id}';
 };
 
-export type Atualizar17Responses = {
+export type DocflowModuloAtualizarResponses = {
   /**
    * OK
    */
   200: ModuloResponse;
 };
 
-export type Atualizar17Response = Atualizar17Responses[keyof Atualizar17Responses];
+export type DocflowModuloAtualizarResponse =
+  DocflowModuloAtualizarResponses[keyof DocflowModuloAtualizarResponses];
 
-export type Excluir13Data = {
+export type DocflowClienteExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -2968,16 +3790,17 @@ export type Excluir13Data = {
   url: '/api/v1/docflow/clientes/{id}';
 };
 
-export type Excluir13Responses = {
+export type DocflowClienteExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir13Response = Excluir13Responses[keyof Excluir13Responses];
+export type DocflowClienteExcluirResponse =
+  DocflowClienteExcluirResponses[keyof DocflowClienteExcluirResponses];
 
-export type Buscar16Data = {
+export type DocflowClienteBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -2986,16 +3809,16 @@ export type Buscar16Data = {
   url: '/api/v1/docflow/clientes/{id}';
 };
 
-export type Buscar16Responses = {
+export type DocflowClienteBuscarResponses = {
   /**
    * OK
    */
   200: ClienteResponse;
 };
 
-export type Buscar16Response = Buscar16Responses[keyof Buscar16Responses];
+export type DocflowClienteBuscarResponse = DocflowClienteBuscarResponses[keyof DocflowClienteBuscarResponses];
 
-export type Atualizar18Data = {
+export type DocflowClienteAtualizarData = {
   body: ClienteRequest;
   path: {
     id: string;
@@ -3004,16 +3827,17 @@ export type Atualizar18Data = {
   url: '/api/v1/docflow/clientes/{id}';
 };
 
-export type Atualizar18Responses = {
+export type DocflowClienteAtualizarResponses = {
   /**
    * OK
    */
   200: ClienteResponse;
 };
 
-export type Atualizar18Response = Atualizar18Responses[keyof Atualizar18Responses];
+export type DocflowClienteAtualizarResponse =
+  DocflowClienteAtualizarResponses[keyof DocflowClienteAtualizarResponses];
 
-export type VincularProjetosData = {
+export type DocflowClienteVincularProjetosData = {
   body: VinculosRequest;
   path: {
     id: string;
@@ -3022,16 +3846,17 @@ export type VincularProjetosData = {
   url: '/api/v1/docflow/clientes/{id}/projetos';
 };
 
-export type VincularProjetosResponses = {
+export type DocflowClienteVincularProjetosResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type VincularProjetosResponse = VincularProjetosResponses[keyof VincularProjetosResponses];
+export type DocflowClienteVincularProjetosResponse =
+  DocflowClienteVincularProjetosResponses[keyof DocflowClienteVincularProjetosResponses];
 
-export type VincularPaginasData = {
+export type DocflowClienteVincularPaginasData = {
   body: VinculosRequest;
   path: {
     id: string;
@@ -3040,16 +3865,17 @@ export type VincularPaginasData = {
   url: '/api/v1/docflow/clientes/{id}/paginas';
 };
 
-export type VincularPaginasResponses = {
+export type DocflowClienteVincularPaginasResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type VincularPaginasResponse = VincularPaginasResponses[keyof VincularPaginasResponses];
+export type DocflowClienteVincularPaginasResponse =
+  DocflowClienteVincularPaginasResponses[keyof DocflowClienteVincularPaginasResponses];
 
-export type VincularModulosData = {
+export type DocflowClienteVincularModulosData = {
   body: VinculosRequest;
   path: {
     id: string;
@@ -3058,16 +3884,93 @@ export type VincularModulosData = {
   url: '/api/v1/docflow/clientes/{id}/modulos';
 };
 
-export type VincularModulosResponses = {
+export type DocflowClienteVincularModulosResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type VincularModulosResponse = VincularModulosResponses[keyof VincularModulosResponses];
+export type DocflowClienteVincularModulosResponse =
+  DocflowClienteVincularModulosResponses[keyof DocflowClienteVincularModulosResponses];
 
-export type ReceberData = {
+export type DocflowAjudaExcluirData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos/{id}';
+};
+
+export type DocflowAjudaExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowAjudaExcluirResponse = DocflowAjudaExcluirResponses[keyof DocflowAjudaExcluirResponses];
+
+export type DocflowAjudaAtualizarData = {
+  body: AjudaConteudoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos/{id}';
+};
+
+export type DocflowAjudaAtualizarResponses = {
+  /**
+   * OK
+   */
+  200: AjudaConteudoResponse;
+};
+
+export type DocflowAjudaAtualizarResponse =
+  DocflowAjudaAtualizarResponses[keyof DocflowAjudaAtualizarResponses];
+
+export type AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData = {
+  body: AiAtualizarComposicaoDocumentoRequest;
+  path: {
+    id: string;
+    paginaPlanoId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/composicao';
+};
+
+export type AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponse =
+  AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses[keyof AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponses];
+
+export type AiAiDocumentoImportacaoReordenarEstruturaDocumentoData = {
+  body: AiReordenarEstruturaDocumentoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/estrutura/rascunho';
+};
+
+export type AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponse =
+  AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses[keyof AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponses];
+
+export type ReleaseorchestratorJenkinsWebhookReceberData = {
   body: JenkinsWebhookRequest;
   headers?: {
     'X-Webhook-Secret'?: string;
@@ -3077,14 +3980,14 @@ export type ReceberData = {
   url: '/api/v1/release-orchestrator/webhooks/jenkins';
 };
 
-export type ReceberResponses = {
+export type ReleaseorchestratorJenkinsWebhookReceberResponses = {
   /**
    * OK
    */
   200: unknown;
 };
 
-export type ListarData = {
+export type ReleaseorchestratorReleaseTemplateListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3098,32 +4001,34 @@ export type ListarData = {
   url: '/api/v1/release-orchestrator/templates';
 };
 
-export type ListarResponses = {
+export type ReleaseorchestratorReleaseTemplateListarResponses = {
   /**
    * OK
    */
   200: PageResponseReleaseTemplateResponse;
 };
 
-export type ListarResponse = ListarResponses[keyof ListarResponses];
+export type ReleaseorchestratorReleaseTemplateListarResponse =
+  ReleaseorchestratorReleaseTemplateListarResponses[keyof ReleaseorchestratorReleaseTemplateListarResponses];
 
-export type CriarData = {
+export type ReleaseorchestratorReleaseTemplateCriarData = {
   body: ReleaseTemplateRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/templates';
 };
 
-export type CriarResponses = {
+export type ReleaseorchestratorReleaseTemplateCriarResponses = {
   /**
    * Created
    */
   201: ReleaseTemplateResponse;
 };
 
-export type CriarResponse = CriarResponses[keyof CriarResponses];
+export type ReleaseorchestratorReleaseTemplateCriarResponse =
+  ReleaseorchestratorReleaseTemplateCriarResponses[keyof ReleaseorchestratorReleaseTemplateCriarResponses];
 
-export type Listar1Data = {
+export type ReleaseorchestratorReleaseListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3140,32 +4045,34 @@ export type Listar1Data = {
   url: '/api/v1/release-orchestrator/releases';
 };
 
-export type Listar1Responses = {
+export type ReleaseorchestratorReleaseListarResponses = {
   /**
    * OK
    */
   200: PageResponseReleaseResponse;
 };
 
-export type Listar1Response = Listar1Responses[keyof Listar1Responses];
+export type ReleaseorchestratorReleaseListarResponse =
+  ReleaseorchestratorReleaseListarResponses[keyof ReleaseorchestratorReleaseListarResponses];
 
-export type Criar1Data = {
+export type ReleaseorchestratorReleaseCriarData = {
   body: ReleaseRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/releases';
 };
 
-export type Criar1Responses = {
+export type ReleaseorchestratorReleaseCriarResponses = {
   /**
    * Created
    */
   201: ReleaseResponse;
 };
 
-export type Criar1Response = Criar1Responses[keyof Criar1Responses];
+export type ReleaseorchestratorReleaseCriarResponse =
+  ReleaseorchestratorReleaseCriarResponses[keyof ReleaseorchestratorReleaseCriarResponses];
 
-export type Listar2Data = {
+export type ReleaseorchestratorArtefatoReleaseModuloListarData = {
   body?: never;
   path: {
     releaseId: string;
@@ -3175,16 +4082,17 @@ export type Listar2Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos';
 };
 
-export type Listar2Responses = {
+export type ReleaseorchestratorArtefatoReleaseModuloListarResponses = {
   /**
    * OK
    */
   200: Array<ArtefatoReleaseModuloResponse>;
 };
 
-export type Listar2Response = Listar2Responses[keyof Listar2Responses];
+export type ReleaseorchestratorArtefatoReleaseModuloListarResponse =
+  ReleaseorchestratorArtefatoReleaseModuloListarResponses[keyof ReleaseorchestratorArtefatoReleaseModuloListarResponses];
 
-export type UploadData = {
+export type ReleaseorchestratorArtefatoReleaseModuloUploadData = {
   body?: {
     file: Blob | File;
   };
@@ -3198,16 +4106,17 @@ export type UploadData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos';
 };
 
-export type UploadResponses = {
+export type ReleaseorchestratorArtefatoReleaseModuloUploadResponses = {
   /**
    * Created
    */
   201: ArtefatoReleaseModuloResponse;
 };
 
-export type UploadResponse = UploadResponses[keyof UploadResponses];
+export type ReleaseorchestratorArtefatoReleaseModuloUploadResponse =
+  ReleaseorchestratorArtefatoReleaseModuloUploadResponses[keyof ReleaseorchestratorArtefatoReleaseModuloUploadResponses];
 
-export type Listar3Data = {
+export type ReleaseorchestratorReleaseItemListarData = {
   body?: never;
   path: {
     releaseId: string;
@@ -3216,16 +4125,17 @@ export type Listar3Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens';
 };
 
-export type Listar3Responses = {
+export type ReleaseorchestratorReleaseItemListarResponses = {
   /**
    * OK
    */
   200: Array<ReleaseItemResponse>;
 };
 
-export type Listar3Response = Listar3Responses[keyof Listar3Responses];
+export type ReleaseorchestratorReleaseItemListarResponse =
+  ReleaseorchestratorReleaseItemListarResponses[keyof ReleaseorchestratorReleaseItemListarResponses];
 
-export type AdicionarData = {
+export type ReleaseorchestratorReleaseItemAdicionarData = {
   body: ReleaseItemRequest;
   path: {
     releaseId: string;
@@ -3234,16 +4144,17 @@ export type AdicionarData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens';
 };
 
-export type AdicionarResponses = {
+export type ReleaseorchestratorReleaseItemAdicionarResponses = {
   /**
    * Created
    */
   201: ReleaseItemResponse;
 };
 
-export type AdicionarResponse = AdicionarResponses[keyof AdicionarResponses];
+export type ReleaseorchestratorReleaseItemAdicionarResponse =
+  ReleaseorchestratorReleaseItemAdicionarResponses[keyof ReleaseorchestratorReleaseItemAdicionarResponses];
 
-export type DuplicarData = {
+export type ReleaseorchestratorReleaseItemDuplicarData = {
   body?: never;
   path: {
     releaseId: string;
@@ -3253,16 +4164,17 @@ export type DuplicarData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}/duplicar';
 };
 
-export type DuplicarResponses = {
+export type ReleaseorchestratorReleaseItemDuplicarResponses = {
   /**
    * Created
    */
   201: ReleaseItemResponse;
 };
 
-export type DuplicarResponse = DuplicarResponses[keyof DuplicarResponses];
+export type ReleaseorchestratorReleaseItemDuplicarResponse =
+  ReleaseorchestratorReleaseItemDuplicarResponses[keyof ReleaseorchestratorReleaseItemDuplicarResponses];
 
-export type PublicarData = {
+export type ReleaseorchestratorReleasePublicarData = {
   body?: never;
   path: {
     id: string;
@@ -3271,16 +4183,17 @@ export type PublicarData = {
   url: '/api/v1/release-orchestrator/releases/{id}/publicar';
 };
 
-export type PublicarResponses = {
+export type ReleaseorchestratorReleasePublicarResponses = {
   /**
    * OK
    */
   200: ReleaseResponse;
 };
 
-export type PublicarResponse = PublicarResponses[keyof PublicarResponses];
+export type ReleaseorchestratorReleasePublicarResponse =
+  ReleaseorchestratorReleasePublicarResponses[keyof ReleaseorchestratorReleasePublicarResponses];
 
-export type Duplicar1Data = {
+export type ReleaseorchestratorReleaseDuplicarData = {
   body?: never;
   path: {
     id: string;
@@ -3289,16 +4202,36 @@ export type Duplicar1Data = {
   url: '/api/v1/release-orchestrator/releases/{id}/duplicar';
 };
 
-export type Duplicar1Responses = {
+export type ReleaseorchestratorReleaseDuplicarResponses = {
   /**
    * Created
    */
   201: ReleaseResponse;
 };
 
-export type Duplicar1Response = Duplicar1Responses[keyof Duplicar1Responses];
+export type ReleaseorchestratorReleaseDuplicarResponse =
+  ReleaseorchestratorReleaseDuplicarResponses[keyof ReleaseorchestratorReleaseDuplicarResponses];
 
-export type CancelarData = {
+export type ReleaseorchestratorReleaseDispararBuildData = {
+  body?: DispararBuildRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/releases/{id}/disparar-build';
+};
+
+export type ReleaseorchestratorReleaseDispararBuildResponses = {
+  /**
+   * OK
+   */
+  200: DispararBuildResponse;
+};
+
+export type ReleaseorchestratorReleaseDispararBuildResponse =
+  ReleaseorchestratorReleaseDispararBuildResponses[keyof ReleaseorchestratorReleaseDispararBuildResponses];
+
+export type ReleaseorchestratorReleaseCancelarData = {
   body?: CancelarReleaseRequest;
   path: {
     id: string;
@@ -3307,16 +4240,17 @@ export type CancelarData = {
   url: '/api/v1/release-orchestrator/releases/{id}/cancelar';
 };
 
-export type CancelarResponses = {
+export type ReleaseorchestratorReleaseCancelarResponses = {
   /**
    * OK
    */
   200: ReleaseResponse;
 };
 
-export type CancelarResponse = CancelarResponses[keyof CancelarResponses];
+export type ReleaseorchestratorReleaseCancelarResponse =
+  ReleaseorchestratorReleaseCancelarResponses[keyof ReleaseorchestratorReleaseCancelarResponses];
 
-export type Listar4Data = {
+export type ReleaseorchestratorProximaEntregaListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3333,32 +4267,34 @@ export type Listar4Data = {
   url: '/api/v1/release-orchestrator/proximas-entregas';
 };
 
-export type Listar4Responses = {
+export type ReleaseorchestratorProximaEntregaListarResponses = {
   /**
    * OK
    */
   200: PageResponseProximaEntregaResponse;
 };
 
-export type Listar4Response = Listar4Responses[keyof Listar4Responses];
+export type ReleaseorchestratorProximaEntregaListarResponse =
+  ReleaseorchestratorProximaEntregaListarResponses[keyof ReleaseorchestratorProximaEntregaListarResponses];
 
-export type Criar2Data = {
+export type ReleaseorchestratorProximaEntregaCriarData = {
   body: ProximaEntregaRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/proximas-entregas';
 };
 
-export type Criar2Responses = {
+export type ReleaseorchestratorProximaEntregaCriarResponses = {
   /**
    * Created
    */
   201: ProximaEntregaResponse;
 };
 
-export type Criar2Response = Criar2Responses[keyof Criar2Responses];
+export type ReleaseorchestratorProximaEntregaCriarResponse =
+  ReleaseorchestratorProximaEntregaCriarResponses[keyof ReleaseorchestratorProximaEntregaCriarResponses];
 
-export type Listar5Data = {
+export type ReleaseorchestratorProdutoRhListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3372,32 +4308,34 @@ export type Listar5Data = {
   url: '/api/v1/release-orchestrator/produtos';
 };
 
-export type Listar5Responses = {
+export type ReleaseorchestratorProdutoRhListarResponses = {
   /**
    * OK
    */
   200: PageResponseProdutoRhResponse;
 };
 
-export type Listar5Response = Listar5Responses[keyof Listar5Responses];
+export type ReleaseorchestratorProdutoRhListarResponse =
+  ReleaseorchestratorProdutoRhListarResponses[keyof ReleaseorchestratorProdutoRhListarResponses];
 
-export type Criar3Data = {
+export type ReleaseorchestratorProdutoRhCriarData = {
   body: ProdutoRhRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/produtos';
 };
 
-export type Criar3Responses = {
+export type ReleaseorchestratorProdutoRhCriarResponses = {
   /**
    * Created
    */
   201: ProdutoRhResponse;
 };
 
-export type Criar3Response = Criar3Responses[keyof Criar3Responses];
+export type ReleaseorchestratorProdutoRhCriarResponse =
+  ReleaseorchestratorProdutoRhCriarResponses[keyof ReleaseorchestratorProdutoRhCriarResponses];
 
-export type Listar6Data = {
+export type ReleaseorchestratorModuloProdutoListarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -3406,16 +4344,17 @@ export type Listar6Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos';
 };
 
-export type Listar6Responses = {
+export type ReleaseorchestratorModuloProdutoListarResponses = {
   /**
    * OK
    */
   200: Array<ModuloProdutoResponse>;
 };
 
-export type Listar6Response = Listar6Responses[keyof Listar6Responses];
+export type ReleaseorchestratorModuloProdutoListarResponse =
+  ReleaseorchestratorModuloProdutoListarResponses[keyof ReleaseorchestratorModuloProdutoListarResponses];
 
-export type Criar4Data = {
+export type ReleaseorchestratorModuloProdutoCriarData = {
   body: CriarModuloProdutoRequest;
   path: {
     produtoId: string;
@@ -3424,16 +4363,17 @@ export type Criar4Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos';
 };
 
-export type Criar4Responses = {
+export type ReleaseorchestratorModuloProdutoCriarResponses = {
   /**
    * Created
    */
   201: ModuloProdutoResponse;
 };
 
-export type Criar4Response = Criar4Responses[keyof Criar4Responses];
+export type ReleaseorchestratorModuloProdutoCriarResponse =
+  ReleaseorchestratorModuloProdutoCriarResponses[keyof ReleaseorchestratorModuloProdutoCriarResponses];
 
-export type Listar7Data = {
+export type ReleaseorchestratorDominioProdutoListarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -3442,16 +4382,17 @@ export type Listar7Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios';
 };
 
-export type Listar7Responses = {
+export type ReleaseorchestratorDominioProdutoListarResponses = {
   /**
    * OK
    */
   200: Array<DominioProdutoResponse>;
 };
 
-export type Listar7Response = Listar7Responses[keyof Listar7Responses];
+export type ReleaseorchestratorDominioProdutoListarResponse =
+  ReleaseorchestratorDominioProdutoListarResponses[keyof ReleaseorchestratorDominioProdutoListarResponses];
 
-export type Criar5Data = {
+export type ReleaseorchestratorDominioProdutoCriarData = {
   body: DominioProdutoRequest;
   path: {
     produtoId: string;
@@ -3460,16 +4401,17 @@ export type Criar5Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios';
 };
 
-export type Criar5Responses = {
+export type ReleaseorchestratorDominioProdutoCriarResponses = {
   /**
    * Created
    */
   201: DominioProdutoResponse;
 };
 
-export type Criar5Response = Criar5Responses[keyof Criar5Responses];
+export type ReleaseorchestratorDominioProdutoCriarResponse =
+  ReleaseorchestratorDominioProdutoCriarResponses[keyof ReleaseorchestratorDominioProdutoCriarResponses];
 
-export type Listar8Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoListarData = {
   body?: never;
   path: {
     produtoId: string;
@@ -3479,16 +4421,17 @@ export type Listar8Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades';
 };
 
-export type Listar8Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoListarResponses = {
   /**
    * OK
    */
   200: Array<FuncionalidadeProdutoResponse>;
 };
 
-export type Listar8Response = Listar8Responses[keyof Listar8Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoListarResponse =
+  ReleaseorchestratorFuncionalidadeProdutoListarResponses[keyof ReleaseorchestratorFuncionalidadeProdutoListarResponses];
 
-export type Criar6Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoCriarData = {
   body: FuncionalidadeProdutoRequest;
   path: {
     produtoId: string;
@@ -3498,16 +4441,17 @@ export type Criar6Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades';
 };
 
-export type Criar6Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoCriarResponses = {
   /**
    * Created
    */
   201: FuncionalidadeProdutoResponse;
 };
 
-export type Criar6Response = Criar6Responses[keyof Criar6Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoCriarResponse =
+  ReleaseorchestratorFuncionalidadeProdutoCriarResponses[keyof ReleaseorchestratorFuncionalidadeProdutoCriarResponses];
 
-export type TestarJenkinsData = {
+export type ReleaseorchestratorProdutoRhTestarJenkinsData = {
   body?: TestarJenkinsRequest;
   path: {
     id: string;
@@ -3516,16 +4460,17 @@ export type TestarJenkinsData = {
   url: '/api/v1/release-orchestrator/produtos/{id}/testar-jenkins';
 };
 
-export type TestarJenkinsResponses = {
+export type ReleaseorchestratorProdutoRhTestarJenkinsResponses = {
   /**
    * OK
    */
   200: TestarJenkinsResponse;
 };
 
-export type TestarJenkinsResponse2 = TestarJenkinsResponses[keyof TestarJenkinsResponses];
+export type ReleaseorchestratorProdutoRhTestarJenkinsResponse =
+  ReleaseorchestratorProdutoRhTestarJenkinsResponses[keyof ReleaseorchestratorProdutoRhTestarJenkinsResponses];
 
-export type TestarGithubData = {
+export type ReleaseorchestratorProdutoRhTestarGithubData = {
   body?: TestarGithubRequest;
   path: {
     id: string;
@@ -3534,16 +4479,182 @@ export type TestarGithubData = {
   url: '/api/v1/release-orchestrator/produtos/{id}/testar-github';
 };
 
-export type TestarGithubResponses = {
+export type ReleaseorchestratorProdutoRhTestarGithubResponses = {
   /**
    * OK
    */
   200: TestarGithubResponse;
 };
 
-export type TestarGithubResponse2 = TestarGithubResponses[keyof TestarGithubResponses];
+export type ReleaseorchestratorProdutoRhTestarGithubResponse =
+  ReleaseorchestratorProdutoRhTestarGithubResponses[keyof ReleaseorchestratorProdutoRhTestarGithubResponses];
 
-export type Listar9Data = {
+export type ReleaseorchestratorInstalacaoClienteListarData = {
+  body?: never;
+  path?: never;
+  query?: {
+    q?: string;
+    clienteId?: string;
+    hostId?: string;
+    produtoId?: string;
+    tipoImplantacao?: 'DOCKER_PULL' | 'DOCKER_TAR' | 'LINUX_MANUAL' | 'WINDOWS_MANUAL';
+    status?: 'INEXISTENTE' | 'ATIVA' | 'INATIVA';
+    ambiente?: 'PROD' | 'HOM' | 'DEV' | 'TEST';
+    sort?: string;
+    direction?: 'ASC' | 'DESC';
+    page?: number;
+    size?: number;
+  };
+  url: '/api/v1/release-orchestrator/instalacoes';
+};
+
+export type ReleaseorchestratorInstalacaoClienteListarResponses = {
+  /**
+   * OK
+   */
+  200: PageResponseInstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteListarResponse =
+  ReleaseorchestratorInstalacaoClienteListarResponses[keyof ReleaseorchestratorInstalacaoClienteListarResponses];
+
+export type ReleaseorchestratorInstalacaoClienteCriarData = {
+  body: InstalacaoClienteRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes';
+};
+
+export type ReleaseorchestratorInstalacaoClienteCriarResponses = {
+  /**
+   * Created
+   */
+  201: InstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteCriarResponse =
+  ReleaseorchestratorInstalacaoClienteCriarResponses[keyof ReleaseorchestratorInstalacaoClienteCriarResponses];
+
+export type ReleaseorchestratorInstalacaoClientePararData = {
+  body?: ExecutarCicloVidaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/stop';
+};
+
+export type ReleaseorchestratorInstalacaoClientePararResponses = {
+  /**
+   * OK
+   */
+  200: DeployInstalacaoResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClientePararResponse =
+  ReleaseorchestratorInstalacaoClientePararResponses[keyof ReleaseorchestratorInstalacaoClientePararResponses];
+
+export type ReleaseorchestratorInstalacaoClienteIniciarData = {
+  body?: ExecutarCicloVidaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/start';
+};
+
+export type ReleaseorchestratorInstalacaoClienteIniciarResponses = {
+  /**
+   * OK
+   */
+  200: DeployInstalacaoResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteIniciarResponse =
+  ReleaseorchestratorInstalacaoClienteIniciarResponses[keyof ReleaseorchestratorInstalacaoClienteIniciarResponses];
+
+export type ReleaseorchestratorInstalacaoClienteResolverVersaoData = {
+  body?: ResolverVersaoInstalacaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/resolver-versao';
+};
+
+export type ReleaseorchestratorInstalacaoClienteResolverVersaoResponses = {
+  /**
+   * OK
+   */
+  200: ResolverVersaoInstalacaoResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteResolverVersaoResponse =
+  ReleaseorchestratorInstalacaoClienteResolverVersaoResponses[keyof ReleaseorchestratorInstalacaoClienteResolverVersaoResponses];
+
+export type ReleaseorchestratorInstalacaoClienteDispararBuildData = {
+  body?: DispararBuildRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/disparar-build';
+};
+
+export type ReleaseorchestratorInstalacaoClienteDispararBuildResponses = {
+  /**
+   * OK
+   */
+  200: DispararBuildResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteDispararBuildResponse =
+  ReleaseorchestratorInstalacaoClienteDispararBuildResponses[keyof ReleaseorchestratorInstalacaoClienteDispararBuildResponses];
+
+export type ReleaseorchestratorHostListarData = {
+  body?: never;
+  path?: never;
+  query?: {
+    q?: string;
+    ativo?: boolean;
+    sistemaOperacional?: 'WINDOWS' | 'LINUX';
+    dockerDisponivel?: boolean;
+    sort?: string;
+    direction?: 'ASC' | 'DESC';
+    page?: number;
+    size?: number;
+  };
+  url: '/api/v1/release-orchestrator/hosts';
+};
+
+export type ReleaseorchestratorHostListarResponses = {
+  /**
+   * OK
+   */
+  200: PageResponseHostResponse;
+};
+
+export type ReleaseorchestratorHostListarResponse =
+  ReleaseorchestratorHostListarResponses[keyof ReleaseorchestratorHostListarResponses];
+
+export type ReleaseorchestratorHostCriarData = {
+  body: HostRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/release-orchestrator/hosts';
+};
+
+export type ReleaseorchestratorHostCriarResponses = {
+  /**
+   * Created
+   */
+  201: HostResponse;
+};
+
+export type ReleaseorchestratorHostCriarResponse =
+  ReleaseorchestratorHostCriarResponses[keyof ReleaseorchestratorHostCriarResponses];
+
+export type ReleaseorchestratorEntregaListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3558,32 +4669,34 @@ export type Listar9Data = {
   url: '/api/v1/release-orchestrator/entregas';
 };
 
-export type Listar9Responses = {
+export type ReleaseorchestratorEntregaListarResponses = {
   /**
    * OK
    */
   200: PageResponseEntregaResponse;
 };
 
-export type Listar9Response = Listar9Responses[keyof Listar9Responses];
+export type ReleaseorchestratorEntregaListarResponse =
+  ReleaseorchestratorEntregaListarResponses[keyof ReleaseorchestratorEntregaListarResponses];
 
-export type Criar7Data = {
+export type ReleaseorchestratorEntregaCriarData = {
   body: CriarEntregaRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/entregas';
 };
 
-export type Criar7Responses = {
+export type ReleaseorchestratorEntregaCriarResponses = {
   /**
    * Created
    */
   201: EntregaResponse;
 };
 
-export type Criar7Response = Criar7Responses[keyof Criar7Responses];
+export type ReleaseorchestratorEntregaCriarResponse =
+  ReleaseorchestratorEntregaCriarResponses[keyof ReleaseorchestratorEntregaCriarResponses];
 
-export type ReentregarData = {
+export type ReleaseorchestratorEntregaReentregarData = {
   body?: never;
   path: {
     id: string;
@@ -3592,16 +4705,17 @@ export type ReentregarData = {
   url: '/api/v1/release-orchestrator/entregas/{id}/reentregar';
 };
 
-export type ReentregarResponses = {
+export type ReleaseorchestratorEntregaReentregarResponses = {
   /**
    * Created
    */
   201: EntregaResponse;
 };
 
-export type ReentregarResponse = ReentregarResponses[keyof ReentregarResponses];
+export type ReleaseorchestratorEntregaReentregarResponse =
+  ReleaseorchestratorEntregaReentregarResponses[keyof ReleaseorchestratorEntregaReentregarResponses];
 
-export type ReagendarPublicacaoData = {
+export type ReleaseorchestratorEntregaReagendarPublicacaoData = {
   body?: never;
   path: {
     id: string;
@@ -3610,16 +4724,17 @@ export type ReagendarPublicacaoData = {
   url: '/api/v1/release-orchestrator/entregas/{id}/publicacao/reagendar';
 };
 
-export type ReagendarPublicacaoResponses = {
+export type ReleaseorchestratorEntregaReagendarPublicacaoResponses = {
   /**
    * OK
    */
   200: EntregaResponse;
 };
 
-export type ReagendarPublicacaoResponse = ReagendarPublicacaoResponses[keyof ReagendarPublicacaoResponses];
+export type ReleaseorchestratorEntregaReagendarPublicacaoResponse =
+  ReleaseorchestratorEntregaReagendarPublicacaoResponses[keyof ReleaseorchestratorEntregaReagendarPublicacaoResponses];
 
-export type Cancelar1Data = {
+export type ReleaseorchestratorEntregaCancelarData = {
   body?: never;
   path: {
     id: string;
@@ -3628,16 +4743,17 @@ export type Cancelar1Data = {
   url: '/api/v1/release-orchestrator/entregas/{id}/cancelar';
 };
 
-export type Cancelar1Responses = {
+export type ReleaseorchestratorEntregaCancelarResponses = {
   /**
    * OK
    */
   200: EntregaResponse;
 };
 
-export type Cancelar1Response = Cancelar1Responses[keyof Cancelar1Responses];
+export type ReleaseorchestratorEntregaCancelarResponse =
+  ReleaseorchestratorEntregaCancelarResponses[keyof ReleaseorchestratorEntregaCancelarResponses];
 
-export type InicializarData = {
+export type ReleaseorchestratorEntregaModuloInicializarData = {
   body?: never;
   path: {
     entregaId: string;
@@ -3646,16 +4762,17 @@ export type InicializarData = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/inicializar';
 };
 
-export type InicializarResponses = {
+export type ReleaseorchestratorEntregaModuloInicializarResponses = {
   /**
    * OK
    */
   200: Array<EntregaModuloResponse>;
 };
 
-export type InicializarResponse = InicializarResponses[keyof InicializarResponses];
+export type ReleaseorchestratorEntregaModuloInicializarResponse =
+  ReleaseorchestratorEntregaModuloInicializarResponses[keyof ReleaseorchestratorEntregaModuloInicializarResponses];
 
-export type IniciarData = {
+export type ReleaseorchestratorGeracaoEntregaIniciarData = {
   body?: never;
   path: {
     entregaId: string;
@@ -3664,16 +4781,17 @@ export type IniciarData = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/geracao/iniciar';
 };
 
-export type IniciarResponses = {
+export type ReleaseorchestratorGeracaoEntregaIniciarResponses = {
   /**
    * Accepted
    */
   202: EntregaResponse;
 };
 
-export type IniciarResponse = IniciarResponses[keyof IniciarResponses];
+export type ReleaseorchestratorGeracaoEntregaIniciarResponse =
+  ReleaseorchestratorGeracaoEntregaIniciarResponses[keyof ReleaseorchestratorGeracaoEntregaIniciarResponses];
 
-export type CalcularData = {
+export type ReleaseorchestratorDeltaEntregaCalcularData = {
   body?: CalcularDeltaRequest;
   path: {
     entregaId: string;
@@ -3682,16 +4800,76 @@ export type CalcularData = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/calcular';
 };
 
-export type CalcularResponses = {
+export type ReleaseorchestratorDeltaEntregaCalcularResponses = {
   /**
    * OK
    */
   200: DeltaResumoResponse;
 };
 
-export type CalcularResponse = CalcularResponses[keyof CalcularResponses];
+export type ReleaseorchestratorDeltaEntregaCalcularResponse =
+  ReleaseorchestratorDeltaEntregaCalcularResponses[keyof ReleaseorchestratorDeltaEntregaCalcularResponses];
 
-export type Listar10Data = {
+export type ReleaseorchestratorDeployInstalacaoListarData = {
+  body?: never;
+  path?: never;
+  query?: {
+    instalacaoId?: string;
+    releaseId?: string;
+    entregaId?: string;
+    sort?: string;
+    direction?: 'ASC' | 'DESC';
+    page?: number;
+    size?: number;
+  };
+  url: '/api/v1/release-orchestrator/deploys';
+};
+
+export type ReleaseorchestratorDeployInstalacaoListarResponses = {
+  /**
+   * OK
+   */
+  200: PageResponseDeployInstalacaoResponse;
+};
+
+export type ReleaseorchestratorDeployInstalacaoListarResponse =
+  ReleaseorchestratorDeployInstalacaoListarResponses[keyof ReleaseorchestratorDeployInstalacaoListarResponses];
+
+export type ReleaseorchestratorDeployInstalacaoExecutarData = {
+  body: ExecutarDeployRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/release-orchestrator/deploys';
+};
+
+export type ReleaseorchestratorDeployInstalacaoExecutarResponses = {
+  /**
+   * Created
+   */
+  201: DeployInstalacaoResponse;
+};
+
+export type ReleaseorchestratorDeployInstalacaoExecutarResponse =
+  ReleaseorchestratorDeployInstalacaoExecutarResponses[keyof ReleaseorchestratorDeployInstalacaoExecutarResponses];
+
+export type ReleaseorchestratorDeployInstalacaoExecutarLoteData = {
+  body: ExecutarDeployLoteRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/release-orchestrator/deploys/lote';
+};
+
+export type ReleaseorchestratorDeployInstalacaoExecutarLoteResponses = {
+  /**
+   * Created
+   */
+  201: DeployLoteResponse;
+};
+
+export type ReleaseorchestratorDeployInstalacaoExecutarLoteResponse =
+  ReleaseorchestratorDeployInstalacaoExecutarLoteResponses[keyof ReleaseorchestratorDeployInstalacaoExecutarLoteResponses];
+
+export type ReleaseorchestratorClienteListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3705,32 +4883,34 @@ export type Listar10Data = {
   url: '/api/v1/release-orchestrator/clientes';
 };
 
-export type Listar10Responses = {
+export type ReleaseorchestratorClienteListarResponses = {
   /**
    * OK
    */
   200: PageResponseClienteResponse;
 };
 
-export type Listar10Response = Listar10Responses[keyof Listar10Responses];
+export type ReleaseorchestratorClienteListarResponse =
+  ReleaseorchestratorClienteListarResponses[keyof ReleaseorchestratorClienteListarResponses];
 
-export type Criar8Data = {
+export type ReleaseorchestratorClienteCriarData = {
   body: ClienteRequest;
   path?: never;
   query?: never;
   url: '/api/v1/release-orchestrator/clientes';
 };
 
-export type Criar8Responses = {
+export type ReleaseorchestratorClienteCriarResponses = {
   /**
    * Created
    */
   201: ClienteResponse;
 };
 
-export type Criar8Response = Criar8Responses[keyof Criar8Responses];
+export type ReleaseorchestratorClienteCriarResponse =
+  ReleaseorchestratorClienteCriarResponses[keyof ReleaseorchestratorClienteCriarResponses];
 
-export type Listar11Data = {
+export type ReleaseorchestratorClienteProdutoListarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -3739,16 +4919,17 @@ export type Listar11Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos';
 };
 
-export type Listar11Responses = {
+export type ReleaseorchestratorClienteProdutoListarResponses = {
   /**
    * OK
    */
   200: Array<ClienteProdutoResponse>;
 };
 
-export type Listar11Response = Listar11Responses[keyof Listar11Responses];
+export type ReleaseorchestratorClienteProdutoListarResponse =
+  ReleaseorchestratorClienteProdutoListarResponses[keyof ReleaseorchestratorClienteProdutoListarResponses];
 
-export type ContratarData = {
+export type ReleaseorchestratorClienteProdutoContratarData = {
   body: ContratarProdutoRequest;
   path: {
     clienteId: string;
@@ -3757,16 +4938,17 @@ export type ContratarData = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos';
 };
 
-export type ContratarResponses = {
+export type ReleaseorchestratorClienteProdutoContratarResponses = {
   /**
    * Created
    */
   201: ClienteProdutoResponse;
 };
 
-export type ContratarResponse = ContratarResponses[keyof ContratarResponses];
+export type ReleaseorchestratorClienteProdutoContratarResponse =
+  ReleaseorchestratorClienteProdutoContratarResponses[keyof ReleaseorchestratorClienteProdutoContratarResponses];
 
-export type Listar12Data = {
+export type ReleaseorchestratorContatoListarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -3775,16 +4957,17 @@ export type Listar12Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos';
 };
 
-export type Listar12Responses = {
+export type ReleaseorchestratorContatoListarResponses = {
   /**
    * OK
    */
   200: Array<ContatoResponse>;
 };
 
-export type Listar12Response = Listar12Responses[keyof Listar12Responses];
+export type ReleaseorchestratorContatoListarResponse =
+  ReleaseorchestratorContatoListarResponses[keyof ReleaseorchestratorContatoListarResponses];
 
-export type Criar9Data = {
+export type ReleaseorchestratorContatoCriarData = {
   body: ContatoRequest;
   path: {
     clienteId: string;
@@ -3793,16 +4976,17 @@ export type Criar9Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos';
 };
 
-export type Criar9Responses = {
+export type ReleaseorchestratorContatoCriarResponses = {
   /**
    * Created
    */
   201: ContatoResponse;
 };
 
-export type Criar9Response = Criar9Responses[keyof Criar9Responses];
+export type ReleaseorchestratorContatoCriarResponse =
+  ReleaseorchestratorContatoCriarResponses[keyof ReleaseorchestratorContatoCriarResponses];
 
-export type TestarData = {
+export type ReleaseorchestratorConfigEntregaTestarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -3811,16 +4995,17 @@ export type TestarData = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega/testar';
 };
 
-export type TestarResponses = {
+export type ReleaseorchestratorConfigEntregaTestarResponses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type TestarResponse = TestarResponses[keyof TestarResponses];
+export type ReleaseorchestratorConfigEntregaTestarResponse =
+  ReleaseorchestratorConfigEntregaTestarResponses[keyof ReleaseorchestratorConfigEntregaTestarResponses];
 
-export type Listar13Data = {
+export type IdentityaccessUsuarioListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3832,32 +5017,34 @@ export type Listar13Data = {
   url: '/api/v1/rbac/usuarios';
 };
 
-export type Listar13Responses = {
+export type IdentityaccessUsuarioListarResponses = {
   /**
    * OK
    */
   200: PageResponseUsuarioResponse;
 };
 
-export type Listar13Response = Listar13Responses[keyof Listar13Responses];
+export type IdentityaccessUsuarioListarResponse =
+  IdentityaccessUsuarioListarResponses[keyof IdentityaccessUsuarioListarResponses];
 
-export type Criar10Data = {
+export type IdentityaccessUsuarioCriarData = {
   body: CriarUsuarioRequest;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/usuarios';
 };
 
-export type Criar10Responses = {
+export type IdentityaccessUsuarioCriarResponses = {
   /**
    * Created
    */
   201: UsuarioResponse;
 };
 
-export type Criar10Response = Criar10Responses[keyof Criar10Responses];
+export type IdentityaccessUsuarioCriarResponse =
+  IdentityaccessUsuarioCriarResponses[keyof IdentityaccessUsuarioCriarResponses];
 
-export type AlterarBloqueioData = {
+export type IdentityaccessUsuarioAlterarBloqueioData = {
   body: BloqueioUsuarioRequest;
   path: {
     id: string;
@@ -3866,16 +5053,17 @@ export type AlterarBloqueioData = {
   url: '/api/v1/rbac/usuarios/{id}/bloqueio';
 };
 
-export type AlterarBloqueioResponses = {
+export type IdentityaccessUsuarioAlterarBloqueioResponses = {
   /**
    * OK
    */
   200: UsuarioResponse;
 };
 
-export type AlterarBloqueioResponse = AlterarBloqueioResponses[keyof AlterarBloqueioResponses];
+export type IdentityaccessUsuarioAlterarBloqueioResponse =
+  IdentityaccessUsuarioAlterarBloqueioResponses[keyof IdentityaccessUsuarioAlterarBloqueioResponses];
 
-export type AlterarSenhaData = {
+export type IdentityaccessUsuarioAlterarSenhaData = {
   body: AlterarSenhaRequest;
   path: {
     id: string;
@@ -3884,14 +5072,14 @@ export type AlterarSenhaData = {
   url: '/api/v1/rbac/usuarios/{id}/alterar-senha';
 };
 
-export type AlterarSenhaResponses = {
+export type IdentityaccessUsuarioAlterarSenhaResponses = {
   /**
    * OK
    */
   200: unknown;
 };
 
-export type RevogarData = {
+export type IdentityaccessSessaoRevogarData = {
   body?: never;
   path: {
     id: string;
@@ -3902,16 +5090,17 @@ export type RevogarData = {
   url: '/api/v1/rbac/sessoes/{id}/revogar';
 };
 
-export type RevogarResponses = {
+export type IdentityaccessSessaoRevogarResponses = {
   /**
    * OK
    */
   200: SessaoResponse;
 };
 
-export type RevogarResponse = RevogarResponses[keyof RevogarResponses];
+export type IdentityaccessSessaoRevogarResponse =
+  IdentityaccessSessaoRevogarResponses[keyof IdentityaccessSessaoRevogarResponses];
 
-export type Listar14Data = {
+export type IdentityaccessGrupoListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3924,32 +5113,34 @@ export type Listar14Data = {
   url: '/api/v1/rbac/grupos';
 };
 
-export type Listar14Responses = {
+export type IdentityaccessGrupoListarResponses = {
   /**
    * OK
    */
   200: PageResponseGrupoResponse;
 };
 
-export type Listar14Response = Listar14Responses[keyof Listar14Responses];
+export type IdentityaccessGrupoListarResponse =
+  IdentityaccessGrupoListarResponses[keyof IdentityaccessGrupoListarResponses];
 
-export type Criar11Data = {
+export type IdentityaccessGrupoCriarData = {
   body: GrupoRequest;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/grupos';
 };
 
-export type Criar11Responses = {
+export type IdentityaccessGrupoCriarResponses = {
   /**
    * Created
    */
   201: GrupoResponse;
 };
 
-export type Criar11Response = Criar11Responses[keyof Criar11Responses];
+export type IdentityaccessGrupoCriarResponse =
+  IdentityaccessGrupoCriarResponses[keyof IdentityaccessGrupoCriarResponses];
 
-export type Listar15Data = {
+export type IdentityaccessEscopoAcessoListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3959,32 +5150,34 @@ export type Listar15Data = {
   url: '/api/v1/rbac/escopos';
 };
 
-export type Listar15Responses = {
+export type IdentityaccessEscopoAcessoListarResponses = {
   /**
    * OK
    */
   200: Array<EscopoAcessoResponse>;
 };
 
-export type Listar15Response = Listar15Responses[keyof Listar15Responses];
+export type IdentityaccessEscopoAcessoListarResponse =
+  IdentityaccessEscopoAcessoListarResponses[keyof IdentityaccessEscopoAcessoListarResponses];
 
-export type Criar12Data = {
+export type IdentityaccessEscopoAcessoCriarData = {
   body: EscopoAcessoRequest;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/escopos';
 };
 
-export type Criar12Responses = {
+export type IdentityaccessEscopoAcessoCriarResponses = {
   /**
    * Created
    */
   201: EscopoAcessoResponse;
 };
 
-export type Criar12Response = Criar12Responses[keyof Criar12Responses];
+export type IdentityaccessEscopoAcessoCriarResponse =
+  IdentityaccessEscopoAcessoCriarResponses[keyof IdentityaccessEscopoAcessoCriarResponses];
 
-export type Listar16Data = {
+export type IdentityaccessAcessoTemporarioListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -3998,32 +5191,34 @@ export type Listar16Data = {
   url: '/api/v1/rbac/acessos-temporarios';
 };
 
-export type Listar16Responses = {
+export type IdentityaccessAcessoTemporarioListarResponses = {
   /**
    * OK
    */
   200: PageResponseAcessoTemporarioResponse;
 };
 
-export type Listar16Response = Listar16Responses[keyof Listar16Responses];
+export type IdentityaccessAcessoTemporarioListarResponse =
+  IdentityaccessAcessoTemporarioListarResponses[keyof IdentityaccessAcessoTemporarioListarResponses];
 
-export type Criar13Data = {
+export type IdentityaccessAcessoTemporarioCriarData = {
   body: AcessoTemporarioRequest;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/acessos-temporarios';
 };
 
-export type Criar13Responses = {
+export type IdentityaccessAcessoTemporarioCriarResponses = {
   /**
    * Created
    */
   201: AcessoTemporarioResponse;
 };
 
-export type Criar13Response = Criar13Responses[keyof Criar13Responses];
+export type IdentityaccessAcessoTemporarioCriarResponse =
+  IdentityaccessAcessoTemporarioCriarResponses[keyof IdentityaccessAcessoTemporarioCriarResponses];
 
-export type Revogar1Data = {
+export type IdentityaccessAcessoTemporarioRevogarData = {
   body?: never;
   path: {
     id: string;
@@ -4034,16 +5229,17 @@ export type Revogar1Data = {
   url: '/api/v1/rbac/acessos-temporarios/{id}/revogar';
 };
 
-export type Revogar1Responses = {
+export type IdentityaccessAcessoTemporarioRevogarResponses = {
   /**
    * OK
    */
   200: AcessoTemporarioResponse;
 };
 
-export type Revogar1Response = Revogar1Responses[keyof Revogar1Responses];
+export type IdentityaccessAcessoTemporarioRevogarResponse =
+  IdentityaccessAcessoTemporarioRevogarResponses[keyof IdentityaccessAcessoTemporarioRevogarResponses];
 
-export type Listar17Data = {
+export type DocflowPreviewListarData = {
   body?: never;
   path?: never;
   query: {
@@ -4052,16 +5248,16 @@ export type Listar17Data = {
   url: '/api/v1/preview-tokens';
 };
 
-export type Listar17Responses = {
+export type DocflowPreviewListarResponses = {
   /**
    * OK
    */
   200: Array<PreviewTokenResponse>;
 };
 
-export type Listar17Response = Listar17Responses[keyof Listar17Responses];
+export type DocflowPreviewListarResponse = DocflowPreviewListarResponses[keyof DocflowPreviewListarResponses];
 
-export type GerarTokenData = {
+export type DocflowPreviewGerarTokenData = {
   body?: never;
   path?: never;
   query: {
@@ -4071,20 +5267,22 @@ export type GerarTokenData = {
   url: '/api/v1/preview-tokens';
 };
 
-export type GerarTokenResponses = {
+export type DocflowPreviewGerarTokenResponses = {
   /**
    * OK
    */
   200: PreviewTokenResponse;
 };
 
-export type GerarTokenResponse = GerarTokenResponses[keyof GerarTokenResponses];
+export type DocflowPreviewGerarTokenResponse =
+  DocflowPreviewGerarTokenResponses[keyof DocflowPreviewGerarTokenResponses];
 
-export type Listar18Data = {
+export type DocflowPublicacaoListarData = {
   body?: never;
   path?: never;
   query?: {
     clienteId?: string;
+    status?: 'GERANDO' | 'SUCESSO' | 'ERRO' | 'CANCELADA';
     sort?: string;
     dir?: 'ASC' | 'DESC';
     page?: number;
@@ -4093,32 +5291,34 @@ export type Listar18Data = {
   url: '/api/v1/docflow/publicacoes';
 };
 
-export type Listar18Responses = {
+export type DocflowPublicacaoListarResponses = {
   /**
    * OK
    */
   200: PageResponsePublicacaoResponse;
 };
 
-export type Listar18Response = Listar18Responses[keyof Listar18Responses];
+export type DocflowPublicacaoListarResponse =
+  DocflowPublicacaoListarResponses[keyof DocflowPublicacaoListarResponses];
 
-export type GerarData = {
+export type DocflowPublicacaoGerarData = {
   body: PublicacaoRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/publicacoes';
 };
 
-export type GerarResponses = {
+export type DocflowPublicacaoGerarResponses = {
   /**
    * Created
    */
   201: PublicacaoResponse;
 };
 
-export type GerarResponse = GerarResponses[keyof GerarResponses];
+export type DocflowPublicacaoGerarResponse =
+  DocflowPublicacaoGerarResponses[keyof DocflowPublicacaoGerarResponses];
 
-export type ReprocessarData = {
+export type DocflowPublicacaoReprocessarData = {
   body?: never;
   path: {
     id: string;
@@ -4127,16 +5327,53 @@ export type ReprocessarData = {
   url: '/api/v1/docflow/publicacoes/{id}/reprocessar';
 };
 
-export type ReprocessarResponses = {
+export type DocflowPublicacaoReprocessarResponses = {
   /**
    * OK
    */
   200: PublicacaoResponse;
 };
 
-export type ReprocessarResponse = ReprocessarResponses[keyof ReprocessarResponses];
+export type DocflowPublicacaoReprocessarResponse =
+  DocflowPublicacaoReprocessarResponses[keyof DocflowPublicacaoReprocessarResponses];
 
-export type Listar19Data = {
+export type DocflowPublicacaoCancelarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/{id}/cancelar';
+};
+
+export type DocflowPublicacaoCancelarResponses = {
+  /**
+   * OK
+   */
+  200: PublicacaoResponse;
+};
+
+export type DocflowPublicacaoCancelarResponse =
+  DocflowPublicacaoCancelarResponses[keyof DocflowPublicacaoCancelarResponses];
+
+export type DocflowPublicacaoReprocessarLoteData = {
+  body: ReprocessarPublicacoesRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/reprocessar-lote';
+};
+
+export type DocflowPublicacaoReprocessarLoteResponses = {
+  /**
+   * OK
+   */
+  200: ReprocessamentoPublicacoesResponse;
+};
+
+export type DocflowPublicacaoReprocessarLoteResponse =
+  DocflowPublicacaoReprocessarLoteResponses[keyof DocflowPublicacaoReprocessarLoteResponses];
+
+export type DocflowProjetoListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -4149,32 +5386,32 @@ export type Listar19Data = {
   url: '/api/v1/docflow/projetos';
 };
 
-export type Listar19Responses = {
+export type DocflowProjetoListarResponses = {
   /**
    * OK
    */
   200: PageResponseProjetoResponse;
 };
 
-export type Listar19Response = Listar19Responses[keyof Listar19Responses];
+export type DocflowProjetoListarResponse = DocflowProjetoListarResponses[keyof DocflowProjetoListarResponses];
 
-export type Criar14Data = {
+export type DocflowProjetoCriarData = {
   body: ProjetoRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/projetos';
 };
 
-export type Criar14Responses = {
+export type DocflowProjetoCriarResponses = {
   /**
    * Created
    */
   201: ProjetoResponse;
 };
 
-export type Criar14Response = Criar14Responses[keyof Criar14Responses];
+export type DocflowProjetoCriarResponse = DocflowProjetoCriarResponses[keyof DocflowProjetoCriarResponses];
 
-export type Listar20Data = {
+export type DocflowPaginaListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -4192,32 +5429,32 @@ export type Listar20Data = {
   url: '/api/v1/docflow/paginas';
 };
 
-export type Listar20Responses = {
+export type DocflowPaginaListarResponses = {
   /**
    * OK
    */
   200: PageResponsePaginaResponse;
 };
 
-export type Listar20Response = Listar20Responses[keyof Listar20Responses];
+export type DocflowPaginaListarResponse = DocflowPaginaListarResponses[keyof DocflowPaginaListarResponses];
 
-export type Criar15Data = {
+export type DocflowPaginaCriarData = {
   body: PaginaRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/paginas';
 };
 
-export type Criar15Responses = {
+export type DocflowPaginaCriarResponses = {
   /**
    * Created
    */
   201: PaginaResponse;
 };
 
-export type Criar15Response = Criar15Responses[keyof Criar15Responses];
+export type DocflowPaginaCriarResponse = DocflowPaginaCriarResponses[keyof DocflowPaginaCriarResponses];
 
-export type SalvarRascunhoData = {
+export type DocflowPaginaSalvarRascunhoData = {
   body?: never;
   path: {
     id: string;
@@ -4226,16 +5463,55 @@ export type SalvarRascunhoData = {
   url: '/api/v1/docflow/paginas/{id}/salvar-rascunho';
 };
 
-export type SalvarRascunhoResponses = {
+export type DocflowPaginaSalvarRascunhoResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type SalvarRascunhoResponse = SalvarRascunhoResponses[keyof SalvarRascunhoResponses];
+export type DocflowPaginaSalvarRascunhoResponse =
+  DocflowPaginaSalvarRascunhoResponses[keyof DocflowPaginaSalvarRascunhoResponses];
 
-export type Publicar1Data = {
+export type DocflowPaginaAtribuirRevisorData = {
+  body: AtribuirRevisorRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/{id}/revisor';
+};
+
+export type DocflowPaginaAtribuirRevisorResponses = {
+  /**
+   * OK
+   */
+  200: PaginaResponse;
+};
+
+export type DocflowPaginaAtribuirRevisorResponse =
+  DocflowPaginaAtribuirRevisorResponses[keyof DocflowPaginaAtribuirRevisorResponses];
+
+export type DocflowPaginaComentarRevisaoData = {
+  body: ComentarioRevisaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios';
+};
+
+export type DocflowPaginaComentarRevisaoResponses = {
+  /**
+   * OK
+   */
+  200: PaginaRevisaoResponse;
+};
+
+export type DocflowPaginaComentarRevisaoResponse =
+  DocflowPaginaComentarRevisaoResponses[keyof DocflowPaginaComentarRevisaoResponses];
+
+export type DocflowPaginaPublicarData = {
   body?: never;
   path: {
     id: string;
@@ -4244,16 +5520,17 @@ export type Publicar1Data = {
   url: '/api/v1/docflow/paginas/{id}/publicar';
 };
 
-export type Publicar1Responses = {
+export type DocflowPaginaPublicarResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type Publicar1Response = Publicar1Responses[keyof Publicar1Responses];
+export type DocflowPaginaPublicarResponse =
+  DocflowPaginaPublicarResponses[keyof DocflowPaginaPublicarResponses];
 
-export type EnviarRevisaoData = {
+export type DocflowPaginaEnviarRevisaoData = {
   body?: never;
   path: {
     id: string;
@@ -4262,16 +5539,17 @@ export type EnviarRevisaoData = {
   url: '/api/v1/docflow/paginas/{id}/enviar-revisao';
 };
 
-export type EnviarRevisaoResponses = {
+export type DocflowPaginaEnviarRevisaoResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type EnviarRevisaoResponse = EnviarRevisaoResponses[keyof EnviarRevisaoResponses];
+export type DocflowPaginaEnviarRevisaoResponse =
+  DocflowPaginaEnviarRevisaoResponses[keyof DocflowPaginaEnviarRevisaoResponses];
 
-export type Duplicar2Data = {
+export type DocflowPaginaDuplicarData = {
   body?: never;
   path: {
     id: string;
@@ -4280,16 +5558,17 @@ export type Duplicar2Data = {
   url: '/api/v1/docflow/paginas/{id}/duplicar';
 };
 
-export type Duplicar2Responses = {
+export type DocflowPaginaDuplicarResponses = {
   /**
    * Created
    */
   201: PaginaResponse;
 };
 
-export type Duplicar2Response = Duplicar2Responses[keyof Duplicar2Responses];
+export type DocflowPaginaDuplicarResponse =
+  DocflowPaginaDuplicarResponses[keyof DocflowPaginaDuplicarResponses];
 
-export type ArquivarData = {
+export type DocflowPaginaArquivarData = {
   body?: never;
   path: {
     id: string;
@@ -4298,16 +5577,17 @@ export type ArquivarData = {
   url: '/api/v1/docflow/paginas/{id}/arquivar';
 };
 
-export type ArquivarResponses = {
+export type DocflowPaginaArquivarResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type ArquivarResponse = ArquivarResponses[keyof ArquivarResponses];
+export type DocflowPaginaArquivarResponse =
+  DocflowPaginaArquivarResponses[keyof DocflowPaginaArquivarResponses];
 
-export type AprovarData = {
+export type DocflowPaginaAprovarData = {
   body?: never;
   path: {
     id: string;
@@ -4316,16 +5596,16 @@ export type AprovarData = {
   url: '/api/v1/docflow/paginas/{id}/aprovar';
 };
 
-export type AprovarResponses = {
+export type DocflowPaginaAprovarResponses = {
   /**
    * OK
    */
   200: PaginaResponse;
 };
 
-export type AprovarResponse = AprovarResponses[keyof AprovarResponses];
+export type DocflowPaginaAprovarResponse = DocflowPaginaAprovarResponses[keyof DocflowPaginaAprovarResponses];
 
-export type AnexosData = {
+export type DocflowPaginaAnexosData = {
   body?: never;
   path: {
     id: string;
@@ -4334,16 +5614,16 @@ export type AnexosData = {
   url: '/api/v1/docflow/paginas/{id}/anexos';
 };
 
-export type AnexosResponses = {
+export type DocflowPaginaAnexosResponses = {
   /**
    * OK
    */
   200: Array<PaginaAnexoResponse>;
 };
 
-export type AnexosResponse = AnexosResponses[keyof AnexosResponses];
+export type DocflowPaginaAnexosResponse = DocflowPaginaAnexosResponses[keyof DocflowPaginaAnexosResponses];
 
-export type AnexarData = {
+export type DocflowPaginaAnexarData = {
   body?: {
     file: Blob | File;
   };
@@ -4354,16 +5634,16 @@ export type AnexarData = {
   url: '/api/v1/docflow/paginas/{id}/anexos';
 };
 
-export type AnexarResponses = {
+export type DocflowPaginaAnexarResponses = {
   /**
    * Created
    */
   201: PaginaAnexoResponse;
 };
 
-export type AnexarResponse = AnexarResponses[keyof AnexarResponses];
+export type DocflowPaginaAnexarResponse = DocflowPaginaAnexarResponses[keyof DocflowPaginaAnexarResponses];
 
-export type TemplatesData = {
+export type DocflowPaginaTemplatesData = {
   body?: never;
   path?: never;
   query?: {
@@ -4375,32 +5655,34 @@ export type TemplatesData = {
   url: '/api/v1/docflow/paginas/templates';
 };
 
-export type TemplatesResponses = {
+export type DocflowPaginaTemplatesResponses = {
   /**
    * OK
    */
   200: Array<PaginaTemplateResponse>;
 };
 
-export type TemplatesResponse = TemplatesResponses[keyof TemplatesResponses];
+export type DocflowPaginaTemplatesResponse =
+  DocflowPaginaTemplatesResponses[keyof DocflowPaginaTemplatesResponses];
 
-export type CriarTemplateData = {
+export type DocflowPaginaCriarTemplateData = {
   body: PaginaTemplateRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/paginas/templates';
 };
 
-export type CriarTemplateResponses = {
+export type DocflowPaginaCriarTemplateResponses = {
   /**
    * Created
    */
   201: PaginaTemplateResponse;
 };
 
-export type CriarTemplateResponse = CriarTemplateResponses[keyof CriarTemplateResponses];
+export type DocflowPaginaCriarTemplateResponse =
+  DocflowPaginaCriarTemplateResponses[keyof DocflowPaginaCriarTemplateResponses];
 
-export type RestaurarVersaoTemplateData = {
+export type DocflowPaginaRestaurarVersaoTemplateData = {
   body?: never;
   path: {
     templateId: string;
@@ -4410,17 +5692,17 @@ export type RestaurarVersaoTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/versoes/{numero}/restaurar';
 };
 
-export type RestaurarVersaoTemplateResponses = {
+export type DocflowPaginaRestaurarVersaoTemplateResponses = {
   /**
    * OK
    */
   200: PaginaTemplateResponse;
 };
 
-export type RestaurarVersaoTemplateResponse =
-  RestaurarVersaoTemplateResponses[keyof RestaurarVersaoTemplateResponses];
+export type DocflowPaginaRestaurarVersaoTemplateResponse =
+  DocflowPaginaRestaurarVersaoTemplateResponses[keyof DocflowPaginaRestaurarVersaoTemplateResponses];
 
-export type ReativarTemplateData = {
+export type DocflowPaginaReativarTemplateData = {
   body?: never;
   path: {
     templateId: string;
@@ -4429,16 +5711,17 @@ export type ReativarTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/reativar';
 };
 
-export type ReativarTemplateResponses = {
+export type DocflowPaginaReativarTemplateResponses = {
   /**
    * OK
    */
   200: PaginaTemplateResponse;
 };
 
-export type ReativarTemplateResponse = ReativarTemplateResponses[keyof ReativarTemplateResponses];
+export type DocflowPaginaReativarTemplateResponse =
+  DocflowPaginaReativarTemplateResponses[keyof DocflowPaginaReativarTemplateResponses];
 
-export type DuplicarTemplateData = {
+export type DocflowPaginaDuplicarTemplateData = {
   body: PaginaTemplateDuplicarRequest;
   path: {
     templateId: string;
@@ -4447,16 +5730,17 @@ export type DuplicarTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/duplicar';
 };
 
-export type DuplicarTemplateResponses = {
+export type DocflowPaginaDuplicarTemplateResponses = {
   /**
    * Created
    */
   201: PaginaTemplateResponse;
 };
 
-export type DuplicarTemplateResponse = DuplicarTemplateResponses[keyof DuplicarTemplateResponses];
+export type DocflowPaginaDuplicarTemplateResponse =
+  DocflowPaginaDuplicarTemplateResponses[keyof DocflowPaginaDuplicarTemplateResponses];
 
-export type ArquivarTemplateData = {
+export type DocflowPaginaArquivarTemplateData = {
   body?: never;
   path: {
     templateId: string;
@@ -4465,16 +5749,17 @@ export type ArquivarTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/arquivar';
 };
 
-export type ArquivarTemplateResponses = {
+export type DocflowPaginaArquivarTemplateResponses = {
   /**
    * OK
    */
   200: PaginaTemplateResponse;
 };
 
-export type ArquivarTemplateResponse = ArquivarTemplateResponses[keyof ArquivarTemplateResponses];
+export type DocflowPaginaArquivarTemplateResponse =
+  DocflowPaginaArquivarTemplateResponses[keyof DocflowPaginaArquivarTemplateResponses];
 
-export type AplicarTemplateData = {
+export type DocflowPaginaAplicarTemplateData = {
   body: PaginaTemplateAplicacaoRequest;
   path: {
     templateId: string;
@@ -4483,30 +5768,67 @@ export type AplicarTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/aplicar';
 };
 
-export type AplicarTemplateResponses = {
+export type DocflowPaginaAplicarTemplateResponses = {
   /**
    * OK
    */
   200: PaginaTemplateAplicacaoResponse;
 };
 
-export type AplicarTemplateResponse = AplicarTemplateResponses[keyof AplicarTemplateResponses];
+export type DocflowPaginaAplicarTemplateResponse =
+  DocflowPaginaAplicarTemplateResponses[keyof DocflowPaginaAplicarTemplateResponses];
 
-export type Reordenar1Data = {
+export type DocflowPaginaSnippetsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    incluirInativos?: boolean;
+  };
+  url: '/api/v1/docflow/paginas/snippets';
+};
+
+export type DocflowPaginaSnippetsResponses = {
+  /**
+   * OK
+   */
+  200: Array<PaginaSnippetResponse>;
+};
+
+export type DocflowPaginaSnippetsResponse =
+  DocflowPaginaSnippetsResponses[keyof DocflowPaginaSnippetsResponses];
+
+export type DocflowPaginaCriarSnippetData = {
+  body: PaginaSnippetRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/snippets';
+};
+
+export type DocflowPaginaCriarSnippetResponses = {
+  /**
+   * Created
+   */
+  201: PaginaSnippetResponse;
+};
+
+export type DocflowPaginaCriarSnippetResponse =
+  DocflowPaginaCriarSnippetResponses[keyof DocflowPaginaCriarSnippetResponses];
+
+export type DocflowPaginaReordenarData = {
   body: ReordenarRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/paginas/reordenar';
 };
 
-export type Reordenar1Responses = {
+export type DocflowPaginaReordenarResponses = {
   /**
    * OK
    */
   200: unknown;
 };
 
-export type Listar21Data = {
+export type DocflowModuloListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -4520,64 +5842,66 @@ export type Listar21Data = {
   url: '/api/v1/docflow/modulos';
 };
 
-export type Listar21Responses = {
+export type DocflowModuloListarResponses = {
   /**
    * OK
    */
   200: PageResponseModuloResponse;
 };
 
-export type Listar21Response = Listar21Responses[keyof Listar21Responses];
+export type DocflowModuloListarResponse = DocflowModuloListarResponses[keyof DocflowModuloListarResponses];
 
-export type Criar16Data = {
+export type DocflowModuloCriarData = {
   body: ModuloRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/modulos';
 };
 
-export type Criar16Responses = {
+export type DocflowModuloCriarResponses = {
   /**
    * Created
    */
   201: ModuloResponse;
 };
 
-export type Criar16Response = Criar16Responses[keyof Criar16Responses];
+export type DocflowModuloCriarResponse = DocflowModuloCriarResponses[keyof DocflowModuloCriarResponses];
 
-export type DeleteLogoData = {
+export type DocflowEmpresaDeleteLogoData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/empresa/logo';
 };
 
-export type DeleteLogoResponses = {
+export type DocflowEmpresaDeleteLogoResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type DeleteLogoResponse = DeleteLogoResponses[keyof DeleteLogoResponses];
+export type DocflowEmpresaDeleteLogoResponse =
+  DocflowEmpresaDeleteLogoResponses[keyof DocflowEmpresaDeleteLogoResponses];
 
-export type GetLogoData = {
+export type DocflowEmpresaGetLogoData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/empresa/logo';
 };
 
-export type GetLogoResponses = {
+export type DocflowEmpresaGetLogoResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type GetLogoResponse = GetLogoResponses[keyof GetLogoResponses];
+export type DocflowEmpresaGetLogoResponse =
+  DocflowEmpresaGetLogoResponses[keyof DocflowEmpresaGetLogoResponses];
 
-export type UploadLogoData = {
+export type DocflowEmpresaUploadLogoData = {
   body?: {
     file: Blob | File;
   };
@@ -4586,16 +5910,17 @@ export type UploadLogoData = {
   url: '/api/v1/docflow/empresa/logo';
 };
 
-export type UploadLogoResponses = {
+export type DocflowEmpresaUploadLogoResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type UploadLogoResponse = UploadLogoResponses[keyof UploadLogoResponses];
+export type DocflowEmpresaUploadLogoResponse =
+  DocflowEmpresaUploadLogoResponses[keyof DocflowEmpresaUploadLogoResponses];
 
-export type Listar22Data = {
+export type DocflowClienteListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -4608,32 +5933,32 @@ export type Listar22Data = {
   url: '/api/v1/docflow/clientes';
 };
 
-export type Listar22Responses = {
+export type DocflowClienteListarResponses = {
   /**
    * OK
    */
   200: PageResponseClienteResponse;
 };
 
-export type Listar22Response = Listar22Responses[keyof Listar22Responses];
+export type DocflowClienteListarResponse = DocflowClienteListarResponses[keyof DocflowClienteListarResponses];
 
-export type Criar17Data = {
+export type DocflowClienteCriarData = {
   body: ClienteRequest;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/clientes';
 };
 
-export type Criar17Responses = {
+export type DocflowClienteCriarResponses = {
   /**
    * Created
    */
   201: ClienteResponse;
 };
 
-export type Criar17Response = Criar17Responses[keyof Criar17Responses];
+export type DocflowClienteCriarResponse = DocflowClienteCriarResponses[keyof DocflowClienteCriarResponses];
 
-export type DeleteLogo1Data = {
+export type DocflowClienteDeleteLogoData = {
   body?: never;
   path: {
     id: string;
@@ -4642,16 +5967,17 @@ export type DeleteLogo1Data = {
   url: '/api/v1/docflow/clientes/{id}/logo';
 };
 
-export type DeleteLogo1Responses = {
+export type DocflowClienteDeleteLogoResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type DeleteLogo1Response = DeleteLogo1Responses[keyof DeleteLogo1Responses];
+export type DocflowClienteDeleteLogoResponse =
+  DocflowClienteDeleteLogoResponses[keyof DocflowClienteDeleteLogoResponses];
 
-export type GetLogo1Data = {
+export type DocflowClienteGetLogoData = {
   body?: never;
   path: {
     id: string;
@@ -4660,16 +5986,17 @@ export type GetLogo1Data = {
   url: '/api/v1/docflow/clientes/{id}/logo';
 };
 
-export type GetLogo1Responses = {
+export type DocflowClienteGetLogoResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type GetLogo1Response = GetLogo1Responses[keyof GetLogo1Responses];
+export type DocflowClienteGetLogoResponse =
+  DocflowClienteGetLogoResponses[keyof DocflowClienteGetLogoResponses];
 
-export type UploadLogo1Data = {
+export type DocflowClienteUploadLogoData = {
   body?: {
     file: Blob | File;
   };
@@ -4680,16 +6007,17 @@ export type UploadLogo1Data = {
   url: '/api/v1/docflow/clientes/{id}/logo';
 };
 
-export type UploadLogo1Responses = {
+export type DocflowClienteUploadLogoResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type UploadLogo1Response = UploadLogo1Responses[keyof UploadLogo1Responses];
+export type DocflowClienteUploadLogoResponse =
+  DocflowClienteUploadLogoResponses[keyof DocflowClienteUploadLogoResponses];
 
-export type CopiarVinculosData = {
+export type DocflowClienteCopiarVinculosData = {
   body: CopiarVinculosRequest;
   path: {
     id: string;
@@ -4698,32 +6026,410 @@ export type CopiarVinculosData = {
   url: '/api/v1/docflow/clientes/{id}/copiar-vinculos';
 };
 
-export type CopiarVinculosResponses = {
+export type DocflowClienteCopiarVinculosResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type CopiarVinculosResponse = CopiarVinculosResponses[keyof CopiarVinculosResponses];
+export type DocflowClienteCopiarVinculosResponse =
+  DocflowClienteCopiarVinculosResponses[keyof DocflowClienteCopiarVinculosResponses];
 
-export type LoginData = {
+export type DocflowAjudaRegistrarData = {
+  body: AjudaEventoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/eventos';
+};
+
+export type DocflowAjudaRegistrarResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowAjudaRegistrarResponse =
+  DocflowAjudaRegistrarResponses[keyof DocflowAjudaRegistrarResponses];
+
+export type DocflowAjudaListarData = {
+  body?: never;
+  path?: never;
+  query?: {
+    busca?: string;
+    rota?: string;
+  };
+  url: '/api/v1/docflow/ajuda/conteudos';
+};
+
+export type DocflowAjudaListarResponses = {
+  /**
+   * OK
+   */
+  200: Array<AjudaConteudoResponse>;
+};
+
+export type DocflowAjudaListarResponse = DocflowAjudaListarResponses[keyof DocflowAjudaListarResponses];
+
+export type DocflowAjudaCriarData = {
+  body: AjudaConteudoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/ajuda/conteudos';
+};
+
+export type DocflowAjudaCriarResponses = {
+  /**
+   * Created
+   */
+  201: AjudaConteudoResponse;
+};
+
+export type DocflowAjudaCriarResponse = DocflowAjudaCriarResponses[keyof DocflowAjudaCriarResponses];
+
+export type IdentityaccessAuthLoginData = {
   body: LoginRequest;
   path?: never;
   query?: never;
   url: '/api/v1/auth/login';
 };
 
-export type LoginResponses = {
+export type IdentityaccessAuthLoginResponses = {
   /**
    * OK
    */
   200: LoginResponse;
 };
 
-export type LoginResponse2 = LoginResponses[keyof LoginResponses];
+export type IdentityaccessAuthLoginResponse =
+  IdentityaccessAuthLoginResponses[keyof IdentityaccessAuthLoginResponses];
 
-export type AlterarStatusData = {
+export type AiAiTemplateRecomendarData = {
+  body: AiTemplateRecomendacaoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/templates/recomendacao';
+};
+
+export type AiAiTemplateRecomendarResponses = {
+  /**
+   * OK
+   */
+  200: AiTemplateRecomendacaoResponse;
+};
+
+export type AiAiTemplateRecomendarResponse =
+  AiAiTemplateRecomendarResponses[keyof AiAiTemplateRecomendarResponses];
+
+export type AiAiSessaoCriarData = {
+  body: CriarAiSessaoRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/sessoes';
+};
+
+export type AiAiSessaoCriarResponses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type AiAiSessaoCriarResponse = AiAiSessaoCriarResponses[keyof AiAiSessaoCriarResponses];
+
+export type AiAiSessaoEnviarMensagemData = {
+  body: AiMensagemRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/mensagens';
+};
+
+export type AiAiSessaoEnviarMensagemResponses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type AiAiSessaoEnviarMensagemResponse =
+  AiAiSessaoEnviarMensagemResponses[keyof AiAiSessaoEnviarMensagemResponses];
+
+export type AiAiSessaoGerarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/gerar';
+};
+
+export type AiAiSessaoGerarResponses = {
+  /**
+   * OK
+   */
+  200: AiJobResponse;
+};
+
+export type AiAiSessaoGerarResponse = AiAiSessaoGerarResponses[keyof AiAiSessaoGerarResponses];
+
+export type AiAiSessaoCancelarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/cancelar';
+};
+
+export type AiAiSessaoCancelarResponses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type AiAiSessaoCancelarResponse = AiAiSessaoCancelarResponses[keyof AiAiSessaoCancelarResponses];
+
+export type AiAiSessaoAplicarData = {
+  body: AplicarAiPropostaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/aplicar';
+};
+
+export type AiAiSessaoAplicarResponses = {
+  /**
+   * OK
+   */
+  200: AiAplicacaoResponse;
+};
+
+export type AiAiSessaoAplicarResponse = AiAiSessaoAplicarResponses[keyof AiAiSessaoAplicarResponses];
+
+export type AiAiDocumentoImportacaoImportarDocumentoData = {
+  body?: {
+    arquivo: Blob | File;
+  };
+  path?: never;
+  query?: {
+    projetoId?: string;
+    clienteId?: string;
+  };
+  url: '/api/v1/ai/importacoes';
+};
+
+export type AiAiDocumentoImportacaoImportarDocumentoResponses = {
+  /**
+   * Created
+   */
+  201: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoImportarDocumentoResponse =
+  AiAiDocumentoImportacaoImportarDocumentoResponses[keyof AiAiDocumentoImportacaoImportarDocumentoResponses];
+
+export type AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData = {
+  body?: never;
+  path: {
+    id: string;
+    sugestaoId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/ignorar';
+};
+
+export type AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse =
+  AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses[keyof AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses];
+
+export type AiAiDocumentoImportacaoAceitarSugestaoDocumentoData = {
+  body?: never;
+  path: {
+    id: string;
+    sugestaoId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/aceitar';
+};
+
+export type AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponse =
+  AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses[keyof AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponses];
+
+export type AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/sugestoes/aplicar-seguras';
+};
+
+export type AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponse =
+  AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses[keyof AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponses];
+
+export type AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/sincronizar';
+};
+
+export type AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponse =
+  AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses[keyof AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponses];
+
+export type AiAiDocumentoImportacaoVincularPaginaImportadaData = {
+  body?: never;
+  path: {
+    id: string;
+    paginaPlanoId: string;
+    paginaId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/vincular/{paginaId}';
+};
+
+export type AiAiDocumentoImportacaoVincularPaginaImportadaResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoVincularPaginaImportadaResponse =
+  AiAiDocumentoImportacaoVincularPaginaImportadaResponses[keyof AiAiDocumentoImportacaoVincularPaginaImportadaResponses];
+
+export type AiAiDocumentoImportacaoSelecionarPaginaImportadaData = {
+  body?: never;
+  path: {
+    id: string;
+    paginaPlanoId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/selecionar';
+};
+
+export type AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoSelecionarPaginaImportadaResponse =
+  AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses[keyof AiAiDocumentoImportacaoSelecionarPaginaImportadaResponses];
+
+export type AiAiDocumentoImportacaoAceitarPaginaImportadaData = {
+  body?: never;
+  path: {
+    id: string;
+    paginaPlanoId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/aceitar';
+};
+
+export type AiAiDocumentoImportacaoAceitarPaginaImportadaResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoAceitarPaginaImportadaResponse =
+  AiAiDocumentoImportacaoAceitarPaginaImportadaResponses[keyof AiAiDocumentoImportacaoAceitarPaginaImportadaResponses];
+
+export type AiAiDocumentoImportacaoGerarLoteDocumentoData = {
+  body: AiGerarLoteDocumentoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/lote/gerar';
+};
+
+export type AiAiDocumentoImportacaoGerarLoteDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoGerarLoteDocumentoResponse =
+  AiAiDocumentoImportacaoGerarLoteDocumentoResponses[keyof AiAiDocumentoImportacaoGerarLoteDocumentoResponses];
+
+export type AiAiDocumentoImportacaoEstimarLoteDocumentoData = {
+  body: AiGerarLoteDocumentoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/lote/estimar';
+};
+
+export type AiAiDocumentoImportacaoEstimarLoteDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiEstimativaLoteDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoEstimarLoteDocumentoResponse =
+  AiAiDocumentoImportacaoEstimarLoteDocumentoResponses[keyof AiAiDocumentoImportacaoEstimarLoteDocumentoResponses];
+
+export type AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData = {
+  body: AiConfirmarEstruturaDocumentoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/importacoes/{id}/estrutura/confirmar';
+};
+
+export type AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses = {
+  /**
+   * OK
+   */
+  200: AiImportacaoDocumentoResponse;
+};
+
+export type AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse =
+  AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses[keyof AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses];
+
+export type ReleaseorchestratorReleaseTemplateAlterarStatusData = {
   body: AlterarStatusTemplateRequest;
   path: {
     id: string;
@@ -4732,16 +6438,17 @@ export type AlterarStatusData = {
   url: '/api/v1/release-orchestrator/templates/{id}/status';
 };
 
-export type AlterarStatusResponses = {
+export type ReleaseorchestratorReleaseTemplateAlterarStatusResponses = {
   /**
    * OK
    */
   200: ReleaseTemplateResponse;
 };
 
-export type AlterarStatusResponse = AlterarStatusResponses[keyof AlterarStatusResponses];
+export type ReleaseorchestratorReleaseTemplateAlterarStatusResponse =
+  ReleaseorchestratorReleaseTemplateAlterarStatusResponses[keyof ReleaseorchestratorReleaseTemplateAlterarStatusResponses];
 
-export type AlterarStatus1Data = {
+export type ReleaseorchestratorReleaseAlterarStatusData = {
   body: AlterarStatusReleaseRequest;
   path: {
     id: string;
@@ -4750,16 +6457,17 @@ export type AlterarStatus1Data = {
   url: '/api/v1/release-orchestrator/releases/{id}/status';
 };
 
-export type AlterarStatus1Responses = {
+export type ReleaseorchestratorReleaseAlterarStatusResponses = {
   /**
    * OK
    */
   200: ReleaseResponse;
 };
 
-export type AlterarStatus1Response = AlterarStatus1Responses[keyof AlterarStatus1Responses];
+export type ReleaseorchestratorReleaseAlterarStatusResponse =
+  ReleaseorchestratorReleaseAlterarStatusResponses[keyof ReleaseorchestratorReleaseAlterarStatusResponses];
 
-export type AlterarStatus2Data = {
+export type ReleaseorchestratorProximaEntregaAlterarStatusData = {
   body: AlterarStatusProximaEntregaRequest;
   path: {
     id: string;
@@ -4768,16 +6476,17 @@ export type AlterarStatus2Data = {
   url: '/api/v1/release-orchestrator/proximas-entregas/{id}/status';
 };
 
-export type AlterarStatus2Responses = {
+export type ReleaseorchestratorProximaEntregaAlterarStatusResponses = {
   /**
    * OK
    */
   200: ProximaEntregaResponse;
 };
 
-export type AlterarStatus2Response = AlterarStatus2Responses[keyof AlterarStatus2Responses];
+export type ReleaseorchestratorProximaEntregaAlterarStatusResponse =
+  ReleaseorchestratorProximaEntregaAlterarStatusResponses[keyof ReleaseorchestratorProximaEntregaAlterarStatusResponses];
 
-export type AlterarStatus3Data = {
+export type ReleaseorchestratorModuloProdutoAlterarStatusData = {
   body: AlterarStatusModuloRequest;
   path: {
     produtoId: string;
@@ -4787,16 +6496,17 @@ export type AlterarStatus3Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}/status';
 };
 
-export type AlterarStatus3Responses = {
+export type ReleaseorchestratorModuloProdutoAlterarStatusResponses = {
   /**
    * OK
    */
   200: ModuloProdutoResponse;
 };
 
-export type AlterarStatus3Response = AlterarStatus3Responses[keyof AlterarStatus3Responses];
+export type ReleaseorchestratorModuloProdutoAlterarStatusResponse =
+  ReleaseorchestratorModuloProdutoAlterarStatusResponses[keyof ReleaseorchestratorModuloProdutoAlterarStatusResponses];
 
-export type AlterarStatus4Data = {
+export type ReleaseorchestratorDominioProdutoAlterarStatusData = {
   body: AlterarStatusCatalogoRequest;
   path: {
     produtoId: string;
@@ -4806,16 +6516,17 @@ export type AlterarStatus4Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}/status';
 };
 
-export type AlterarStatus4Responses = {
+export type ReleaseorchestratorDominioProdutoAlterarStatusResponses = {
   /**
    * OK
    */
   200: DominioProdutoResponse;
 };
 
-export type AlterarStatus4Response = AlterarStatus4Responses[keyof AlterarStatus4Responses];
+export type ReleaseorchestratorDominioProdutoAlterarStatusResponse =
+  ReleaseorchestratorDominioProdutoAlterarStatusResponses[keyof ReleaseorchestratorDominioProdutoAlterarStatusResponses];
 
-export type AlterarStatus5Data = {
+export type ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData = {
   body: AlterarStatusCatalogoRequest;
   path: {
     produtoId: string;
@@ -4826,16 +6537,17 @@ export type AlterarStatus5Data = {
   url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}/status';
 };
 
-export type AlterarStatus5Responses = {
+export type ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses = {
   /**
    * OK
    */
   200: FuncionalidadeProdutoResponse;
 };
 
-export type AlterarStatus5Response = AlterarStatus5Responses[keyof AlterarStatus5Responses];
+export type ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponse =
+  ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses[keyof ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponses];
 
-export type AlterarStatus6Data = {
+export type ReleaseorchestratorProdutoRhAlterarStatusData = {
   body: AlterarStatusProdutoRequest;
   path: {
     id: string;
@@ -4844,16 +6556,74 @@ export type AlterarStatus6Data = {
   url: '/api/v1/release-orchestrator/produtos/{id}/status';
 };
 
-export type AlterarStatus6Responses = {
+export type ReleaseorchestratorProdutoRhAlterarStatusResponses = {
   /**
    * OK
    */
   200: ProdutoRhResponse;
 };
 
-export type AlterarStatus6Response = AlterarStatus6Responses[keyof AlterarStatus6Responses];
+export type ReleaseorchestratorProdutoRhAlterarStatusResponse =
+  ReleaseorchestratorProdutoRhAlterarStatusResponses[keyof ReleaseorchestratorProdutoRhAlterarStatusResponses];
 
-export type AlterarSelecaoData = {
+export type ReleaseorchestratorInstalacaoClienteAlterarStatusData = {
+  body: AlterarStatusInstalacaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/status';
+};
+
+export type ReleaseorchestratorInstalacaoClienteAlterarStatusResponses = {
+  /**
+   * OK
+   */
+  200: InstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteAlterarStatusResponse =
+  ReleaseorchestratorInstalacaoClienteAlterarStatusResponses[keyof ReleaseorchestratorInstalacaoClienteAlterarStatusResponses];
+
+export type ReleaseorchestratorInstalacaoClienteRegistrarHealthData = {
+  body: RegistrarHealthInstalacaoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/health';
+};
+
+export type ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses = {
+  /**
+   * OK
+   */
+  200: InstalacaoClienteResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteRegistrarHealthResponse =
+  ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses[keyof ReleaseorchestratorInstalacaoClienteRegistrarHealthResponses];
+
+export type ReleaseorchestratorHostAlterarStatusData = {
+  body: AlterarStatusHostRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/hosts/{id}/status';
+};
+
+export type ReleaseorchestratorHostAlterarStatusResponses = {
+  /**
+   * OK
+   */
+  200: HostResponse;
+};
+
+export type ReleaseorchestratorHostAlterarStatusResponse =
+  ReleaseorchestratorHostAlterarStatusResponses[keyof ReleaseorchestratorHostAlterarStatusResponses];
+
+export type ReleaseorchestratorEntregaModuloAlterarSelecaoData = {
   body: AlterarSelecaoModuloRequest;
   path: {
     entregaId: string;
@@ -4863,16 +6633,17 @@ export type AlterarSelecaoData = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/{moduloProdutoId}/selecao';
 };
 
-export type AlterarSelecaoResponses = {
+export type ReleaseorchestratorEntregaModuloAlterarSelecaoResponses = {
   /**
    * OK
    */
   200: EntregaModuloResponse;
 };
 
-export type AlterarSelecaoResponse = AlterarSelecaoResponses[keyof AlterarSelecaoResponses];
+export type ReleaseorchestratorEntregaModuloAlterarSelecaoResponse =
+  ReleaseorchestratorEntregaModuloAlterarSelecaoResponses[keyof ReleaseorchestratorEntregaModuloAlterarSelecaoResponses];
 
-export type AlterarStatus7Data = {
+export type ReleaseorchestratorClienteAlterarStatusData = {
   body: AlterarStatusClienteRequest;
   path: {
     id: string;
@@ -4881,16 +6652,17 @@ export type AlterarStatus7Data = {
   url: '/api/v1/release-orchestrator/clientes/{id}/status';
 };
 
-export type AlterarStatus7Responses = {
+export type ReleaseorchestratorClienteAlterarStatusResponses = {
   /**
    * OK
    */
   200: ClienteResponse;
 };
 
-export type AlterarStatus7Response = AlterarStatus7Responses[keyof AlterarStatus7Responses];
+export type ReleaseorchestratorClienteAlterarStatusResponse =
+  ReleaseorchestratorClienteAlterarStatusResponses[keyof ReleaseorchestratorClienteAlterarStatusResponses];
 
-export type AlterarStatus8Data = {
+export type IdentityaccessGrupoAlterarStatusData = {
   body: AlterarStatusGrupoRequest;
   path: {
     id: string;
@@ -4899,16 +6671,17 @@ export type AlterarStatus8Data = {
   url: '/api/v1/rbac/grupos/{id}/status';
 };
 
-export type AlterarStatus8Responses = {
+export type IdentityaccessGrupoAlterarStatusResponses = {
   /**
    * OK
    */
   200: GrupoResponse;
 };
 
-export type AlterarStatus8Response = AlterarStatus8Responses[keyof AlterarStatus8Responses];
+export type IdentityaccessGrupoAlterarStatusResponse =
+  IdentityaccessGrupoAlterarStatusResponses[keyof IdentityaccessGrupoAlterarStatusResponses];
 
-export type AlterarStatus9Data = {
+export type IdentityaccessEscopoAcessoAlterarStatusData = {
   body?: never;
   path: {
     id: string;
@@ -4919,16 +6692,17 @@ export type AlterarStatus9Data = {
   url: '/api/v1/rbac/escopos/{id}/status';
 };
 
-export type AlterarStatus9Responses = {
+export type IdentityaccessEscopoAcessoAlterarStatusResponses = {
   /**
    * OK
    */
   200: EscopoAcessoResponse;
 };
 
-export type AlterarStatus9Response = AlterarStatus9Responses[keyof AlterarStatus9Responses];
+export type IdentityaccessEscopoAcessoAlterarStatusResponse =
+  IdentityaccessEscopoAcessoAlterarStatusResponses[keyof IdentityaccessEscopoAcessoAlterarStatusResponses];
 
-export type Gerar1Data = {
+export type ReleaseorchestratorReleasePdfGerarData = {
   body?: never;
   path: {
     releaseId: string;
@@ -4939,16 +6713,17 @@ export type Gerar1Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/pdf';
 };
 
-export type Gerar1Responses = {
+export type ReleaseorchestratorReleasePdfGerarResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type Gerar1Response = Gerar1Responses[keyof Gerar1Responses];
+export type ReleaseorchestratorReleasePdfGerarResponse =
+  ReleaseorchestratorReleasePdfGerarResponses[keyof ReleaseorchestratorReleasePdfGerarResponses];
 
-export type DownloadData = {
+export type ReleaseorchestratorArtefatoReleaseModuloDownloadData = {
   body?: never;
   path: {
     releaseId: string;
@@ -4959,16 +6734,17 @@ export type DownloadData = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}/download';
 };
 
-export type DownloadResponses = {
+export type ReleaseorchestratorArtefatoReleaseModuloDownloadResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type DownloadResponse = DownloadResponses[keyof DownloadResponses];
+export type ReleaseorchestratorArtefatoReleaseModuloDownloadResponse =
+  ReleaseorchestratorArtefatoReleaseModuloDownloadResponses[keyof ReleaseorchestratorArtefatoReleaseModuloDownloadResponses];
 
-export type Listar23Data = {
+export type ReleaseorchestratorReleaseModuloVersaoListarData = {
   body?: never;
   path: {
     releaseId: string;
@@ -4977,16 +6753,17 @@ export type Listar23Data = {
   url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao';
 };
 
-export type Listar23Responses = {
+export type ReleaseorchestratorReleaseModuloVersaoListarResponses = {
   /**
    * OK
    */
   200: Array<ReleaseModuloVersaoResponse>;
 };
 
-export type Listar23Response = Listar23Responses[keyof Listar23Responses];
+export type ReleaseorchestratorReleaseModuloVersaoListarResponse =
+  ReleaseorchestratorReleaseModuloVersaoListarResponses[keyof ReleaseorchestratorReleaseModuloVersaoListarResponses];
 
-export type ValidarData = {
+export type ReleaseorchestratorReleaseValidarData = {
   body?: never;
   path: {
     id: string;
@@ -4995,16 +6772,17 @@ export type ValidarData = {
   url: '/api/v1/release-orchestrator/releases/{id}/validar';
 };
 
-export type ValidarResponses = {
+export type ReleaseorchestratorReleaseValidarResponses = {
   /**
    * OK
    */
   200: RevisaoValidacaoResponse;
 };
 
-export type ValidarResponse = ValidarResponses[keyof ValidarResponses];
+export type ReleaseorchestratorReleaseValidarResponse =
+  ReleaseorchestratorReleaseValidarResponses[keyof ReleaseorchestratorReleaseValidarResponses];
 
-export type HistoricoData = {
+export type ReleaseorchestratorReleaseHistoricoData = {
   body?: never;
   path: {
     id: string;
@@ -5013,16 +6791,97 @@ export type HistoricoData = {
   url: '/api/v1/release-orchestrator/releases/{id}/historico';
 };
 
-export type HistoricoResponses = {
+export type ReleaseorchestratorReleaseHistoricoResponses = {
   /**
    * OK
    */
   200: Array<ReleaseHistoricoResponse>;
 };
 
-export type HistoricoResponse = HistoricoResponses[keyof HistoricoResponses];
+export type ReleaseorchestratorReleaseHistoricoResponse =
+  ReleaseorchestratorReleaseHistoricoResponses[keyof ReleaseorchestratorReleaseHistoricoResponses];
 
-export type Buscar17Data = {
+export type ReleaseorchestratorReleaseFontesBuildData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/releases/{id}/fontes-build';
+};
+
+export type ReleaseorchestratorReleaseFontesBuildResponses = {
+  /**
+   * OK
+   */
+  200: FontesBuildResponse;
+};
+
+export type ReleaseorchestratorReleaseFontesBuildResponse =
+  ReleaseorchestratorReleaseFontesBuildResponses[keyof ReleaseorchestratorReleaseFontesBuildResponses];
+
+export type ReleaseorchestratorReleaseDisponiveisDeployData = {
+  body?: never;
+  path?: never;
+  query: {
+    produtoId: string;
+  };
+  url: '/api/v1/release-orchestrator/releases/disponiveis-deploy';
+};
+
+export type ReleaseorchestratorReleaseDisponiveisDeployResponses = {
+  /**
+   * OK
+   */
+  200: Array<ReleaseDisponivelDeployResponse>;
+};
+
+export type ReleaseorchestratorReleaseDisponiveisDeployResponse =
+  ReleaseorchestratorReleaseDisponiveisDeployResponses[keyof ReleaseorchestratorReleaseDisponiveisDeployResponses];
+
+export type ReleaseorchestratorInstalacaoClienteFontesVersaoData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/instalacoes/{id}/fontes-versao';
+};
+
+export type ReleaseorchestratorInstalacaoClienteFontesVersaoResponses = {
+  /**
+   * OK
+   */
+  200: FontesVersaoInstalacaoResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteFontesVersaoResponse =
+  ReleaseorchestratorInstalacaoClienteFontesVersaoResponses[keyof ReleaseorchestratorInstalacaoClienteFontesVersaoResponses];
+
+export type ReleaseorchestratorInstalacaoClienteSugerirPortasData = {
+  body?: never;
+  path?: never;
+  query?: {
+    hostId?: string;
+    instalacaoId?: string;
+    backendInicio?: number;
+    frontendInicio?: number;
+    quantidade?: number;
+  };
+  url: '/api/v1/release-orchestrator/instalacoes/portas-sugeridas';
+};
+
+export type ReleaseorchestratorInstalacaoClienteSugerirPortasResponses = {
+  /**
+   * OK
+   */
+  200: PortasSugeridasResponse;
+};
+
+export type ReleaseorchestratorInstalacaoClienteSugerirPortasResponse =
+  ReleaseorchestratorInstalacaoClienteSugerirPortasResponses[keyof ReleaseorchestratorInstalacaoClienteSugerirPortasResponses];
+
+export type ReleaseorchestratorEntregaBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -5031,16 +6890,17 @@ export type Buscar17Data = {
   url: '/api/v1/release-orchestrator/entregas/{id}';
 };
 
-export type Buscar17Responses = {
+export type ReleaseorchestratorEntregaBuscarResponses = {
   /**
    * OK
    */
   200: EntregaResponse;
 };
 
-export type Buscar17Response = Buscar17Responses[keyof Buscar17Responses];
+export type ReleaseorchestratorEntregaBuscarResponse =
+  ReleaseorchestratorEntregaBuscarResponses[keyof ReleaseorchestratorEntregaBuscarResponses];
 
-export type DownloadPacoteData = {
+export type ReleaseorchestratorEntregaDownloadPacoteData = {
   body?: never;
   path: {
     id: string;
@@ -5049,16 +6909,17 @@ export type DownloadPacoteData = {
   url: '/api/v1/release-orchestrator/entregas/{id}/pacote/download';
 };
 
-export type DownloadPacoteResponses = {
+export type ReleaseorchestratorEntregaDownloadPacoteResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type DownloadPacoteResponse = DownloadPacoteResponses[keyof DownloadPacoteResponses];
+export type ReleaseorchestratorEntregaDownloadPacoteResponse =
+  ReleaseorchestratorEntregaDownloadPacoteResponses[keyof ReleaseorchestratorEntregaDownloadPacoteResponses];
 
-export type Listar24Data = {
+export type ReleaseorchestratorEntregaModuloListarData = {
   body?: never;
   path: {
     entregaId: string;
@@ -5067,16 +6928,17 @@ export type Listar24Data = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos';
 };
 
-export type Listar24Responses = {
+export type ReleaseorchestratorEntregaModuloListarResponses = {
   /**
    * OK
    */
   200: Array<EntregaModuloResponse>;
 };
 
-export type Listar24Response = Listar24Responses[keyof Listar24Responses];
+export type ReleaseorchestratorEntregaModuloListarResponse =
+  ReleaseorchestratorEntregaModuloListarResponses[keyof ReleaseorchestratorEntregaModuloListarResponses];
 
-export type Gerar2Data = {
+export type ReleaseorchestratorDocumentoEntregaGerarData = {
   body?: never;
   path: {
     entregaId: string;
@@ -5085,16 +6947,17 @@ export type Gerar2Data = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/documento';
 };
 
-export type Gerar2Responses = {
+export type ReleaseorchestratorDocumentoEntregaGerarResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type Gerar2Response = Gerar2Responses[keyof Gerar2Responses];
+export type ReleaseorchestratorDocumentoEntregaGerarResponse =
+  ReleaseorchestratorDocumentoEntregaGerarResponses[keyof ReleaseorchestratorDocumentoEntregaGerarResponses];
 
-export type Listar25Data = {
+export type ReleaseorchestratorDeltaEntregaListarData = {
   body?: never;
   path: {
     entregaId: string;
@@ -5103,16 +6966,17 @@ export type Listar25Data = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta';
 };
 
-export type Listar25Responses = {
+export type ReleaseorchestratorDeltaEntregaListarResponses = {
   /**
    * OK
    */
   200: Array<EntregaModuloArtefatoResponse>;
 };
 
-export type Listar25Response = Listar25Responses[keyof Listar25Responses];
+export type ReleaseorchestratorDeltaEntregaListarResponse =
+  ReleaseorchestratorDeltaEntregaListarResponses[keyof ReleaseorchestratorDeltaEntregaListarResponses];
 
-export type ResumoData = {
+export type ReleaseorchestratorDeltaEntregaResumoData = {
   body?: never;
   path: {
     entregaId: string;
@@ -5121,16 +6985,56 @@ export type ResumoData = {
   url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/resumo';
 };
 
-export type ResumoResponses = {
+export type ReleaseorchestratorDeltaEntregaResumoResponses = {
   /**
    * OK
    */
   200: DeltaResumoResponse;
 };
 
-export type ResumoResponse = ResumoResponses[keyof ResumoResponses];
+export type ReleaseorchestratorDeltaEntregaResumoResponse =
+  ReleaseorchestratorDeltaEntregaResumoResponses[keyof ReleaseorchestratorDeltaEntregaResumoResponses];
 
-export type Listar26Data = {
+export type ReleaseorchestratorDeployInstalacaoBuscarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/deploys/{id}';
+};
+
+export type ReleaseorchestratorDeployInstalacaoBuscarResponses = {
+  /**
+   * OK
+   */
+  200: DeployInstalacaoResponse;
+};
+
+export type ReleaseorchestratorDeployInstalacaoBuscarResponse =
+  ReleaseorchestratorDeployInstalacaoBuscarResponses[keyof ReleaseorchestratorDeployInstalacaoBuscarResponses];
+
+export type ReleaseorchestratorDeployInstalacaoPreviewData = {
+  body?: never;
+  path?: never;
+  query: {
+    releaseId: string;
+    instalacaoId: string;
+  };
+  url: '/api/v1/release-orchestrator/deploys/preview';
+};
+
+export type ReleaseorchestratorDeployInstalacaoPreviewResponses = {
+  /**
+   * OK
+   */
+  200: ManifestoImplantacaoResponse;
+};
+
+export type ReleaseorchestratorDeployInstalacaoPreviewResponse =
+  ReleaseorchestratorDeployInstalacaoPreviewResponses[keyof ReleaseorchestratorDeployInstalacaoPreviewResponses];
+
+export type ReleaseorchestratorClienteProdutoModuloListarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -5140,16 +7044,17 @@ export type Listar26Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos';
 };
 
-export type Listar26Responses = {
+export type ReleaseorchestratorClienteProdutoModuloListarResponses = {
   /**
    * OK
    */
   200: Array<ClienteProdutoModuloResponse>;
 };
 
-export type Listar26Response = Listar26Responses[keyof Listar26Responses];
+export type ReleaseorchestratorClienteProdutoModuloListarResponse =
+  ReleaseorchestratorClienteProdutoModuloListarResponses[keyof ReleaseorchestratorClienteProdutoModuloListarResponses];
 
-export type Listar27Data = {
+export type ReleaseorchestratorClienteFuncionalidadeListarData = {
   body?: never;
   path: {
     clienteId: string;
@@ -5160,16 +7065,17 @@ export type Listar27Data = {
   url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades';
 };
 
-export type Listar27Responses = {
+export type ReleaseorchestratorClienteFuncionalidadeListarResponses = {
   /**
    * OK
    */
   200: Array<ClienteFuncionalidadeResponse>;
 };
 
-export type Listar27Response = Listar27Responses[keyof Listar27Responses];
+export type ReleaseorchestratorClienteFuncionalidadeListarResponse =
+  ReleaseorchestratorClienteFuncionalidadeListarResponses[keyof ReleaseorchestratorClienteFuncionalidadeListarResponses];
 
-export type Listar28Data = {
+export type IdentityaccessSessaoListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -5183,16 +7089,17 @@ export type Listar28Data = {
   url: '/api/v1/rbac/sessoes';
 };
 
-export type Listar28Responses = {
+export type IdentityaccessSessaoListarResponses = {
   /**
    * OK
    */
   200: PageResponseSessaoResponse;
 };
 
-export type Listar28Response = Listar28Responses[keyof Listar28Responses];
+export type IdentityaccessSessaoListarResponse =
+  IdentityaccessSessaoListarResponses[keyof IdentityaccessSessaoListarResponses];
 
-export type Listar29Data = {
+export type IdentityaccessHistoricoLoginListarData = {
   body?: never;
   path?: never;
   query?: {
@@ -5209,64 +7116,68 @@ export type Listar29Data = {
   url: '/api/v1/rbac/historico-login';
 };
 
-export type Listar29Responses = {
+export type IdentityaccessHistoricoLoginListarResponses = {
   /**
    * OK
    */
   200: PageResponseHistoricoLoginResponse;
 };
 
-export type Listar29Response = Listar29Responses[keyof Listar29Responses];
+export type IdentityaccessHistoricoLoginListarResponse =
+  IdentityaccessHistoricoLoginListarResponses[keyof IdentityaccessHistoricoLoginListarResponses];
 
-export type PermissoesData = {
+export type IdentityaccessCatalogoPermissoesData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/catalogo/permissoes';
 };
 
-export type PermissoesResponses = {
+export type IdentityaccessCatalogoPermissoesResponses = {
   /**
    * OK
    */
   200: Array<PermissaoResponse>;
 };
 
-export type PermissoesResponse = PermissoesResponses[keyof PermissoesResponses];
+export type IdentityaccessCatalogoPermissoesResponse =
+  IdentityaccessCatalogoPermissoesResponses[keyof IdentityaccessCatalogoPermissoesResponses];
 
-export type FuncionalidadesData = {
+export type IdentityaccessCatalogoFuncionalidadesData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/catalogo/funcionalidades';
 };
 
-export type FuncionalidadesResponses = {
+export type IdentityaccessCatalogoFuncionalidadesResponses = {
   /**
    * OK
    */
   200: Array<FuncionalidadeResponse>;
 };
 
-export type FuncionalidadesResponse = FuncionalidadesResponses[keyof FuncionalidadesResponses];
+export type IdentityaccessCatalogoFuncionalidadesResponse =
+  IdentityaccessCatalogoFuncionalidadesResponses[keyof IdentityaccessCatalogoFuncionalidadesResponses];
 
-export type DominiosData = {
+export type IdentityaccessCatalogoDominiosData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/rbac/catalogo/dominios';
 };
 
-export type DominiosResponses = {
+export type IdentityaccessCatalogoDominiosResponses = {
   /**
    * OK
    */
   200: Array<DominioResponse>;
 };
 
-export type DominiosResponse = DominiosResponses[keyof DominiosResponses];
+export type IdentityaccessCatalogoDominiosResponse =
+  IdentityaccessCatalogoDominiosResponses[keyof IdentityaccessCatalogoDominiosResponses];
 
-export type RecentesData = {
+export type IdentityaccessAuditoriaRecentesData = {
   body?: never;
   path?: never;
   query?: {
@@ -5284,16 +7195,17 @@ export type RecentesData = {
   url: '/api/v1/rbac/auditoria';
 };
 
-export type RecentesResponses = {
+export type IdentityaccessAuditoriaRecentesResponses = {
   /**
    * OK
    */
   200: PageResponseAuditoriaResponse;
 };
 
-export type RecentesResponse = RecentesResponses[keyof RecentesResponses];
+export type IdentityaccessAuditoriaRecentesResponse =
+  IdentityaccessAuditoriaRecentesResponses[keyof IdentityaccessAuditoriaRecentesResponses];
 
-export type DownloadZipData = {
+export type DocflowPublicDownloadDownloadZipData = {
   body?: never;
   path?: never;
   query: {
@@ -5302,16 +7214,17 @@ export type DownloadZipData = {
   url: '/api/v1/public/publicacoes/download';
 };
 
-export type DownloadZipResponses = {
+export type DocflowPublicDownloadDownloadZipResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type DownloadZipResponse = DownloadZipResponses[keyof DownloadZipResponses];
+export type DocflowPublicDownloadDownloadZipResponse =
+  DocflowPublicDownloadDownloadZipResponses[keyof DocflowPublicDownloadDownloadZipResponses];
 
-export type PreviewData = {
+export type DocflowPreviewPreviewData = {
   body?: never;
   path: {
     token: string;
@@ -5320,16 +7233,17 @@ export type PreviewData = {
   url: '/api/v1/preview/{token}';
 };
 
-export type PreviewResponses = {
+export type DocflowPreviewPreviewResponses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type PreviewResponse = PreviewResponses[keyof PreviewResponses];
+export type DocflowPreviewPreviewResponse =
+  DocflowPreviewPreviewResponses[keyof DocflowPreviewPreviewResponses];
 
-export type Excluir14Data = {
+export type DocflowPublicacaoExcluirData = {
   body?: never;
   path: {
     id: string;
@@ -5338,16 +7252,17 @@ export type Excluir14Data = {
   url: '/api/v1/docflow/publicacoes/{id}';
 };
 
-export type Excluir14Responses = {
+export type DocflowPublicacaoExcluirResponses = {
   /**
    * No Content
    */
   204: void;
 };
 
-export type Excluir14Response = Excluir14Responses[keyof Excluir14Responses];
+export type DocflowPublicacaoExcluirResponse =
+  DocflowPublicacaoExcluirResponses[keyof DocflowPublicacaoExcluirResponses];
 
-export type Buscar18Data = {
+export type DocflowPublicacaoBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -5356,16 +7271,56 @@ export type Buscar18Data = {
   url: '/api/v1/docflow/publicacoes/{id}';
 };
 
-export type Buscar18Responses = {
+export type DocflowPublicacaoBuscarResponses = {
   /**
    * OK
    */
   200: PublicacaoResponse;
 };
 
-export type Buscar18Response = Buscar18Responses[keyof Buscar18Responses];
+export type DocflowPublicacaoBuscarResponse =
+  DocflowPublicacaoBuscarResponses[keyof DocflowPublicacaoBuscarResponses];
 
-export type Download1Data = {
+export type DocflowPublicacaoArvorePaginasData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/{id}/paginas';
+};
+
+export type DocflowPublicacaoArvorePaginasResponses = {
+  /**
+   * OK
+   */
+  200: Array<PublicacaoPaginaSnapshotItem>;
+};
+
+export type DocflowPublicacaoArvorePaginasResponse =
+  DocflowPublicacaoArvorePaginasResponses[keyof DocflowPublicacaoArvorePaginasResponses];
+
+export type DocflowPublicacaoHtmlDaPaginaData = {
+  body?: never;
+  path: {
+    id: string;
+    paginaId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/{id}/paginas/{paginaId}/html';
+};
+
+export type DocflowPublicacaoHtmlDaPaginaResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type DocflowPublicacaoHtmlDaPaginaResponse =
+  DocflowPublicacaoHtmlDaPaginaResponses[keyof DocflowPublicacaoHtmlDaPaginaResponses];
+
+export type DocflowPublicacaoDownloadData = {
   body?: never;
   path: {
     id: string;
@@ -5374,16 +7329,17 @@ export type Download1Data = {
   url: '/api/v1/docflow/publicacoes/{id}/download';
 };
 
-export type Download1Responses = {
+export type DocflowPublicacaoDownloadResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type Download1Response = Download1Responses[keyof Download1Responses];
+export type DocflowPublicacaoDownloadResponse =
+  DocflowPublicacaoDownloadResponses[keyof DocflowPublicacaoDownloadResponses];
 
-export type EmitirTokenDownloadData = {
+export type DocflowPublicacaoEmitirTokenDownloadData = {
   body?: never;
   path: {
     id: string;
@@ -5392,16 +7348,17 @@ export type EmitirTokenDownloadData = {
   url: '/api/v1/docflow/publicacoes/{id}/download-token';
 };
 
-export type EmitirTokenDownloadResponses = {
+export type DocflowPublicacaoEmitirTokenDownloadResponses = {
   /**
    * OK
    */
   200: DownloadTokenResponse;
 };
 
-export type EmitirTokenDownloadResponse = EmitirTokenDownloadResponses[keyof EmitirTokenDownloadResponses];
+export type DocflowPublicacaoEmitirTokenDownloadResponse =
+  DocflowPublicacaoEmitirTokenDownloadResponses[keyof DocflowPublicacaoEmitirTokenDownloadResponses];
 
-export type DownloadPdfData = {
+export type DocflowPublicacaoDownloadPdfData = {
   body?: never;
   path: {
     id: string;
@@ -5410,16 +7367,38 @@ export type DownloadPdfData = {
   url: '/api/v1/docflow/publicacoes/{id}/download-pdf';
 };
 
-export type DownloadPdfResponses = {
+export type DocflowPublicacaoDownloadPdfResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type DownloadPdfResponse = DownloadPdfResponses[keyof DownloadPdfResponses];
+export type DocflowPublicacaoDownloadPdfResponse =
+  DocflowPublicacaoDownloadPdfResponses[keyof DocflowPublicacaoDownloadPdfResponses];
 
-export type ChangelogData = {
+export type DocflowPublicacaoDiffData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: {
+    comparadaCom?: string;
+  };
+  url: '/api/v1/docflow/publicacoes/{id}/diff';
+};
+
+export type DocflowPublicacaoDiffResponses = {
+  /**
+   * OK
+   */
+  200: PublicacaoDiffResponse;
+};
+
+export type DocflowPublicacaoDiffResponse =
+  DocflowPublicacaoDiffResponses[keyof DocflowPublicacaoDiffResponses];
+
+export type DocflowPublicacaoChangelogData = {
   body?: never;
   path: {
     id: string;
@@ -5428,16 +7407,17 @@ export type ChangelogData = {
   url: '/api/v1/docflow/publicacoes/{id}/changelog';
 };
 
-export type ChangelogResponses = {
+export type DocflowPublicacaoChangelogResponses = {
   /**
    * OK
    */
   200: Array<ChangelogItemResponse>;
 };
 
-export type ChangelogResponse = ChangelogResponses[keyof ChangelogResponses];
+export type DocflowPublicacaoChangelogResponse =
+  DocflowPublicacaoChangelogResponses[keyof DocflowPublicacaoChangelogResponses];
 
-export type Preview1Data = {
+export type DocflowPublicacaoPreviewData = {
   body?: never;
   path?: never;
   query: {
@@ -5446,16 +7426,17 @@ export type Preview1Data = {
   url: '/api/v1/docflow/publicacoes/preview';
 };
 
-export type Preview1Responses = {
+export type DocflowPublicacaoPreviewResponses = {
   /**
    * OK
    */
   200: Array<PaginaResponse>;
 };
 
-export type Preview1Response = Preview1Responses[keyof Preview1Responses];
+export type DocflowPublicacaoPreviewResponse =
+  DocflowPublicacaoPreviewResponses[keyof DocflowPublicacaoPreviewResponses];
 
-export type PreviewHtmlData = {
+export type DocflowPublicacaoPreviewHtmlData = {
   body?: never;
   path?: never;
   query: {
@@ -5465,16 +7446,34 @@ export type PreviewHtmlData = {
   url: '/api/v1/docflow/publicacoes/preview-html';
 };
 
-export type PreviewHtmlResponses = {
+export type DocflowPublicacaoPreviewHtmlResponses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type PreviewHtmlResponse = PreviewHtmlResponses[keyof PreviewHtmlResponses];
+export type DocflowPublicacaoPreviewHtmlResponse =
+  DocflowPublicacaoPreviewHtmlResponses[keyof DocflowPublicacaoPreviewHtmlResponses];
 
-export type DiagnosticoData = {
+export type DocflowPublicacaoEventosData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/publicacoes/eventos';
+};
+
+export type DocflowPublicacaoEventosResponses = {
+  /**
+   * OK
+   */
+  200: SseEmitter;
+};
+
+export type DocflowPublicacaoEventosResponse =
+  DocflowPublicacaoEventosResponses[keyof DocflowPublicacaoEventosResponses];
+
+export type DocflowPublicacaoDiagnosticoData = {
   body?: never;
   path?: never;
   query: {
@@ -5483,16 +7482,17 @@ export type DiagnosticoData = {
   url: '/api/v1/docflow/publicacoes/diagnostico';
 };
 
-export type DiagnosticoResponses = {
+export type DocflowPublicacaoDiagnosticoResponses = {
   /**
    * OK
    */
   200: Array<DiagnosticoPublicacao>;
 };
 
-export type DiagnosticoResponse = DiagnosticoResponses[keyof DiagnosticoResponses];
+export type DocflowPublicacaoDiagnosticoResponse =
+  DocflowPublicacaoDiagnosticoResponses[keyof DocflowPublicacaoDiagnosticoResponses];
 
-export type BaixarAnexoData = {
+export type DocflowPaginaBaixarAnexoData = {
   body?: never;
   path: {
     paginaId: string;
@@ -5502,16 +7502,17 @@ export type BaixarAnexoData = {
   url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}/download';
 };
 
-export type BaixarAnexoResponses = {
+export type DocflowPaginaBaixarAnexoResponses = {
   /**
    * OK
    */
   200: Blob | File;
 };
 
-export type BaixarAnexoResponse = BaixarAnexoResponses[keyof BaixarAnexoResponses];
+export type DocflowPaginaBaixarAnexoResponse =
+  DocflowPaginaBaixarAnexoResponses[keyof DocflowPaginaBaixarAnexoResponses];
 
-export type RevisoesData = {
+export type DocflowPaginaRevisoesData = {
   body?: never;
   path: {
     id: string;
@@ -5525,16 +7526,17 @@ export type RevisoesData = {
   url: '/api/v1/docflow/paginas/{id}/revisoes';
 };
 
-export type RevisoesResponses = {
+export type DocflowPaginaRevisoesResponses = {
   /**
    * OK
    */
   200: PageResponsePaginaRevisaoResponse;
 };
 
-export type RevisoesResponse = RevisoesResponses[keyof RevisoesResponses];
+export type DocflowPaginaRevisoesResponse =
+  DocflowPaginaRevisoesResponses[keyof DocflowPaginaRevisoesResponses];
 
-export type QualidadeData = {
+export type DocflowPaginaQualidadeData = {
   body?: never;
   path: {
     id: string;
@@ -5543,16 +7545,17 @@ export type QualidadeData = {
   url: '/api/v1/docflow/paginas/{id}/qualidade';
 };
 
-export type QualidadeResponses = {
+export type DocflowPaginaQualidadeResponses = {
   /**
    * OK
    */
   200: PaginaQualidadeResponse;
 };
 
-export type QualidadeResponse = QualidadeResponses[keyof QualidadeResponses];
+export type DocflowPaginaQualidadeResponse =
+  DocflowPaginaQualidadeResponses[keyof DocflowPaginaQualidadeResponses];
 
-export type Preview2Data = {
+export type DocflowPaginaPreviewData = {
   body?: never;
   path: {
     id: string;
@@ -5561,16 +7564,16 @@ export type Preview2Data = {
   url: '/api/v1/docflow/paginas/{id}/preview';
 };
 
-export type Preview2Responses = {
+export type DocflowPaginaPreviewResponses = {
   /**
    * OK
    */
   200: string;
 };
 
-export type Preview2Response = Preview2Responses[keyof Preview2Responses];
+export type DocflowPaginaPreviewResponse = DocflowPaginaPreviewResponses[keyof DocflowPaginaPreviewResponses];
 
-export type VersoesTemplateData = {
+export type DocflowPaginaVersoesTemplateData = {
   body?: never;
   path: {
     templateId: string;
@@ -5579,23 +7582,24 @@ export type VersoesTemplateData = {
   url: '/api/v1/docflow/paginas/templates/{templateId}/versoes';
 };
 
-export type VersoesTemplateResponses = {
+export type DocflowPaginaVersoesTemplateResponses = {
   /**
    * OK
    */
   200: Array<PaginaTemplateVersaoResponse>;
 };
 
-export type VersoesTemplateResponse = VersoesTemplateResponses[keyof VersoesTemplateResponses];
+export type DocflowPaginaVersoesTemplateResponse =
+  DocflowPaginaVersoesTemplateResponses[keyof DocflowPaginaVersoesTemplateResponses];
 
-export type ResumoPorStatusGlobalData = {
+export type DocflowPaginaResumoPorStatusGlobalData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/paginas/resumo-por-status';
 };
 
-export type ResumoPorStatusGlobalResponses = {
+export type DocflowPaginaResumoPorStatusGlobalResponses = {
   /**
    * OK
    */
@@ -5604,135 +7608,96 @@ export type ResumoPorStatusGlobalResponses = {
   };
 };
 
-export type ResumoPorStatusGlobalResponse =
-  ResumoPorStatusGlobalResponses[keyof ResumoPorStatusGlobalResponses];
+export type DocflowPaginaResumoPorStatusGlobalResponse =
+  DocflowPaginaResumoPorStatusGlobalResponses[keyof DocflowPaginaResumoPorStatusGlobalResponses];
 
-export type VinculosData = {
+export type DocflowPaginaMinhasRevisoesData = {
   body?: never;
-  path: {
-    id: string;
+  path?: never;
+  query?: {
+    page?: number;
+    size?: number;
   };
-  query?: never;
-  url: '/api/v1/docflow/clientes/{id}/vinculos';
+  url: '/api/v1/docflow/paginas/minhas-revisoes';
 };
 
-export type VinculosResponses = {
+export type DocflowPaginaMinhasRevisoesResponses = {
   /**
    * OK
    */
-  200: {
-    [key: string]: Array<string>;
-  };
+  200: PageResponsePaginaResponse;
 };
 
-export type VinculosResponse = VinculosResponses[keyof VinculosResponses];
+export type DocflowPaginaMinhasRevisoesResponse =
+  DocflowPaginaMinhasRevisoesResponses[keyof DocflowPaginaMinhasRevisoesResponses];
 
-export type MeData = {
+export type DocflowPaginaEventosData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/auth/me';
+  url: '/api/v1/docflow/paginas/eventos';
 };
 
-export type MeResponses = {
+export type DocflowPaginaEventosResponses = {
   /**
    * OK
    */
-  200: MeResponse;
+  200: SseEmitter;
 };
 
-export type MeResponse2 = MeResponses[keyof MeResponses];
+export type DocflowPaginaEventosResponse = DocflowPaginaEventosResponses[keyof DocflowPaginaEventosResponses];
 
-export type Excluir15Data = {
+export type DocflowPaginaBlueprintsData = {
   body?: never;
-  path: {
-    releaseId: string;
-    moduloId: string;
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}';
-};
-
-export type Excluir15Responses = {
-  /**
-   * No Content
-   */
-  204: void;
-};
-
-export type Excluir15Response = Excluir15Responses[keyof Excluir15Responses];
-
-export type Revogar2Data = {
-  body?: never;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/preview-tokens/{id}';
-};
-
-export type Revogar2Responses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type ExcluirAnexoData = {
-  body?: never;
-  path: {
-    paginaId: string;
-    anexoId: string;
-  };
-  query?: never;
-  url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}';
-};
-
-export type ExcluirAnexoResponses = {
-  /**
-   * No Content
-   */
-  204: void;
-};
-
-export type ExcluirAnexoResponse = ExcluirAnexoResponses[keyof ExcluirAnexoResponses];
-
-export type ArvorePaginasData = {
-  body?: never;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/docflow/publicacoes/{id}/paginas';
-};
-
-export type ArvorePaginasResponses = {
-  /**
-   * OK
-   */
-  200: Array<PublicacaoPaginaSnapshotItem>;
-};
-
-export type ArvorePaginasResponse = ArvorePaginasResponses[keyof ArvorePaginasResponses];
-
-export type ReprocessarLoteData = {
-  body: ReprocessarPublicacoesRequest;
   path?: never;
   query?: never;
-  url: '/api/v1/docflow/publicacoes/reprocessar-lote';
+  url: '/api/v1/docflow/paginas/blueprints';
 };
 
-export type ReprocessarLoteResponses = {
+export type DocflowPaginaBlueprintsResponses = {
   /**
    * OK
    */
-  200: ReprocessamentoPublicacoesResponse;
+  200: Array<PaginaBlueprintResponse>;
 };
 
-export type ReprocessarLoteResponse = ReprocessarLoteResponses[keyof ReprocessarLoteResponses];
+export type DocflowPaginaBlueprintsResponse =
+  DocflowPaginaBlueprintsResponses[keyof DocflowPaginaBlueprintsResponses];
 
-export type BibliotecaAnexosData = {
+export type DocflowPaginaBlocosData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/blocos';
+};
+
+export type DocflowPaginaBlocosResponses = {
+  /**
+   * OK
+   */
+  200: Array<PaginaBlocoResponse>;
+};
+
+export type DocflowPaginaBlocosResponse = DocflowPaginaBlocosResponses[keyof DocflowPaginaBlocosResponses];
+
+export type DocflowPaginaBibliotecaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/paginas/biblioteca';
+};
+
+export type DocflowPaginaBibliotecaResponses = {
+  /**
+   * OK
+   */
+  200: PaginaBibliotecaResponse;
+};
+
+export type DocflowPaginaBibliotecaResponse =
+  DocflowPaginaBibliotecaResponses[keyof DocflowPaginaBibliotecaResponses];
+
+export type DocflowPaginaBibliotecaAnexosData = {
   body?: never;
   path?: never;
   query?: {
@@ -5743,337 +7708,120 @@ export type BibliotecaAnexosData = {
   url: '/api/v1/docflow/paginas/anexos';
 };
 
-export type BibliotecaAnexosResponses = {
+export type DocflowPaginaBibliotecaAnexosResponses = {
   /**
    * OK
    */
   200: PageResponsePaginaAnexoResponse;
 };
 
-export type BibliotecaAnexosResponse = BibliotecaAnexosResponses[keyof BibliotecaAnexosResponses];
+export type DocflowPaginaBibliotecaAnexosResponse =
+  DocflowPaginaBibliotecaAnexosResponses[keyof DocflowPaginaBibliotecaAnexosResponses];
 
-export type ComentarRevisaoData = {
-  body: ComentarioRevisaoRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios';
-};
-
-export type ComentarRevisaoResponses = {
-  /**
-   * OK
-   */
-  200: PaginaRevisaoResponse;
-};
-
-export type ComentarRevisaoResponse = ComentarRevisaoResponses[keyof ComentarRevisaoResponses];
-
-export type Resumo2Data = {
+export type DocflowDocFlowDashboardResumoData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/dashboard/resumo';
 };
 
-export type Resumo2Responses = {
+export type DocflowDocFlowDashboardResumoResponses = {
   /**
    * OK
    */
   200: DocFlowDashboardResponse;
 };
 
-export type Resumo2Response = Resumo2Responses[keyof Resumo2Responses];
+export type DocflowDocFlowDashboardResumoResponse =
+  DocflowDocFlowDashboardResumoResponses[keyof DocflowDocFlowDashboardResumoResponses];
 
-export type ListarAjudaData = {
-  body?: never;
-  path?: never;
-  query?: {
-    busca?: string;
-    rota?: string;
-  };
-  url: '/api/v1/docflow/ajuda/conteudos';
-};
-
-export type ListarAjudaResponses = {
-  /**
-   * OK
-   */
-  200: Array<AjudaConteudoResponse>;
-};
-
-export type ListarAjudaResponse = ListarAjudaResponses[keyof ListarAjudaResponses];
-
-export type CriarAjudaData = {
-  body: AjudaConteudoRequest;
-  path?: never;
-  query?: never;
-  url: '/api/v1/docflow/ajuda/conteudos';
-};
-
-export type CriarAjudaResponses = {
-  /**
-   * OK
-   */
-  201: AjudaConteudoResponse;
-};
-
-export type CriarAjudaResponse = CriarAjudaResponses[keyof CriarAjudaResponses];
-
-export type ListarAjudaAdminData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/api/v1/docflow/ajuda/conteudos/admin';
-};
-
-export type ListarAjudaAdminResponses = {
-  /**
-   * OK
-   */
-  200: Array<AjudaConteudoResponse>;
-};
-
-export type ListarAjudaAdminResponse = ListarAjudaAdminResponses[keyof ListarAjudaAdminResponses];
-
-export type ExcluirAjudaData = {
+export type DocflowClienteVinculosData = {
   body?: never;
   path: {
     id: string;
   };
   query?: never;
-  url: '/api/v1/docflow/ajuda/conteudos/{id}';
+  url: '/api/v1/docflow/clientes/{id}/vinculos';
 };
 
-export type ExcluirAjudaResponses = {
-  /**
-   * No Content
-   */
-  204: void;
-};
-
-export type ExcluirAjudaResponse = ExcluirAjudaResponses[keyof ExcluirAjudaResponses];
-
-export type AtualizarAjudaData = {
-  body: AjudaConteudoRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/docflow/ajuda/conteudos/{id}';
-};
-
-export type AtualizarAjudaResponses = {
+export type DocflowClienteVinculosResponses = {
   /**
    * OK
    */
-  200: AjudaConteudoResponse;
+  200: {
+    [key: string]: Array<string>;
+  };
 };
 
-export type AtualizarAjudaResponse = AtualizarAjudaResponses[keyof AtualizarAjudaResponses];
+export type DocflowClienteVinculosResponse =
+  DocflowClienteVinculosResponses[keyof DocflowClienteVinculosResponses];
 
-export type RegistrarAjudaEventoData = {
-  body: AjudaEventoRequest;
-  path?: never;
-  query?: never;
-  url: '/api/v1/docflow/ajuda/eventos';
-};
-
-export type RegistrarAjudaEventoResponses = {
-  /**
-   * No Content
-   */
-  204: void;
-};
-
-export type RegistrarAjudaEventoResponse = RegistrarAjudaEventoResponses[keyof RegistrarAjudaEventoResponses];
-
-export type MetricasAjudaData = {
+export type DocflowAjudaMetricasData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/docflow/ajuda/metricas';
 };
 
-export type MetricasAjudaResponses = {
+export type DocflowAjudaMetricasResponses = {
   /**
    * OK
    */
   200: AjudaMetricasResponse;
 };
 
-export type MetricasAjudaResponse = MetricasAjudaResponses[keyof MetricasAjudaResponses];
+export type DocflowAjudaMetricasResponse = DocflowAjudaMetricasResponses[keyof DocflowAjudaMetricasResponses];
 
-export type EventosPaginaData = {
+export type DocflowAjudaListarAdministracaoData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/docflow/paginas/eventos';
+  url: '/api/v1/docflow/ajuda/conteudos/admin';
 };
 
-export type EventosPaginaResponses = {
+export type DocflowAjudaListarAdministracaoResponses = {
   /**
-   * Server-Sent Events stream
+   * OK
    */
-  200: PaginaEventoResponse;
+  200: Array<AjudaConteudoResponse>;
 };
 
-export type EventosPaginaResponse = EventosPaginaResponses[keyof EventosPaginaResponses];
+export type DocflowAjudaListarAdministracaoResponse =
+  DocflowAjudaListarAdministracaoResponses[keyof DocflowAjudaListarAdministracaoResponses];
 
-export type EventosPublicacaoData = {
+export type IdentityaccessAuthMeData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/docflow/publicacoes/eventos';
+  url: '/api/v1/auth/me';
 };
 
-export type EventosPublicacaoResponses = {
-  /**
-   * Server-Sent Events stream
-   */
-  200: PublicacaoEventoResponse;
-};
-
-export type EventosPublicacaoResponse = EventosPublicacaoResponses[keyof EventosPublicacaoResponses];
-
-export type RecomendarData = {
-  body: AiTemplateRecomendacaoRequest;
-  path?: never;
-  query?: never;
-  url: '/api/v1/ai/templates/recomendacao';
-};
-
-export type RecomendarResponses = {
+export type IdentityaccessAuthMeResponses = {
   /**
    * OK
    */
-  200: AiTemplateRecomendacaoResponse;
+  200: MeResponse;
 };
 
-export type RecomendarResponse = RecomendarResponses[keyof RecomendarResponses];
+export type IdentityaccessAuthMeResponse = IdentityaccessAuthMeResponses[keyof IdentityaccessAuthMeResponses];
 
-export type BlocosData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/api/v1/docflow/paginas/blocos';
-};
-
-export type BlocosResponses = {
-  /**
-   * OK
-   */
-  200: Array<PaginaBlocoResponse>;
-};
-
-export type BlocosResponse = BlocosResponses[keyof BlocosResponses];
-
-export type Criar19Data = {
-  body: CriarAiSessaoRequest;
-  path?: never;
-  query?: never;
-  url: '/api/v1/ai/sessoes';
-};
-
-export type Criar19Responses = {
-  /**
-   * OK
-   */
-  200: AiSessaoResponse;
-};
-
-export type Criar19Response = Criar19Responses[keyof Criar19Responses];
-
-export type EnviarMensagemData = {
-  body: AiMensagemRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/mensagens';
-};
-
-export type EnviarMensagemResponses = {
-  /**
-   * OK
-   */
-  200: AiSessaoResponse;
-};
-
-export type EnviarMensagemResponse = EnviarMensagemResponses[keyof EnviarMensagemResponses];
-
-export type Gerar12Data = {
-  body?: never;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/gerar';
-};
-
-export type Gerar12Responses = {
-  /**
-   * OK
-   */
-  200: AiJobResponse;
-};
-
-export type Gerar12Response = Gerar12Responses[keyof Gerar12Responses];
-
-export type Cancelar2Data = {
-  body?: never;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/cancelar';
-};
-
-export type Cancelar2Responses = {
-  /**
-   * OK
-   */
-  200: AiSessaoResponse;
-};
-
-export type Cancelar2Response = Cancelar2Responses[keyof Cancelar2Responses];
-
-export type AplicarData = {
-  body: AplicarAiPropostaRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/aplicar';
-};
-
-export type AplicarResponses = {
-  /**
-   * OK
-   */
-  200: AiAplicacaoResponse;
-};
-
-export type AplicarResponse = AplicarResponses[keyof AplicarResponses];
-
-export type StatusData = {
+export type AiAiStatusStatusData = {
   body?: never;
   path?: never;
   query?: never;
   url: '/api/v1/ai/status';
 };
 
-export type StatusResponses = {
+export type AiAiStatusStatusResponses = {
   /**
    * OK
    */
   200: AiStatusResponse;
 };
 
-export type StatusResponse = StatusResponses[keyof StatusResponses];
+export type AiAiStatusStatusResponse = AiAiStatusStatusResponses[keyof AiAiStatusStatusResponses];
 
-export type Buscar19Data = {
+export type AiAiSessaoBuscarData = {
   body?: never;
   path: {
     id: string;
@@ -6082,16 +7830,16 @@ export type Buscar19Data = {
   url: '/api/v1/ai/sessoes/{id}';
 };
 
-export type Buscar19Responses = {
+export type AiAiSessaoBuscarResponses = {
   /**
    * OK
    */
   200: AiSessaoResponse;
 };
 
-export type Buscar19Response = Buscar19Responses[keyof Buscar19Responses];
+export type AiAiSessaoBuscarResponse = AiAiSessaoBuscarResponses[keyof AiAiSessaoBuscarResponses];
 
-export type PropostaData = {
+export type AiAiSessaoPropostaData = {
   body?: never;
   path: {
     id: string;
@@ -6100,43 +7848,103 @@ export type PropostaData = {
   url: '/api/v1/ai/sessoes/{id}/proposta';
 };
 
-export type PropostaResponses = {
+export type AiAiSessaoPropostaResponses = {
   /**
    * OK
    */
   200: AiPropostaResponse;
 };
 
-export type PropostaResponse = PropostaResponses[keyof PropostaResponses];
+export type AiAiSessaoPropostaResponse = AiAiSessaoPropostaResponses[keyof AiAiSessaoPropostaResponses];
 
-export type BlueprintsData = {
+export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoData = {
   body?: never;
-  path?: never;
+  path: {
+    id: string;
+  };
   query?: never;
-  url: '/api/v1/docflow/paginas/blueprints';
+  url: '/api/v1/ai/importacoes/{id}';
 };
 
-export type BlueprintsResponses = {
+export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses = {
   /**
    * OK
    */
-  200: Array<PaginaBlueprintResponse>;
+  200: AiImportacaoDocumentoResponse;
 };
 
-export type BlueprintsResponse = BlueprintsResponses[keyof BlueprintsResponses];
+export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse =
+  AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses[keyof AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses];
 
-export type BibliotecaData = {
+export type AiAiEventEventosData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/v1/docflow/paginas/biblioteca';
+  url: '/api/v1/ai/eventos';
 };
 
-export type BibliotecaResponses = {
+export type AiAiEventEventosResponses = {
   /**
    * OK
    */
-  200: PaginaBibliotecaResponse;
+  200: SseEmitter;
 };
 
-export type BibliotecaResponse = BibliotecaResponses[keyof BibliotecaResponses];
+export type AiAiEventEventosResponse = AiAiEventEventosResponses[keyof AiAiEventEventosResponses];
+
+export type ReleaseorchestratorArtefatoReleaseModuloExcluirData = {
+  body?: never;
+  path: {
+    releaseId: string;
+    moduloId: string;
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}';
+};
+
+export type ReleaseorchestratorArtefatoReleaseModuloExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type ReleaseorchestratorArtefatoReleaseModuloExcluirResponse =
+  ReleaseorchestratorArtefatoReleaseModuloExcluirResponses[keyof ReleaseorchestratorArtefatoReleaseModuloExcluirResponses];
+
+export type DocflowPreviewRevogarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/preview-tokens/{id}';
+};
+
+export type DocflowPreviewRevogarResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type DocflowPaginaExcluirAnexoData = {
+  body?: never;
+  path: {
+    paginaId: string;
+    anexoId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}';
+};
+
+export type DocflowPaginaExcluirAnexoResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowPaginaExcluirAnexoResponse =
+  DocflowPaginaExcluirAnexoResponses[keyof DocflowPaginaExcluirAnexoResponses];

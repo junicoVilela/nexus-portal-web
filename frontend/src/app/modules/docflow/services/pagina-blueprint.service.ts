@@ -1,7 +1,7 @@
 import { Injectable, Injector, inject } from '@angular/core';
 import { Observable, defer, map, shareReplay } from 'rxjs';
 
-import { blueprints as listarBlueprintsSdk } from '../../../api/generated/sdk.gen';
+import { docflowPaginaBlueprints as listarBlueprintsSdk } from '../../../api/generated/sdk.gen';
 import type { PaginaBlueprintResponse } from '../../../api/generated/types.gen';
 import {
   NecessidadeSecaoBlueprint,

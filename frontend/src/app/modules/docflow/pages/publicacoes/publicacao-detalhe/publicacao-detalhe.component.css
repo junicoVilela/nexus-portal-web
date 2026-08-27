@@ -214,3 +214,49 @@
   font-size: 0.9rem;
   color: var(--text-primary);
 }
+
+.pub-det__conteudo-diff {
+  margin-top: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.pub-det__conteudo-diff > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface-subtle);
+}
+
+.pub-det__diff {
+  margin: 0;
+  padding: 12px;
+  max-height: 420px;
+  overflow: auto;
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.pub-det__diff--add {
+  display: block;
+  background: color-mix(in srgb, #12b76a 12%, transparent);
+}
+
+.pub-det__diff--del {
+  display: block;
+  background: color-mix(in srgb, #b42318 12%, transparent);
+}
+
+.pub-det__tok--add {
+  background: color-mix(in srgb, #12b76a 28%, transparent);
+}
+
+.pub-det__tok--del {
+  background: color-mix(in srgb, #b42318 28%, transparent);
+  text-decoration: line-through;
+}

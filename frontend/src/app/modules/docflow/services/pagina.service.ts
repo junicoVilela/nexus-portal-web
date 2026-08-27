@@ -7,41 +7,40 @@ import { PageResult } from '@shared/models/page-result.model';
 import { buildQueryParams } from '@shared/utils/http-params.util';
 import { SortDirection } from '@shared/utils/query-state';
 import {
-  anexar as anexarPaginaSdk,
-  anexos as anexosPaginaSdk,
-  bibliotecaAnexos as bibliotecaAnexosSdk,
-  aplicarTemplate,
-  aprovar as aprovarPaginaSdk,
-  arquivar as arquivarPaginaSdk,
-  arquivarTemplate,
-  comentarRevisao as comentarRevisaoSdk,
-  atualizar16 as atualizarPaginaSdk,
-  atualizarTemplate,
-  autosave as autosavePaginaSdk,
-  buscar14 as buscarPaginaSdk,
-  criar15 as criarPaginaSdk,
-  criarTemplate,
-  duplicar2 as duplicarPaginaSdk,
-  duplicarTemplate,
-  enviarRevisao as enviarRevisaoPaginaSdk,
-  excluir11 as excluirPaginaSdk,
-  excluirAnexo as excluirAnexoPaginaSdk,
-  excluirTemplate,
-  listar20 as listarPaginasSdk,
-  preview2 as previewPaginaHtmlSdk,
-  publicar1 as publicarPaginaSdk,
-  qualidade as qualidadePaginaSdk,
-  reativarTemplate,
-  reordenar1 as reordenarPaginasSdk,
-  restaurarVersaoTemplate,
-  resumoPorStatusGlobal as resumoPaginasPorStatusGlobalSdk,
-  revisoes as revisoesPaginaSdk,
-  salvarRascunho as salvarRascunhoPaginaSdk,
-  templates,
-  versoesTemplate,
+  docflowPaginaAnexar as anexarPaginaSdk,
+  docflowPaginaAnexos as anexosPaginaSdk,
+  docflowPaginaBibliotecaAnexos as bibliotecaAnexosSdk,
+  docflowPaginaAplicarTemplate,
+  docflowPaginaAprovar as aprovarPaginaSdk,
+  docflowPaginaArquivar as arquivarPaginaSdk,
+  docflowPaginaArquivarTemplate,
+  docflowPaginaComentarRevisao as comentarRevisaoSdk,
+  docflowPaginaAtualizar as atualizarPaginaSdk,
+  docflowPaginaAtualizarTemplate,
+  docflowPaginaAutosave as autosavePaginaSdk,
+  docflowPaginaBuscar as buscarPaginaSdk,
+  docflowPaginaCriar as criarPaginaSdk,
+  docflowPaginaCriarTemplate,
+  docflowPaginaDuplicar as duplicarPaginaSdk,
+  docflowPaginaDuplicarTemplate,
+  docflowPaginaEnviarRevisao as enviarRevisaoPaginaSdk,
+  docflowPaginaExcluir as excluirPaginaSdk,
+  docflowPaginaExcluirAnexo as excluirAnexoPaginaSdk,
+  docflowPaginaExcluirTemplate,
+  docflowPaginaListar as listarPaginasSdk,
+  docflowPaginaPreview as previewPaginaHtmlSdk,
+  docflowPaginaPublicar as publicarPaginaSdk,
+  docflowPaginaQualidade as qualidadePaginaSdk,
+  docflowPaginaReativarTemplate,
+  docflowPaginaReordenar as reordenarPaginasSdk,
+  docflowPaginaRestaurarVersaoTemplate,
+  docflowPaginaResumoPorStatusGlobal as resumoPaginasPorStatusGlobalSdk,
+  docflowPaginaRevisoes as revisoesPaginaSdk,
+  docflowPaginaSalvarRascunho as salvarRascunhoPaginaSdk,
+  docflowPaginaTemplates,
+  docflowPaginaVersoesTemplate,
 } from '../../../api/generated/sdk.gen';
 import type {
-  PaginaEventoResponse,
   PaginaRequest,
   PaginaResponse,
   PaginaTemplateAplicacaoResponse,
@@ -51,6 +50,7 @@ import type {
 import {
   Pagina,
   PaginaAnexo,
+  PaginaEvento,
   PaginaQualidade,
   PaginaRevisao,
   PaginaSnippet,
@@ -127,7 +127,7 @@ export class PaginaService {
     return this.http.delete<void>(`${this.base}/paginas/snippets/${id}`);
   }
 
-  eventosPagina(): Observable<PaginaEventoResponse> {
+  eventosPagina(): Observable<PaginaEvento> {
     return new Observable(observer => {
       const controller = new AbortController();
       const token = localStorage.getItem('doc-flow-jwt');
@@ -220,7 +220,7 @@ export class PaginaService {
     const cache = this.templatesCache.get(chave);
     if (cache && cache.expiresAt > agora) return cache.request;
 
-    const request = defer(() => templates({ query: filtros, injector: this.injector })).pipe(
+    const request = defer(() => docflowPaginaTemplates({ query: filtros, injector: this.injector })).pipe(
       map(resposta => resposta.data.map(item => this.mapearTemplate(item))),
       shareReplay({ bufferSize: 1, refCount: false }),
     );
@@ -232,14 +232,14 @@ export class PaginaService {
   }
 
   criarTemplatePagina(payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
-    return defer(() => criarTemplate({ body: payload, injector: this.injector })).pipe(
+    return defer(() => docflowPaginaCriarTemplate({ body: payload, injector: this.injector })).pipe(
       map(resposta => this.mapearTemplate(resposta.data)),
       tap(() => this.invalidarCacheTemplates()),
     );
   }
 
   excluirTemplatePagina(id: string): Observable<void> {
-    return defer(() => excluirTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() => docflowPaginaExcluirTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
       map(() => undefined),
       tap(() => this.invalidarCacheTemplates()),
     );
@@ -247,7 +247,7 @@ export class PaginaService {
 
   atualizarTemplatePagina(id: string, payload: PaginaTemplateCriacao): Observable<PaginaTemplate> {
     return defer(() =>
-      atualizarTemplate({
+      docflowPaginaAtualizarTemplate({
         path: { templateId: id },
         body: payload,
         injector: this.injector,
@@ -260,7 +260,7 @@ export class PaginaService {
 
   duplicarTemplatePagina(id: string, payload: PaginaTemplateDuplicacao): Observable<PaginaTemplate> {
     return defer(() =>
-      duplicarTemplate({
+      docflowPaginaDuplicarTemplate({
         path: { templateId: id },
         body: payload,
         injector: this.injector,
@@ -273,7 +273,7 @@ export class PaginaService {
 
   aplicarTemplatePagina(id: string, payload: PaginaTemplateAplicacao): Observable<PaginaTemplateAplicada> {
     return defer(() =>
-      aplicarTemplate({
+      docflowPaginaAplicarTemplate({
         path: { templateId: id },
         body: payload,
         injector: this.injector,
@@ -282,28 +282,28 @@ export class PaginaService {
   }
 
   arquivarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return defer(() => arquivarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() => docflowPaginaArquivarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
       map(resposta => this.mapearTemplate(resposta.data)),
       tap(() => this.invalidarCacheTemplates()),
     );
   }
 
   reativarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return defer(() => reativarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() => docflowPaginaReativarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
       map(resposta => this.mapearTemplate(resposta.data)),
       tap(() => this.invalidarCacheTemplates()),
     );
   }
 
   versoesTemplatePagina(id: string): Observable<PaginaTemplateVersao[]> {
-    return defer(() => versoesTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() => docflowPaginaVersoesTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
       map(resposta => resposta.data.map(item => this.mapearVersaoTemplate(item))),
     );
   }
 
   restaurarVersaoTemplatePagina(id: string, numero: number): Observable<PaginaTemplate> {
     return defer(() =>
-      restaurarVersaoTemplate({
+      docflowPaginaRestaurarVersaoTemplate({
         path: { templateId: id, numero },
         injector: this.injector,
       }),

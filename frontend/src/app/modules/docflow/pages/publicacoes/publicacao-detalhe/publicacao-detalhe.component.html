@@ -185,10 +185,45 @@
                       @if (item.codigoTela) {
                         <span class="pub-det__meta"> · {{ item.codigoTela }}</span>
                       }
+                      @if (mudanca === 'ALTERADA') {
+                        <ui-button
+                          variant="ghost"
+                          size="sm"
+                          icon="GitCompare"
+                          [loading]="carregandoConteudo() && paginaComparada()?.paginaId === item.paginaId"
+                          (clicked)="compararConteudo(item)"
+                          >Ver o que mudou</ui-button
+                        >
+                      }
                     </li>
                   }
                 </ul>
               }
+            }
+
+            @if (paginaComparada(); as comparada) {
+              <div class="pub-det__conteudo-diff">
+                <header>
+                  <strong>{{ comparada.titulo }}</strong>
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="fecharComparacao()"
+                    >Fechar</ui-button
+                  >
+                </header>
+                @if (carregandoConteudo()) {
+                  <p class="pub-det__empty">Carregando as duas versões…</p>
+                } @else if (linhasConteudo().length) {
+                  <pre class="pub-det__diff"><code>@for (linha of linhasConteudo(); track $index) {<span
+                    [class.pub-det__diff--add]="linha.tipo === '+'"
+                    [class.pub-det__diff--del]="linha.tipo === '-'"
+                  >{{ linha.tipo }} @for (token of linha.tokens; track $index) {<span
+                      [class.pub-det__tok--add]="token.tipo === '+'"
+                      [class.pub-det__tok--del]="token.tipo === '-'"
+                    >{{ token.texto }}</span>}
+</span>}</code></pre>
+                } @else {
+                  <p class="pub-det__empty">Sem diferença textual entre as duas versões.</p>
+                }
+              </div>
             }
 
             @if (totalDaMudanca('INDETERMINADA')) {

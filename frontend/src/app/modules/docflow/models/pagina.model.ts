@@ -159,6 +159,8 @@ export interface PaginaSnippet {
   descricao?: string;
   conteudoHtml: string;
   ativo: boolean;
+  /** Quantas páginas ativas citam este trecho. */
+  paginasQueUsam: number;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
@@ -171,4 +173,17 @@ export interface PaginaSnippetCriacao {
   descricao?: string;
   conteudoHtml: string;
   ativo?: boolean;
+}
+
+/**
+ * Evento do stream editorial. O endpoint SSE devolve `SseEmitter`, que o
+ * contrato OpenAPI não descreve — o formato é acordado com o backend em
+ * `PaginaEventService`.
+ */
+export interface PaginaEvento {
+  id?: string;
+  titulo?: string;
+  status?: StatusPagina;
+  acao?: 'ENVIAR_REVISAO' | 'APROVAR' | 'PUBLICAR' | 'ARQUIVAR' | 'DEVOLVER' | 'ATRIBUIR_REVISOR';
+  usuario?: string;
 }

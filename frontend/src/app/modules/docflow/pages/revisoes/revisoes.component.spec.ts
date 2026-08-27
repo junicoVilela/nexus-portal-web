@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { AuthService } from '@core/auth/services/auth.service';
 import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
@@ -18,7 +18,11 @@ describe('RevisoesComponent', () => {
       'aprovarPagina',
       'salvarRascunho',
       'comentarRevisaoPagina',
+      'eventosPagina',
+      'atribuirRevisorPagina',
+      'minhasRevisoes',
     ]);
+    paginaService.eventosPagina.and.returnValue(EMPTY);
     paginaService.listarPaginas.and.returnValue(
       of({ items: [], page: 1, size: 12, totalItems: 0, totalPages: 0, first: true, last: true }),
     );

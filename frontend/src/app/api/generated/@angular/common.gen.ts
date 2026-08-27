@@ -5,1240 +5,1561 @@ import { type HttpRequest, httpResource } from '@angular/common/http';
 import { client } from '../client.gen';
 import type { Options } from '../sdk.gen';
 import type {
-  AdicionarData,
-  AdicionarResponse,
-  AlterarBloqueioData,
-  AlterarBloqueioResponse,
-  AlterarSelecaoData,
-  AlterarSelecaoResponse,
-  AlterarSenhaData,
-  AlterarStatus1Data,
-  AlterarStatus1Response,
-  AlterarStatus2Data,
-  AlterarStatus2Response,
-  AlterarStatus3Data,
-  AlterarStatus3Response,
-  AlterarStatus4Data,
-  AlterarStatus4Response,
-  AlterarStatus5Data,
-  AlterarStatus5Response,
-  AlterarStatus6Data,
-  AlterarStatus6Response,
-  AlterarStatus7Data,
-  AlterarStatus7Response,
-  AlterarStatus8Data,
-  AlterarStatus8Response,
-  AlterarStatus9Data,
-  AlterarStatus9Response,
-  AlterarStatusData,
-  AlterarStatusResponse,
-  AnexarData,
-  AnexarResponse,
-  AnexosData,
-  AnexosResponse,
-  AplicarData,
-  AplicarResponse,
-  AplicarTemplateData,
-  AplicarTemplateResponse,
-  AprovarData,
-  AprovarResponse,
-  ArquivarData,
-  ArquivarResponse,
-  ArquivarTemplateData,
-  ArquivarTemplateResponse,
-  ArvorePaginasData,
-  ArvorePaginasResponse,
-  AtualData,
-  Atualizar10Data,
-  Atualizar10Response,
-  Atualizar11Data,
-  Atualizar11Response,
-  Atualizar12Data,
-  Atualizar12Response,
-  Atualizar13Data,
-  Atualizar13Response,
-  Atualizar14Data,
-  Atualizar14Response,
-  Atualizar15Data,
-  Atualizar15Response,
-  Atualizar16Data,
-  Atualizar16Response,
-  Atualizar17Data,
-  Atualizar17Response,
-  Atualizar18Data,
-  Atualizar18Response,
-  Atualizar1Data,
-  Atualizar1Response,
-  Atualizar2Data,
-  Atualizar2Response,
-  Atualizar3Data,
-  Atualizar3Response,
-  Atualizar4Data,
-  Atualizar4Response,
-  Atualizar5Data,
-  Atualizar5Response,
-  Atualizar6Data,
-  Atualizar6Response,
-  Atualizar7Data,
-  Atualizar7Response,
-  Atualizar8Data,
-  Atualizar8Response,
-  Atualizar9Data,
-  Atualizar9Response,
-  AtualizarAjudaData,
-  AtualizarAjudaResponse,
-  AtualizarData,
-  AtualizarRascunhoData,
-  AtualizarRascunhoResponse,
-  AtualizarResponse,
-  AtualizarTemplateData,
-  AtualizarTemplateResponse,
-  AtualResponse,
-  AutosaveData,
-  AutosaveResponse,
-  BaixarAnexoData,
-  BaixarAnexoResponse,
-  BibliotecaAnexosData,
-  BibliotecaAnexosResponse,
-  BibliotecaData,
-  BibliotecaResponse,
-  BlocosData,
-  BlocosResponse,
-  BlueprintsData,
-  BlueprintsResponse,
-  Buscar10Data,
-  Buscar10Response,
-  Buscar11Data,
-  Buscar11Response,
-  Buscar12Data,
-  Buscar12Response,
-  Buscar13Data,
-  Buscar13Response,
-  Buscar14Data,
-  Buscar14Response,
-  Buscar15Data,
-  Buscar15Response,
-  Buscar16Data,
-  Buscar16Response,
-  Buscar17Data,
-  Buscar17Response,
-  Buscar18Data,
-  Buscar18Response,
-  Buscar19Data,
-  Buscar19Response,
-  Buscar1Data,
-  Buscar1Response,
-  Buscar2Data,
-  Buscar2Response,
-  Buscar3Data,
-  Buscar3Response,
-  Buscar4Data,
-  Buscar4Response,
-  Buscar5Data,
-  Buscar5Response,
-  Buscar6Data,
-  Buscar6Response,
-  Buscar7Data,
-  Buscar7Response,
-  Buscar8Data,
-  Buscar8Response,
-  Buscar9Data,
-  Buscar9Response,
-  BuscarData,
-  BuscarResponse,
-  CalcularData,
-  CalcularResponse,
-  Cancelar1Data,
-  Cancelar1Response,
-  Cancelar2Data,
-  Cancelar2Response,
-  CancelarData,
-  CancelarResponse,
-  ChangelogData,
-  ChangelogResponse,
-  ComentarRevisaoData,
-  ComentarRevisaoResponse,
-  ContratarData,
-  ContratarResponse,
-  CopiarVinculosData,
-  CopiarVinculosResponse,
-  Criar10Data,
-  Criar10Response,
-  Criar11Data,
-  Criar11Response,
-  Criar12Data,
-  Criar12Response,
-  Criar13Data,
-  Criar13Response,
-  Criar14Data,
-  Criar14Response,
-  Criar15Data,
-  Criar15Response,
-  Criar16Data,
-  Criar16Response,
-  Criar17Data,
-  Criar17Response,
-  Criar19Data,
-  Criar19Response,
-  Criar1Data,
-  Criar1Response,
-  Criar2Data,
-  Criar2Response,
-  Criar3Data,
-  Criar3Response,
-  Criar4Data,
-  Criar4Response,
-  Criar5Data,
-  Criar5Response,
-  Criar6Data,
-  Criar6Response,
-  Criar7Data,
-  Criar7Response,
-  Criar8Data,
-  Criar8Response,
-  Criar9Data,
-  Criar9Response,
-  CriarAjudaData,
-  CriarAjudaResponse,
-  CriarData,
-  CriarResponse,
-  CriarTemplateData,
-  CriarTemplateResponse,
-  DeleteLogo1Data,
-  DeleteLogo1Response,
-  DeleteLogoData,
-  DeleteLogoResponse,
-  DiagnosticoData,
-  DiagnosticoResponse,
-  DominiosData,
-  DominiosResponse,
-  Download1Data,
-  Download1Response,
-  DownloadData,
-  DownloadPacoteData,
-  DownloadPacoteResponse,
-  DownloadPdfData,
-  DownloadPdfResponse,
-  DownloadResponse,
-  DownloadZipData,
-  DownloadZipResponse,
-  Duplicar1Data,
-  Duplicar1Response,
-  Duplicar2Data,
-  Duplicar2Response,
-  DuplicarData,
-  DuplicarResponse,
-  DuplicarTemplateData,
-  DuplicarTemplateResponse,
-  EmitirTokenDownloadData,
-  EmitirTokenDownloadResponse,
-  EnviarMensagemData,
-  EnviarMensagemResponse,
-  EnviarRevisaoData,
-  EnviarRevisaoResponse,
-  EventosPaginaData,
-  EventosPaginaResponse,
-  EventosPublicacaoData,
-  EventosPublicacaoResponse,
-  Excluir10Data,
-  Excluir10Response,
-  Excluir11Data,
-  Excluir11Response,
-  Excluir12Data,
-  Excluir12Response,
-  Excluir13Data,
-  Excluir13Response,
-  Excluir14Data,
-  Excluir14Response,
-  Excluir15Data,
-  Excluir15Response,
-  Excluir1Data,
-  Excluir1Response,
-  Excluir2Data,
-  Excluir2Response,
-  Excluir3Data,
-  Excluir3Response,
-  Excluir4Data,
-  Excluir4Response,
-  Excluir5Data,
-  Excluir5Response,
-  Excluir6Data,
-  Excluir6Response,
-  Excluir7Data,
-  Excluir7Response,
-  Excluir8Data,
-  Excluir8Response,
-  Excluir9Data,
-  Excluir9Response,
-  ExcluirAjudaData,
-  ExcluirAjudaResponse,
-  ExcluirAnexoData,
-  ExcluirAnexoResponse,
-  ExcluirData,
-  ExcluirResponse,
-  ExcluirTemplateData,
-  ExcluirTemplateResponse,
-  FuncionalidadesData,
-  FuncionalidadesResponse,
-  Gerar12Data,
-  Gerar12Response,
-  Gerar1Data,
-  Gerar1Response,
-  Gerar2Data,
-  Gerar2Response,
-  GerarData,
-  GerarResponse,
-  GerarTokenData,
-  GerarTokenResponse,
-  GetLogo1Data,
-  GetLogo1Response,
-  GetLogoData,
-  GetLogoResponse,
-  HistoricoData,
-  HistoricoResponse,
-  InicializarData,
-  InicializarResponse,
-  IniciarData,
-  IniciarResponse,
-  Listar10Data,
-  Listar10Response,
-  Listar11Data,
-  Listar11Response,
-  Listar12Data,
-  Listar12Response,
-  Listar13Data,
-  Listar13Response,
-  Listar14Data,
-  Listar14Response,
-  Listar15Data,
-  Listar15Response,
-  Listar16Data,
-  Listar16Response,
-  Listar17Data,
-  Listar17Response,
-  Listar18Data,
-  Listar18Response,
-  Listar19Data,
-  Listar19Response,
-  Listar1Data,
-  Listar1Response,
-  Listar20Data,
-  Listar20Response,
-  Listar21Data,
-  Listar21Response,
-  Listar22Data,
-  Listar22Response,
-  Listar23Data,
-  Listar23Response,
-  Listar24Data,
-  Listar24Response,
-  Listar25Data,
-  Listar25Response,
-  Listar26Data,
-  Listar26Response,
-  Listar27Data,
-  Listar27Response,
-  Listar28Data,
-  Listar28Response,
-  Listar29Data,
-  Listar29Response,
-  Listar2Data,
-  Listar2Response,
-  Listar3Data,
-  Listar3Response,
-  Listar4Data,
-  Listar4Response,
-  Listar5Data,
-  Listar5Response,
-  Listar6Data,
-  Listar6Response,
-  Listar7Data,
-  Listar7Response,
-  Listar8Data,
-  Listar8Response,
-  Listar9Data,
-  Listar9Response,
-  ListarAjudaAdminData,
-  ListarAjudaAdminResponse,
-  ListarAjudaData,
-  ListarAjudaResponse,
-  ListarData,
-  ListarGruposData,
-  ListarGruposResponse,
-  ListarMembrosData,
-  ListarMembrosResponse,
-  ListarPermissoesData,
-  ListarPermissoesResponse,
-  ListarResponse,
-  LoginData,
-  LoginResponse2,
-  MeData,
-  MeResponse2,
-  MetricasAjudaData,
-  MetricasAjudaResponse,
-  PermissoesData,
-  PermissoesResponse,
-  Preview1Data,
-  Preview1Response,
-  Preview2Data,
-  Preview2Response,
-  PreviewData,
-  PreviewHtmlData,
-  PreviewHtmlResponse,
-  PreviewResponse,
-  PropostaData,
-  PropostaResponse,
-  Publicar1Data,
-  Publicar1Response,
-  PublicarData,
-  PublicarResponse,
-  QualidadeData,
-  QualidadeResponse,
-  ReagendarPublicacaoData,
-  ReagendarPublicacaoResponse,
-  ReativarTemplateData,
-  ReativarTemplateResponse,
-  ReceberData,
-  RecentesData,
-  RecentesResponse,
-  RecomendarData,
-  RecomendarResponse,
-  ReentregarData,
-  ReentregarResponse,
-  RegistrarAjudaEventoData,
-  RegistrarAjudaEventoResponse,
-  Remover1Data,
-  Remover1Response,
-  Remover2Data,
-  Remover2Response,
-  Remover3Data,
-  Remover3Response,
-  Remover4Data,
-  Remover4Response,
-  RemoverData,
-  RemoverResponse,
-  Reordenar1Data,
-  ReordenarData,
-  ReordenarResponse,
-  ReprocessarData,
-  ReprocessarLoteData,
-  ReprocessarLoteResponse,
-  ReprocessarResponse,
-  RescindirData,
-  RescindirResponse,
-  RestaurarVersaoTemplateData,
-  RestaurarVersaoTemplateResponse,
-  Resumo2Data,
-  Resumo2Response,
-  ResumoData,
-  ResumoPorStatusGlobalData,
-  ResumoPorStatusGlobalResponse,
-  ResumoResponse,
-  RevisoesData,
-  RevisoesResponse,
-  Revogar1Data,
-  Revogar1Response,
-  Revogar2Data,
-  RevogarData,
-  RevogarResponse,
-  Salvar1Data,
-  Salvar1Response,
-  Salvar2Data,
-  Salvar2Response,
-  Salvar3Data,
-  Salvar3Response,
-  SalvarData,
-  SalvarGruposData,
-  SalvarGruposResponse,
-  SalvarMembrosData,
-  SalvarMembrosResponse,
-  SalvarPermissoesData,
-  SalvarPermissoesResponse,
-  SalvarRascunhoData,
-  SalvarRascunhoResponse,
-  SalvarResponse,
-  StatusData,
-  StatusResponse,
-  TemplatesData,
-  TemplatesResponse,
-  TestarData,
-  TestarGithubData,
-  TestarGithubResponse2,
-  TestarJenkinsData,
-  TestarJenkinsResponse2,
-  TestarResponse,
-  UploadData,
-  UploadLogo1Data,
-  UploadLogo1Response,
-  UploadLogoData,
-  UploadLogoResponse,
-  UploadResponse,
-  ValidarData,
-  ValidarResponse,
-  VersoesTemplateData,
-  VersoesTemplateResponse,
-  VincularModulosData,
-  VincularModulosResponse,
-  VincularPaginasData,
-  VincularPaginasResponse,
-  VincularProjetosData,
-  VincularProjetosResponse,
-  VinculosData,
-  VinculosResponse,
+  AiAiDocumentoImportacaoAceitarPaginaImportadaData,
+  AiAiDocumentoImportacaoAceitarPaginaImportadaResponse,
+  AiAiDocumentoImportacaoAceitarSugestaoDocumentoData,
+  AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponse,
+  AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData,
+  AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponse,
+  AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData,
+  AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponse,
+  AiAiDocumentoImportacaoBuscarImportacaoDocumentoData,
+  AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse,
+  AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData,
+  AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse,
+  AiAiDocumentoImportacaoEstimarLoteDocumentoData,
+  AiAiDocumentoImportacaoEstimarLoteDocumentoResponse,
+  AiAiDocumentoImportacaoGerarLoteDocumentoData,
+  AiAiDocumentoImportacaoGerarLoteDocumentoResponse,
+  AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData,
+  AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse,
+  AiAiDocumentoImportacaoImportarDocumentoData,
+  AiAiDocumentoImportacaoImportarDocumentoResponse,
+  AiAiDocumentoImportacaoReordenarEstruturaDocumentoData,
+  AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponse,
+  AiAiDocumentoImportacaoSelecionarPaginaImportadaData,
+  AiAiDocumentoImportacaoSelecionarPaginaImportadaResponse,
+  AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData,
+  AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponse,
+  AiAiDocumentoImportacaoVincularPaginaImportadaData,
+  AiAiDocumentoImportacaoVincularPaginaImportadaResponse,
+  AiAiEventEventosData,
+  AiAiEventEventosResponse,
+  AiAiSessaoAplicarData,
+  AiAiSessaoAplicarResponse,
+  AiAiSessaoBuscarData,
+  AiAiSessaoBuscarResponse,
+  AiAiSessaoCancelarData,
+  AiAiSessaoCancelarResponse,
+  AiAiSessaoCriarData,
+  AiAiSessaoCriarResponse,
+  AiAiSessaoEnviarMensagemData,
+  AiAiSessaoEnviarMensagemResponse,
+  AiAiSessaoGerarData,
+  AiAiSessaoGerarResponse,
+  AiAiSessaoPropostaData,
+  AiAiSessaoPropostaResponse,
+  AiAiStatusStatusData,
+  AiAiStatusStatusResponse,
+  AiAiTemplateRecomendarData,
+  AiAiTemplateRecomendarResponse,
+  DocflowAjudaAtualizarData,
+  DocflowAjudaAtualizarResponse,
+  DocflowAjudaCriarData,
+  DocflowAjudaCriarResponse,
+  DocflowAjudaExcluirData,
+  DocflowAjudaExcluirResponse,
+  DocflowAjudaListarAdministracaoData,
+  DocflowAjudaListarAdministracaoResponse,
+  DocflowAjudaListarData,
+  DocflowAjudaListarResponse,
+  DocflowAjudaMetricasData,
+  DocflowAjudaMetricasResponse,
+  DocflowAjudaRegistrarData,
+  DocflowAjudaRegistrarResponse,
+  DocflowClienteAtualizarData,
+  DocflowClienteAtualizarResponse,
+  DocflowClienteBuscarData,
+  DocflowClienteBuscarResponse,
+  DocflowClienteCopiarVinculosData,
+  DocflowClienteCopiarVinculosResponse,
+  DocflowClienteCriarData,
+  DocflowClienteCriarResponse,
+  DocflowClienteDeleteLogoData,
+  DocflowClienteDeleteLogoResponse,
+  DocflowClienteExcluirData,
+  DocflowClienteExcluirResponse,
+  DocflowClienteGetLogoData,
+  DocflowClienteGetLogoResponse,
+  DocflowClienteListarData,
+  DocflowClienteListarResponse,
+  DocflowClienteUploadLogoData,
+  DocflowClienteUploadLogoResponse,
+  DocflowClienteVincularModulosData,
+  DocflowClienteVincularModulosResponse,
+  DocflowClienteVincularPaginasData,
+  DocflowClienteVincularPaginasResponse,
+  DocflowClienteVincularProjetosData,
+  DocflowClienteVincularProjetosResponse,
+  DocflowClienteVinculosData,
+  DocflowClienteVinculosResponse,
+  DocflowDocFlowDashboardResumoData,
+  DocflowDocFlowDashboardResumoResponse,
+  DocflowEmpresaDeleteLogoData,
+  DocflowEmpresaDeleteLogoResponse,
+  DocflowEmpresaGetLogoData,
+  DocflowEmpresaGetLogoResponse,
+  DocflowEmpresaUploadLogoData,
+  DocflowEmpresaUploadLogoResponse,
+  DocflowModuloAtualizarData,
+  DocflowModuloAtualizarResponse,
+  DocflowModuloBuscarData,
+  DocflowModuloBuscarResponse,
+  DocflowModuloCriarData,
+  DocflowModuloCriarResponse,
+  DocflowModuloExcluirData,
+  DocflowModuloExcluirResponse,
+  DocflowModuloListarData,
+  DocflowModuloListarResponse,
+  DocflowPaginaAnexarData,
+  DocflowPaginaAnexarResponse,
+  DocflowPaginaAnexosData,
+  DocflowPaginaAnexosResponse,
+  DocflowPaginaAplicarTemplateData,
+  DocflowPaginaAplicarTemplateResponse,
+  DocflowPaginaAprovarData,
+  DocflowPaginaAprovarResponse,
+  DocflowPaginaArquivarData,
+  DocflowPaginaArquivarResponse,
+  DocflowPaginaArquivarTemplateData,
+  DocflowPaginaArquivarTemplateResponse,
+  DocflowPaginaAtribuirRevisorData,
+  DocflowPaginaAtribuirRevisorResponse,
+  DocflowPaginaAtualizarData,
+  DocflowPaginaAtualizarResponse,
+  DocflowPaginaAtualizarSnippetData,
+  DocflowPaginaAtualizarSnippetResponse,
+  DocflowPaginaAtualizarTemplateData,
+  DocflowPaginaAtualizarTemplateResponse,
+  DocflowPaginaAutosaveData,
+  DocflowPaginaAutosaveResponse,
+  DocflowPaginaBaixarAnexoData,
+  DocflowPaginaBaixarAnexoResponse,
+  DocflowPaginaBibliotecaAnexosData,
+  DocflowPaginaBibliotecaAnexosResponse,
+  DocflowPaginaBibliotecaData,
+  DocflowPaginaBibliotecaResponse,
+  DocflowPaginaBlocosData,
+  DocflowPaginaBlocosResponse,
+  DocflowPaginaBlueprintsData,
+  DocflowPaginaBlueprintsResponse,
+  DocflowPaginaBuscarData,
+  DocflowPaginaBuscarResponse,
+  DocflowPaginaComentarRevisaoData,
+  DocflowPaginaComentarRevisaoResponse,
+  DocflowPaginaCriarData,
+  DocflowPaginaCriarResponse,
+  DocflowPaginaCriarSnippetData,
+  DocflowPaginaCriarSnippetResponse,
+  DocflowPaginaCriarTemplateData,
+  DocflowPaginaCriarTemplateResponse,
+  DocflowPaginaDuplicarData,
+  DocflowPaginaDuplicarResponse,
+  DocflowPaginaDuplicarTemplateData,
+  DocflowPaginaDuplicarTemplateResponse,
+  DocflowPaginaEnviarRevisaoData,
+  DocflowPaginaEnviarRevisaoResponse,
+  DocflowPaginaEventosData,
+  DocflowPaginaEventosResponse,
+  DocflowPaginaExcluirAnexoData,
+  DocflowPaginaExcluirAnexoResponse,
+  DocflowPaginaExcluirData,
+  DocflowPaginaExcluirResponse,
+  DocflowPaginaExcluirSnippetData,
+  DocflowPaginaExcluirSnippetResponse,
+  DocflowPaginaExcluirTemplateData,
+  DocflowPaginaExcluirTemplateResponse,
+  DocflowPaginaListarData,
+  DocflowPaginaListarResponse,
+  DocflowPaginaMinhasRevisoesData,
+  DocflowPaginaMinhasRevisoesResponse,
+  DocflowPaginaPreviewData,
+  DocflowPaginaPreviewResponse,
+  DocflowPaginaPublicarData,
+  DocflowPaginaPublicarResponse,
+  DocflowPaginaQualidadeData,
+  DocflowPaginaQualidadeResponse,
+  DocflowPaginaReativarTemplateData,
+  DocflowPaginaReativarTemplateResponse,
+  DocflowPaginaReordenarData,
+  DocflowPaginaRestaurarVersaoTemplateData,
+  DocflowPaginaRestaurarVersaoTemplateResponse,
+  DocflowPaginaResumoPorStatusGlobalData,
+  DocflowPaginaResumoPorStatusGlobalResponse,
+  DocflowPaginaRevisoesData,
+  DocflowPaginaRevisoesResponse,
+  DocflowPaginaSalvarRascunhoData,
+  DocflowPaginaSalvarRascunhoResponse,
+  DocflowPaginaSnippetsData,
+  DocflowPaginaSnippetsResponse,
+  DocflowPaginaTemplatesData,
+  DocflowPaginaTemplatesResponse,
+  DocflowPaginaVersoesTemplateData,
+  DocflowPaginaVersoesTemplateResponse,
+  DocflowPreviewGerarTokenData,
+  DocflowPreviewGerarTokenResponse,
+  DocflowPreviewListarData,
+  DocflowPreviewListarResponse,
+  DocflowPreviewPreviewData,
+  DocflowPreviewPreviewResponse,
+  DocflowPreviewRevogarData,
+  DocflowProjetoAtualizarData,
+  DocflowProjetoAtualizarResponse,
+  DocflowProjetoBuscarData,
+  DocflowProjetoBuscarResponse,
+  DocflowProjetoCriarData,
+  DocflowProjetoCriarResponse,
+  DocflowProjetoExcluirData,
+  DocflowProjetoExcluirResponse,
+  DocflowProjetoListarData,
+  DocflowProjetoListarResponse,
+  DocflowPublicacaoArvorePaginasData,
+  DocflowPublicacaoArvorePaginasResponse,
+  DocflowPublicacaoBuscarData,
+  DocflowPublicacaoBuscarResponse,
+  DocflowPublicacaoCancelarData,
+  DocflowPublicacaoCancelarResponse,
+  DocflowPublicacaoChangelogData,
+  DocflowPublicacaoChangelogResponse,
+  DocflowPublicacaoDiagnosticoData,
+  DocflowPublicacaoDiagnosticoResponse,
+  DocflowPublicacaoDiffData,
+  DocflowPublicacaoDiffResponse,
+  DocflowPublicacaoDownloadData,
+  DocflowPublicacaoDownloadPdfData,
+  DocflowPublicacaoDownloadPdfResponse,
+  DocflowPublicacaoDownloadResponse,
+  DocflowPublicacaoEmitirTokenDownloadData,
+  DocflowPublicacaoEmitirTokenDownloadResponse,
+  DocflowPublicacaoEventosData,
+  DocflowPublicacaoEventosResponse,
+  DocflowPublicacaoExcluirData,
+  DocflowPublicacaoExcluirResponse,
+  DocflowPublicacaoGerarData,
+  DocflowPublicacaoGerarResponse,
+  DocflowPublicacaoHtmlDaPaginaData,
+  DocflowPublicacaoHtmlDaPaginaResponse,
+  DocflowPublicacaoListarData,
+  DocflowPublicacaoListarResponse,
+  DocflowPublicacaoPreviewData,
+  DocflowPublicacaoPreviewHtmlData,
+  DocflowPublicacaoPreviewHtmlResponse,
+  DocflowPublicacaoPreviewResponse,
+  DocflowPublicacaoReprocessarData,
+  DocflowPublicacaoReprocessarLoteData,
+  DocflowPublicacaoReprocessarLoteResponse,
+  DocflowPublicacaoReprocessarResponse,
+  DocflowPublicDownloadDownloadZipData,
+  DocflowPublicDownloadDownloadZipResponse,
+  IdentityaccessAcessoTemporarioCriarData,
+  IdentityaccessAcessoTemporarioCriarResponse,
+  IdentityaccessAcessoTemporarioListarData,
+  IdentityaccessAcessoTemporarioListarResponse,
+  IdentityaccessAcessoTemporarioRevogarData,
+  IdentityaccessAcessoTemporarioRevogarResponse,
+  IdentityaccessAuditoriaRecentesData,
+  IdentityaccessAuditoriaRecentesResponse,
+  IdentityaccessAuthLoginData,
+  IdentityaccessAuthLoginResponse,
+  IdentityaccessAuthMeData,
+  IdentityaccessAuthMeResponse,
+  IdentityaccessCatalogoDominiosData,
+  IdentityaccessCatalogoDominiosResponse,
+  IdentityaccessCatalogoFuncionalidadesData,
+  IdentityaccessCatalogoFuncionalidadesResponse,
+  IdentityaccessCatalogoPermissoesData,
+  IdentityaccessCatalogoPermissoesResponse,
+  IdentityaccessEscopoAcessoAlterarStatusData,
+  IdentityaccessEscopoAcessoAlterarStatusResponse,
+  IdentityaccessEscopoAcessoAtualizarData,
+  IdentityaccessEscopoAcessoAtualizarResponse,
+  IdentityaccessEscopoAcessoCriarData,
+  IdentityaccessEscopoAcessoCriarResponse,
+  IdentityaccessEscopoAcessoListarData,
+  IdentityaccessEscopoAcessoListarResponse,
+  IdentityaccessEscopoAcessoRemoverData,
+  IdentityaccessEscopoAcessoRemoverResponse,
+  IdentityaccessGrupoAlterarStatusData,
+  IdentityaccessGrupoAlterarStatusResponse,
+  IdentityaccessGrupoAtualizarData,
+  IdentityaccessGrupoAtualizarResponse,
+  IdentityaccessGrupoBuscarData,
+  IdentityaccessGrupoBuscarResponse,
+  IdentityaccessGrupoCriarData,
+  IdentityaccessGrupoCriarResponse,
+  IdentityaccessGrupoExcluirData,
+  IdentityaccessGrupoExcluirResponse,
+  IdentityaccessGrupoListarData,
+  IdentityaccessGrupoListarMembrosData,
+  IdentityaccessGrupoListarMembrosResponse,
+  IdentityaccessGrupoListarPermissoesData,
+  IdentityaccessGrupoListarPermissoesResponse,
+  IdentityaccessGrupoListarResponse,
+  IdentityaccessGrupoSalvarMembrosData,
+  IdentityaccessGrupoSalvarMembrosResponse,
+  IdentityaccessGrupoSalvarPermissoesData,
+  IdentityaccessGrupoSalvarPermissoesResponse,
+  IdentityaccessHistoricoLoginListarData,
+  IdentityaccessHistoricoLoginListarResponse,
+  IdentityaccessPoliticaSenhaAtualData,
+  IdentityaccessPoliticaSenhaAtualizarData,
+  IdentityaccessPoliticaSenhaAtualizarResponse,
+  IdentityaccessPoliticaSenhaAtualResponse,
+  IdentityaccessSessaoListarData,
+  IdentityaccessSessaoListarResponse,
+  IdentityaccessSessaoRevogarData,
+  IdentityaccessSessaoRevogarResponse,
+  IdentityaccessUsuarioAlterarBloqueioData,
+  IdentityaccessUsuarioAlterarBloqueioResponse,
+  IdentityaccessUsuarioAlterarSenhaData,
+  IdentityaccessUsuarioAtualizarData,
+  IdentityaccessUsuarioAtualizarResponse,
+  IdentityaccessUsuarioBuscarData,
+  IdentityaccessUsuarioBuscarResponse,
+  IdentityaccessUsuarioCriarData,
+  IdentityaccessUsuarioCriarResponse,
+  IdentityaccessUsuarioListarData,
+  IdentityaccessUsuarioListarGruposData,
+  IdentityaccessUsuarioListarGruposResponse,
+  IdentityaccessUsuarioListarResponse,
+  IdentityaccessUsuarioSalvarGruposData,
+  IdentityaccessUsuarioSalvarGruposResponse,
+  ReleaseorchestratorArtefatoReleaseModuloDownloadData,
+  ReleaseorchestratorArtefatoReleaseModuloDownloadResponse,
+  ReleaseorchestratorArtefatoReleaseModuloExcluirData,
+  ReleaseorchestratorArtefatoReleaseModuloExcluirResponse,
+  ReleaseorchestratorArtefatoReleaseModuloListarData,
+  ReleaseorchestratorArtefatoReleaseModuloListarResponse,
+  ReleaseorchestratorArtefatoReleaseModuloUploadData,
+  ReleaseorchestratorArtefatoReleaseModuloUploadResponse,
+  ReleaseorchestratorClienteAlterarStatusData,
+  ReleaseorchestratorClienteAlterarStatusResponse,
+  ReleaseorchestratorClienteAtualizarData,
+  ReleaseorchestratorClienteAtualizarResponse,
+  ReleaseorchestratorClienteBuscarData,
+  ReleaseorchestratorClienteBuscarResponse,
+  ReleaseorchestratorClienteCriarData,
+  ReleaseorchestratorClienteCriarResponse,
+  ReleaseorchestratorClienteExcluirData,
+  ReleaseorchestratorClienteExcluirResponse,
+  ReleaseorchestratorClienteFuncionalidadeListarData,
+  ReleaseorchestratorClienteFuncionalidadeListarResponse,
+  ReleaseorchestratorClienteFuncionalidadeRemoverData,
+  ReleaseorchestratorClienteFuncionalidadeRemoverResponse,
+  ReleaseorchestratorClienteFuncionalidadeSalvarData,
+  ReleaseorchestratorClienteFuncionalidadeSalvarResponse,
+  ReleaseorchestratorClienteListarData,
+  ReleaseorchestratorClienteListarResponse,
+  ReleaseorchestratorClienteProdutoAtualizarData,
+  ReleaseorchestratorClienteProdutoAtualizarResponse,
+  ReleaseorchestratorClienteProdutoBuscarData,
+  ReleaseorchestratorClienteProdutoBuscarResponse,
+  ReleaseorchestratorClienteProdutoContratarData,
+  ReleaseorchestratorClienteProdutoContratarResponse,
+  ReleaseorchestratorClienteProdutoListarData,
+  ReleaseorchestratorClienteProdutoListarResponse,
+  ReleaseorchestratorClienteProdutoModuloListarData,
+  ReleaseorchestratorClienteProdutoModuloListarResponse,
+  ReleaseorchestratorClienteProdutoModuloRemoverData,
+  ReleaseorchestratorClienteProdutoModuloRemoverResponse,
+  ReleaseorchestratorClienteProdutoModuloSalvarData,
+  ReleaseorchestratorClienteProdutoModuloSalvarResponse,
+  ReleaseorchestratorClienteProdutoRescindirData,
+  ReleaseorchestratorClienteProdutoRescindirResponse,
+  ReleaseorchestratorConfigEntregaBuscarData,
+  ReleaseorchestratorConfigEntregaBuscarResponse,
+  ReleaseorchestratorConfigEntregaSalvarData,
+  ReleaseorchestratorConfigEntregaSalvarResponse,
+  ReleaseorchestratorConfigEntregaTestarData,
+  ReleaseorchestratorConfigEntregaTestarResponse,
+  ReleaseorchestratorContatoAtualizarData,
+  ReleaseorchestratorContatoAtualizarResponse,
+  ReleaseorchestratorContatoBuscarData,
+  ReleaseorchestratorContatoBuscarResponse,
+  ReleaseorchestratorContatoCriarData,
+  ReleaseorchestratorContatoCriarResponse,
+  ReleaseorchestratorContatoExcluirData,
+  ReleaseorchestratorContatoExcluirResponse,
+  ReleaseorchestratorContatoListarData,
+  ReleaseorchestratorContatoListarResponse,
+  ReleaseorchestratorDeltaEntregaCalcularData,
+  ReleaseorchestratorDeltaEntregaCalcularResponse,
+  ReleaseorchestratorDeltaEntregaListarData,
+  ReleaseorchestratorDeltaEntregaListarResponse,
+  ReleaseorchestratorDeltaEntregaResumoData,
+  ReleaseorchestratorDeltaEntregaResumoResponse,
+  ReleaseorchestratorDeployInstalacaoBuscarData,
+  ReleaseorchestratorDeployInstalacaoBuscarResponse,
+  ReleaseorchestratorDeployInstalacaoExecutarData,
+  ReleaseorchestratorDeployInstalacaoExecutarLoteData,
+  ReleaseorchestratorDeployInstalacaoExecutarLoteResponse,
+  ReleaseorchestratorDeployInstalacaoExecutarResponse,
+  ReleaseorchestratorDeployInstalacaoListarData,
+  ReleaseorchestratorDeployInstalacaoListarResponse,
+  ReleaseorchestratorDeployInstalacaoPreviewData,
+  ReleaseorchestratorDeployInstalacaoPreviewResponse,
+  ReleaseorchestratorDocumentoEntregaGerarData,
+  ReleaseorchestratorDocumentoEntregaGerarResponse,
+  ReleaseorchestratorDominioProdutoAlterarStatusData,
+  ReleaseorchestratorDominioProdutoAlterarStatusResponse,
+  ReleaseorchestratorDominioProdutoAtualizarData,
+  ReleaseorchestratorDominioProdutoAtualizarResponse,
+  ReleaseorchestratorDominioProdutoBuscarData,
+  ReleaseorchestratorDominioProdutoBuscarResponse,
+  ReleaseorchestratorDominioProdutoCriarData,
+  ReleaseorchestratorDominioProdutoCriarResponse,
+  ReleaseorchestratorDominioProdutoExcluirData,
+  ReleaseorchestratorDominioProdutoExcluirResponse,
+  ReleaseorchestratorDominioProdutoListarData,
+  ReleaseorchestratorDominioProdutoListarResponse,
+  ReleaseorchestratorEntregaAtualizarRascunhoData,
+  ReleaseorchestratorEntregaAtualizarRascunhoResponse,
+  ReleaseorchestratorEntregaBuscarData,
+  ReleaseorchestratorEntregaBuscarResponse,
+  ReleaseorchestratorEntregaCancelarData,
+  ReleaseorchestratorEntregaCancelarResponse,
+  ReleaseorchestratorEntregaCriarData,
+  ReleaseorchestratorEntregaCriarResponse,
+  ReleaseorchestratorEntregaDownloadPacoteData,
+  ReleaseorchestratorEntregaDownloadPacoteResponse,
+  ReleaseorchestratorEntregaListarData,
+  ReleaseorchestratorEntregaListarResponse,
+  ReleaseorchestratorEntregaModuloAlterarSelecaoData,
+  ReleaseorchestratorEntregaModuloAlterarSelecaoResponse,
+  ReleaseorchestratorEntregaModuloInicializarData,
+  ReleaseorchestratorEntregaModuloInicializarResponse,
+  ReleaseorchestratorEntregaModuloListarData,
+  ReleaseorchestratorEntregaModuloListarResponse,
+  ReleaseorchestratorEntregaReagendarPublicacaoData,
+  ReleaseorchestratorEntregaReagendarPublicacaoResponse,
+  ReleaseorchestratorEntregaReentregarData,
+  ReleaseorchestratorEntregaReentregarResponse,
+  ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData,
+  ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponse,
+  ReleaseorchestratorFuncionalidadeProdutoAtualizarData,
+  ReleaseorchestratorFuncionalidadeProdutoAtualizarResponse,
+  ReleaseorchestratorFuncionalidadeProdutoBuscarData,
+  ReleaseorchestratorFuncionalidadeProdutoBuscarResponse,
+  ReleaseorchestratorFuncionalidadeProdutoCriarData,
+  ReleaseorchestratorFuncionalidadeProdutoCriarResponse,
+  ReleaseorchestratorFuncionalidadeProdutoExcluirData,
+  ReleaseorchestratorFuncionalidadeProdutoExcluirResponse,
+  ReleaseorchestratorFuncionalidadeProdutoListarData,
+  ReleaseorchestratorFuncionalidadeProdutoListarResponse,
+  ReleaseorchestratorGeracaoEntregaIniciarData,
+  ReleaseorchestratorGeracaoEntregaIniciarResponse,
+  ReleaseorchestratorHostAlterarStatusData,
+  ReleaseorchestratorHostAlterarStatusResponse,
+  ReleaseorchestratorHostAtualizarData,
+  ReleaseorchestratorHostAtualizarResponse,
+  ReleaseorchestratorHostBuscarData,
+  ReleaseorchestratorHostBuscarResponse,
+  ReleaseorchestratorHostCriarData,
+  ReleaseorchestratorHostCriarResponse,
+  ReleaseorchestratorHostExcluirData,
+  ReleaseorchestratorHostExcluirResponse,
+  ReleaseorchestratorHostListarData,
+  ReleaseorchestratorHostListarResponse,
+  ReleaseorchestratorInstalacaoClienteAlterarStatusData,
+  ReleaseorchestratorInstalacaoClienteAlterarStatusResponse,
+  ReleaseorchestratorInstalacaoClienteAtualizarData,
+  ReleaseorchestratorInstalacaoClienteAtualizarResponse,
+  ReleaseorchestratorInstalacaoClienteBuscarData,
+  ReleaseorchestratorInstalacaoClienteBuscarResponse,
+  ReleaseorchestratorInstalacaoClienteCriarData,
+  ReleaseorchestratorInstalacaoClienteCriarResponse,
+  ReleaseorchestratorInstalacaoClienteDispararBuildData,
+  ReleaseorchestratorInstalacaoClienteDispararBuildResponse,
+  ReleaseorchestratorInstalacaoClienteExcluirData,
+  ReleaseorchestratorInstalacaoClienteExcluirResponse,
+  ReleaseorchestratorInstalacaoClienteFontesVersaoData,
+  ReleaseorchestratorInstalacaoClienteFontesVersaoResponse,
+  ReleaseorchestratorInstalacaoClienteIniciarData,
+  ReleaseorchestratorInstalacaoClienteIniciarResponse,
+  ReleaseorchestratorInstalacaoClienteListarData,
+  ReleaseorchestratorInstalacaoClienteListarResponse,
+  ReleaseorchestratorInstalacaoClientePararData,
+  ReleaseorchestratorInstalacaoClientePararResponse,
+  ReleaseorchestratorInstalacaoClienteRegistrarHealthData,
+  ReleaseorchestratorInstalacaoClienteRegistrarHealthResponse,
+  ReleaseorchestratorInstalacaoClienteResolverVersaoData,
+  ReleaseorchestratorInstalacaoClienteResolverVersaoResponse,
+  ReleaseorchestratorInstalacaoClienteSugerirPortasData,
+  ReleaseorchestratorInstalacaoClienteSugerirPortasResponse,
+  ReleaseorchestratorJenkinsWebhookReceberData,
+  ReleaseorchestratorModuloProdutoAlterarStatusData,
+  ReleaseorchestratorModuloProdutoAlterarStatusResponse,
+  ReleaseorchestratorModuloProdutoAtualizarData,
+  ReleaseorchestratorModuloProdutoAtualizarResponse,
+  ReleaseorchestratorModuloProdutoBuscarData,
+  ReleaseorchestratorModuloProdutoBuscarResponse,
+  ReleaseorchestratorModuloProdutoCriarData,
+  ReleaseorchestratorModuloProdutoCriarResponse,
+  ReleaseorchestratorModuloProdutoExcluirData,
+  ReleaseorchestratorModuloProdutoExcluirResponse,
+  ReleaseorchestratorModuloProdutoListarData,
+  ReleaseorchestratorModuloProdutoListarResponse,
+  ReleaseorchestratorProdutoRhAlterarStatusData,
+  ReleaseorchestratorProdutoRhAlterarStatusResponse,
+  ReleaseorchestratorProdutoRhAtualizarData,
+  ReleaseorchestratorProdutoRhAtualizarResponse,
+  ReleaseorchestratorProdutoRhBuscarData,
+  ReleaseorchestratorProdutoRhBuscarResponse,
+  ReleaseorchestratorProdutoRhCriarData,
+  ReleaseorchestratorProdutoRhCriarResponse,
+  ReleaseorchestratorProdutoRhExcluirData,
+  ReleaseorchestratorProdutoRhExcluirResponse,
+  ReleaseorchestratorProdutoRhListarData,
+  ReleaseorchestratorProdutoRhListarResponse,
+  ReleaseorchestratorProdutoRhTestarGithubData,
+  ReleaseorchestratorProdutoRhTestarGithubResponse,
+  ReleaseorchestratorProdutoRhTestarJenkinsData,
+  ReleaseorchestratorProdutoRhTestarJenkinsResponse,
+  ReleaseorchestratorProximaEntregaAlterarStatusData,
+  ReleaseorchestratorProximaEntregaAlterarStatusResponse,
+  ReleaseorchestratorProximaEntregaAtualizarData,
+  ReleaseorchestratorProximaEntregaAtualizarResponse,
+  ReleaseorchestratorProximaEntregaBuscarData,
+  ReleaseorchestratorProximaEntregaBuscarResponse,
+  ReleaseorchestratorProximaEntregaCriarData,
+  ReleaseorchestratorProximaEntregaCriarResponse,
+  ReleaseorchestratorProximaEntregaExcluirData,
+  ReleaseorchestratorProximaEntregaExcluirResponse,
+  ReleaseorchestratorProximaEntregaListarData,
+  ReleaseorchestratorProximaEntregaListarResponse,
+  ReleaseorchestratorReleaseAlterarStatusData,
+  ReleaseorchestratorReleaseAlterarStatusResponse,
+  ReleaseorchestratorReleaseAtualizarData,
+  ReleaseorchestratorReleaseAtualizarResponse,
+  ReleaseorchestratorReleaseBuscarData,
+  ReleaseorchestratorReleaseBuscarResponse,
+  ReleaseorchestratorReleaseCancelarData,
+  ReleaseorchestratorReleaseCancelarResponse,
+  ReleaseorchestratorReleaseCriarData,
+  ReleaseorchestratorReleaseCriarResponse,
+  ReleaseorchestratorReleaseDispararBuildData,
+  ReleaseorchestratorReleaseDispararBuildResponse,
+  ReleaseorchestratorReleaseDisponiveisDeployData,
+  ReleaseorchestratorReleaseDisponiveisDeployResponse,
+  ReleaseorchestratorReleaseDuplicarData,
+  ReleaseorchestratorReleaseDuplicarResponse,
+  ReleaseorchestratorReleaseExcluirData,
+  ReleaseorchestratorReleaseExcluirResponse,
+  ReleaseorchestratorReleaseFontesBuildData,
+  ReleaseorchestratorReleaseFontesBuildResponse,
+  ReleaseorchestratorReleaseHistoricoData,
+  ReleaseorchestratorReleaseHistoricoResponse,
+  ReleaseorchestratorReleaseItemAdicionarData,
+  ReleaseorchestratorReleaseItemAdicionarResponse,
+  ReleaseorchestratorReleaseItemAtualizarData,
+  ReleaseorchestratorReleaseItemAtualizarResponse,
+  ReleaseorchestratorReleaseItemDuplicarData,
+  ReleaseorchestratorReleaseItemDuplicarResponse,
+  ReleaseorchestratorReleaseItemListarData,
+  ReleaseorchestratorReleaseItemListarResponse,
+  ReleaseorchestratorReleaseItemRemoverData,
+  ReleaseorchestratorReleaseItemRemoverResponse,
+  ReleaseorchestratorReleaseItemReordenarData,
+  ReleaseorchestratorReleaseItemReordenarResponse,
+  ReleaseorchestratorReleaseListarData,
+  ReleaseorchestratorReleaseListarManifestosData,
+  ReleaseorchestratorReleaseListarManifestosResponse,
+  ReleaseorchestratorReleaseListarResponse,
+  ReleaseorchestratorReleaseModuloVersaoListarData,
+  ReleaseorchestratorReleaseModuloVersaoListarResponse,
+  ReleaseorchestratorReleaseModuloVersaoRemoverData,
+  ReleaseorchestratorReleaseModuloVersaoRemoverResponse,
+  ReleaseorchestratorReleaseModuloVersaoSalvarData,
+  ReleaseorchestratorReleaseModuloVersaoSalvarResponse,
+  ReleaseorchestratorReleasePdfGerarData,
+  ReleaseorchestratorReleasePdfGerarResponse,
+  ReleaseorchestratorReleasePublicarData,
+  ReleaseorchestratorReleasePublicarResponse,
+  ReleaseorchestratorReleaseSalvarManifestoData,
+  ReleaseorchestratorReleaseSalvarManifestoResponse,
+  ReleaseorchestratorReleaseTemplateAlterarStatusData,
+  ReleaseorchestratorReleaseTemplateAlterarStatusResponse,
+  ReleaseorchestratorReleaseTemplateAtualizarData,
+  ReleaseorchestratorReleaseTemplateAtualizarResponse,
+  ReleaseorchestratorReleaseTemplateBuscarData,
+  ReleaseorchestratorReleaseTemplateBuscarResponse,
+  ReleaseorchestratorReleaseTemplateCriarData,
+  ReleaseorchestratorReleaseTemplateCriarResponse,
+  ReleaseorchestratorReleaseTemplateExcluirData,
+  ReleaseorchestratorReleaseTemplateExcluirResponse,
+  ReleaseorchestratorReleaseTemplateListarData,
+  ReleaseorchestratorReleaseTemplateListarResponse,
+  ReleaseorchestratorReleaseValidarData,
+  ReleaseorchestratorReleaseValidarResponse,
 } from '../types.gen';
 
-export const excluirRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ExcluirData, ThrowOnError>,
-): HttpRequest<ExcluirResponse> =>
-  (options?.client ?? client).requestOptions<ExcluirResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'DELETE',
-    url: '/api/v1/release-orchestrator/templates/{id}',
-    ...options,
-  });
+export const releaseorchestratorReleaseTemplateExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseTemplateExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseTemplateExcluirResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'DELETE',
+      url: '/api/v1/release-orchestrator/templates/{id}',
+      ...options,
+    },
+  );
 
-export const buscarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<BuscarData, ThrowOnError>,
-): HttpRequest<BuscarResponse> =>
-  (options?.client ?? client).requestOptions<BuscarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseTemplateBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseTemplateBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/templates/{id}',
     ...options,
   });
 
-export const atualizarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AtualizarData, ThrowOnError>,
-): HttpRequest<AtualizarResponse> =>
-  (options?.client ?? client).requestOptions<AtualizarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseTemplateAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseTemplateAtualizarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/templates/{id}',
     ...options,
   });
 
-export const removerRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RemoverData, ThrowOnError>,
-): HttpRequest<RemoverResponse> =>
-  (options?.client ?? client).requestOptions<RemoverResponse, ThrowOnError>({
+export const releaseorchestratorReleaseModuloVersaoRemoverRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoRemoverData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseModuloVersaoRemoverResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseModuloVersaoRemoverResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}',
     ...options,
   });
 
-export const salvarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<SalvarData, ThrowOnError>,
-): HttpRequest<SalvarResponse> =>
-  (options?.client ?? client).requestOptions<SalvarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseModuloVersaoSalvarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoSalvarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseModuloVersaoSalvarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseModuloVersaoSalvarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao/{moduloProdutoId}',
     ...options,
   });
 
-export const remover1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Remover1Data, ThrowOnError>,
-): HttpRequest<Remover1Response> =>
-  (options?.client ?? client).requestOptions<Remover1Response, ThrowOnError>({
+export const releaseorchestratorReleaseItemRemoverRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemRemoverData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemRemoverResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemRemoverResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}',
     ...options,
   });
 
-export const atualizar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar1Data, ThrowOnError>,
-): HttpRequest<Atualizar1Response> =>
-  (options?.client ?? client).requestOptions<Atualizar1Response, ThrowOnError>({
+export const releaseorchestratorReleaseItemAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}',
     ...options,
   });
 
-export const reordenarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReordenarData, ThrowOnError>,
-): HttpRequest<ReordenarResponse> =>
-  (options?.client ?? client).requestOptions<ReordenarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseItemReordenarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemReordenarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemReordenarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemReordenarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/reordenar',
     ...options,
   });
 
-export const excluir1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir1Data, ThrowOnError>,
-): HttpRequest<Excluir1Response> =>
-  (options?.client ?? client).requestOptions<Excluir1Response, ThrowOnError>({
+export const releaseorchestratorReleaseExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
   });
 
-export const buscar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar1Data, ThrowOnError>,
-): HttpRequest<Buscar1Response> =>
-  (options?.client ?? client).requestOptions<Buscar1Response, ThrowOnError>({
+export const releaseorchestratorReleaseBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
   });
 
-export const atualizar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar2Data, ThrowOnError>,
-): HttpRequest<Atualizar2Response> =>
-  (options?.client ?? client).requestOptions<Atualizar2Response, ThrowOnError>({
+export const releaseorchestratorReleaseAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/releases/{id}',
     ...options,
   });
 
-export const excluir2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir2Data, ThrowOnError>,
-): HttpRequest<Excluir2Response> =>
-  (options?.client ?? client).requestOptions<Excluir2Response, ThrowOnError>({
+export const releaseorchestratorReleaseListarManifestosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseListarManifestosData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseListarManifestosResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseListarManifestosResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/releases/{id}/manifestos',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseSalvarManifestoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseSalvarManifestoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseSalvarManifestoResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseSalvarManifestoResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'PUT',
+      url: '/api/v1/release-orchestrator/releases/{id}/manifestos',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorProximaEntregaExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProximaEntregaExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProximaEntregaExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
     ...options,
   });
 
-export const buscar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar2Data, ThrowOnError>,
-): HttpRequest<Buscar2Response> =>
-  (options?.client ?? client).requestOptions<Buscar2Response, ThrowOnError>({
+export const releaseorchestratorProximaEntregaBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProximaEntregaBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProximaEntregaBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
     ...options,
   });
 
-export const atualizar3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar3Data, ThrowOnError>,
-): HttpRequest<Atualizar3Response> =>
-  (options?.client ?? client).requestOptions<Atualizar3Response, ThrowOnError>({
+export const releaseorchestratorProximaEntregaAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProximaEntregaAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorProximaEntregaAtualizarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}',
     ...options,
   });
 
-export const excluir3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir3Data, ThrowOnError>,
-): HttpRequest<Excluir3Response> =>
-  (options?.client ?? client).requestOptions<Excluir3Response, ThrowOnError>({
+export const releaseorchestratorModuloProdutoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorModuloProdutoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
     ...options,
   });
 
-export const buscar3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar3Data, ThrowOnError>,
-): HttpRequest<Buscar3Response> =>
-  (options?.client ?? client).requestOptions<Buscar3Response, ThrowOnError>({
+export const releaseorchestratorModuloProdutoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorModuloProdutoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
     ...options,
   });
 
-export const atualizar4Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar4Data, ThrowOnError>,
-): HttpRequest<Atualizar4Response> =>
-  (options?.client ?? client).requestOptions<Atualizar4Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'PUT',
-    url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
-    ...options,
-  });
+export const releaseorchestratorModuloProdutoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorModuloProdutoAtualizarResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'PUT',
+      url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}',
+      ...options,
+    },
+  );
 
-export const excluir4Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir4Data, ThrowOnError>,
-): HttpRequest<Excluir4Response> =>
-  (options?.client ?? client).requestOptions<Excluir4Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDominioProdutoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
     ...options,
   });
 
-export const buscar4Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar4Data, ThrowOnError>,
-): HttpRequest<Buscar4Response> =>
-  (options?.client ?? client).requestOptions<Buscar4Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDominioProdutoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
     ...options,
   });
 
-export const atualizar5Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar5Data, ThrowOnError>,
-): HttpRequest<Atualizar5Response> =>
-  (options?.client ?? client).requestOptions<Atualizar5Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorDominioProdutoAtualizarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}',
     ...options,
   });
 
-export const excluir5Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir5Data, ThrowOnError>,
-): HttpRequest<Excluir5Response> =>
-  (options?.client ?? client).requestOptions<Excluir5Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoExcluirResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
   });
 
-export const buscar5Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar5Data, ThrowOnError>,
-): HttpRequest<Buscar5Response> =>
-  (options?.client ?? client).requestOptions<Buscar5Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoBuscarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
   });
 
-export const atualizar6Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar6Data, ThrowOnError>,
-): HttpRequest<Atualizar6Response> =>
-  (options?.client ?? client).requestOptions<Atualizar6Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoAtualizarRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoAtualizarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}',
     ...options,
   });
 
-export const excluir6Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir6Data, ThrowOnError>,
-): HttpRequest<Excluir6Response> =>
-  (options?.client ?? client).requestOptions<Excluir6Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
   });
 
-export const buscar6Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar6Data, ThrowOnError>,
-): HttpRequest<Buscar6Response> =>
-  (options?.client ?? client).requestOptions<Buscar6Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
   });
 
-export const atualizar7Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar7Data, ThrowOnError>,
-): HttpRequest<Atualizar7Response> =>
-  (options?.client ?? client).requestOptions<Atualizar7Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/produtos/{id}',
     ...options,
   });
 
-export const atualizarRascunhoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AtualizarRascunhoData, ThrowOnError>,
-): HttpRequest<AtualizarRascunhoResponse> =>
-  (options?.client ?? client).requestOptions<AtualizarRascunhoResponse, ThrowOnError>({
+export const releaseorchestratorInstalacaoClienteExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteExcluirResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteExcluirResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteBuscarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteBuscarResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteAtualizarResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorHostExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorHostExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostExcluirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorHostBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorHostBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostBuscarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorHostAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorHostAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostAtualizarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/release-orchestrator/hosts/{id}',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaAtualizarRascunhoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaAtualizarRascunhoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaAtualizarRascunhoResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorEntregaAtualizarRascunhoResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/entregas/{id}/rascunho',
     ...options,
   });
 
-export const excluir7Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir7Data, ThrowOnError>,
-): HttpRequest<Excluir7Response> =>
-  (options?.client ?? client).requestOptions<Excluir7Response, ThrowOnError>({
+export const releaseorchestratorClienteExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
   });
 
-export const buscar7Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar7Data, ThrowOnError>,
-): HttpRequest<Buscar7Response> =>
-  (options?.client ?? client).requestOptions<Buscar7Response, ThrowOnError>({
+export const releaseorchestratorClienteBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
   });
 
-export const atualizar8Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar8Data, ThrowOnError>,
-): HttpRequest<Atualizar8Response> =>
-  (options?.client ?? client).requestOptions<Atualizar8Response, ThrowOnError>({
+export const releaseorchestratorClienteAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{id}',
     ...options,
   });
 
-export const rescindirRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RescindirData, ThrowOnError>,
-): HttpRequest<RescindirResponse> =>
-  (options?.client ?? client).requestOptions<RescindirResponse, ThrowOnError>({
+export const releaseorchestratorClienteProdutoRescindirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoRescindirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoRescindirResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoRescindirResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
   });
 
-export const buscar8Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar8Data, ThrowOnError>,
-): HttpRequest<Buscar8Response> =>
-  (options?.client ?? client).requestOptions<Buscar8Response, ThrowOnError>({
+export const releaseorchestratorClienteProdutoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteProdutoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
   });
 
-export const atualizar9Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar9Data, ThrowOnError>,
-): HttpRequest<Atualizar9Response> =>
-  (options?.client ?? client).requestOptions<Atualizar9Response, ThrowOnError>({
+export const releaseorchestratorClienteProdutoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoAtualizarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{id}',
     ...options,
   });
 
-export const remover2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Remover2Data, ThrowOnError>,
-): HttpRequest<Remover2Response> =>
-  (options?.client ?? client).requestOptions<Remover2Response, ThrowOnError>({
+export const releaseorchestratorClienteProdutoModuloRemoverRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloRemoverData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoModuloRemoverResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoModuloRemoverResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}',
     ...options,
   });
 
-export const salvar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Salvar1Data, ThrowOnError>,
-): HttpRequest<Salvar1Response> =>
-  (options?.client ?? client).requestOptions<Salvar1Response, ThrowOnError>({
+export const releaseorchestratorClienteProdutoModuloSalvarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloSalvarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoModuloSalvarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoModuloSalvarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos/{moduloProdutoId}',
     ...options,
   });
 
-export const remover3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Remover3Data, ThrowOnError>,
-): HttpRequest<Remover3Response> =>
-  (options?.client ?? client).requestOptions<Remover3Response, ThrowOnError>({
+export const releaseorchestratorClienteFuncionalidadeRemoverRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeRemoverData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteFuncionalidadeRemoverResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteFuncionalidadeRemoverResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}',
     ...options,
   });
 
-export const salvar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Salvar2Data, ThrowOnError>,
-): HttpRequest<Salvar2Response> =>
-  (options?.client ?? client).requestOptions<Salvar2Response, ThrowOnError>({
+export const releaseorchestratorClienteFuncionalidadeSalvarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeSalvarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteFuncionalidadeSalvarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteFuncionalidadeSalvarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades/{funcionalidadeId}',
     ...options,
   });
 
-export const excluir8Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir8Data, ThrowOnError>,
-): HttpRequest<Excluir8Response> =>
-  (options?.client ?? client).requestOptions<Excluir8Response, ThrowOnError>({
+export const releaseorchestratorContatoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorContatoExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorContatoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorContatoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
   });
 
-export const buscar9Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar9Data, ThrowOnError>,
-): HttpRequest<Buscar9Response> =>
-  (options?.client ?? client).requestOptions<Buscar9Response, ThrowOnError>({
+export const releaseorchestratorContatoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorContatoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorContatoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorContatoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
   });
 
-export const atualizar10Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar10Data, ThrowOnError>,
-): HttpRequest<Atualizar10Response> =>
-  (options?.client ?? client).requestOptions<Atualizar10Response, ThrowOnError>({
+export const releaseorchestratorContatoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorContatoAtualizarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorContatoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorContatoAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos/{id}',
     ...options,
   });
 
-export const buscar10Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar10Data, ThrowOnError>,
-): HttpRequest<Buscar10Response> =>
-  (options?.client ?? client).requestOptions<Buscar10Response, ThrowOnError>({
+export const releaseorchestratorConfigEntregaBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorConfigEntregaBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorConfigEntregaBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorConfigEntregaBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega',
     ...options,
   });
 
-export const salvar3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Salvar3Data, ThrowOnError>,
-): HttpRequest<Salvar3Response> =>
-  (options?.client ?? client).requestOptions<Salvar3Response, ThrowOnError>({
+export const releaseorchestratorConfigEntregaSalvarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorConfigEntregaSalvarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorConfigEntregaSalvarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorConfigEntregaSalvarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega',
     ...options,
   });
 
-export const buscar11Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar11Data, ThrowOnError>,
-): HttpRequest<Buscar11Response> =>
-  (options?.client ?? client).requestOptions<Buscar11Response, ThrowOnError>({
+export const identityaccessUsuarioBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioBuscarData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioBuscarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/usuarios/{id}',
     ...options,
   });
 
-export const atualizar11Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar11Data, ThrowOnError>,
-): HttpRequest<Atualizar11Response> =>
-  (options?.client ?? client).requestOptions<Atualizar11Response, ThrowOnError>({
+export const identityaccessUsuarioAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioAtualizarData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/usuarios/{id}',
     ...options,
   });
 
-export const listarGruposRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ListarGruposData, ThrowOnError>,
-): HttpRequest<ListarGruposResponse> =>
-  (options?.client ?? client).requestOptions<ListarGruposResponse, ThrowOnError>({
+export const identityaccessUsuarioListarGruposRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioListarGruposData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioListarGruposResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioListarGruposResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/usuarios/{id}/grupos',
     ...options,
   });
 
-export const salvarGruposRequest = <ThrowOnError extends boolean = false>(
-  options: Options<SalvarGruposData, ThrowOnError>,
-): HttpRequest<SalvarGruposResponse> =>
-  (options?.client ?? client).requestOptions<SalvarGruposResponse, ThrowOnError>({
+export const identityaccessUsuarioSalvarGruposRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioSalvarGruposData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioSalvarGruposResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioSalvarGruposResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/usuarios/{id}/grupos',
     ...options,
   });
 
-export const atualRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<AtualData, ThrowOnError>,
-): HttpRequest<AtualResponse> =>
-  (options?.client ?? client).requestOptions<AtualResponse, ThrowOnError>({
+export const identityaccessPoliticaSenhaAtualRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessPoliticaSenhaAtualData, ThrowOnError>,
+): HttpRequest<IdentityaccessPoliticaSenhaAtualResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessPoliticaSenhaAtualResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/politica-senha',
     ...options,
   });
 
-export const atualizar12Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar12Data, ThrowOnError>,
-): HttpRequest<Atualizar12Response> =>
-  (options?.client ?? client).requestOptions<Atualizar12Response, ThrowOnError>({
+export const identityaccessPoliticaSenhaAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessPoliticaSenhaAtualizarData, ThrowOnError>,
+): HttpRequest<IdentityaccessPoliticaSenhaAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessPoliticaSenhaAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/politica-senha',
     ...options,
   });
 
-export const excluir9Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir9Data, ThrowOnError>,
-): HttpRequest<Excluir9Response> =>
-  (options?.client ?? client).requestOptions<Excluir9Response, ThrowOnError>({
+export const identityaccessGrupoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoExcluirData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
   });
 
-export const buscar12Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar12Data, ThrowOnError>,
-): HttpRequest<Buscar12Response> =>
-  (options?.client ?? client).requestOptions<Buscar12Response, ThrowOnError>({
+export const identityaccessGrupoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoBuscarData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
   });
 
-export const atualizar13Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar13Data, ThrowOnError>,
-): HttpRequest<Atualizar13Response> =>
-  (options?.client ?? client).requestOptions<Atualizar13Response, ThrowOnError>({
+export const identityaccessGrupoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoAtualizarData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/grupos/{id}',
     ...options,
   });
 
-export const listarMembrosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ListarMembrosData, ThrowOnError>,
-): HttpRequest<ListarMembrosResponse> =>
-  (options?.client ?? client).requestOptions<ListarMembrosResponse, ThrowOnError>({
+export const identityaccessGrupoListarMembrosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoListarMembrosData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoListarMembrosResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoListarMembrosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/grupos/{id}/usuarios',
     ...options,
   });
 
-export const salvarMembrosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<SalvarMembrosData, ThrowOnError>,
-): HttpRequest<SalvarMembrosResponse> =>
-  (options?.client ?? client).requestOptions<SalvarMembrosResponse, ThrowOnError>({
+export const identityaccessGrupoSalvarMembrosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoSalvarMembrosData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoSalvarMembrosResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoSalvarMembrosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/grupos/{id}/usuarios',
     ...options,
   });
 
-export const listarPermissoesRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ListarPermissoesData, ThrowOnError>,
-): HttpRequest<ListarPermissoesResponse> =>
-  (options?.client ?? client).requestOptions<ListarPermissoesResponse, ThrowOnError>({
+export const identityaccessGrupoListarPermissoesRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoListarPermissoesData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoListarPermissoesResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoListarPermissoesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/grupos/{id}/permissoes',
     ...options,
   });
 
-export const salvarPermissoesRequest = <ThrowOnError extends boolean = false>(
-  options: Options<SalvarPermissoesData, ThrowOnError>,
-): HttpRequest<SalvarPermissoesResponse> =>
-  (options?.client ?? client).requestOptions<SalvarPermissoesResponse, ThrowOnError>({
+export const identityaccessGrupoSalvarPermissoesRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoSalvarPermissoesData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoSalvarPermissoesResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoSalvarPermissoesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/grupos/{id}/permissoes',
     ...options,
   });
 
-export const remover4Request = <ThrowOnError extends boolean = false>(
-  options: Options<Remover4Data, ThrowOnError>,
-): HttpRequest<Remover4Response> =>
-  (options?.client ?? client).requestOptions<Remover4Response, ThrowOnError>({
+export const identityaccessEscopoAcessoRemoverRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessEscopoAcessoRemoverData, ThrowOnError>,
+): HttpRequest<IdentityaccessEscopoAcessoRemoverResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessEscopoAcessoRemoverResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/rbac/escopos/{id}',
     ...options,
   });
 
-export const atualizar14Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar14Data, ThrowOnError>,
-): HttpRequest<Atualizar14Response> =>
-  (options?.client ?? client).requestOptions<Atualizar14Response, ThrowOnError>({
+export const identityaccessEscopoAcessoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessEscopoAcessoAtualizarData, ThrowOnError>,
+): HttpRequest<IdentityaccessEscopoAcessoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessEscopoAcessoAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/escopos/{id}',
     ...options,
   });
 
-export const excluir10Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir10Data, ThrowOnError>,
-): HttpRequest<Excluir10Response> =>
-  (options?.client ?? client).requestOptions<Excluir10Response, ThrowOnError>({
+export const docflowProjetoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowProjetoExcluirData, ThrowOnError>,
+): HttpRequest<DocflowProjetoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
   });
 
-export const buscar13Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar13Data, ThrowOnError>,
-): HttpRequest<Buscar13Response> =>
-  (options?.client ?? client).requestOptions<Buscar13Response, ThrowOnError>({
+export const docflowProjetoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowProjetoBuscarData, ThrowOnError>,
+): HttpRequest<DocflowProjetoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
   });
 
-export const atualizar15Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar15Data, ThrowOnError>,
-): HttpRequest<Atualizar15Response> =>
-  (options?.client ?? client).requestOptions<Atualizar15Response, ThrowOnError>({
+export const docflowProjetoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowProjetoAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowProjetoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/projetos/{id}',
     ...options,
   });
 
-export const excluir11Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir11Data, ThrowOnError>,
-): HttpRequest<Excluir11Response> =>
-  (options?.client ?? client).requestOptions<Excluir11Response, ThrowOnError>({
+export const docflowPaginaExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaExcluirData, ThrowOnError>,
+): HttpRequest<DocflowPaginaExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
   });
 
-export const buscar14Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar14Data, ThrowOnError>,
-): HttpRequest<Buscar14Response> =>
-  (options?.client ?? client).requestOptions<Buscar14Response, ThrowOnError>({
+export const docflowPaginaBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaBuscarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBuscarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
   });
 
-export const atualizar16Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar16Data, ThrowOnError>,
-): HttpRequest<Atualizar16Response> =>
-  (options?.client ?? client).requestOptions<Atualizar16Response, ThrowOnError>({
+export const docflowPaginaAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/paginas/{id}',
     ...options,
   });
 
-export const autosaveRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AutosaveData, ThrowOnError>,
-): HttpRequest<AutosaveResponse> =>
-  (options?.client ?? client).requestOptions<AutosaveResponse, ThrowOnError>({
+export const docflowPaginaAutosaveRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAutosaveData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAutosaveResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAutosaveResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/paginas/{id}/autosave',
     ...options,
   });
 
-export const excluirTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ExcluirTemplateData, ThrowOnError>,
-): HttpRequest<ExcluirTemplateResponse> =>
-  (options?.client ?? client).requestOptions<ExcluirTemplateResponse, ThrowOnError>({
+export const docflowPaginaExcluirTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaExcluirTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaExcluirTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaExcluirTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/paginas/templates/{templateId}',
     ...options,
   });
 
-export const atualizarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AtualizarTemplateData, ThrowOnError>,
-): HttpRequest<AtualizarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<AtualizarTemplateResponse, ThrowOnError>({
+export const docflowPaginaAtualizarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAtualizarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAtualizarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAtualizarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/paginas/templates/{templateId}',
     ...options,
   });
 
-export const excluir12Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir12Data, ThrowOnError>,
-): HttpRequest<Excluir12Response> =>
-  (options?.client ?? client).requestOptions<Excluir12Response, ThrowOnError>({
+export const docflowPaginaExcluirSnippetRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaExcluirSnippetData, ThrowOnError>,
+): HttpRequest<DocflowPaginaExcluirSnippetResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaExcluirSnippetResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/docflow/paginas/snippets/{snippetId}',
+    ...options,
+  });
+
+export const docflowPaginaAtualizarSnippetRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAtualizarSnippetData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAtualizarSnippetResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAtualizarSnippetResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/docflow/paginas/snippets/{snippetId}',
+    ...options,
+  });
+
+export const docflowModuloExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowModuloExcluirData, ThrowOnError>,
+): HttpRequest<DocflowModuloExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowModuloExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
   });
 
-export const buscar15Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar15Data, ThrowOnError>,
-): HttpRequest<Buscar15Response> =>
-  (options?.client ?? client).requestOptions<Buscar15Response, ThrowOnError>({
+export const docflowModuloBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowModuloBuscarData, ThrowOnError>,
+): HttpRequest<DocflowModuloBuscarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowModuloBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
   });
 
-export const atualizar17Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar17Data, ThrowOnError>,
-): HttpRequest<Atualizar17Response> =>
-  (options?.client ?? client).requestOptions<Atualizar17Response, ThrowOnError>({
+export const docflowModuloAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowModuloAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowModuloAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowModuloAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/modulos/{id}',
     ...options,
   });
 
-export const excluir13Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir13Data, ThrowOnError>,
-): HttpRequest<Excluir13Response> =>
-  (options?.client ?? client).requestOptions<Excluir13Response, ThrowOnError>({
+export const docflowClienteExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteExcluirData, ThrowOnError>,
+): HttpRequest<DocflowClienteExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
   });
 
-export const buscar16Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar16Data, ThrowOnError>,
-): HttpRequest<Buscar16Response> =>
-  (options?.client ?? client).requestOptions<Buscar16Response, ThrowOnError>({
+export const docflowClienteBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteBuscarData, ThrowOnError>,
+): HttpRequest<DocflowClienteBuscarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
   });
 
-export const atualizar18Request = <ThrowOnError extends boolean = false>(
-  options: Options<Atualizar18Data, ThrowOnError>,
-): HttpRequest<Atualizar18Response> =>
-  (options?.client ?? client).requestOptions<Atualizar18Response, ThrowOnError>({
+export const docflowClienteAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowClienteAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteAtualizarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/clientes/{id}',
     ...options,
   });
 
-export const vincularProjetosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<VincularProjetosData, ThrowOnError>,
-): HttpRequest<VincularProjetosResponse> =>
-  (options?.client ?? client).requestOptions<VincularProjetosResponse, ThrowOnError>({
+export const docflowClienteVincularProjetosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteVincularProjetosData, ThrowOnError>,
+): HttpRequest<DocflowClienteVincularProjetosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteVincularProjetosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/clientes/{id}/projetos',
     ...options,
   });
 
-export const vincularPaginasRequest = <ThrowOnError extends boolean = false>(
-  options: Options<VincularPaginasData, ThrowOnError>,
-): HttpRequest<VincularPaginasResponse> =>
-  (options?.client ?? client).requestOptions<VincularPaginasResponse, ThrowOnError>({
+export const docflowClienteVincularPaginasRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteVincularPaginasData, ThrowOnError>,
+): HttpRequest<DocflowClienteVincularPaginasResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteVincularPaginasResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/clientes/{id}/paginas',
     ...options,
   });
 
-export const vincularModulosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<VincularModulosData, ThrowOnError>,
-): HttpRequest<VincularModulosResponse> =>
-  (options?.client ?? client).requestOptions<VincularModulosResponse, ThrowOnError>({
+export const docflowClienteVincularModulosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteVincularModulosData, ThrowOnError>,
+): HttpRequest<DocflowClienteVincularModulosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteVincularModulosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/docflow/clientes/{id}/modulos',
     ...options,
   });
 
-export const receberRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReceberData, ThrowOnError>,
+export const docflowAjudaExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowAjudaExcluirData, ThrowOnError>,
+): HttpRequest<DocflowAjudaExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaExcluirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const docflowAjudaAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowAjudaAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowAjudaAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaAtualizarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/docflow/ajuda/conteudos/{id}',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/composicao',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoReordenarEstruturaDocumentoRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<AiAiDocumentoImportacaoReordenarEstruturaDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/ai/importacoes/{id}/estrutura/rascunho',
+    ...options,
+  });
+
+export const releaseorchestratorJenkinsWebhookReceberRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorJenkinsWebhookReceberData, ThrowOnError>,
 ): HttpRequest<unknown> =>
   (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
     responseStyle: 'data',
@@ -1247,428 +1568,599 @@ export const receberRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
-export const listarRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<ListarData, ThrowOnError>,
-): HttpRequest<ListarResponse> =>
-  (options?.client ?? client).requestOptions<ListarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorReleaseTemplateListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseTemplateListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/templates',
     ...options,
   });
 
-export const criarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CriarData, ThrowOnError>,
-): HttpRequest<CriarResponse> =>
-  (options?.client ?? client).requestOptions<CriarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseTemplateCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseTemplateCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseTemplateCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/templates',
     ...options,
   });
 
-export const listar1Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar1Data, ThrowOnError>,
-): HttpRequest<Listar1Response> =>
-  (options?.client ?? client).requestOptions<Listar1Response, ThrowOnError>({
+export const releaseorchestratorReleaseListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorReleaseListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases',
     ...options,
   });
 
-export const criar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar1Data, ThrowOnError>,
-): HttpRequest<Criar1Response> =>
-  (options?.client ?? client).requestOptions<Criar1Response, ThrowOnError>({
+export const releaseorchestratorReleaseCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases',
     ...options,
   });
 
-export const listar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar2Data, ThrowOnError>,
-): HttpRequest<Listar2Response> =>
-  (options?.client ?? client).requestOptions<Listar2Response, ThrowOnError>({
+export const releaseorchestratorArtefatoReleaseModuloListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorArtefatoReleaseModuloListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorArtefatoReleaseModuloListarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos',
     ...options,
   });
 
-export const uploadRequest = <ThrowOnError extends boolean = false>(
-  options: Options<UploadData, ThrowOnError>,
-): HttpRequest<UploadResponse> =>
-  (options?.client ?? client).requestOptions<UploadResponse, ThrowOnError>({
+export const releaseorchestratorArtefatoReleaseModuloUploadRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloUploadData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorArtefatoReleaseModuloUploadResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorArtefatoReleaseModuloUploadResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos',
     ...options,
   });
 
-export const listar3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar3Data, ThrowOnError>,
-): HttpRequest<Listar3Response> =>
-  (options?.client ?? client).requestOptions<Listar3Response, ThrowOnError>({
+export const releaseorchestratorReleaseItemListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens',
     ...options,
   });
 
-export const adicionarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AdicionarData, ThrowOnError>,
-): HttpRequest<AdicionarResponse> =>
-  (options?.client ?? client).requestOptions<AdicionarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseItemAdicionarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemAdicionarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemAdicionarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemAdicionarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens',
     ...options,
   });
 
-export const duplicarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DuplicarData, ThrowOnError>,
-): HttpRequest<DuplicarResponse> =>
-  (options?.client ?? client).requestOptions<DuplicarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseItemDuplicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseItemDuplicarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseItemDuplicarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseItemDuplicarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/itens/{itemId}/duplicar',
     ...options,
   });
 
-export const publicarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<PublicarData, ThrowOnError>,
-): HttpRequest<PublicarResponse> =>
-  (options?.client ?? client).requestOptions<PublicarResponse, ThrowOnError>({
+export const releaseorchestratorReleasePublicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleasePublicarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleasePublicarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleasePublicarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{id}/publicar',
     ...options,
   });
 
-export const duplicar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Duplicar1Data, ThrowOnError>,
-): HttpRequest<Duplicar1Response> =>
-  (options?.client ?? client).requestOptions<Duplicar1Response, ThrowOnError>({
+export const releaseorchestratorReleaseDuplicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseDuplicarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseDuplicarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseDuplicarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{id}/duplicar',
     ...options,
   });
 
-export const cancelarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CancelarData, ThrowOnError>,
-): HttpRequest<CancelarResponse> =>
-  (options?.client ?? client).requestOptions<CancelarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseDispararBuildRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseDispararBuildData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseDispararBuildResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseDispararBuildResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/releases/{id}/disparar-build',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseCancelarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseCancelarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseCancelarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseCancelarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/releases/{id}/cancelar',
     ...options,
   });
 
-export const listar4Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar4Data, ThrowOnError>,
-): HttpRequest<Listar4Response> =>
-  (options?.client ?? client).requestOptions<Listar4Response, ThrowOnError>({
+export const releaseorchestratorProximaEntregaListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorProximaEntregaListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProximaEntregaListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/proximas-entregas',
     ...options,
   });
 
-export const criar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar2Data, ThrowOnError>,
-): HttpRequest<Criar2Response> =>
-  (options?.client ?? client).requestOptions<Criar2Response, ThrowOnError>({
+export const releaseorchestratorProximaEntregaCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProximaEntregaCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProximaEntregaCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/proximas-entregas',
     ...options,
   });
 
-export const listar5Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar5Data, ThrowOnError>,
-): HttpRequest<Listar5Response> =>
-  (options?.client ?? client).requestOptions<Listar5Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorProdutoRhListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos',
     ...options,
   });
 
-export const criar3Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar3Data, ThrowOnError>,
-): HttpRequest<Criar3Response> =>
-  (options?.client ?? client).requestOptions<Criar3Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/produtos',
     ...options,
   });
 
-export const listar6Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar6Data, ThrowOnError>,
-): HttpRequest<Listar6Response> =>
-  (options?.client ?? client).requestOptions<Listar6Response, ThrowOnError>({
+export const releaseorchestratorModuloProdutoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorModuloProdutoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos',
     ...options,
   });
 
-export const criar4Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar4Data, ThrowOnError>,
-): HttpRequest<Criar4Response> =>
-  (options?.client ?? client).requestOptions<Criar4Response, ThrowOnError>({
+export const releaseorchestratorModuloProdutoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorModuloProdutoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos',
     ...options,
   });
 
-export const listar7Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar7Data, ThrowOnError>,
-): HttpRequest<Listar7Response> =>
-  (options?.client ?? client).requestOptions<Listar7Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDominioProdutoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios',
     ...options,
   });
 
-export const criar5Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar5Data, ThrowOnError>,
-): HttpRequest<Criar5Response> =>
-  (options?.client ?? client).requestOptions<Criar5Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDominioProdutoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios',
     ...options,
   });
 
-export const listar8Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar8Data, ThrowOnError>,
-): HttpRequest<Listar8Response> =>
-  (options?.client ?? client).requestOptions<Listar8Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoListarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades',
     ...options,
   });
 
-export const criar6Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar6Data, ThrowOnError>,
-): HttpRequest<Criar6Response> =>
-  (options?.client ?? client).requestOptions<Criar6Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoCriarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoCriarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades',
     ...options,
   });
 
-export const testarJenkinsRequest = <ThrowOnError extends boolean = false>(
-  options: Options<TestarJenkinsData, ThrowOnError>,
-): HttpRequest<TestarJenkinsResponse2> =>
-  (options?.client ?? client).requestOptions<TestarJenkinsResponse2, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/release-orchestrator/produtos/{id}/testar-jenkins',
-    ...options,
-  });
+export const releaseorchestratorProdutoRhTestarJenkinsRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhTestarJenkinsData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhTestarJenkinsResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhTestarJenkinsResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'POST',
+      url: '/api/v1/release-orchestrator/produtos/{id}/testar-jenkins',
+      ...options,
+    },
+  );
 
-export const testarGithubRequest = <ThrowOnError extends boolean = false>(
-  options: Options<TestarGithubData, ThrowOnError>,
-): HttpRequest<TestarGithubResponse2> =>
-  (options?.client ?? client).requestOptions<TestarGithubResponse2, ThrowOnError>({
+export const releaseorchestratorProdutoRhTestarGithubRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhTestarGithubData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhTestarGithubResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhTestarGithubResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/produtos/{id}/testar-github',
     ...options,
   });
 
-export const listar9Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar9Data, ThrowOnError>,
-): HttpRequest<Listar9Response> =>
-  (options?.client ?? client).requestOptions<Listar9Response, ThrowOnError>({
+export const releaseorchestratorInstalacaoClienteListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorInstalacaoClienteListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteListarResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/instalacoes',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorInstalacaoClienteCriarResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'POST',
+      url: '/api/v1/release-orchestrator/instalacoes',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorInstalacaoClientePararRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClientePararData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClientePararResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorInstalacaoClientePararResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'POST',
+      url: '/api/v1/release-orchestrator/instalacoes/{id}/stop',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorInstalacaoClienteIniciarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteIniciarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteIniciarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteIniciarResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/start',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteResolverVersaoRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorInstalacaoClienteResolverVersaoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteResolverVersaoResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteResolverVersaoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/resolver-versao',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteDispararBuildRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorInstalacaoClienteDispararBuildData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteDispararBuildResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteDispararBuildResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/disparar-build',
+    ...options,
+  });
+
+export const releaseorchestratorHostListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorHostListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostListarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/hosts',
+    ...options,
+  });
+
+export const releaseorchestratorHostCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorHostCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostCriarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/hosts',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorEntregaListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas',
     ...options,
   });
 
-export const criar7Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar7Data, ThrowOnError>,
-): HttpRequest<Criar7Response> =>
-  (options?.client ?? client).requestOptions<Criar7Response, ThrowOnError>({
+export const releaseorchestratorEntregaCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas',
     ...options,
   });
 
-export const reentregarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReentregarData, ThrowOnError>,
-): HttpRequest<ReentregarResponse> =>
-  (options?.client ?? client).requestOptions<ReentregarResponse, ThrowOnError>({
+export const releaseorchestratorEntregaReentregarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaReentregarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaReentregarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaReentregarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{id}/reentregar',
     ...options,
   });
 
-export const reagendarPublicacaoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReagendarPublicacaoData, ThrowOnError>,
-): HttpRequest<ReagendarPublicacaoResponse> =>
-  (options?.client ?? client).requestOptions<ReagendarPublicacaoResponse, ThrowOnError>({
+export const releaseorchestratorEntregaReagendarPublicacaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaReagendarPublicacaoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaReagendarPublicacaoResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorEntregaReagendarPublicacaoResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{id}/publicacao/reagendar',
     ...options,
   });
 
-export const cancelar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Cancelar1Data, ThrowOnError>,
-): HttpRequest<Cancelar1Response> =>
-  (options?.client ?? client).requestOptions<Cancelar1Response, ThrowOnError>({
+export const releaseorchestratorEntregaCancelarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaCancelarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaCancelarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaCancelarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{id}/cancelar',
     ...options,
   });
 
-export const inicializarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<InicializarData, ThrowOnError>,
-): HttpRequest<InicializarResponse> =>
-  (options?.client ?? client).requestOptions<InicializarResponse, ThrowOnError>({
+export const releaseorchestratorEntregaModuloInicializarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaModuloInicializarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaModuloInicializarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorEntregaModuloInicializarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/inicializar',
     ...options,
   });
 
-export const iniciarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<IniciarData, ThrowOnError>,
-): HttpRequest<IniciarResponse> =>
-  (options?.client ?? client).requestOptions<IniciarResponse, ThrowOnError>({
+export const releaseorchestratorGeracaoEntregaIniciarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorGeracaoEntregaIniciarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorGeracaoEntregaIniciarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorGeracaoEntregaIniciarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/geracao/iniciar',
     ...options,
   });
 
-export const calcularRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CalcularData, ThrowOnError>,
-): HttpRequest<CalcularResponse> =>
-  (options?.client ?? client).requestOptions<CalcularResponse, ThrowOnError>({
+export const releaseorchestratorDeltaEntregaCalcularRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeltaEntregaCalcularData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeltaEntregaCalcularResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDeltaEntregaCalcularResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/calcular',
     ...options,
   });
 
-export const listar10Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar10Data, ThrowOnError>,
-): HttpRequest<Listar10Response> =>
-  (options?.client ?? client).requestOptions<Listar10Response, ThrowOnError>({
+export const releaseorchestratorDeployInstalacaoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorDeployInstalacaoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeployInstalacaoListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDeployInstalacaoListarResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'GET',
+      url: '/api/v1/release-orchestrator/deploys',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorDeployInstalacaoExecutarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeployInstalacaoExecutarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeployInstalacaoExecutarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorDeployInstalacaoExecutarResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/deploys',
+    ...options,
+  });
+
+export const releaseorchestratorDeployInstalacaoExecutarLoteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeployInstalacaoExecutarLoteData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeployInstalacaoExecutarLoteResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorDeployInstalacaoExecutarLoteResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/release-orchestrator/deploys/lote',
+    ...options,
+  });
+
+export const releaseorchestratorClienteListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<ReleaseorchestratorClienteListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes',
     ...options,
   });
 
-export const criar8Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar8Data, ThrowOnError>,
-): HttpRequest<Criar8Response> =>
-  (options?.client ?? client).requestOptions<Criar8Response, ThrowOnError>({
+export const releaseorchestratorClienteCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/clientes',
     ...options,
   });
 
-export const listar11Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar11Data, ThrowOnError>,
-): HttpRequest<Listar11Response> =>
-  (options?.client ?? client).requestOptions<Listar11Response, ThrowOnError>({
+export const releaseorchestratorClienteProdutoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteProdutoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos',
     ...options,
   });
 
-export const contratarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ContratarData, ThrowOnError>,
-): HttpRequest<ContratarResponse> =>
-  (options?.client ?? client).requestOptions<ContratarResponse, ThrowOnError>({
+export const releaseorchestratorClienteProdutoContratarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoContratarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoContratarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoContratarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos',
     ...options,
   });
 
-export const listar12Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar12Data, ThrowOnError>,
-): HttpRequest<Listar12Response> =>
-  (options?.client ?? client).requestOptions<Listar12Response, ThrowOnError>({
+export const releaseorchestratorContatoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorContatoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorContatoListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorContatoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
     ...options,
   });
 
-export const criar9Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar9Data, ThrowOnError>,
-): HttpRequest<Criar9Response> =>
-  (options?.client ?? client).requestOptions<Criar9Response, ThrowOnError>({
+export const releaseorchestratorContatoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorContatoCriarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorContatoCriarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorContatoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/contatos',
     ...options,
   });
 
-export const testarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<TestarData, ThrowOnError>,
-): HttpRequest<TestarResponse> =>
-  (options?.client ?? client).requestOptions<TestarResponse, ThrowOnError>({
+export const releaseorchestratorConfigEntregaTestarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorConfigEntregaTestarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorConfigEntregaTestarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorConfigEntregaTestarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/config-entrega/testar',
     ...options,
   });
 
-export const listar13Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar13Data, ThrowOnError>,
-): HttpRequest<Listar13Response> =>
-  (options?.client ?? client).requestOptions<Listar13Response, ThrowOnError>({
+export const identityaccessUsuarioListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessUsuarioListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/usuarios',
     ...options,
   });
 
-export const criar10Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar10Data, ThrowOnError>,
-): HttpRequest<Criar10Response> =>
-  (options?.client ?? client).requestOptions<Criar10Response, ThrowOnError>({
+export const identityaccessUsuarioCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioCriarData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioCriarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/usuarios',
     ...options,
   });
 
-export const alterarBloqueioRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarBloqueioData, ThrowOnError>,
-): HttpRequest<AlterarBloqueioResponse> =>
-  (options?.client ?? client).requestOptions<AlterarBloqueioResponse, ThrowOnError>({
+export const identityaccessUsuarioAlterarBloqueioRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioAlterarBloqueioData, ThrowOnError>,
+): HttpRequest<IdentityaccessUsuarioAlterarBloqueioResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessUsuarioAlterarBloqueioResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/usuarios/{id}/bloqueio',
     ...options,
   });
 
-export const alterarSenhaRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarSenhaData, ThrowOnError>,
+export const identityaccessUsuarioAlterarSenhaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessUsuarioAlterarSenhaData, ThrowOnError>,
 ): HttpRequest<unknown> =>
   (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
     responseStyle: 'data',
@@ -1677,328 +2169,388 @@ export const alterarSenhaRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
-export const revogarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RevogarData, ThrowOnError>,
-): HttpRequest<RevogarResponse> =>
-  (options?.client ?? client).requestOptions<RevogarResponse, ThrowOnError>({
+export const identityaccessSessaoRevogarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessSessaoRevogarData, ThrowOnError>,
+): HttpRequest<IdentityaccessSessaoRevogarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessSessaoRevogarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/sessoes/{id}/revogar',
     ...options,
   });
 
-export const listar14Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar14Data, ThrowOnError>,
-): HttpRequest<Listar14Response> =>
-  (options?.client ?? client).requestOptions<Listar14Response, ThrowOnError>({
+export const identityaccessGrupoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessGrupoListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/grupos',
     ...options,
   });
 
-export const criar11Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar11Data, ThrowOnError>,
-): HttpRequest<Criar11Response> =>
-  (options?.client ?? client).requestOptions<Criar11Response, ThrowOnError>({
+export const identityaccessGrupoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoCriarData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoCriarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/grupos',
     ...options,
   });
 
-export const listar15Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar15Data, ThrowOnError>,
-): HttpRequest<Listar15Response> =>
-  (options?.client ?? client).requestOptions<Listar15Response, ThrowOnError>({
+export const identityaccessEscopoAcessoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessEscopoAcessoListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessEscopoAcessoListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessEscopoAcessoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/escopos',
     ...options,
   });
 
-export const criar12Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar12Data, ThrowOnError>,
-): HttpRequest<Criar12Response> =>
-  (options?.client ?? client).requestOptions<Criar12Response, ThrowOnError>({
+export const identityaccessEscopoAcessoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessEscopoAcessoCriarData, ThrowOnError>,
+): HttpRequest<IdentityaccessEscopoAcessoCriarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessEscopoAcessoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/escopos',
     ...options,
   });
 
-export const listar16Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar16Data, ThrowOnError>,
-): HttpRequest<Listar16Response> =>
-  (options?.client ?? client).requestOptions<Listar16Response, ThrowOnError>({
+export const identityaccessAcessoTemporarioListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessAcessoTemporarioListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessAcessoTemporarioListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAcessoTemporarioListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/acessos-temporarios',
     ...options,
   });
 
-export const criar13Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar13Data, ThrowOnError>,
-): HttpRequest<Criar13Response> =>
-  (options?.client ?? client).requestOptions<Criar13Response, ThrowOnError>({
+export const identityaccessAcessoTemporarioCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessAcessoTemporarioCriarData, ThrowOnError>,
+): HttpRequest<IdentityaccessAcessoTemporarioCriarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAcessoTemporarioCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/acessos-temporarios',
     ...options,
   });
 
-export const revogar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Revogar1Data, ThrowOnError>,
-): HttpRequest<Revogar1Response> =>
-  (options?.client ?? client).requestOptions<Revogar1Response, ThrowOnError>({
+export const identityaccessAcessoTemporarioRevogarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessAcessoTemporarioRevogarData, ThrowOnError>,
+): HttpRequest<IdentityaccessAcessoTemporarioRevogarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAcessoTemporarioRevogarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/rbac/acessos-temporarios/{id}/revogar',
     ...options,
   });
 
-export const listar17Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar17Data, ThrowOnError>,
-): HttpRequest<Listar17Response> =>
-  (options?.client ?? client).requestOptions<Listar17Response, ThrowOnError>({
+export const docflowPreviewListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPreviewListarData, ThrowOnError>,
+): HttpRequest<DocflowPreviewListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPreviewListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/preview-tokens',
     ...options,
   });
 
-export const gerarTokenRequest = <ThrowOnError extends boolean = false>(
-  options: Options<GerarTokenData, ThrowOnError>,
-): HttpRequest<GerarTokenResponse> =>
-  (options?.client ?? client).requestOptions<GerarTokenResponse, ThrowOnError>({
+export const docflowPreviewGerarTokenRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPreviewGerarTokenData, ThrowOnError>,
+): HttpRequest<DocflowPreviewGerarTokenResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPreviewGerarTokenResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/preview-tokens',
     ...options,
   });
 
-export const listar18Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar18Data, ThrowOnError>,
-): HttpRequest<Listar18Response> =>
-  (options?.client ?? client).requestOptions<Listar18Response, ThrowOnError>({
+export const docflowPublicacaoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPublicacaoListarData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes',
     ...options,
   });
 
-export const gerarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<GerarData, ThrowOnError>,
-): HttpRequest<GerarResponse> =>
-  (options?.client ?? client).requestOptions<GerarResponse, ThrowOnError>({
+export const docflowPublicacaoGerarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoGerarData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoGerarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoGerarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/publicacoes',
     ...options,
   });
 
-export const reprocessarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReprocessarData, ThrowOnError>,
-): HttpRequest<ReprocessarResponse> =>
-  (options?.client ?? client).requestOptions<ReprocessarResponse, ThrowOnError>({
+export const docflowPublicacaoReprocessarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoReprocessarData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoReprocessarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoReprocessarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/publicacoes/{id}/reprocessar',
     ...options,
   });
 
-export const listar19Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar19Data, ThrowOnError>,
-): HttpRequest<Listar19Response> =>
-  (options?.client ?? client).requestOptions<Listar19Response, ThrowOnError>({
+export const docflowPublicacaoCancelarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoCancelarData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoCancelarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoCancelarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/publicacoes/{id}/cancelar',
+    ...options,
+  });
+
+export const docflowPublicacaoReprocessarLoteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoReprocessarLoteData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoReprocessarLoteResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoReprocessarLoteResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
+    ...options,
+  });
+
+export const docflowProjetoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowProjetoListarData, ThrowOnError>,
+): HttpRequest<DocflowProjetoListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/projetos',
     ...options,
   });
 
-export const criar14Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar14Data, ThrowOnError>,
-): HttpRequest<Criar14Response> =>
-  (options?.client ?? client).requestOptions<Criar14Response, ThrowOnError>({
+export const docflowProjetoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowProjetoCriarData, ThrowOnError>,
+): HttpRequest<DocflowProjetoCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/projetos',
     ...options,
   });
 
-export const listar20Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar20Data, ThrowOnError>,
-): HttpRequest<Listar20Response> =>
-  (options?.client ?? client).requestOptions<Listar20Response, ThrowOnError>({
+export const docflowPaginaListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaListarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas',
     ...options,
   });
 
-export const criar15Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar15Data, ThrowOnError>,
-): HttpRequest<Criar15Response> =>
-  (options?.client ?? client).requestOptions<Criar15Response, ThrowOnError>({
+export const docflowPaginaCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaCriarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas',
     ...options,
   });
 
-export const salvarRascunhoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<SalvarRascunhoData, ThrowOnError>,
-): HttpRequest<SalvarRascunhoResponse> =>
-  (options?.client ?? client).requestOptions<SalvarRascunhoResponse, ThrowOnError>({
+export const docflowPaginaSalvarRascunhoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaSalvarRascunhoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaSalvarRascunhoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaSalvarRascunhoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/salvar-rascunho',
     ...options,
   });
 
-export const publicar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Publicar1Data, ThrowOnError>,
-): HttpRequest<Publicar1Response> =>
-  (options?.client ?? client).requestOptions<Publicar1Response, ThrowOnError>({
+export const docflowPaginaAtribuirRevisorRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAtribuirRevisorData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAtribuirRevisorResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAtribuirRevisorResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/paginas/{id}/revisor',
+    ...options,
+  });
+
+export const docflowPaginaComentarRevisaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaComentarRevisaoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaComentarRevisaoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaComentarRevisaoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
+    ...options,
+  });
+
+export const docflowPaginaPublicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaPublicarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaPublicarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaPublicarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/publicar',
     ...options,
   });
 
-export const enviarRevisaoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<EnviarRevisaoData, ThrowOnError>,
-): HttpRequest<EnviarRevisaoResponse> =>
-  (options?.client ?? client).requestOptions<EnviarRevisaoResponse, ThrowOnError>({
+export const docflowPaginaEnviarRevisaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaEnviarRevisaoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaEnviarRevisaoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaEnviarRevisaoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/enviar-revisao',
     ...options,
   });
 
-export const duplicar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Duplicar2Data, ThrowOnError>,
-): HttpRequest<Duplicar2Response> =>
-  (options?.client ?? client).requestOptions<Duplicar2Response, ThrowOnError>({
+export const docflowPaginaDuplicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaDuplicarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaDuplicarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaDuplicarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/duplicar',
     ...options,
   });
 
-export const arquivarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ArquivarData, ThrowOnError>,
-): HttpRequest<ArquivarResponse> =>
-  (options?.client ?? client).requestOptions<ArquivarResponse, ThrowOnError>({
+export const docflowPaginaArquivarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaArquivarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaArquivarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaArquivarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/arquivar',
     ...options,
   });
 
-export const aprovarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AprovarData, ThrowOnError>,
-): HttpRequest<AprovarResponse> =>
-  (options?.client ?? client).requestOptions<AprovarResponse, ThrowOnError>({
+export const docflowPaginaAprovarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAprovarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAprovarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAprovarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/aprovar',
     ...options,
   });
 
-export const anexosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AnexosData, ThrowOnError>,
-): HttpRequest<AnexosResponse> =>
-  (options?.client ?? client).requestOptions<AnexosResponse, ThrowOnError>({
+export const docflowPaginaAnexosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAnexosData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAnexosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAnexosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{id}/anexos',
     ...options,
   });
 
-export const anexarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AnexarData, ThrowOnError>,
-): HttpRequest<AnexarResponse> =>
-  (options?.client ?? client).requestOptions<AnexarResponse, ThrowOnError>({
+export const docflowPaginaAnexarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAnexarData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAnexarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAnexarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/{id}/anexos',
     ...options,
   });
 
-export const templatesRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<TemplatesData, ThrowOnError>,
-): HttpRequest<TemplatesResponse> =>
-  (options?.client ?? client).requestOptions<TemplatesResponse, ThrowOnError>({
+export const docflowPaginaTemplatesRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaTemplatesData, ThrowOnError>,
+): HttpRequest<DocflowPaginaTemplatesResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaTemplatesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/templates',
     ...options,
   });
 
-export const criarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CriarTemplateData, ThrowOnError>,
-): HttpRequest<CriarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<CriarTemplateResponse, ThrowOnError>({
+export const docflowPaginaCriarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaCriarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaCriarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaCriarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates',
     ...options,
   });
 
-export const restaurarVersaoTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RestaurarVersaoTemplateData, ThrowOnError>,
-): HttpRequest<RestaurarVersaoTemplateResponse> =>
-  (options?.client ?? client).requestOptions<RestaurarVersaoTemplateResponse, ThrowOnError>({
+export const docflowPaginaRestaurarVersaoTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaRestaurarVersaoTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaRestaurarVersaoTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaRestaurarVersaoTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates/{templateId}/versoes/{numero}/restaurar',
     ...options,
   });
 
-export const reativarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReativarTemplateData, ThrowOnError>,
-): HttpRequest<ReativarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<ReativarTemplateResponse, ThrowOnError>({
+export const docflowPaginaReativarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaReativarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaReativarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaReativarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates/{templateId}/reativar',
     ...options,
   });
 
-export const duplicarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DuplicarTemplateData, ThrowOnError>,
-): HttpRequest<DuplicarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<DuplicarTemplateResponse, ThrowOnError>({
+export const docflowPaginaDuplicarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaDuplicarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaDuplicarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaDuplicarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates/{templateId}/duplicar',
     ...options,
   });
 
-export const arquivarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ArquivarTemplateData, ThrowOnError>,
-): HttpRequest<ArquivarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<ArquivarTemplateResponse, ThrowOnError>({
+export const docflowPaginaArquivarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaArquivarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaArquivarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaArquivarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates/{templateId}/arquivar',
     ...options,
   });
 
-export const aplicarTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AplicarTemplateData, ThrowOnError>,
-): HttpRequest<AplicarTemplateResponse> =>
-  (options?.client ?? client).requestOptions<AplicarTemplateResponse, ThrowOnError>({
+export const docflowPaginaAplicarTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaAplicarTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaAplicarTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaAplicarTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/paginas/templates/{templateId}/aplicar',
     ...options,
   });
 
-export const reordenar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Reordenar1Data, ThrowOnError>,
+export const docflowPaginaSnippetsRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaSnippetsData, ThrowOnError>,
+): HttpRequest<DocflowPaginaSnippetsResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaSnippetsResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/snippets',
+    ...options,
+  });
+
+export const docflowPaginaCriarSnippetRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaCriarSnippetData, ThrowOnError>,
+): HttpRequest<DocflowPaginaCriarSnippetResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaCriarSnippetResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/paginas/snippets',
+    ...options,
+  });
+
+export const docflowPaginaReordenarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaReordenarData, ThrowOnError>,
 ): HttpRequest<unknown> =>
   (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
     responseStyle: 'data',
@@ -2007,628 +2559,1199 @@ export const reordenar1Request = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
-export const listar21Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar21Data, ThrowOnError>,
-): HttpRequest<Listar21Response> =>
-  (options?.client ?? client).requestOptions<Listar21Response, ThrowOnError>({
+export const docflowModuloListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowModuloListarData, ThrowOnError>,
+): HttpRequest<DocflowModuloListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowModuloListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/modulos',
     ...options,
   });
 
-export const criar16Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar16Data, ThrowOnError>,
-): HttpRequest<Criar16Response> =>
-  (options?.client ?? client).requestOptions<Criar16Response, ThrowOnError>({
+export const docflowModuloCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowModuloCriarData, ThrowOnError>,
+): HttpRequest<DocflowModuloCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowModuloCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/modulos',
     ...options,
   });
 
-export const deleteLogoRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<DeleteLogoData, ThrowOnError>,
-): HttpRequest<DeleteLogoResponse> =>
-  (options?.client ?? client).requestOptions<DeleteLogoResponse, ThrowOnError>({
+export const docflowEmpresaDeleteLogoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowEmpresaDeleteLogoData, ThrowOnError>,
+): HttpRequest<DocflowEmpresaDeleteLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowEmpresaDeleteLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/empresa/logo',
     ...options,
   });
 
-export const getLogoRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<GetLogoData, ThrowOnError>,
-): HttpRequest<GetLogoResponse> =>
-  (options?.client ?? client).requestOptions<GetLogoResponse, ThrowOnError>({
+export const docflowEmpresaGetLogoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowEmpresaGetLogoData, ThrowOnError>,
+): HttpRequest<DocflowEmpresaGetLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowEmpresaGetLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/empresa/logo',
     ...options,
   });
 
-export const uploadLogoRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<UploadLogoData, ThrowOnError>,
-): HttpRequest<UploadLogoResponse> =>
-  (options?.client ?? client).requestOptions<UploadLogoResponse, ThrowOnError>({
+export const docflowEmpresaUploadLogoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowEmpresaUploadLogoData, ThrowOnError>,
+): HttpRequest<DocflowEmpresaUploadLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowEmpresaUploadLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/empresa/logo',
     ...options,
   });
 
-export const listar22Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar22Data, ThrowOnError>,
-): HttpRequest<Listar22Response> =>
-  (options?.client ?? client).requestOptions<Listar22Response, ThrowOnError>({
+export const docflowClienteListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowClienteListarData, ThrowOnError>,
+): HttpRequest<DocflowClienteListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/clientes',
     ...options,
   });
 
-export const criar17Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar17Data, ThrowOnError>,
-): HttpRequest<Criar17Response> =>
-  (options?.client ?? client).requestOptions<Criar17Response, ThrowOnError>({
+export const docflowClienteCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteCriarData, ThrowOnError>,
+): HttpRequest<DocflowClienteCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteCriarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/clientes',
     ...options,
   });
 
-export const deleteLogo1Request = <ThrowOnError extends boolean = false>(
-  options: Options<DeleteLogo1Data, ThrowOnError>,
-): HttpRequest<DeleteLogo1Response> =>
-  (options?.client ?? client).requestOptions<DeleteLogo1Response, ThrowOnError>({
+export const docflowClienteDeleteLogoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteDeleteLogoData, ThrowOnError>,
+): HttpRequest<DocflowClienteDeleteLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteDeleteLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/clientes/{id}/logo',
     ...options,
   });
 
-export const getLogo1Request = <ThrowOnError extends boolean = false>(
-  options: Options<GetLogo1Data, ThrowOnError>,
-): HttpRequest<GetLogo1Response> =>
-  (options?.client ?? client).requestOptions<GetLogo1Response, ThrowOnError>({
+export const docflowClienteGetLogoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteGetLogoData, ThrowOnError>,
+): HttpRequest<DocflowClienteGetLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteGetLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/clientes/{id}/logo',
     ...options,
   });
 
-export const uploadLogo1Request = <ThrowOnError extends boolean = false>(
-  options: Options<UploadLogo1Data, ThrowOnError>,
-): HttpRequest<UploadLogo1Response> =>
-  (options?.client ?? client).requestOptions<UploadLogo1Response, ThrowOnError>({
+export const docflowClienteUploadLogoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteUploadLogoData, ThrowOnError>,
+): HttpRequest<DocflowClienteUploadLogoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteUploadLogoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/clientes/{id}/logo',
     ...options,
   });
 
-export const copiarVinculosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CopiarVinculosData, ThrowOnError>,
-): HttpRequest<CopiarVinculosResponse> =>
-  (options?.client ?? client).requestOptions<CopiarVinculosResponse, ThrowOnError>({
+export const docflowClienteCopiarVinculosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteCopiarVinculosData, ThrowOnError>,
+): HttpRequest<DocflowClienteCopiarVinculosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteCopiarVinculosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/clientes/{id}/copiar-vinculos',
     ...options,
   });
 
-export const loginRequest = <ThrowOnError extends boolean = false>(
-  options: Options<LoginData, ThrowOnError>,
-): HttpRequest<LoginResponse2> =>
-  (options?.client ?? client).requestOptions<LoginResponse2, ThrowOnError>({
+export const docflowAjudaRegistrarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowAjudaRegistrarData, ThrowOnError>,
+): HttpRequest<DocflowAjudaRegistrarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaRegistrarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/ajuda/eventos',
+    ...options,
+  });
+
+export const docflowAjudaListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowAjudaListarData, ThrowOnError>,
+): HttpRequest<DocflowAjudaListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaListarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+  });
+
+export const docflowAjudaCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowAjudaCriarData, ThrowOnError>,
+): HttpRequest<DocflowAjudaCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaCriarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/ajuda/conteudos',
+    ...options,
+  });
+
+export const identityaccessAuthLoginRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessAuthLoginData, ThrowOnError>,
+): HttpRequest<IdentityaccessAuthLoginResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAuthLoginResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/auth/login',
     ...options,
   });
 
-export const alterarStatusRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatusData, ThrowOnError>,
-): HttpRequest<AlterarStatusResponse> =>
-  (options?.client ?? client).requestOptions<AlterarStatusResponse, ThrowOnError>({
+export const aiAiTemplateRecomendarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiTemplateRecomendarData, ThrowOnError>,
+): HttpRequest<AiAiTemplateRecomendarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiTemplateRecomendarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/templates/recomendacao',
+    ...options,
+  });
+
+export const aiAiSessaoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoCriarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoCriarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoCriarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes',
+    ...options,
+  });
+
+export const aiAiSessaoEnviarMensagemRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
+): HttpRequest<AiAiSessaoEnviarMensagemResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoEnviarMensagemResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/mensagens',
+    ...options,
+  });
+
+export const aiAiSessaoGerarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoGerarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoGerarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoGerarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/gerar',
+    ...options,
+  });
+
+export const aiAiSessaoCancelarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoCancelarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoCancelarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoCancelarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/cancelar',
+    ...options,
+  });
+
+export const aiAiSessaoAplicarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoAplicarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoAplicarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoAplicarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/aplicar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoImportarDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiDocumentoImportacaoImportarDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoImportarDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<AiAiDocumentoImportacaoImportarDocumentoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoIgnorarSugestaoDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/ignorar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoAceitarSugestaoDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoAceitarSugestaoDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/{sugestaoId}/aceitar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/sugestoes/aplicar-seguras',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoSincronizarImportacaoDocumentoRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/sincronizar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoVincularPaginaImportadaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoVincularPaginaImportadaData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoVincularPaginaImportadaResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoVincularPaginaImportadaResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/vincular/{paginaId}',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoSelecionarPaginaImportadaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoSelecionarPaginaImportadaData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoSelecionarPaginaImportadaResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoSelecionarPaginaImportadaResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/selecionar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoAceitarPaginaImportadaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoAceitarPaginaImportadaData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoAceitarPaginaImportadaResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoAceitarPaginaImportadaResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/paginas/{paginaPlanoId}/aceitar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoGerarLoteDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoGerarLoteDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoGerarLoteDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<AiAiDocumentoImportacaoGerarLoteDocumentoResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'POST',
+      url: '/api/v1/ai/importacoes/{id}/lote/gerar',
+      ...options,
+    },
+  );
+
+export const aiAiDocumentoImportacaoEstimarLoteDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoEstimarLoteDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoEstimarLoteDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoEstimarLoteDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/lote/estimar',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoConfirmarEstruturaDocumentoRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/importacoes/{id}/estrutura/confirmar',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseTemplateAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseTemplateAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseTemplateAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseTemplateAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/templates/{id}/status',
     ...options,
   });
 
-export const alterarStatus1Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus1Data, ThrowOnError>,
-): HttpRequest<AlterarStatus1Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus1Response, ThrowOnError>({
+export const releaseorchestratorReleaseAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseAlterarStatusResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/releases/{id}/status',
     ...options,
   });
 
-export const alterarStatus2Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus2Data, ThrowOnError>,
-): HttpRequest<AlterarStatus2Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus2Response, ThrowOnError>({
+export const releaseorchestratorProximaEntregaAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProximaEntregaAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProximaEntregaAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorProximaEntregaAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/proximas-entregas/{id}/status',
     ...options,
   });
 
-export const alterarStatus3Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus3Data, ThrowOnError>,
-): HttpRequest<AlterarStatus3Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus3Response, ThrowOnError>({
+export const releaseorchestratorModuloProdutoAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorModuloProdutoAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorModuloProdutoAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorModuloProdutoAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/modulos/{id}/status',
     ...options,
   });
 
-export const alterarStatus4Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus4Data, ThrowOnError>,
-): HttpRequest<AlterarStatus4Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus4Response, ThrowOnError>({
+export const releaseorchestratorDominioProdutoAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDominioProdutoAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDominioProdutoAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorDominioProdutoAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{id}/status',
     ...options,
   });
 
-export const alterarStatus5Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus5Data, ThrowOnError>,
-): HttpRequest<AlterarStatus5Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus5Response, ThrowOnError>({
+export const releaseorchestratorFuncionalidadeProdutoAlterarStatusRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/produtos/{produtoId}/dominios/{dominioId}/funcionalidades/{id}/status',
     ...options,
   });
 
-export const alterarStatus6Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus6Data, ThrowOnError>,
-): HttpRequest<AlterarStatus6Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus6Response, ThrowOnError>({
+export const releaseorchestratorProdutoRhAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorProdutoRhAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorProdutoRhAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorProdutoRhAlterarStatusResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'PATCH',
+      url: '/api/v1/release-orchestrator/produtos/{id}/status',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorInstalacaoClienteAlterarStatusRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorInstalacaoClienteAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteAlterarStatusResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
-    url: '/api/v1/release-orchestrator/produtos/{id}/status',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/status',
     ...options,
   });
 
-export const alterarSelecaoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarSelecaoData, ThrowOnError>,
-): HttpRequest<AlterarSelecaoResponse> =>
-  (options?.client ?? client).requestOptions<AlterarSelecaoResponse, ThrowOnError>({
+export const releaseorchestratorInstalacaoClienteRegistrarHealthRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ReleaseorchestratorInstalacaoClienteRegistrarHealthData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteRegistrarHealthResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteRegistrarHealthResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'PATCH',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/health',
+    ...options,
+  });
+
+export const releaseorchestratorHostAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorHostAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorHostAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorHostAlterarStatusResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PATCH',
+    url: '/api/v1/release-orchestrator/hosts/{id}/status',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaModuloAlterarSelecaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaModuloAlterarSelecaoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaModuloAlterarSelecaoResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorEntregaModuloAlterarSelecaoResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos/{moduloProdutoId}/selecao',
     ...options,
   });
 
-export const alterarStatus7Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus7Data, ThrowOnError>,
-): HttpRequest<AlterarStatus7Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus7Response, ThrowOnError>({
+export const releaseorchestratorClienteAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteAlterarStatusData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorClienteAlterarStatusResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/release-orchestrator/clientes/{id}/status',
     ...options,
   });
 
-export const alterarStatus8Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus8Data, ThrowOnError>,
-): HttpRequest<AlterarStatus8Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus8Response, ThrowOnError>({
+export const identityaccessGrupoAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessGrupoAlterarStatusData, ThrowOnError>,
+): HttpRequest<IdentityaccessGrupoAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessGrupoAlterarStatusResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/rbac/grupos/{id}/status',
     ...options,
   });
 
-export const alterarStatus9Request = <ThrowOnError extends boolean = false>(
-  options: Options<AlterarStatus9Data, ThrowOnError>,
-): HttpRequest<AlterarStatus9Response> =>
-  (options?.client ?? client).requestOptions<AlterarStatus9Response, ThrowOnError>({
+export const identityaccessEscopoAcessoAlterarStatusRequest = <ThrowOnError extends boolean = false>(
+  options: Options<IdentityaccessEscopoAcessoAlterarStatusData, ThrowOnError>,
+): HttpRequest<IdentityaccessEscopoAcessoAlterarStatusResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessEscopoAcessoAlterarStatusResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/rbac/escopos/{id}/status',
     ...options,
   });
 
-export const gerar1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Gerar1Data, ThrowOnError>,
-): HttpRequest<Gerar1Response> =>
-  (options?.client ?? client).requestOptions<Gerar1Response, ThrowOnError>({
+export const releaseorchestratorReleasePdfGerarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleasePdfGerarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleasePdfGerarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleasePdfGerarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/pdf',
     ...options,
   });
 
-export const downloadRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DownloadData, ThrowOnError>,
-): HttpRequest<DownloadResponse> =>
-  (options?.client ?? client).requestOptions<DownloadResponse, ThrowOnError>({
+export const releaseorchestratorArtefatoReleaseModuloDownloadRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloDownloadData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorArtefatoReleaseModuloDownloadResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorArtefatoReleaseModuloDownloadResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}/download',
     ...options,
   });
 
-export const listar23Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar23Data, ThrowOnError>,
-): HttpRequest<Listar23Response> =>
-  (options?.client ?? client).requestOptions<Listar23Response, ThrowOnError>({
+export const releaseorchestratorReleaseModuloVersaoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseModuloVersaoListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseModuloVersaoListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseModuloVersaoListarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos-versao',
     ...options,
   });
 
-export const validarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ValidarData, ThrowOnError>,
-): HttpRequest<ValidarResponse> =>
-  (options?.client ?? client).requestOptions<ValidarResponse, ThrowOnError>({
+export const releaseorchestratorReleaseValidarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseValidarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseValidarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseValidarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{id}/validar',
     ...options,
   });
 
-export const historicoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<HistoricoData, ThrowOnError>,
-): HttpRequest<HistoricoResponse> =>
-  (options?.client ?? client).requestOptions<HistoricoResponse, ThrowOnError>({
+export const releaseorchestratorReleaseHistoricoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseHistoricoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseHistoricoResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseHistoricoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/releases/{id}/historico',
     ...options,
   });
 
-export const buscar17Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar17Data, ThrowOnError>,
-): HttpRequest<Buscar17Response> =>
-  (options?.client ?? client).requestOptions<Buscar17Response, ThrowOnError>({
+export const releaseorchestratorReleaseFontesBuildRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseFontesBuildData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseFontesBuildResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorReleaseFontesBuildResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/releases/{id}/fontes-build',
+    ...options,
+  });
+
+export const releaseorchestratorReleaseDisponiveisDeployRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorReleaseDisponiveisDeployData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorReleaseDisponiveisDeployResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorReleaseDisponiveisDeployResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/releases/disponiveis-deploy',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteFontesVersaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorInstalacaoClienteFontesVersaoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteFontesVersaoResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteFontesVersaoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/instalacoes/{id}/fontes-versao',
+    ...options,
+  });
+
+export const releaseorchestratorInstalacaoClienteSugerirPortasRequest = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<ReleaseorchestratorInstalacaoClienteSugerirPortasData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorInstalacaoClienteSugerirPortasResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorInstalacaoClienteSugerirPortasResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/instalacoes/portas-sugeridas',
+    ...options,
+  });
+
+export const releaseorchestratorEntregaBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{id}',
     ...options,
   });
 
-export const downloadPacoteRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DownloadPacoteData, ThrowOnError>,
-): HttpRequest<DownloadPacoteResponse> =>
-  (options?.client ?? client).requestOptions<DownloadPacoteResponse, ThrowOnError>({
+export const releaseorchestratorEntregaDownloadPacoteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaDownloadPacoteData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaDownloadPacoteResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaDownloadPacoteResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{id}/pacote/download',
     ...options,
   });
 
-export const listar24Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar24Data, ThrowOnError>,
-): HttpRequest<Listar24Response> =>
-  (options?.client ?? client).requestOptions<Listar24Response, ThrowOnError>({
+export const releaseorchestratorEntregaModuloListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorEntregaModuloListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorEntregaModuloListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorEntregaModuloListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/modulos',
     ...options,
   });
 
-export const gerar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Gerar2Data, ThrowOnError>,
-): HttpRequest<Gerar2Response> =>
-  (options?.client ?? client).requestOptions<Gerar2Response, ThrowOnError>({
+export const releaseorchestratorDocumentoEntregaGerarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDocumentoEntregaGerarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDocumentoEntregaGerarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDocumentoEntregaGerarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/documento',
     ...options,
   });
 
-export const listar25Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar25Data, ThrowOnError>,
-): HttpRequest<Listar25Response> =>
-  (options?.client ?? client).requestOptions<Listar25Response, ThrowOnError>({
+export const releaseorchestratorDeltaEntregaListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeltaEntregaListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeltaEntregaListarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDeltaEntregaListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta',
     ...options,
   });
 
-export const resumoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ResumoData, ThrowOnError>,
-): HttpRequest<ResumoResponse> =>
-  (options?.client ?? client).requestOptions<ResumoResponse, ThrowOnError>({
+export const releaseorchestratorDeltaEntregaResumoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeltaEntregaResumoData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeltaEntregaResumoResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDeltaEntregaResumoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/entregas/{entregaId}/delta/resumo',
     ...options,
   });
 
-export const listar26Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar26Data, ThrowOnError>,
-): HttpRequest<Listar26Response> =>
-  (options?.client ?? client).requestOptions<Listar26Response, ThrowOnError>({
+export const releaseorchestratorDeployInstalacaoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeployInstalacaoBuscarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeployInstalacaoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<ReleaseorchestratorDeployInstalacaoBuscarResponse, ThrowOnError>(
+    {
+      responseStyle: 'data',
+      method: 'GET',
+      url: '/api/v1/release-orchestrator/deploys/{id}',
+      ...options,
+    },
+  );
+
+export const releaseorchestratorDeployInstalacaoPreviewRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorDeployInstalacaoPreviewData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorDeployInstalacaoPreviewResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorDeployInstalacaoPreviewResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/release-orchestrator/deploys/preview',
+    ...options,
+  });
+
+export const releaseorchestratorClienteProdutoModuloListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteProdutoModuloListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteProdutoModuloListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteProdutoModuloListarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/produtos/{clienteProdutoId}/modulos',
     ...options,
   });
 
-export const listar27Request = <ThrowOnError extends boolean = false>(
-  options: Options<Listar27Data, ThrowOnError>,
-): HttpRequest<Listar27Response> =>
-  (options?.client ?? client).requestOptions<Listar27Response, ThrowOnError>({
+export const releaseorchestratorClienteFuncionalidadeListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorClienteFuncionalidadeListarData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorClienteFuncionalidadeListarResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorClienteFuncionalidadeListarResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/release-orchestrator/clientes/{clienteId}/funcionalidades',
     ...options,
   });
 
-export const listar28Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar28Data, ThrowOnError>,
-): HttpRequest<Listar28Response> =>
-  (options?.client ?? client).requestOptions<Listar28Response, ThrowOnError>({
+export const identityaccessSessaoListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessSessaoListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessSessaoListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessSessaoListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/sessoes',
     ...options,
   });
 
-export const listar29Request = <ThrowOnError extends boolean = false>(
-  options?: Options<Listar29Data, ThrowOnError>,
-): HttpRequest<Listar29Response> =>
-  (options?.client ?? client).requestOptions<Listar29Response, ThrowOnError>({
+export const identityaccessHistoricoLoginListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessHistoricoLoginListarData, ThrowOnError>,
+): HttpRequest<IdentityaccessHistoricoLoginListarResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessHistoricoLoginListarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/historico-login',
     ...options,
   });
 
-export const permissoesRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<PermissoesData, ThrowOnError>,
-): HttpRequest<PermissoesResponse> =>
-  (options?.client ?? client).requestOptions<PermissoesResponse, ThrowOnError>({
+export const identityaccessCatalogoPermissoesRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessCatalogoPermissoesData, ThrowOnError>,
+): HttpRequest<IdentityaccessCatalogoPermissoesResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessCatalogoPermissoesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/catalogo/permissoes',
     ...options,
   });
 
-export const funcionalidadesRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<FuncionalidadesData, ThrowOnError>,
-): HttpRequest<FuncionalidadesResponse> =>
-  (options?.client ?? client).requestOptions<FuncionalidadesResponse, ThrowOnError>({
+export const identityaccessCatalogoFuncionalidadesRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessCatalogoFuncionalidadesData, ThrowOnError>,
+): HttpRequest<IdentityaccessCatalogoFuncionalidadesResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessCatalogoFuncionalidadesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/catalogo/funcionalidades',
     ...options,
   });
 
-export const dominiosRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<DominiosData, ThrowOnError>,
-): HttpRequest<DominiosResponse> =>
-  (options?.client ?? client).requestOptions<DominiosResponse, ThrowOnError>({
+export const identityaccessCatalogoDominiosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessCatalogoDominiosData, ThrowOnError>,
+): HttpRequest<IdentityaccessCatalogoDominiosResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessCatalogoDominiosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/catalogo/dominios',
     ...options,
   });
 
-export const recentesRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<RecentesData, ThrowOnError>,
-): HttpRequest<RecentesResponse> =>
-  (options?.client ?? client).requestOptions<RecentesResponse, ThrowOnError>({
+export const identityaccessAuditoriaRecentesRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessAuditoriaRecentesData, ThrowOnError>,
+): HttpRequest<IdentityaccessAuditoriaRecentesResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAuditoriaRecentesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/rbac/auditoria',
     ...options,
   });
 
-export const downloadZipRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DownloadZipData, ThrowOnError>,
-): HttpRequest<DownloadZipResponse> =>
-  (options?.client ?? client).requestOptions<DownloadZipResponse, ThrowOnError>({
+export const docflowPublicDownloadDownloadZipRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicDownloadDownloadZipData, ThrowOnError>,
+): HttpRequest<DocflowPublicDownloadDownloadZipResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicDownloadDownloadZipResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/public/publicacoes/download',
     ...options,
   });
 
-export const previewRequest = <ThrowOnError extends boolean = false>(
-  options: Options<PreviewData, ThrowOnError>,
-): HttpRequest<PreviewResponse> =>
-  (options?.client ?? client).requestOptions<PreviewResponse, ThrowOnError>({
+export const docflowPreviewPreviewRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPreviewPreviewData, ThrowOnError>,
+): HttpRequest<DocflowPreviewPreviewResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPreviewPreviewResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/preview/{token}',
     ...options,
   });
 
-export const excluir14Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir14Data, ThrowOnError>,
-): HttpRequest<Excluir14Response> =>
-  (options?.client ?? client).requestOptions<Excluir14Response, ThrowOnError>({
+export const docflowPublicacaoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoExcluirData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoExcluirResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/publicacoes/{id}',
     ...options,
   });
 
-export const buscar18Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar18Data, ThrowOnError>,
-): HttpRequest<Buscar18Response> =>
-  (options?.client ?? client).requestOptions<Buscar18Response, ThrowOnError>({
+export const docflowPublicacaoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoBuscarData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoBuscarResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/{id}',
     ...options,
   });
 
-export const download1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Download1Data, ThrowOnError>,
-): HttpRequest<Download1Response> =>
-  (options?.client ?? client).requestOptions<Download1Response, ThrowOnError>({
+export const docflowPublicacaoArvorePaginasRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoArvorePaginasData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoArvorePaginasResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoArvorePaginasResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/{id}/paginas',
+    ...options,
+  });
+
+export const docflowPublicacaoHtmlDaPaginaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoHtmlDaPaginaData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoHtmlDaPaginaResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoHtmlDaPaginaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/{id}/paginas/{paginaId}/html',
+    ...options,
+  });
+
+export const docflowPublicacaoDownloadRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoDownloadData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoDownloadResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoDownloadResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/{id}/download',
     ...options,
   });
 
-export const emitirTokenDownloadRequest = <ThrowOnError extends boolean = false>(
-  options: Options<EmitirTokenDownloadData, ThrowOnError>,
-): HttpRequest<EmitirTokenDownloadResponse> =>
-  (options?.client ?? client).requestOptions<EmitirTokenDownloadResponse, ThrowOnError>({
+export const docflowPublicacaoEmitirTokenDownloadRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoEmitirTokenDownloadData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoEmitirTokenDownloadResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoEmitirTokenDownloadResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/{id}/download-token',
     ...options,
   });
 
-export const downloadPdfRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DownloadPdfData, ThrowOnError>,
-): HttpRequest<DownloadPdfResponse> =>
-  (options?.client ?? client).requestOptions<DownloadPdfResponse, ThrowOnError>({
+export const docflowPublicacaoDownloadPdfRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoDownloadPdfData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoDownloadPdfResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoDownloadPdfResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/{id}/download-pdf',
     ...options,
   });
 
-export const changelogRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ChangelogData, ThrowOnError>,
-): HttpRequest<ChangelogResponse> =>
-  (options?.client ?? client).requestOptions<ChangelogResponse, ThrowOnError>({
+export const docflowPublicacaoDiffRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoDiffData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoDiffResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoDiffResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/{id}/diff',
+    ...options,
+  });
+
+export const docflowPublicacaoChangelogRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoChangelogData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoChangelogResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoChangelogResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/{id}/changelog',
     ...options,
   });
 
-export const preview1Request = <ThrowOnError extends boolean = false>(
-  options: Options<Preview1Data, ThrowOnError>,
-): HttpRequest<Preview1Response> =>
-  (options?.client ?? client).requestOptions<Preview1Response, ThrowOnError>({
+export const docflowPublicacaoPreviewRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoPreviewData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoPreviewResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoPreviewResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/preview',
     ...options,
   });
 
-export const previewHtmlRequest = <ThrowOnError extends boolean = false>(
-  options: Options<PreviewHtmlData, ThrowOnError>,
-): HttpRequest<PreviewHtmlResponse> =>
-  (options?.client ?? client).requestOptions<PreviewHtmlResponse, ThrowOnError>({
+export const docflowPublicacaoPreviewHtmlRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoPreviewHtmlData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoPreviewHtmlResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoPreviewHtmlResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/preview-html',
     ...options,
   });
 
-export const diagnosticoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<DiagnosticoData, ThrowOnError>,
-): HttpRequest<DiagnosticoResponse> =>
-  (options?.client ?? client).requestOptions<DiagnosticoResponse, ThrowOnError>({
+export const docflowPublicacaoEventosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPublicacaoEventosData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoEventosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoEventosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/publicacoes/eventos',
+    ...options,
+  });
+
+export const docflowPublicacaoDiagnosticoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPublicacaoDiagnosticoData, ThrowOnError>,
+): HttpRequest<DocflowPublicacaoDiagnosticoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPublicacaoDiagnosticoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/publicacoes/diagnostico',
     ...options,
   });
 
-export const baixarAnexoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<BaixarAnexoData, ThrowOnError>,
-): HttpRequest<BaixarAnexoResponse> =>
-  (options?.client ?? client).requestOptions<BaixarAnexoResponse, ThrowOnError>({
+export const docflowPaginaBaixarAnexoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaBaixarAnexoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBaixarAnexoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBaixarAnexoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}/download',
     ...options,
   });
 
-export const revisoesRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RevisoesData, ThrowOnError>,
-): HttpRequest<RevisoesResponse> =>
-  (options?.client ?? client).requestOptions<RevisoesResponse, ThrowOnError>({
+export const docflowPaginaRevisoesRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaRevisoesData, ThrowOnError>,
+): HttpRequest<DocflowPaginaRevisoesResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaRevisoesResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{id}/revisoes',
     ...options,
   });
 
-export const qualidadeRequest = <ThrowOnError extends boolean = false>(
-  options: Options<QualidadeData, ThrowOnError>,
-): HttpRequest<QualidadeResponse> =>
-  (options?.client ?? client).requestOptions<QualidadeResponse, ThrowOnError>({
+export const docflowPaginaQualidadeRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaQualidadeData, ThrowOnError>,
+): HttpRequest<DocflowPaginaQualidadeResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaQualidadeResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{id}/qualidade',
     ...options,
   });
 
-export const preview2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Preview2Data, ThrowOnError>,
-): HttpRequest<Preview2Response> =>
-  (options?.client ?? client).requestOptions<Preview2Response, ThrowOnError>({
+export const docflowPaginaPreviewRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaPreviewData, ThrowOnError>,
+): HttpRequest<DocflowPaginaPreviewResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaPreviewResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/{id}/preview',
     ...options,
   });
 
-export const versoesTemplateRequest = <ThrowOnError extends boolean = false>(
-  options: Options<VersoesTemplateData, ThrowOnError>,
-): HttpRequest<VersoesTemplateResponse> =>
-  (options?.client ?? client).requestOptions<VersoesTemplateResponse, ThrowOnError>({
+export const docflowPaginaVersoesTemplateRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaVersoesTemplateData, ThrowOnError>,
+): HttpRequest<DocflowPaginaVersoesTemplateResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaVersoesTemplateResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/templates/{templateId}/versoes',
     ...options,
   });
 
-export const resumoPorStatusGlobalRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<ResumoPorStatusGlobalData, ThrowOnError>,
-): HttpRequest<ResumoPorStatusGlobalResponse> =>
-  (options?.client ?? client).requestOptions<ResumoPorStatusGlobalResponse, ThrowOnError>({
+export const docflowPaginaResumoPorStatusGlobalRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaResumoPorStatusGlobalData, ThrowOnError>,
+): HttpRequest<DocflowPaginaResumoPorStatusGlobalResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaResumoPorStatusGlobalResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/paginas/resumo-por-status',
     ...options,
   });
 
-export const vinculosRequest = <ThrowOnError extends boolean = false>(
-  options: Options<VinculosData, ThrowOnError>,
-): HttpRequest<VinculosResponse> =>
-  (options?.client ?? client).requestOptions<VinculosResponse, ThrowOnError>({
+export const docflowPaginaMinhasRevisoesRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaMinhasRevisoesData, ThrowOnError>,
+): HttpRequest<DocflowPaginaMinhasRevisoesResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaMinhasRevisoesResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/minhas-revisoes',
+    ...options,
+  });
+
+export const docflowPaginaEventosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaEventosData, ThrowOnError>,
+): HttpRequest<DocflowPaginaEventosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaEventosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/eventos',
+    ...options,
+  });
+
+export const docflowPaginaBlueprintsRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaBlueprintsData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBlueprintsResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBlueprintsResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/blueprints',
+    ...options,
+  });
+
+export const docflowPaginaBlocosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaBlocosData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBlocosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBlocosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/blocos',
+    ...options,
+  });
+
+export const docflowPaginaBibliotecaRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaBibliotecaData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBibliotecaResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBibliotecaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/biblioteca',
+    ...options,
+  });
+
+export const docflowPaginaBibliotecaAnexosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowPaginaBibliotecaAnexosData, ThrowOnError>,
+): HttpRequest<DocflowPaginaBibliotecaAnexosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaBibliotecaAnexosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/paginas/anexos',
+    ...options,
+  });
+
+export const docflowDocFlowDashboardResumoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowDocFlowDashboardResumoData, ThrowOnError>,
+): HttpRequest<DocflowDocFlowDashboardResumoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowDocFlowDashboardResumoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/dashboard/resumo',
+    ...options,
+  });
+
+export const docflowClienteVinculosRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowClienteVinculosData, ThrowOnError>,
+): HttpRequest<DocflowClienteVinculosResponse> =>
+  (options?.client ?? client).requestOptions<DocflowClienteVinculosResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/docflow/clientes/{id}/vinculos',
     ...options,
   });
 
-export const meRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<MeData, ThrowOnError>,
-): HttpRequest<MeResponse2> =>
-  (options?.client ?? client).requestOptions<MeResponse2, ThrowOnError>({
+export const docflowAjudaMetricasRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowAjudaMetricasData, ThrowOnError>,
+): HttpRequest<DocflowAjudaMetricasResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaMetricasResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/metricas',
+    ...options,
+  });
+
+export const docflowAjudaListarAdministracaoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowAjudaListarAdministracaoData, ThrowOnError>,
+): HttpRequest<DocflowAjudaListarAdministracaoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowAjudaListarAdministracaoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/ajuda/conteudos/admin',
+    ...options,
+  });
+
+export const identityaccessAuthMeRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<IdentityaccessAuthMeData, ThrowOnError>,
+): HttpRequest<IdentityaccessAuthMeResponse> =>
+  (options?.client ?? client).requestOptions<IdentityaccessAuthMeResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/auth/me',
     ...options,
   });
 
-export const excluir15Request = <ThrowOnError extends boolean = false>(
-  options: Options<Excluir15Data, ThrowOnError>,
-): HttpRequest<Excluir15Response> =>
-  (options?.client ?? client).requestOptions<Excluir15Response, ThrowOnError>({
+export const aiAiStatusStatusRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiStatusStatusData, ThrowOnError>,
+): HttpRequest<AiAiStatusStatusResponse> =>
+  (options?.client ?? client).requestOptions<AiAiStatusStatusResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/status',
+    ...options,
+  });
+
+export const aiAiSessaoBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoBuscarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoBuscarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoBuscarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/sessoes/{id}',
+    ...options,
+  });
+
+export const aiAiSessaoPropostaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoPropostaData, ThrowOnError>,
+): HttpRequest<AiAiSessaoPropostaResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoPropostaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
+export const aiAiDocumentoImportacaoBuscarImportacaoDocumentoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiDocumentoImportacaoBuscarImportacaoDocumentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/importacoes/{id}',
+    ...options,
+  });
+
+export const aiAiEventEventosRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiEventEventosData, ThrowOnError>,
+): HttpRequest<AiAiEventEventosResponse> =>
+  (options?.client ?? client).requestOptions<AiAiEventEventosResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/eventos',
+    ...options,
+  });
+
+export const releaseorchestratorArtefatoReleaseModuloExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<ReleaseorchestratorArtefatoReleaseModuloExcluirData, ThrowOnError>,
+): HttpRequest<ReleaseorchestratorArtefatoReleaseModuloExcluirResponse> =>
+  (options?.client ?? client).requestOptions<
+    ReleaseorchestratorArtefatoReleaseModuloExcluirResponse,
+    ThrowOnError
+  >({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/release-orchestrator/releases/{releaseId}/modulos/{moduloId}/artefatos/{id}',
     ...options,
   });
 
-export const revogar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Revogar2Data, ThrowOnError>,
+export const docflowPreviewRevogarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPreviewRevogarData, ThrowOnError>,
 ): HttpRequest<unknown> =>
   (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
     responseStyle: 'data',
@@ -2637,2208 +3760,2406 @@ export const revogar2Request = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
-export const excluirAnexoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ExcluirAnexoData, ThrowOnError>,
-): HttpRequest<ExcluirAnexoResponse> =>
-  (options?.client ?? client).requestOptions<ExcluirAnexoResponse, ThrowOnError>({
+export const docflowPaginaExcluirAnexoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaExcluirAnexoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaExcluirAnexoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaExcluirAnexoResponse, ThrowOnError>({
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
     ...options,
   });
 
-export const arvorePaginasRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ArvorePaginasData, ThrowOnError>,
-): HttpRequest<ArvorePaginasResponse> =>
-  (options?.client ?? client).requestOptions<ArvorePaginasResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/publicacoes/{id}/paginas',
-    ...options,
-  });
-
-export const reprocessarLoteRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ReprocessarLoteData, ThrowOnError>,
-): HttpRequest<ReprocessarLoteResponse> =>
-  (options?.client ?? client).requestOptions<ReprocessarLoteResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/docflow/publicacoes/reprocessar-lote',
-    ...options,
-  });
-
-export const bibliotecaAnexosRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<BibliotecaAnexosData, ThrowOnError>,
-): HttpRequest<BibliotecaAnexosResponse> =>
-  (options?.client ?? client).requestOptions<BibliotecaAnexosResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/paginas/anexos',
-    ...options,
-  });
-
-export const comentarRevisaoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ComentarRevisaoData, ThrowOnError>,
-): HttpRequest<ComentarRevisaoResponse> =>
-  (options?.client ?? client).requestOptions<ComentarRevisaoResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/docflow/paginas/{id}/revisoes/comentarios',
-    ...options,
-  });
-
-export const resumoRequest2 = <ThrowOnError extends boolean = false>(
-  options?: Options<Resumo2Data, ThrowOnError>,
-): HttpRequest<Resumo2Response> =>
-  (options?.client ?? client).requestOptions<Resumo2Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/dashboard/resumo',
-    ...options,
-  });
-
-export const listarAjudaRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<ListarAjudaData, ThrowOnError>,
-): HttpRequest<ListarAjudaResponse> =>
-  (options?.client ?? client).requestOptions<ListarAjudaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/ajuda/conteudos',
-    ...options,
-  });
-
-export const criarAjudaRequest = <ThrowOnError extends boolean = false>(
-  options: Options<CriarAjudaData, ThrowOnError>,
-): HttpRequest<CriarAjudaResponse> =>
-  (options?.client ?? client).requestOptions<CriarAjudaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/docflow/ajuda/conteudos',
-    ...options,
-  });
-
-export const listarAjudaAdminRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<ListarAjudaAdminData, ThrowOnError>,
-): HttpRequest<ListarAjudaAdminResponse> =>
-  (options?.client ?? client).requestOptions<ListarAjudaAdminResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/ajuda/conteudos/admin',
-    ...options,
-  });
-
-export const excluirAjudaRequest = <ThrowOnError extends boolean = false>(
-  options: Options<ExcluirAjudaData, ThrowOnError>,
-): HttpRequest<ExcluirAjudaResponse> =>
-  (options?.client ?? client).requestOptions<ExcluirAjudaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'DELETE',
-    url: '/api/v1/docflow/ajuda/conteudos/{id}',
-    ...options,
-  });
-
-export const atualizarAjudaRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AtualizarAjudaData, ThrowOnError>,
-): HttpRequest<AtualizarAjudaResponse> =>
-  (options?.client ?? client).requestOptions<AtualizarAjudaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'PUT',
-    url: '/api/v1/docflow/ajuda/conteudos/{id}',
-    ...options,
-  });
-
-export const registrarAjudaEventoRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RegistrarAjudaEventoData, ThrowOnError>,
-): HttpRequest<RegistrarAjudaEventoResponse> =>
-  (options?.client ?? client).requestOptions<RegistrarAjudaEventoResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/docflow/ajuda/eventos',
-    ...options,
-  });
-
-export const metricasAjudaRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<MetricasAjudaData, ThrowOnError>,
-): HttpRequest<MetricasAjudaResponse> =>
-  (options?.client ?? client).requestOptions<MetricasAjudaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/ajuda/metricas',
-    ...options,
-  });
-
-export const eventosPaginaRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<EventosPaginaData, ThrowOnError>,
-): HttpRequest<EventosPaginaResponse> =>
-  (options?.client ?? client).requestOptions<EventosPaginaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/paginas/eventos',
-    ...options,
-  });
-
-export const eventosPublicacaoRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<EventosPublicacaoData, ThrowOnError>,
-): HttpRequest<EventosPublicacaoResponse> =>
-  (options?.client ?? client).requestOptions<EventosPublicacaoResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/publicacoes/eventos',
-    ...options,
-  });
-
-export const recomendarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<RecomendarData, ThrowOnError>,
-): HttpRequest<RecomendarResponse> =>
-  (options?.client ?? client).requestOptions<RecomendarResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/templates/recomendacao',
-    ...options,
-  });
-
-export const blocosRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<BlocosData, ThrowOnError>,
-): HttpRequest<BlocosResponse> =>
-  (options?.client ?? client).requestOptions<BlocosResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/paginas/blocos',
-    ...options,
-  });
-
-export const criar19Request = <ThrowOnError extends boolean = false>(
-  options: Options<Criar19Data, ThrowOnError>,
-): HttpRequest<Criar19Response> =>
-  (options?.client ?? client).requestOptions<Criar19Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes',
-    ...options,
-  });
-
-export const enviarMensagemRequest = <ThrowOnError extends boolean = false>(
-  options: Options<EnviarMensagemData, ThrowOnError>,
-): HttpRequest<EnviarMensagemResponse> =>
-  (options?.client ?? client).requestOptions<EnviarMensagemResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/mensagens',
-    ...options,
-  });
-
-export const gerar1Request2 = <ThrowOnError extends boolean = false>(
-  options: Options<Gerar12Data, ThrowOnError>,
-): HttpRequest<Gerar12Response> =>
-  (options?.client ?? client).requestOptions<Gerar12Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/gerar',
-    ...options,
-  });
-
-export const cancelar2Request = <ThrowOnError extends boolean = false>(
-  options: Options<Cancelar2Data, ThrowOnError>,
-): HttpRequest<Cancelar2Response> =>
-  (options?.client ?? client).requestOptions<Cancelar2Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/cancelar',
-    ...options,
+export const releaseorchestratorReleaseTemplateExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseTemplateExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseTemplateExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseTemplateExcluirRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseTemplateBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseTemplateBuscarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseTemplateBuscarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseTemplateBuscarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseTemplateAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseTemplateAtualizarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseTemplateAtualizarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseTemplateAtualizarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseModuloVersaoRemoverResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseModuloVersaoRemoverData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseModuloVersaoRemoverResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseModuloVersaoRemoverRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseModuloVersaoSalvarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseModuloVersaoSalvarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseModuloVersaoSalvarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseModuloVersaoSalvarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseItemRemoverResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemRemoverData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseItemRemoverResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseItemRemoverRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseItemAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemAtualizarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseItemAtualizarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseItemAtualizarRequest(opts) : undefined;
   });
 
-export const aplicarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AplicarData, ThrowOnError>,
-): HttpRequest<AplicarResponse> =>
-  (options?.client ?? client).requestOptions<AplicarResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/aplicar',
-    ...options,
+export const releaseorchestratorReleaseItemReordenarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemReordenarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseItemReordenarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseItemReordenarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorReleaseExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseExcluirRequest(opts) : undefined;
   });
 
-export const statusRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<StatusData, ThrowOnError>,
-): HttpRequest<StatusResponse> =>
-  (options?.client ?? client).requestOptions<StatusResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/ai/status',
-    ...options,
+export const releaseorchestratorReleaseBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseBuscarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseBuscarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseBuscarRequest(opts) : undefined;
   });
 
-export const buscar19Request = <ThrowOnError extends boolean = false>(
-  options: Options<Buscar19Data, ThrowOnError>,
-): HttpRequest<Buscar19Response> =>
-  (options?.client ?? client).requestOptions<Buscar19Response, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/ai/sessoes/{id}',
-    ...options,
+export const releaseorchestratorReleaseAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseAtualizarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseAtualizarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseAtualizarRequest(opts) : undefined;
   });
 
-export const propostaRequest = <ThrowOnError extends boolean = false>(
-  options: Options<PropostaData, ThrowOnError>,
-): HttpRequest<PropostaResponse> =>
-  (options?.client ?? client).requestOptions<PropostaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/ai/sessoes/{id}/proposta',
-    ...options,
+export const releaseorchestratorReleaseListarManifestosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseListarManifestosData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseListarManifestosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseListarManifestosRequest(opts) : undefined;
   });
 
-export const blueprintsRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<BlueprintsData, ThrowOnError>,
-): HttpRequest<BlueprintsResponse> =>
-  (options?.client ?? client).requestOptions<BlueprintsResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/paginas/blueprints',
-    ...options,
+export const releaseorchestratorReleaseSalvarManifestoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseSalvarManifestoData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorReleaseSalvarManifestoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorReleaseSalvarManifestoRequest(opts) : undefined;
   });
 
-export const bibliotecaRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<BibliotecaData, ThrowOnError>,
-): HttpRequest<BibliotecaResponse> =>
-  (options?.client ?? client).requestOptions<BibliotecaResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/docflow/paginas/biblioteca',
-    ...options,
+export const releaseorchestratorProximaEntregaExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProximaEntregaExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorProximaEntregaExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorProximaEntregaExcluirRequest(opts) : undefined;
   });
 
-export const excluirResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ExcluirData, ThrowOnError> | undefined,
+export const releaseorchestratorProximaEntregaBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProximaEntregaBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ExcluirResponse>(() => {
+  httpResource<ReleaseorchestratorProximaEntregaBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluirRequest(opts) : undefined;
+    return opts ? releaseorchestratorProximaEntregaBuscarRequest(opts) : undefined;
   });
 
-export const buscarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<BuscarData, ThrowOnError> | undefined,
+export const releaseorchestratorProximaEntregaAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProximaEntregaAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<BuscarResponse>(() => {
+  httpResource<ReleaseorchestratorProximaEntregaAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscarRequest(opts) : undefined;
+    return opts ? releaseorchestratorProximaEntregaAtualizarRequest(opts) : undefined;
   });
 
-export const atualizarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AtualizarData, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AtualizarResponse>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizarRequest(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoExcluirRequest(opts) : undefined;
   });
 
-export const removerResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RemoverData, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RemoverResponse>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? removerRequest(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoBuscarRequest(opts) : undefined;
   });
 
-export const salvarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<SalvarData, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<SalvarResponse>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvarRequest(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoAtualizarRequest(opts) : undefined;
   });
 
-export const remover1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Remover1Data, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Remover1Response>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? remover1Request(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoExcluirRequest(opts) : undefined;
   });
 
-export const atualizar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar1Response>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar1Request(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoBuscarRequest(opts) : undefined;
   });
 
-export const reordenarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReordenarData, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ReordenarResponse>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reordenarRequest(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoAtualizarRequest(opts) : undefined;
   });
 
-export const excluir1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir1Data, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir1Response>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir1Request(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoExcluirRequest(opts) : undefined;
   });
 
-export const buscar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar1Response>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar1Request(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoBuscarRequest(opts) : undefined;
   });
 
-export const atualizar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar2Data, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoAtualizarResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar2Response>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar2Request(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoAtualizarRequest(opts) : undefined;
   });
 
-export const excluir2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir2Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir2Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir2Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhExcluirRequest(opts) : undefined;
   });
 
-export const buscar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar2Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar2Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar2Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhBuscarRequest(opts) : undefined;
   });
 
-export const atualizar3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar3Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar3Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar3Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhAtualizarRequest(opts) : undefined;
   });
 
-export const excluir3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir3Data, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir3Response>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir3Request(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteExcluirRequest(opts) : undefined;
   });
 
-export const buscar3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar3Data, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar3Response>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar3Request(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteBuscarRequest(opts) : undefined;
   });
 
-export const atualizar4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar4Data, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar4Response>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar4Request(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteAtualizarRequest(opts) : undefined;
   });
 
-export const excluir4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir4Data, ThrowOnError> | undefined,
+export const releaseorchestratorHostExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorHostExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir4Response>(() => {
+  httpResource<ReleaseorchestratorHostExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir4Request(opts) : undefined;
+    return opts ? releaseorchestratorHostExcluirRequest(opts) : undefined;
   });
 
-export const buscar4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar4Data, ThrowOnError> | undefined,
+export const releaseorchestratorHostBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorHostBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar4Response>(() => {
+  httpResource<ReleaseorchestratorHostBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar4Request(opts) : undefined;
+    return opts ? releaseorchestratorHostBuscarRequest(opts) : undefined;
   });
 
-export const atualizar5Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar5Data, ThrowOnError> | undefined,
+export const releaseorchestratorHostAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorHostAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar5Response>(() => {
+  httpResource<ReleaseorchestratorHostAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar5Request(opts) : undefined;
+    return opts ? releaseorchestratorHostAtualizarRequest(opts) : undefined;
   });
 
-export const excluir5Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir5Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaAtualizarRascunhoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaAtualizarRascunhoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir5Response>(() => {
+  httpResource<ReleaseorchestratorEntregaAtualizarRascunhoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir5Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaAtualizarRascunhoRequest(opts) : undefined;
   });
 
-export const buscar5Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar5Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar5Response>(() => {
+  httpResource<ReleaseorchestratorClienteExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar5Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteExcluirRequest(opts) : undefined;
   });
 
-export const atualizar6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar6Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar6Response>(() => {
+  httpResource<ReleaseorchestratorClienteBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar6Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteBuscarRequest(opts) : undefined;
   });
 
-export const excluir6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir6Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir6Response>(() => {
+  httpResource<ReleaseorchestratorClienteAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir6Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteAtualizarRequest(opts) : undefined;
   });
 
-export const buscar6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar6Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteProdutoRescindirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoRescindirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar6Response>(() => {
+  httpResource<ReleaseorchestratorClienteProdutoRescindirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar6Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteProdutoRescindirRequest(opts) : undefined;
   });
 
-export const atualizar7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar7Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteProdutoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar7Response>(() => {
+  httpResource<ReleaseorchestratorClienteProdutoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar7Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteProdutoBuscarRequest(opts) : undefined;
   });
 
-export const atualizarRascunhoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AtualizarRascunhoData, ThrowOnError> | undefined,
+export const releaseorchestratorClienteProdutoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AtualizarRascunhoResponse>(() => {
+  httpResource<ReleaseorchestratorClienteProdutoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizarRascunhoRequest(opts) : undefined;
+    return opts ? releaseorchestratorClienteProdutoAtualizarRequest(opts) : undefined;
   });
 
-export const excluir7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir7Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteProdutoModuloRemoverResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoModuloRemoverData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir7Response>(() => {
+  httpResource<ReleaseorchestratorClienteProdutoModuloRemoverResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir7Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteProdutoModuloRemoverRequest(opts) : undefined;
   });
 
-export const buscar7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar7Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteProdutoModuloSalvarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoModuloSalvarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar7Response>(() => {
+  httpResource<ReleaseorchestratorClienteProdutoModuloSalvarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar7Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteProdutoModuloSalvarRequest(opts) : undefined;
   });
 
-export const atualizar8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar8Data, ThrowOnError> | undefined,
+export const releaseorchestratorClienteFuncionalidadeRemoverResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteFuncionalidadeRemoverData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar8Response>(() => {
+  httpResource<ReleaseorchestratorClienteFuncionalidadeRemoverResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar8Request(opts) : undefined;
+    return opts ? releaseorchestratorClienteFuncionalidadeRemoverRequest(opts) : undefined;
   });
 
-export const rescindirResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RescindirData, ThrowOnError> | undefined,
+export const releaseorchestratorClienteFuncionalidadeSalvarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteFuncionalidadeSalvarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RescindirResponse>(() => {
+  httpResource<ReleaseorchestratorClienteFuncionalidadeSalvarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? rescindirRequest(opts) : undefined;
+    return opts ? releaseorchestratorClienteFuncionalidadeSalvarRequest(opts) : undefined;
   });
 
-export const buscar8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar8Data, ThrowOnError> | undefined,
+export const releaseorchestratorContatoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorContatoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar8Response>(() => {
+  httpResource<ReleaseorchestratorContatoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar8Request(opts) : undefined;
+    return opts ? releaseorchestratorContatoExcluirRequest(opts) : undefined;
   });
 
-export const atualizar9Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar9Data, ThrowOnError> | undefined,
+export const releaseorchestratorContatoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorContatoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar9Response>(() => {
+  httpResource<ReleaseorchestratorContatoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar9Request(opts) : undefined;
+    return opts ? releaseorchestratorContatoBuscarRequest(opts) : undefined;
   });
 
-export const remover2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Remover2Data, ThrowOnError> | undefined,
+export const releaseorchestratorContatoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorContatoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Remover2Response>(() => {
+  httpResource<ReleaseorchestratorContatoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? remover2Request(opts) : undefined;
+    return opts ? releaseorchestratorContatoAtualizarRequest(opts) : undefined;
   });
 
-export const salvar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Salvar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorConfigEntregaBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorConfigEntregaBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Salvar1Response>(() => {
+  httpResource<ReleaseorchestratorConfigEntregaBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvar1Request(opts) : undefined;
+    return opts ? releaseorchestratorConfigEntregaBuscarRequest(opts) : undefined;
   });
 
-export const remover3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Remover3Data, ThrowOnError> | undefined,
+export const releaseorchestratorConfigEntregaSalvarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorConfigEntregaSalvarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Remover3Response>(() => {
+  httpResource<ReleaseorchestratorConfigEntregaSalvarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? remover3Request(opts) : undefined;
+    return opts ? releaseorchestratorConfigEntregaSalvarRequest(opts) : undefined;
   });
 
-export const salvar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Salvar2Data, ThrowOnError> | undefined,
+export const identityaccessUsuarioBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Salvar2Response>(() => {
+  httpResource<IdentityaccessUsuarioBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvar2Request(opts) : undefined;
+    return opts ? identityaccessUsuarioBuscarRequest(opts) : undefined;
   });
 
-export const excluir8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir8Data, ThrowOnError> | undefined,
+export const identityaccessUsuarioAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir8Response>(() => {
+  httpResource<IdentityaccessUsuarioAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir8Request(opts) : undefined;
+    return opts ? identityaccessUsuarioAtualizarRequest(opts) : undefined;
   });
 
-export const buscar9Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar9Data, ThrowOnError> | undefined,
+export const identityaccessUsuarioListarGruposResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioListarGruposData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar9Response>(() => {
+  httpResource<IdentityaccessUsuarioListarGruposResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar9Request(opts) : undefined;
+    return opts ? identityaccessUsuarioListarGruposRequest(opts) : undefined;
   });
 
-export const atualizar10Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar10Data, ThrowOnError> | undefined,
+export const identityaccessUsuarioSalvarGruposResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioSalvarGruposData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar10Response>(() => {
+  httpResource<IdentityaccessUsuarioSalvarGruposResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar10Request(opts) : undefined;
+    return opts ? identityaccessUsuarioSalvarGruposRequest(opts) : undefined;
   });
 
-export const buscar10Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar10Data, ThrowOnError> | undefined,
+export const identityaccessPoliticaSenhaAtualResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessPoliticaSenhaAtualData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar10Response>(() => {
+  httpResource<IdentityaccessPoliticaSenhaAtualResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar10Request(opts) : undefined;
+    return opts ? identityaccessPoliticaSenhaAtualRequest(opts) : undefined;
   });
 
-export const salvar3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Salvar3Data, ThrowOnError> | undefined,
+export const identityaccessPoliticaSenhaAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessPoliticaSenhaAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Salvar3Response>(() => {
+  httpResource<IdentityaccessPoliticaSenhaAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvar3Request(opts) : undefined;
+    return opts ? identityaccessPoliticaSenhaAtualizarRequest(opts) : undefined;
   });
 
-export const buscar11Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar11Data, ThrowOnError> | undefined,
+export const identityaccessGrupoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar11Response>(() => {
+  httpResource<IdentityaccessGrupoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar11Request(opts) : undefined;
+    return opts ? identityaccessGrupoExcluirRequest(opts) : undefined;
   });
 
-export const atualizar11Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar11Data, ThrowOnError> | undefined,
+export const identityaccessGrupoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar11Response>(() => {
+  httpResource<IdentityaccessGrupoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar11Request(opts) : undefined;
+    return opts ? identityaccessGrupoBuscarRequest(opts) : undefined;
   });
 
-export const listarGruposResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ListarGruposData, ThrowOnError> | undefined,
+export const identityaccessGrupoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ListarGruposResponse>(() => {
+  httpResource<IdentityaccessGrupoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listarGruposRequest(opts) : undefined;
+    return opts ? identityaccessGrupoAtualizarRequest(opts) : undefined;
   });
 
-export const salvarGruposResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<SalvarGruposData, ThrowOnError> | undefined,
+export const identityaccessGrupoListarMembrosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoListarMembrosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<SalvarGruposResponse>(() => {
+  httpResource<IdentityaccessGrupoListarMembrosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvarGruposRequest(opts) : undefined;
+    return opts ? identityaccessGrupoListarMembrosRequest(opts) : undefined;
   });
 
-export const atualResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<AtualData, ThrowOnError> | undefined,
+export const identityaccessGrupoSalvarMembrosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoSalvarMembrosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AtualResponse>(() => {
+  httpResource<IdentityaccessGrupoSalvarMembrosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualRequest(opts) : undefined;
+    return opts ? identityaccessGrupoSalvarMembrosRequest(opts) : undefined;
   });
 
-export const atualizar12Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar12Data, ThrowOnError> | undefined,
+export const identityaccessGrupoListarPermissoesResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoListarPermissoesData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar12Response>(() => {
+  httpResource<IdentityaccessGrupoListarPermissoesResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar12Request(opts) : undefined;
+    return opts ? identityaccessGrupoListarPermissoesRequest(opts) : undefined;
   });
 
-export const excluir9Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir9Data, ThrowOnError> | undefined,
+export const identityaccessGrupoSalvarPermissoesResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoSalvarPermissoesData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir9Response>(() => {
+  httpResource<IdentityaccessGrupoSalvarPermissoesResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir9Request(opts) : undefined;
+    return opts ? identityaccessGrupoSalvarPermissoesRequest(opts) : undefined;
   });
 
-export const buscar12Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar12Data, ThrowOnError> | undefined,
+export const identityaccessEscopoAcessoRemoverResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessEscopoAcessoRemoverData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar12Response>(() => {
+  httpResource<IdentityaccessEscopoAcessoRemoverResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar12Request(opts) : undefined;
+    return opts ? identityaccessEscopoAcessoRemoverRequest(opts) : undefined;
   });
 
-export const atualizar13Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar13Data, ThrowOnError> | undefined,
+export const identityaccessEscopoAcessoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessEscopoAcessoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar13Response>(() => {
+  httpResource<IdentityaccessEscopoAcessoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar13Request(opts) : undefined;
+    return opts ? identityaccessEscopoAcessoAtualizarRequest(opts) : undefined;
   });
 
-export const listarMembrosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ListarMembrosData, ThrowOnError> | undefined,
+export const docflowProjetoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowProjetoExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ListarMembrosResponse>(() => {
+  httpResource<DocflowProjetoExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listarMembrosRequest(opts) : undefined;
+    return opts ? docflowProjetoExcluirRequest(opts) : undefined;
   });
 
-export const salvarMembrosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<SalvarMembrosData, ThrowOnError> | undefined,
+export const docflowProjetoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowProjetoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<SalvarMembrosResponse>(() => {
+  httpResource<DocflowProjetoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvarMembrosRequest(opts) : undefined;
+    return opts ? docflowProjetoBuscarRequest(opts) : undefined;
   });
 
-export const listarPermissoesResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ListarPermissoesData, ThrowOnError> | undefined,
+export const docflowProjetoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowProjetoAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ListarPermissoesResponse>(() => {
+  httpResource<DocflowProjetoAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listarPermissoesRequest(opts) : undefined;
+    return opts ? docflowProjetoAtualizarRequest(opts) : undefined;
   });
 
-export const salvarPermissoesResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<SalvarPermissoesData, ThrowOnError> | undefined,
+export const docflowPaginaExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<SalvarPermissoesResponse>(() => {
+  httpResource<DocflowPaginaExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvarPermissoesRequest(opts) : undefined;
+    return opts ? docflowPaginaExcluirRequest(opts) : undefined;
   });
 
-export const remover4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Remover4Data, ThrowOnError> | undefined,
+export const docflowPaginaBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Remover4Response>(() => {
+  httpResource<DocflowPaginaBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? remover4Request(opts) : undefined;
+    return opts ? docflowPaginaBuscarRequest(opts) : undefined;
   });
 
-export const atualizar14Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar14Data, ThrowOnError> | undefined,
+export const docflowPaginaAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar14Response>(() => {
+  httpResource<DocflowPaginaAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar14Request(opts) : undefined;
+    return opts ? docflowPaginaAtualizarRequest(opts) : undefined;
   });
 
-export const excluir10Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir10Data, ThrowOnError> | undefined,
+export const docflowPaginaAutosaveResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAutosaveData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir10Response>(() => {
+  httpResource<DocflowPaginaAutosaveResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir10Request(opts) : undefined;
+    return opts ? docflowPaginaAutosaveRequest(opts) : undefined;
   });
 
-export const buscar13Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar13Data, ThrowOnError> | undefined,
+export const docflowPaginaExcluirTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaExcluirTemplateData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar13Response>(() => {
+  httpResource<DocflowPaginaExcluirTemplateResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar13Request(opts) : undefined;
+    return opts ? docflowPaginaExcluirTemplateRequest(opts) : undefined;
   });
 
-export const atualizar15Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar15Data, ThrowOnError> | undefined,
+export const docflowPaginaAtualizarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAtualizarTemplateData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar15Response>(() => {
+  httpResource<DocflowPaginaAtualizarTemplateResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar15Request(opts) : undefined;
+    return opts ? docflowPaginaAtualizarTemplateRequest(opts) : undefined;
   });
 
-export const excluir11Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir11Data, ThrowOnError> | undefined,
+export const docflowPaginaExcluirSnippetResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaExcluirSnippetData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir11Response>(() => {
+  httpResource<DocflowPaginaExcluirSnippetResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir11Request(opts) : undefined;
+    return opts ? docflowPaginaExcluirSnippetRequest(opts) : undefined;
   });
 
-export const buscar14Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar14Data, ThrowOnError> | undefined,
+export const docflowPaginaAtualizarSnippetResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAtualizarSnippetData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar14Response>(() => {
+  httpResource<DocflowPaginaAtualizarSnippetResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar14Request(opts) : undefined;
+    return opts ? docflowPaginaAtualizarSnippetRequest(opts) : undefined;
   });
 
-export const atualizar16Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar16Data, ThrowOnError> | undefined,
+export const docflowModuloExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowModuloExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar16Response>(() => {
+  httpResource<DocflowModuloExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar16Request(opts) : undefined;
+    return opts ? docflowModuloExcluirRequest(opts) : undefined;
   });
 
-export const autosaveResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AutosaveData, ThrowOnError> | undefined,
+export const docflowModuloBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowModuloBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AutosaveResponse>(() => {
+  httpResource<DocflowModuloBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? autosaveRequest(opts) : undefined;
+    return opts ? docflowModuloBuscarRequest(opts) : undefined;
   });
 
-export const excluirTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ExcluirTemplateData, ThrowOnError> | undefined,
+export const docflowModuloAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowModuloAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ExcluirTemplateResponse>(() => {
+  httpResource<DocflowModuloAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluirTemplateRequest(opts) : undefined;
+    return opts ? docflowModuloAtualizarRequest(opts) : undefined;
   });
 
-export const atualizarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AtualizarTemplateData, ThrowOnError> | undefined,
+export const docflowClienteExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AtualizarTemplateResponse>(() => {
+  httpResource<DocflowClienteExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizarTemplateRequest(opts) : undefined;
+    return opts ? docflowClienteExcluirRequest(opts) : undefined;
   });
 
-export const excluir12Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir12Data, ThrowOnError> | undefined,
+export const docflowClienteBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir12Response>(() => {
+  httpResource<DocflowClienteBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir12Request(opts) : undefined;
+    return opts ? docflowClienteBuscarRequest(opts) : undefined;
   });
 
-export const buscar15Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar15Data, ThrowOnError> | undefined,
+export const docflowClienteAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar15Response>(() => {
+  httpResource<DocflowClienteAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar15Request(opts) : undefined;
+    return opts ? docflowClienteAtualizarRequest(opts) : undefined;
   });
 
-export const atualizar17Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar17Data, ThrowOnError> | undefined,
+export const docflowClienteVincularProjetosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteVincularProjetosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar17Response>(() => {
+  httpResource<DocflowClienteVincularProjetosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar17Request(opts) : undefined;
+    return opts ? docflowClienteVincularProjetosRequest(opts) : undefined;
   });
 
-export const excluir13Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir13Data, ThrowOnError> | undefined,
+export const docflowClienteVincularPaginasResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteVincularPaginasData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir13Response>(() => {
+  httpResource<DocflowClienteVincularPaginasResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir13Request(opts) : undefined;
+    return opts ? docflowClienteVincularPaginasRequest(opts) : undefined;
   });
 
-export const buscar16Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar16Data, ThrowOnError> | undefined,
+export const docflowClienteVincularModulosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteVincularModulosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar16Response>(() => {
+  httpResource<DocflowClienteVincularModulosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar16Request(opts) : undefined;
+    return opts ? docflowClienteVincularModulosRequest(opts) : undefined;
   });
 
-export const atualizar18Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Atualizar18Data, ThrowOnError> | undefined,
+export const docflowAjudaExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowAjudaExcluirData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Atualizar18Response>(() => {
+  httpResource<DocflowAjudaExcluirResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? atualizar18Request(opts) : undefined;
+    return opts ? docflowAjudaExcluirRequest(opts) : undefined;
   });
 
-export const vincularProjetosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<VincularProjetosData, ThrowOnError> | undefined,
+export const docflowAjudaAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowAjudaAtualizarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<VincularProjetosResponse>(() => {
+  httpResource<DocflowAjudaAtualizarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? vincularProjetosRequest(opts) : undefined;
+    return opts ? docflowAjudaAtualizarRequest(opts) : undefined;
   });
 
-export const vincularPaginasResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<VincularPaginasData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () =>
+    Options<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaData, ThrowOnError> | undefined,
 ) =>
-  httpResource<VincularPaginasResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? vincularPaginasRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoAtualizarComposicaoPaginaImportadaRequest(opts) : undefined;
   });
 
-export const vincularModulosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<VincularModulosData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoReordenarEstruturaDocumentoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<AiAiDocumentoImportacaoReordenarEstruturaDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<VincularModulosResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoReordenarEstruturaDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? vincularModulosRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoReordenarEstruturaDocumentoRequest(opts) : undefined;
   });
 
-export const receberResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReceberData, ThrowOnError> | undefined,
+export const releaseorchestratorJenkinsWebhookReceberResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorJenkinsWebhookReceberData, ThrowOnError> | undefined,
 ) =>
   httpResource<unknown>(() => {
     const opts = options ? options() : undefined;
-    return opts ? receberRequest(opts) : undefined;
+    return opts ? releaseorchestratorJenkinsWebhookReceberRequest(opts) : undefined;
   });
 
-export const listarResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<ListarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseTemplateListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorReleaseTemplateListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ListarResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseTemplateListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseTemplateListarRequest(opts) : undefined;
   });
 
-export const criarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CriarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseTemplateCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseTemplateCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<CriarResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseTemplateCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseTemplateCriarRequest(opts) : undefined;
   });
 
-export const listar1Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorReleaseListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar1Response>(() => {
+  httpResource<ReleaseorchestratorReleaseListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar1Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseListarRequest(opts) : undefined;
   });
 
-export const criar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar1Response>(() => {
+  httpResource<ReleaseorchestratorReleaseCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar1Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseCriarRequest(opts) : undefined;
   });
 
-export const listar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar2Data, ThrowOnError> | undefined,
+export const releaseorchestratorArtefatoReleaseModuloListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorArtefatoReleaseModuloListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar2Response>(() => {
+  httpResource<ReleaseorchestratorArtefatoReleaseModuloListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar2Request(opts) : undefined;
+    return opts ? releaseorchestratorArtefatoReleaseModuloListarRequest(opts) : undefined;
   });
 
-export const uploadResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<UploadData, ThrowOnError> | undefined,
+export const releaseorchestratorArtefatoReleaseModuloUploadResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorArtefatoReleaseModuloUploadData, ThrowOnError> | undefined,
 ) =>
-  httpResource<UploadResponse>(() => {
+  httpResource<ReleaseorchestratorArtefatoReleaseModuloUploadResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? uploadRequest(opts) : undefined;
+    return opts ? releaseorchestratorArtefatoReleaseModuloUploadRequest(opts) : undefined;
   });
 
-export const listar3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar3Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseItemListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar3Response>(() => {
+  httpResource<ReleaseorchestratorReleaseItemListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar3Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseItemListarRequest(opts) : undefined;
   });
 
-export const adicionarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AdicionarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseItemAdicionarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemAdicionarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AdicionarResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseItemAdicionarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? adicionarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseItemAdicionarRequest(opts) : undefined;
   });
 
-export const duplicarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DuplicarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseItemDuplicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseItemDuplicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DuplicarResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseItemDuplicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? duplicarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseItemDuplicarRequest(opts) : undefined;
   });
 
-export const publicarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<PublicarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleasePublicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleasePublicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<PublicarResponse>(() => {
+  httpResource<ReleaseorchestratorReleasePublicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? publicarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleasePublicarRequest(opts) : undefined;
   });
 
-export const duplicar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Duplicar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseDuplicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseDuplicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Duplicar1Response>(() => {
+  httpResource<ReleaseorchestratorReleaseDuplicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? duplicar1Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseDuplicarRequest(opts) : undefined;
   });
 
-export const cancelarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CancelarData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseDispararBuildResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseDispararBuildData, ThrowOnError> | undefined,
 ) =>
-  httpResource<CancelarResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseDispararBuildResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? cancelarRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseDispararBuildRequest(opts) : undefined;
   });
 
-export const listar4Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar4Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseCancelarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseCancelarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar4Response>(() => {
+  httpResource<ReleaseorchestratorReleaseCancelarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar4Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseCancelarRequest(opts) : undefined;
   });
 
-export const criar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar2Data, ThrowOnError> | undefined,
+export const releaseorchestratorProximaEntregaListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorProximaEntregaListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar2Response>(() => {
+  httpResource<ReleaseorchestratorProximaEntregaListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar2Request(opts) : undefined;
+    return opts ? releaseorchestratorProximaEntregaListarRequest(opts) : undefined;
   });
 
-export const listar5Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar5Data, ThrowOnError> | undefined,
+export const releaseorchestratorProximaEntregaCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProximaEntregaCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar5Response>(() => {
+  httpResource<ReleaseorchestratorProximaEntregaCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar5Request(opts) : undefined;
+    return opts ? releaseorchestratorProximaEntregaCriarRequest(opts) : undefined;
   });
 
-export const criar3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar3Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorProdutoRhListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar3Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar3Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhListarRequest(opts) : undefined;
   });
 
-export const listar6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar6Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar6Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar6Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhCriarRequest(opts) : undefined;
   });
 
-export const criar4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar4Data, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar4Response>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar4Request(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoListarRequest(opts) : undefined;
   });
 
-export const listar7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar7Data, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar7Response>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar7Request(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoCriarRequest(opts) : undefined;
   });
 
-export const criar5Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar5Data, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar5Response>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar5Request(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoListarRequest(opts) : undefined;
   });
 
-export const listar8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar8Data, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar8Response>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar8Request(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoCriarRequest(opts) : undefined;
   });
 
-export const criar6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar6Data, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar6Response>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar6Request(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoListarRequest(opts) : undefined;
   });
 
-export const testarJenkinsResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<TestarJenkinsData, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<TestarJenkinsResponse2>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? testarJenkinsRequest(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoCriarRequest(opts) : undefined;
   });
 
-export const testarGithubResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<TestarGithubData, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhTestarJenkinsResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhTestarJenkinsData, ThrowOnError> | undefined,
 ) =>
-  httpResource<TestarGithubResponse2>(() => {
+  httpResource<ReleaseorchestratorProdutoRhTestarJenkinsResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? testarGithubRequest(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhTestarJenkinsRequest(opts) : undefined;
   });
 
-export const listar9Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar9Data, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhTestarGithubResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhTestarGithubData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar9Response>(() => {
+  httpResource<ReleaseorchestratorProdutoRhTestarGithubResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar9Request(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhTestarGithubRequest(opts) : undefined;
   });
 
-export const criar7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar7Data, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorInstalacaoClienteListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar7Response>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar7Request(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteListarRequest(opts) : undefined;
   });
 
-export const reentregarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReentregarData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ReentregarResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reentregarRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteCriarRequest(opts) : undefined;
   });
 
-export const reagendarPublicacaoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReagendarPublicacaoData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClientePararResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClientePararData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ReagendarPublicacaoResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClientePararResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reagendarPublicacaoRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClientePararRequest(opts) : undefined;
   });
 
-export const cancelar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Cancelar1Data, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteIniciarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteIniciarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Cancelar1Response>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteIniciarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? cancelar1Request(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteIniciarRequest(opts) : undefined;
   });
 
-export const inicializarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<InicializarData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteResolverVersaoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteResolverVersaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<InicializarResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteResolverVersaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? inicializarRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteResolverVersaoRequest(opts) : undefined;
   });
 
-export const iniciarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<IniciarData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteDispararBuildResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteDispararBuildData, ThrowOnError> | undefined,
 ) =>
-  httpResource<IniciarResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteDispararBuildResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? iniciarRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteDispararBuildRequest(opts) : undefined;
   });
 
-export const calcularResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CalcularData, ThrowOnError> | undefined,
+export const releaseorchestratorHostListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorHostListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<CalcularResponse>(() => {
+  httpResource<ReleaseorchestratorHostListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? calcularRequest(opts) : undefined;
+    return opts ? releaseorchestratorHostListarRequest(opts) : undefined;
   });
 
-export const listar10Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar10Data, ThrowOnError> | undefined,
+export const releaseorchestratorHostCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorHostCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar10Response>(() => {
+  httpResource<ReleaseorchestratorHostCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar10Request(opts) : undefined;
+    return opts ? releaseorchestratorHostCriarRequest(opts) : undefined;
   });
 
-export const criar8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar8Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorEntregaListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar8Response>(() => {
+  httpResource<ReleaseorchestratorEntregaListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar8Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaListarRequest(opts) : undefined;
   });
 
-export const listar11Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar11Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar11Response>(() => {
+  httpResource<ReleaseorchestratorEntregaCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar11Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaCriarRequest(opts) : undefined;
   });
 
-export const contratarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ContratarData, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaReentregarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaReentregarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ContratarResponse>(() => {
+  httpResource<ReleaseorchestratorEntregaReentregarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? contratarRequest(opts) : undefined;
+    return opts ? releaseorchestratorEntregaReentregarRequest(opts) : undefined;
   });
 
-export const listar12Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar12Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaReagendarPublicacaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaReagendarPublicacaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar12Response>(() => {
+  httpResource<ReleaseorchestratorEntregaReagendarPublicacaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar12Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaReagendarPublicacaoRequest(opts) : undefined;
   });
 
-export const criar9Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar9Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaCancelarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaCancelarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar9Response>(() => {
+  httpResource<ReleaseorchestratorEntregaCancelarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar9Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaCancelarRequest(opts) : undefined;
   });
 
-export const testarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<TestarData, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaModuloInicializarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaModuloInicializarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<TestarResponse>(() => {
+  httpResource<ReleaseorchestratorEntregaModuloInicializarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? testarRequest(opts) : undefined;
+    return opts ? releaseorchestratorEntregaModuloInicializarRequest(opts) : undefined;
   });
 
-export const listar13Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar13Data, ThrowOnError> | undefined,
+export const releaseorchestratorGeracaoEntregaIniciarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorGeracaoEntregaIniciarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar13Response>(() => {
+  httpResource<ReleaseorchestratorGeracaoEntregaIniciarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar13Request(opts) : undefined;
+    return opts ? releaseorchestratorGeracaoEntregaIniciarRequest(opts) : undefined;
   });
 
-export const criar10Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar10Data, ThrowOnError> | undefined,
+export const releaseorchestratorDeltaEntregaCalcularResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeltaEntregaCalcularData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar10Response>(() => {
+  httpResource<ReleaseorchestratorDeltaEntregaCalcularResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar10Request(opts) : undefined;
+    return opts ? releaseorchestratorDeltaEntregaCalcularRequest(opts) : undefined;
   });
 
-export const alterarBloqueioResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarBloqueioData, ThrowOnError> | undefined,
+export const releaseorchestratorDeployInstalacaoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorDeployInstalacaoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarBloqueioResponse>(() => {
+  httpResource<ReleaseorchestratorDeployInstalacaoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarBloqueioRequest(opts) : undefined;
+    return opts ? releaseorchestratorDeployInstalacaoListarRequest(opts) : undefined;
   });
 
-export const alterarSenhaResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarSenhaData, ThrowOnError> | undefined,
+export const releaseorchestratorDeployInstalacaoExecutarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeployInstalacaoExecutarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorDeployInstalacaoExecutarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorDeployInstalacaoExecutarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorDeployInstalacaoExecutarLoteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeployInstalacaoExecutarLoteData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorDeployInstalacaoExecutarLoteResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorDeployInstalacaoExecutarLoteRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<ReleaseorchestratorClienteListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteListarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteCriarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteCriarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteCriarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteProdutoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteProdutoListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteProdutoListarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteProdutoContratarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoContratarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteProdutoContratarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteProdutoContratarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorContatoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorContatoListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorContatoListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorContatoListarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorContatoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorContatoCriarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorContatoCriarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorContatoCriarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorConfigEntregaTestarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorConfigEntregaTestarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorConfigEntregaTestarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorConfigEntregaTestarRequest(opts) : undefined;
+  });
+
+export const identityaccessUsuarioListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessUsuarioListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessUsuarioListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessUsuarioListarRequest(opts) : undefined;
+  });
+
+export const identityaccessUsuarioCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioCriarData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessUsuarioCriarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessUsuarioCriarRequest(opts) : undefined;
+  });
+
+export const identityaccessUsuarioAlterarBloqueioResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioAlterarBloqueioData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessUsuarioAlterarBloqueioResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessUsuarioAlterarBloqueioRequest(opts) : undefined;
+  });
+
+export const identityaccessUsuarioAlterarSenhaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessUsuarioAlterarSenhaData, ThrowOnError> | undefined,
 ) =>
   httpResource<unknown>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarSenhaRequest(opts) : undefined;
+    return opts ? identityaccessUsuarioAlterarSenhaRequest(opts) : undefined;
   });
 
-export const revogarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RevogarData, ThrowOnError> | undefined,
+export const identityaccessSessaoRevogarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessSessaoRevogarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RevogarResponse>(() => {
+  httpResource<IdentityaccessSessaoRevogarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? revogarRequest(opts) : undefined;
+    return opts ? identityaccessSessaoRevogarRequest(opts) : undefined;
   });
 
-export const listar14Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar14Data, ThrowOnError> | undefined,
+export const identityaccessGrupoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessGrupoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar14Response>(() => {
+  httpResource<IdentityaccessGrupoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar14Request(opts) : undefined;
+    return opts ? identityaccessGrupoListarRequest(opts) : undefined;
   });
 
-export const criar11Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar11Data, ThrowOnError> | undefined,
+export const identityaccessGrupoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar11Response>(() => {
+  httpResource<IdentityaccessGrupoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar11Request(opts) : undefined;
+    return opts ? identityaccessGrupoCriarRequest(opts) : undefined;
   });
 
-export const listar15Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar15Data, ThrowOnError> | undefined,
+export const identityaccessEscopoAcessoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessEscopoAcessoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar15Response>(() => {
+  httpResource<IdentityaccessEscopoAcessoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar15Request(opts) : undefined;
+    return opts ? identityaccessEscopoAcessoListarRequest(opts) : undefined;
   });
 
-export const criar12Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar12Data, ThrowOnError> | undefined,
+export const identityaccessEscopoAcessoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessEscopoAcessoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar12Response>(() => {
+  httpResource<IdentityaccessEscopoAcessoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar12Request(opts) : undefined;
+    return opts ? identityaccessEscopoAcessoCriarRequest(opts) : undefined;
   });
 
-export const listar16Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar16Data, ThrowOnError> | undefined,
+export const identityaccessAcessoTemporarioListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessAcessoTemporarioListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar16Response>(() => {
+  httpResource<IdentityaccessAcessoTemporarioListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar16Request(opts) : undefined;
+    return opts ? identityaccessAcessoTemporarioListarRequest(opts) : undefined;
   });
 
-export const criar13Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar13Data, ThrowOnError> | undefined,
+export const identityaccessAcessoTemporarioCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessAcessoTemporarioCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar13Response>(() => {
+  httpResource<IdentityaccessAcessoTemporarioCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar13Request(opts) : undefined;
+    return opts ? identityaccessAcessoTemporarioCriarRequest(opts) : undefined;
   });
 
-export const revogar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Revogar1Data, ThrowOnError> | undefined,
+export const identityaccessAcessoTemporarioRevogarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessAcessoTemporarioRevogarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Revogar1Response>(() => {
+  httpResource<IdentityaccessAcessoTemporarioRevogarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? revogar1Request(opts) : undefined;
+    return opts ? identityaccessAcessoTemporarioRevogarRequest(opts) : undefined;
   });
 
-export const listar17Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar17Data, ThrowOnError> | undefined,
+export const docflowPreviewListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPreviewListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar17Response>(() => {
+  httpResource<DocflowPreviewListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar17Request(opts) : undefined;
+    return opts ? docflowPreviewListarRequest(opts) : undefined;
   });
 
-export const gerarTokenResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<GerarTokenData, ThrowOnError> | undefined,
+export const docflowPreviewGerarTokenResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPreviewGerarTokenData, ThrowOnError> | undefined,
 ) =>
-  httpResource<GerarTokenResponse>(() => {
+  httpResource<DocflowPreviewGerarTokenResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? gerarTokenRequest(opts) : undefined;
+    return opts ? docflowPreviewGerarTokenRequest(opts) : undefined;
   });
 
-export const listar18Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar18Data, ThrowOnError> | undefined,
+export const docflowPublicacaoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPublicacaoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar18Response>(() => {
+  httpResource<DocflowPublicacaoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar18Request(opts) : undefined;
+    return opts ? docflowPublicacaoListarRequest(opts) : undefined;
   });
 
-export const gerarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<GerarData, ThrowOnError> | undefined,
+export const docflowPublicacaoGerarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoGerarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<GerarResponse>(() => {
+  httpResource<DocflowPublicacaoGerarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? gerarRequest(opts) : undefined;
+    return opts ? docflowPublicacaoGerarRequest(opts) : undefined;
   });
 
-export const reprocessarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReprocessarData, ThrowOnError> | undefined,
+export const docflowPublicacaoReprocessarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoReprocessarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ReprocessarResponse>(() => {
+  httpResource<DocflowPublicacaoReprocessarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reprocessarRequest(opts) : undefined;
+    return opts ? docflowPublicacaoReprocessarRequest(opts) : undefined;
   });
 
-export const listar19Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar19Data, ThrowOnError> | undefined,
+export const docflowPublicacaoCancelarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoCancelarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar19Response>(() => {
+  httpResource<DocflowPublicacaoCancelarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar19Request(opts) : undefined;
+    return opts ? docflowPublicacaoCancelarRequest(opts) : undefined;
   });
 
-export const criar14Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar14Data, ThrowOnError> | undefined,
+export const docflowPublicacaoReprocessarLoteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoReprocessarLoteData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar14Response>(() => {
+  httpResource<DocflowPublicacaoReprocessarLoteResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar14Request(opts) : undefined;
+    return opts ? docflowPublicacaoReprocessarLoteRequest(opts) : undefined;
   });
 
-export const listar20Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar20Data, ThrowOnError> | undefined,
+export const docflowProjetoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowProjetoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar20Response>(() => {
+  httpResource<DocflowProjetoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar20Request(opts) : undefined;
+    return opts ? docflowProjetoListarRequest(opts) : undefined;
   });
 
-export const criar15Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar15Data, ThrowOnError> | undefined,
+export const docflowProjetoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowProjetoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar15Response>(() => {
+  httpResource<DocflowProjetoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar15Request(opts) : undefined;
+    return opts ? docflowProjetoCriarRequest(opts) : undefined;
   });
 
-export const salvarRascunhoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<SalvarRascunhoData, ThrowOnError> | undefined,
+export const docflowPaginaListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<SalvarRascunhoResponse>(() => {
+  httpResource<DocflowPaginaListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? salvarRascunhoRequest(opts) : undefined;
+    return opts ? docflowPaginaListarRequest(opts) : undefined;
   });
 
-export const publicar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Publicar1Data, ThrowOnError> | undefined,
+export const docflowPaginaCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Publicar1Response>(() => {
+  httpResource<DocflowPaginaCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? publicar1Request(opts) : undefined;
+    return opts ? docflowPaginaCriarRequest(opts) : undefined;
   });
 
-export const enviarRevisaoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<EnviarRevisaoData, ThrowOnError> | undefined,
+export const docflowPaginaSalvarRascunhoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaSalvarRascunhoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<EnviarRevisaoResponse>(() => {
+  httpResource<DocflowPaginaSalvarRascunhoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? enviarRevisaoRequest(opts) : undefined;
+    return opts ? docflowPaginaSalvarRascunhoRequest(opts) : undefined;
   });
 
-export const duplicar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Duplicar2Data, ThrowOnError> | undefined,
+export const docflowPaginaAtribuirRevisorResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAtribuirRevisorData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Duplicar2Response>(() => {
+  httpResource<DocflowPaginaAtribuirRevisorResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? duplicar2Request(opts) : undefined;
+    return opts ? docflowPaginaAtribuirRevisorRequest(opts) : undefined;
   });
 
-export const arquivarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ArquivarData, ThrowOnError> | undefined,
+export const docflowPaginaComentarRevisaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaComentarRevisaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ArquivarResponse>(() => {
+  httpResource<DocflowPaginaComentarRevisaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? arquivarRequest(opts) : undefined;
+    return opts ? docflowPaginaComentarRevisaoRequest(opts) : undefined;
   });
 
-export const aprovarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AprovarData, ThrowOnError> | undefined,
+export const docflowPaginaPublicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaPublicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AprovarResponse>(() => {
+  httpResource<DocflowPaginaPublicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? aprovarRequest(opts) : undefined;
+    return opts ? docflowPaginaPublicarRequest(opts) : undefined;
   });
 
-export const anexosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AnexosData, ThrowOnError> | undefined,
+export const docflowPaginaEnviarRevisaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaEnviarRevisaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AnexosResponse>(() => {
+  httpResource<DocflowPaginaEnviarRevisaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? anexosRequest(opts) : undefined;
+    return opts ? docflowPaginaEnviarRevisaoRequest(opts) : undefined;
   });
 
-export const anexarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AnexarData, ThrowOnError> | undefined,
+export const docflowPaginaDuplicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaDuplicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AnexarResponse>(() => {
+  httpResource<DocflowPaginaDuplicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? anexarRequest(opts) : undefined;
+    return opts ? docflowPaginaDuplicarRequest(opts) : undefined;
   });
 
-export const templatesResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<TemplatesData, ThrowOnError> | undefined,
+export const docflowPaginaArquivarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaArquivarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<TemplatesResponse>(() => {
+  httpResource<DocflowPaginaArquivarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? templatesRequest(opts) : undefined;
+    return opts ? docflowPaginaArquivarRequest(opts) : undefined;
   });
 
-export const criarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CriarTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaAprovarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAprovarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<CriarTemplateResponse>(() => {
+  httpResource<DocflowPaginaAprovarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criarTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaAprovarRequest(opts) : undefined;
   });
 
-export const restaurarVersaoTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RestaurarVersaoTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaAnexosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAnexosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RestaurarVersaoTemplateResponse>(() => {
+  httpResource<DocflowPaginaAnexosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? restaurarVersaoTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaAnexosRequest(opts) : undefined;
   });
 
-export const reativarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReativarTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaAnexarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAnexarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ReativarTemplateResponse>(() => {
+  httpResource<DocflowPaginaAnexarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reativarTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaAnexarRequest(opts) : undefined;
   });
 
-export const duplicarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DuplicarTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaTemplatesResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaTemplatesData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DuplicarTemplateResponse>(() => {
+  httpResource<DocflowPaginaTemplatesResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? duplicarTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaTemplatesRequest(opts) : undefined;
   });
 
-export const arquivarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ArquivarTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaCriarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaCriarTemplateData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ArquivarTemplateResponse>(() => {
+  httpResource<DocflowPaginaCriarTemplateResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? arquivarTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaCriarTemplateRequest(opts) : undefined;
   });
 
-export const aplicarTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AplicarTemplateData, ThrowOnError> | undefined,
+export const docflowPaginaRestaurarVersaoTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaRestaurarVersaoTemplateData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AplicarTemplateResponse>(() => {
+  httpResource<DocflowPaginaRestaurarVersaoTemplateResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? aplicarTemplateRequest(opts) : undefined;
+    return opts ? docflowPaginaRestaurarVersaoTemplateRequest(opts) : undefined;
   });
 
-export const reordenar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Reordenar1Data, ThrowOnError> | undefined,
+export const docflowPaginaReativarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaReativarTemplateData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaReativarTemplateResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaReativarTemplateRequest(opts) : undefined;
+  });
+
+export const docflowPaginaDuplicarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaDuplicarTemplateData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaDuplicarTemplateResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaDuplicarTemplateRequest(opts) : undefined;
+  });
+
+export const docflowPaginaArquivarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaArquivarTemplateData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaArquivarTemplateResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaArquivarTemplateRequest(opts) : undefined;
+  });
+
+export const docflowPaginaAplicarTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaAplicarTemplateData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaAplicarTemplateResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaAplicarTemplateRequest(opts) : undefined;
+  });
+
+export const docflowPaginaSnippetsResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaSnippetsData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaSnippetsResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaSnippetsRequest(opts) : undefined;
+  });
+
+export const docflowPaginaCriarSnippetResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaCriarSnippetData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaCriarSnippetResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaCriarSnippetRequest(opts) : undefined;
+  });
+
+export const docflowPaginaReordenarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaReordenarData, ThrowOnError> | undefined,
 ) =>
   httpResource<unknown>(() => {
     const opts = options ? options() : undefined;
-    return opts ? reordenar1Request(opts) : undefined;
+    return opts ? docflowPaginaReordenarRequest(opts) : undefined;
   });
 
-export const listar21Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar21Data, ThrowOnError> | undefined,
+export const docflowModuloListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowModuloListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar21Response>(() => {
+  httpResource<DocflowModuloListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar21Request(opts) : undefined;
+    return opts ? docflowModuloListarRequest(opts) : undefined;
   });
 
-export const criar16Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar16Data, ThrowOnError> | undefined,
+export const docflowModuloCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowModuloCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar16Response>(() => {
+  httpResource<DocflowModuloCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar16Request(opts) : undefined;
+    return opts ? docflowModuloCriarRequest(opts) : undefined;
   });
 
-export const deleteLogoResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<DeleteLogoData, ThrowOnError> | undefined,
+export const docflowEmpresaDeleteLogoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowEmpresaDeleteLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DeleteLogoResponse>(() => {
+  httpResource<DocflowEmpresaDeleteLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? deleteLogoRequest(opts) : undefined;
+    return opts ? docflowEmpresaDeleteLogoRequest(opts) : undefined;
   });
 
-export const getLogoResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<GetLogoData, ThrowOnError> | undefined,
+export const docflowEmpresaGetLogoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowEmpresaGetLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<GetLogoResponse>(() => {
+  httpResource<DocflowEmpresaGetLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? getLogoRequest(opts) : undefined;
+    return opts ? docflowEmpresaGetLogoRequest(opts) : undefined;
   });
 
-export const uploadLogoResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<UploadLogoData, ThrowOnError> | undefined,
+export const docflowEmpresaUploadLogoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowEmpresaUploadLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<UploadLogoResponse>(() => {
+  httpResource<DocflowEmpresaUploadLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? uploadLogoRequest(opts) : undefined;
+    return opts ? docflowEmpresaUploadLogoRequest(opts) : undefined;
   });
 
-export const listar22Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar22Data, ThrowOnError> | undefined,
+export const docflowClienteListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowClienteListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar22Response>(() => {
+  httpResource<DocflowClienteListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar22Request(opts) : undefined;
+    return opts ? docflowClienteListarRequest(opts) : undefined;
   });
 
-export const criar17Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar17Data, ThrowOnError> | undefined,
+export const docflowClienteCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Criar17Response>(() => {
+  httpResource<DocflowClienteCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? criar17Request(opts) : undefined;
+    return opts ? docflowClienteCriarRequest(opts) : undefined;
   });
 
-export const deleteLogo1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DeleteLogo1Data, ThrowOnError> | undefined,
+export const docflowClienteDeleteLogoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteDeleteLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DeleteLogo1Response>(() => {
+  httpResource<DocflowClienteDeleteLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? deleteLogo1Request(opts) : undefined;
+    return opts ? docflowClienteDeleteLogoRequest(opts) : undefined;
   });
 
-export const getLogo1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<GetLogo1Data, ThrowOnError> | undefined,
+export const docflowClienteGetLogoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteGetLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<GetLogo1Response>(() => {
+  httpResource<DocflowClienteGetLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? getLogo1Request(opts) : undefined;
+    return opts ? docflowClienteGetLogoRequest(opts) : undefined;
   });
 
-export const uploadLogo1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<UploadLogo1Data, ThrowOnError> | undefined,
+export const docflowClienteUploadLogoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteUploadLogoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<UploadLogo1Response>(() => {
+  httpResource<DocflowClienteUploadLogoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? uploadLogo1Request(opts) : undefined;
+    return opts ? docflowClienteUploadLogoRequest(opts) : undefined;
   });
 
-export const copiarVinculosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CopiarVinculosData, ThrowOnError> | undefined,
+export const docflowClienteCopiarVinculosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteCopiarVinculosData, ThrowOnError> | undefined,
 ) =>
-  httpResource<CopiarVinculosResponse>(() => {
+  httpResource<DocflowClienteCopiarVinculosResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? copiarVinculosRequest(opts) : undefined;
+    return opts ? docflowClienteCopiarVinculosRequest(opts) : undefined;
   });
 
-export const loginResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<LoginData, ThrowOnError> | undefined,
+export const docflowAjudaRegistrarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowAjudaRegistrarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<LoginResponse2>(() => {
+  httpResource<DocflowAjudaRegistrarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? loginRequest(opts) : undefined;
+    return opts ? docflowAjudaRegistrarRequest(opts) : undefined;
   });
 
-export const alterarStatusResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatusData, ThrowOnError> | undefined,
+export const docflowAjudaListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowAjudaListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatusResponse>(() => {
+  httpResource<DocflowAjudaListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatusRequest(opts) : undefined;
+    return opts ? docflowAjudaListarRequest(opts) : undefined;
   });
 
-export const alterarStatus1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus1Data, ThrowOnError> | undefined,
+export const docflowAjudaCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowAjudaCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus1Response>(() => {
+  httpResource<DocflowAjudaCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus1Request(opts) : undefined;
+    return opts ? docflowAjudaCriarRequest(opts) : undefined;
   });
 
-export const alterarStatus2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus2Data, ThrowOnError> | undefined,
+export const identityaccessAuthLoginResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessAuthLoginData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus2Response>(() => {
+  httpResource<IdentityaccessAuthLoginResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus2Request(opts) : undefined;
+    return opts ? identityaccessAuthLoginRequest(opts) : undefined;
   });
 
-export const alterarStatus3Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus3Data, ThrowOnError> | undefined,
+export const aiAiTemplateRecomendarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiTemplateRecomendarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus3Response>(() => {
+  httpResource<AiAiTemplateRecomendarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus3Request(opts) : undefined;
+    return opts ? aiAiTemplateRecomendarRequest(opts) : undefined;
   });
 
-export const alterarStatus4Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus4Data, ThrowOnError> | undefined,
+export const aiAiSessaoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoCriarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus4Response>(() => {
+  httpResource<AiAiSessaoCriarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus4Request(opts) : undefined;
+    return opts ? aiAiSessaoCriarRequest(opts) : undefined;
   });
 
-export const alterarStatus5Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus5Data, ThrowOnError> | undefined,
+export const aiAiSessaoEnviarMensagemResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoEnviarMensagemData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus5Response>(() => {
+  httpResource<AiAiSessaoEnviarMensagemResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus5Request(opts) : undefined;
+    return opts ? aiAiSessaoEnviarMensagemRequest(opts) : undefined;
   });
 
-export const alterarStatus6Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus6Data, ThrowOnError> | undefined,
+export const aiAiSessaoGerarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoGerarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus6Response>(() => {
+  httpResource<AiAiSessaoGerarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus6Request(opts) : undefined;
+    return opts ? aiAiSessaoGerarRequest(opts) : undefined;
   });
 
-export const alterarSelecaoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarSelecaoData, ThrowOnError> | undefined,
+export const aiAiSessaoCancelarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoCancelarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarSelecaoResponse>(() => {
+  httpResource<AiAiSessaoCancelarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarSelecaoRequest(opts) : undefined;
+    return opts ? aiAiSessaoCancelarRequest(opts) : undefined;
   });
 
-export const alterarStatus7Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus7Data, ThrowOnError> | undefined,
+export const aiAiSessaoAplicarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoAplicarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus7Response>(() => {
+  httpResource<AiAiSessaoAplicarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus7Request(opts) : undefined;
+    return opts ? aiAiSessaoAplicarRequest(opts) : undefined;
   });
 
-export const alterarStatus8Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus8Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoImportarDocumentoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiDocumentoImportacaoImportarDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus8Response>(() => {
+  httpResource<AiAiDocumentoImportacaoImportarDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus8Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoImportarDocumentoRequest(opts) : undefined;
   });
 
-export const alterarStatus9Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AlterarStatus9Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoIgnorarSugestaoDocumentoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<AlterarStatus9Response>(() => {
+  httpResource<AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? alterarStatus9Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoIgnorarSugestaoDocumentoRequest(opts) : undefined;
   });
 
-export const gerar1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Gerar1Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoAceitarSugestaoDocumentoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoAceitarSugestaoDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Gerar1Response>(() => {
+  httpResource<AiAiDocumentoImportacaoAceitarSugestaoDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? gerar1Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoAceitarSugestaoDocumentoRequest(opts) : undefined;
   });
 
-export const downloadResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DownloadData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () =>
+    Options<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DownloadResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? downloadRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoAplicarSugestoesSegurasDocumentoRequest(opts) : undefined;
   });
 
-export const listar23Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar23Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoSincronizarImportacaoDocumentoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar23Response>(() => {
+  httpResource<AiAiDocumentoImportacaoSincronizarImportacaoDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar23Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoSincronizarImportacaoDocumentoRequest(opts) : undefined;
   });
 
-export const validarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ValidarData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoVincularPaginaImportadaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoVincularPaginaImportadaData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ValidarResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoVincularPaginaImportadaResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? validarRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoVincularPaginaImportadaRequest(opts) : undefined;
   });
 
-export const historicoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<HistoricoData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoSelecionarPaginaImportadaResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<AiAiDocumentoImportacaoSelecionarPaginaImportadaData, ThrowOnError> | undefined,
 ) =>
-  httpResource<HistoricoResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoSelecionarPaginaImportadaResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? historicoRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoSelecionarPaginaImportadaRequest(opts) : undefined;
   });
 
-export const buscar17Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar17Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoAceitarPaginaImportadaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoAceitarPaginaImportadaData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar17Response>(() => {
+  httpResource<AiAiDocumentoImportacaoAceitarPaginaImportadaResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar17Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoAceitarPaginaImportadaRequest(opts) : undefined;
   });
 
-export const downloadPacoteResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DownloadPacoteData, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoGerarLoteDocumentoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoGerarLoteDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DownloadPacoteResponse>(() => {
+  httpResource<AiAiDocumentoImportacaoGerarLoteDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? downloadPacoteRequest(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoGerarLoteDocumentoRequest(opts) : undefined;
   });
 
-export const listar24Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar24Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoEstimarLoteDocumentoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiDocumentoImportacaoEstimarLoteDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar24Response>(() => {
+  httpResource<AiAiDocumentoImportacaoEstimarLoteDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar24Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoEstimarLoteDocumentoRequest(opts) : undefined;
   });
 
-export const gerar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Gerar2Data, ThrowOnError> | undefined,
+export const aiAiDocumentoImportacaoConfirmarEstruturaDocumentoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Gerar2Response>(() => {
+  httpResource<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? gerar2Request(opts) : undefined;
+    return opts ? aiAiDocumentoImportacaoConfirmarEstruturaDocumentoRequest(opts) : undefined;
   });
 
-export const listar25Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar25Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseTemplateAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseTemplateAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar25Response>(() => {
+  httpResource<ReleaseorchestratorReleaseTemplateAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar25Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseTemplateAlterarStatusRequest(opts) : undefined;
   });
 
-export const resumoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ResumoData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ResumoResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? resumoRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseAlterarStatusRequest(opts) : undefined;
   });
 
-export const listar26Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar26Data, ThrowOnError> | undefined,
+export const releaseorchestratorProximaEntregaAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProximaEntregaAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar26Response>(() => {
+  httpResource<ReleaseorchestratorProximaEntregaAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar26Request(opts) : undefined;
+    return opts ? releaseorchestratorProximaEntregaAlterarStatusRequest(opts) : undefined;
   });
 
-export const listar27Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Listar27Data, ThrowOnError> | undefined,
+export const releaseorchestratorModuloProdutoAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorModuloProdutoAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar27Response>(() => {
+  httpResource<ReleaseorchestratorModuloProdutoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar27Request(opts) : undefined;
+    return opts ? releaseorchestratorModuloProdutoAlterarStatusRequest(opts) : undefined;
   });
 
-export const listar28Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar28Data, ThrowOnError> | undefined,
+export const releaseorchestratorDominioProdutoAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDominioProdutoAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar28Response>(() => {
+  httpResource<ReleaseorchestratorDominioProdutoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar28Request(opts) : undefined;
+    return opts ? releaseorchestratorDominioProdutoAlterarStatusRequest(opts) : undefined;
   });
 
-export const listar29Resource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Listar29Data, ThrowOnError> | undefined,
+export const releaseorchestratorFuncionalidadeProdutoAlterarStatusResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Listar29Response>(() => {
+  httpResource<ReleaseorchestratorFuncionalidadeProdutoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? listar29Request(opts) : undefined;
+    return opts ? releaseorchestratorFuncionalidadeProdutoAlterarStatusRequest(opts) : undefined;
   });
 
-export const permissoesResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<PermissoesData, ThrowOnError> | undefined,
+export const releaseorchestratorProdutoRhAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorProdutoRhAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<PermissoesResponse>(() => {
+  httpResource<ReleaseorchestratorProdutoRhAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? permissoesRequest(opts) : undefined;
+    return opts ? releaseorchestratorProdutoRhAlterarStatusRequest(opts) : undefined;
   });
 
-export const funcionalidadesResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<FuncionalidadesData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteAlterarStatusResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<FuncionalidadesResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? funcionalidadesRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteAlterarStatusRequest(opts) : undefined;
   });
 
-export const dominiosResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<DominiosData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteRegistrarHealthResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteRegistrarHealthData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DominiosResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteRegistrarHealthResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? dominiosRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteRegistrarHealthRequest(opts) : undefined;
   });
 
-export const recentesResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<RecentesData, ThrowOnError> | undefined,
+export const releaseorchestratorHostAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorHostAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RecentesResponse>(() => {
+  httpResource<ReleaseorchestratorHostAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? recentesRequest(opts) : undefined;
+    return opts ? releaseorchestratorHostAlterarStatusRequest(opts) : undefined;
   });
 
-export const downloadZipResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DownloadZipData, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaModuloAlterarSelecaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaModuloAlterarSelecaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DownloadZipResponse>(() => {
+  httpResource<ReleaseorchestratorEntregaModuloAlterarSelecaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? downloadZipRequest(opts) : undefined;
+    return opts ? releaseorchestratorEntregaModuloAlterarSelecaoRequest(opts) : undefined;
   });
 
-export const previewResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<PreviewData, ThrowOnError> | undefined,
+export const releaseorchestratorClienteAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<PreviewResponse>(() => {
+  httpResource<ReleaseorchestratorClienteAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? previewRequest(opts) : undefined;
+    return opts ? releaseorchestratorClienteAlterarStatusRequest(opts) : undefined;
   });
 
-export const excluir14Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir14Data, ThrowOnError> | undefined,
+export const identityaccessGrupoAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessGrupoAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir14Response>(() => {
+  httpResource<IdentityaccessGrupoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir14Request(opts) : undefined;
+    return opts ? identityaccessGrupoAlterarStatusRequest(opts) : undefined;
   });
 
-export const buscar18Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar18Data, ThrowOnError> | undefined,
+export const identityaccessEscopoAcessoAlterarStatusResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<IdentityaccessEscopoAcessoAlterarStatusData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Buscar18Response>(() => {
+  httpResource<IdentityaccessEscopoAcessoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? buscar18Request(opts) : undefined;
+    return opts ? identityaccessEscopoAcessoAlterarStatusRequest(opts) : undefined;
   });
 
-export const download1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Download1Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleasePdfGerarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleasePdfGerarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Download1Response>(() => {
+  httpResource<ReleaseorchestratorReleasePdfGerarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? download1Request(opts) : undefined;
+    return opts ? releaseorchestratorReleasePdfGerarRequest(opts) : undefined;
   });
 
-export const emitirTokenDownloadResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<EmitirTokenDownloadData, ThrowOnError> | undefined,
+export const releaseorchestratorArtefatoReleaseModuloDownloadResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorArtefatoReleaseModuloDownloadData, ThrowOnError> | undefined,
 ) =>
-  httpResource<EmitirTokenDownloadResponse>(() => {
+  httpResource<ReleaseorchestratorArtefatoReleaseModuloDownloadResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? emitirTokenDownloadRequest(opts) : undefined;
+    return opts ? releaseorchestratorArtefatoReleaseModuloDownloadRequest(opts) : undefined;
   });
 
-export const downloadPdfResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DownloadPdfData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseModuloVersaoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseModuloVersaoListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DownloadPdfResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseModuloVersaoListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? downloadPdfRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseModuloVersaoListarRequest(opts) : undefined;
   });
 
-export const changelogResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ChangelogData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseValidarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseValidarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ChangelogResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseValidarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? changelogRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseValidarRequest(opts) : undefined;
   });
 
-export const preview1Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Preview1Data, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseHistoricoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseHistoricoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Preview1Response>(() => {
+  httpResource<ReleaseorchestratorReleaseHistoricoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? preview1Request(opts) : undefined;
+    return opts ? releaseorchestratorReleaseHistoricoRequest(opts) : undefined;
   });
 
-export const previewHtmlResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<PreviewHtmlData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseFontesBuildResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseFontesBuildData, ThrowOnError> | undefined,
 ) =>
-  httpResource<PreviewHtmlResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseFontesBuildResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? previewHtmlRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseFontesBuildRequest(opts) : undefined;
   });
 
-export const diagnosticoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<DiagnosticoData, ThrowOnError> | undefined,
+export const releaseorchestratorReleaseDisponiveisDeployResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorReleaseDisponiveisDeployData, ThrowOnError> | undefined,
 ) =>
-  httpResource<DiagnosticoResponse>(() => {
+  httpResource<ReleaseorchestratorReleaseDisponiveisDeployResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? diagnosticoRequest(opts) : undefined;
+    return opts ? releaseorchestratorReleaseDisponiveisDeployRequest(opts) : undefined;
   });
 
-export const baixarAnexoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<BaixarAnexoData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteFontesVersaoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<ReleaseorchestratorInstalacaoClienteFontesVersaoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<BaixarAnexoResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteFontesVersaoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? baixarAnexoRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteFontesVersaoRequest(opts) : undefined;
   });
 
-export const revisoesResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RevisoesData, ThrowOnError> | undefined,
+export const releaseorchestratorInstalacaoClienteSugerirPortasResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: () => Options<ReleaseorchestratorInstalacaoClienteSugerirPortasData, ThrowOnError> | undefined,
 ) =>
-  httpResource<RevisoesResponse>(() => {
+  httpResource<ReleaseorchestratorInstalacaoClienteSugerirPortasResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? revisoesRequest(opts) : undefined;
+    return opts ? releaseorchestratorInstalacaoClienteSugerirPortasRequest(opts) : undefined;
   });
 
-export const qualidadeResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<QualidadeData, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<QualidadeResponse>(() => {
+  httpResource<ReleaseorchestratorEntregaBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? qualidadeRequest(opts) : undefined;
+    return opts ? releaseorchestratorEntregaBuscarRequest(opts) : undefined;
   });
 
-export const preview2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Preview2Data, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaDownloadPacoteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaDownloadPacoteData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Preview2Response>(() => {
+  httpResource<ReleaseorchestratorEntregaDownloadPacoteResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? preview2Request(opts) : undefined;
+    return opts ? releaseorchestratorEntregaDownloadPacoteRequest(opts) : undefined;
   });
 
-export const versoesTemplateResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<VersoesTemplateData, ThrowOnError> | undefined,
+export const releaseorchestratorEntregaModuloListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorEntregaModuloListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<VersoesTemplateResponse>(() => {
+  httpResource<ReleaseorchestratorEntregaModuloListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? versoesTemplateRequest(opts) : undefined;
+    return opts ? releaseorchestratorEntregaModuloListarRequest(opts) : undefined;
   });
 
-export const resumoPorStatusGlobalResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<ResumoPorStatusGlobalData, ThrowOnError> | undefined,
+export const releaseorchestratorDocumentoEntregaGerarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDocumentoEntregaGerarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ResumoPorStatusGlobalResponse>(() => {
+  httpResource<ReleaseorchestratorDocumentoEntregaGerarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? resumoPorStatusGlobalRequest(opts) : undefined;
+    return opts ? releaseorchestratorDocumentoEntregaGerarRequest(opts) : undefined;
   });
 
-export const vinculosResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<VinculosData, ThrowOnError> | undefined,
+export const releaseorchestratorDeltaEntregaListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeltaEntregaListarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<VinculosResponse>(() => {
+  httpResource<ReleaseorchestratorDeltaEntregaListarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? vinculosRequest(opts) : undefined;
+    return opts ? releaseorchestratorDeltaEntregaListarRequest(opts) : undefined;
   });
 
-export const meResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<MeData, ThrowOnError> | undefined,
+export const releaseorchestratorDeltaEntregaResumoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeltaEntregaResumoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<MeResponse2>(() => {
+  httpResource<ReleaseorchestratorDeltaEntregaResumoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? meRequest(opts) : undefined;
+    return opts ? releaseorchestratorDeltaEntregaResumoRequest(opts) : undefined;
   });
 
-export const excluir15Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Excluir15Data, ThrowOnError> | undefined,
+export const releaseorchestratorDeployInstalacaoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeployInstalacaoBuscarData, ThrowOnError> | undefined,
 ) =>
-  httpResource<Excluir15Response>(() => {
+  httpResource<ReleaseorchestratorDeployInstalacaoBuscarResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluir15Request(opts) : undefined;
+    return opts ? releaseorchestratorDeployInstalacaoBuscarRequest(opts) : undefined;
   });
 
-export const revogar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Revogar2Data, ThrowOnError> | undefined,
+export const releaseorchestratorDeployInstalacaoPreviewResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorDeployInstalacaoPreviewData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorDeployInstalacaoPreviewResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorDeployInstalacaoPreviewRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteProdutoModuloListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteProdutoModuloListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteProdutoModuloListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteProdutoModuloListarRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorClienteFuncionalidadeListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorClienteFuncionalidadeListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorClienteFuncionalidadeListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorClienteFuncionalidadeListarRequest(opts) : undefined;
+  });
+
+export const identityaccessSessaoListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessSessaoListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessSessaoListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessSessaoListarRequest(opts) : undefined;
+  });
+
+export const identityaccessHistoricoLoginListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessHistoricoLoginListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessHistoricoLoginListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessHistoricoLoginListarRequest(opts) : undefined;
+  });
+
+export const identityaccessCatalogoPermissoesResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessCatalogoPermissoesData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessCatalogoPermissoesResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessCatalogoPermissoesRequest(opts) : undefined;
+  });
+
+export const identityaccessCatalogoFuncionalidadesResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessCatalogoFuncionalidadesData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessCatalogoFuncionalidadesResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessCatalogoFuncionalidadesRequest(opts) : undefined;
+  });
+
+export const identityaccessCatalogoDominiosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessCatalogoDominiosData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessCatalogoDominiosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessCatalogoDominiosRequest(opts) : undefined;
+  });
+
+export const identityaccessAuditoriaRecentesResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessAuditoriaRecentesData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessAuditoriaRecentesResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessAuditoriaRecentesRequest(opts) : undefined;
+  });
+
+export const docflowPublicDownloadDownloadZipResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicDownloadDownloadZipData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicDownloadDownloadZipResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicDownloadDownloadZipRequest(opts) : undefined;
+  });
+
+export const docflowPreviewPreviewResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPreviewPreviewData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPreviewPreviewResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPreviewPreviewRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoExcluirRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoBuscarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoBuscarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoBuscarRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoArvorePaginasResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoArvorePaginasData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoArvorePaginasResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoArvorePaginasRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoHtmlDaPaginaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoHtmlDaPaginaData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoHtmlDaPaginaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoHtmlDaPaginaRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoDownloadResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoDownloadData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoDownloadResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoDownloadRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoEmitirTokenDownloadResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoEmitirTokenDownloadData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoEmitirTokenDownloadResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoEmitirTokenDownloadRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoDownloadPdfResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoDownloadPdfData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoDownloadPdfResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoDownloadPdfRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoDiffResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoDiffData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoDiffResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoDiffRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoChangelogResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoChangelogData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoChangelogResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoChangelogRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoPreviewResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoPreviewData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoPreviewResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoPreviewRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoPreviewHtmlResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoPreviewHtmlData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoPreviewHtmlResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoPreviewHtmlRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoEventosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPublicacaoEventosData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoEventosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoEventosRequest(opts) : undefined;
+  });
+
+export const docflowPublicacaoDiagnosticoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPublicacaoDiagnosticoData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPublicacaoDiagnosticoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPublicacaoDiagnosticoRequest(opts) : undefined;
+  });
+
+export const docflowPaginaBaixarAnexoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaBaixarAnexoData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaBaixarAnexoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaBaixarAnexoRequest(opts) : undefined;
+  });
+
+export const docflowPaginaRevisoesResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaRevisoesData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaRevisoesResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaRevisoesRequest(opts) : undefined;
+  });
+
+export const docflowPaginaQualidadeResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaQualidadeData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaQualidadeResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaQualidadeRequest(opts) : undefined;
+  });
+
+export const docflowPaginaPreviewResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaPreviewData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaPreviewResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaPreviewRequest(opts) : undefined;
+  });
+
+export const docflowPaginaVersoesTemplateResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaVersoesTemplateData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaVersoesTemplateResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaVersoesTemplateRequest(opts) : undefined;
+  });
+
+export const docflowPaginaResumoPorStatusGlobalResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaResumoPorStatusGlobalData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaResumoPorStatusGlobalResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaResumoPorStatusGlobalRequest(opts) : undefined;
+  });
+
+export const docflowPaginaMinhasRevisoesResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaMinhasRevisoesData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaMinhasRevisoesResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaMinhasRevisoesRequest(opts) : undefined;
+  });
+
+export const docflowPaginaEventosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaEventosData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaEventosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaEventosRequest(opts) : undefined;
+  });
+
+export const docflowPaginaBlueprintsResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaBlueprintsData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaBlueprintsResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaBlueprintsRequest(opts) : undefined;
+  });
+
+export const docflowPaginaBlocosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaBlocosData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaBlocosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaBlocosRequest(opts) : undefined;
+  });
+
+export const docflowPaginaBibliotecaResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaBibliotecaData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaBibliotecaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaBibliotecaRequest(opts) : undefined;
+  });
+
+export const docflowPaginaBibliotecaAnexosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowPaginaBibliotecaAnexosData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaBibliotecaAnexosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaBibliotecaAnexosRequest(opts) : undefined;
+  });
+
+export const docflowDocFlowDashboardResumoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowDocFlowDashboardResumoData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowDocFlowDashboardResumoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowDocFlowDashboardResumoRequest(opts) : undefined;
+  });
+
+export const docflowClienteVinculosResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowClienteVinculosData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowClienteVinculosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowClienteVinculosRequest(opts) : undefined;
+  });
+
+export const docflowAjudaMetricasResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowAjudaMetricasData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowAjudaMetricasResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowAjudaMetricasRequest(opts) : undefined;
+  });
+
+export const docflowAjudaListarAdministracaoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowAjudaListarAdministracaoData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowAjudaListarAdministracaoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowAjudaListarAdministracaoRequest(opts) : undefined;
+  });
+
+export const identityaccessAuthMeResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<IdentityaccessAuthMeData, ThrowOnError> | undefined,
+) =>
+  httpResource<IdentityaccessAuthMeResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? identityaccessAuthMeRequest(opts) : undefined;
+  });
+
+export const aiAiStatusStatusResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiStatusStatusData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiStatusStatusResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiStatusStatusRequest(opts) : undefined;
+  });
+
+export const aiAiSessaoBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoBuscarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoBuscarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoBuscarRequest(opts) : undefined;
+  });
+
+export const aiAiSessaoPropostaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoPropostaData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoPropostaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoPropostaRequest(opts) : undefined;
+  });
+
+export const aiAiDocumentoImportacaoBuscarImportacaoDocumentoResource = <
+  ThrowOnError extends boolean = false,
+>(
+  options: () => Options<AiAiDocumentoImportacaoBuscarImportacaoDocumentoData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiDocumentoImportacaoBuscarImportacaoDocumentoRequest(opts) : undefined;
+  });
+
+export const aiAiEventEventosResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiEventEventosData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiEventEventosResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiEventEventosRequest(opts) : undefined;
+  });
+
+export const releaseorchestratorArtefatoReleaseModuloExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<ReleaseorchestratorArtefatoReleaseModuloExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<ReleaseorchestratorArtefatoReleaseModuloExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? releaseorchestratorArtefatoReleaseModuloExcluirRequest(opts) : undefined;
+  });
+
+export const docflowPreviewRevogarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPreviewRevogarData, ThrowOnError> | undefined,
 ) =>
   httpResource<unknown>(() => {
     const opts = options ? options() : undefined;
-    return opts ? revogar2Request(opts) : undefined;
+    return opts ? docflowPreviewRevogarRequest(opts) : undefined;
   });
 
-export const excluirAnexoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ExcluirAnexoData, ThrowOnError> | undefined,
+export const docflowPaginaExcluirAnexoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaExcluirAnexoData, ThrowOnError> | undefined,
 ) =>
-  httpResource<ExcluirAnexoResponse>(() => {
+  httpResource<DocflowPaginaExcluirAnexoResponse>(() => {
     const opts = options ? options() : undefined;
-    return opts ? excluirAnexoRequest(opts) : undefined;
-  });
-
-export const arvorePaginasResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ArvorePaginasData, ThrowOnError> | undefined,
-) =>
-  httpResource<ArvorePaginasResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? arvorePaginasRequest(opts) : undefined;
-  });
-
-export const reprocessarLoteResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ReprocessarLoteData, ThrowOnError> | undefined,
-) =>
-  httpResource<ReprocessarLoteResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? reprocessarLoteRequest(opts) : undefined;
-  });
-
-export const bibliotecaAnexosResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<BibliotecaAnexosData, ThrowOnError> | undefined,
-) =>
-  httpResource<BibliotecaAnexosResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? bibliotecaAnexosRequest(opts) : undefined;
-  });
-
-export const comentarRevisaoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ComentarRevisaoData, ThrowOnError> | undefined,
-) =>
-  httpResource<ComentarRevisaoResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? comentarRevisaoRequest(opts) : undefined;
-  });
-
-export const resumoResource2 = <ThrowOnError extends boolean = false>(
-  options?: () => Options<Resumo2Data, ThrowOnError> | undefined,
-) =>
-  httpResource<Resumo2Response>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? resumoRequest2(opts) : undefined;
-  });
-
-export const listarAjudaResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<ListarAjudaData, ThrowOnError> | undefined,
-) =>
-  httpResource<ListarAjudaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? listarAjudaRequest(opts) : undefined;
-  });
-
-export const criarAjudaResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<CriarAjudaData, ThrowOnError> | undefined,
-) =>
-  httpResource<CriarAjudaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? criarAjudaRequest(opts) : undefined;
-  });
-
-export const listarAjudaAdminResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<ListarAjudaAdminData, ThrowOnError> | undefined,
-) =>
-  httpResource<ListarAjudaAdminResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? listarAjudaAdminRequest(opts) : undefined;
-  });
-
-export const excluirAjudaResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<ExcluirAjudaData, ThrowOnError> | undefined,
-) =>
-  httpResource<ExcluirAjudaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? excluirAjudaRequest(opts) : undefined;
-  });
-
-export const atualizarAjudaResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AtualizarAjudaData, ThrowOnError> | undefined,
-) =>
-  httpResource<AtualizarAjudaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? atualizarAjudaRequest(opts) : undefined;
-  });
-
-export const registrarAjudaEventoResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RegistrarAjudaEventoData, ThrowOnError> | undefined,
-) =>
-  httpResource<RegistrarAjudaEventoResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? registrarAjudaEventoRequest(opts) : undefined;
-  });
-
-export const metricasAjudaResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<MetricasAjudaData, ThrowOnError> | undefined,
-) =>
-  httpResource<MetricasAjudaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? metricasAjudaRequest(opts) : undefined;
-  });
-
-export const eventosPaginaResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<EventosPaginaData, ThrowOnError> | undefined,
-) =>
-  httpResource<EventosPaginaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? eventosPaginaRequest(opts) : undefined;
-  });
-
-export const eventosPublicacaoResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<EventosPublicacaoData, ThrowOnError> | undefined,
-) =>
-  httpResource<EventosPublicacaoResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? eventosPublicacaoRequest(opts) : undefined;
-  });
-
-export const recomendarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<RecomendarData, ThrowOnError> | undefined,
-) =>
-  httpResource<RecomendarResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? recomendarRequest(opts) : undefined;
-  });
-
-export const blocosResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<BlocosData, ThrowOnError> | undefined,
-) =>
-  httpResource<BlocosResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? blocosRequest(opts) : undefined;
-  });
-
-export const criar19Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Criar19Data, ThrowOnError> | undefined,
-) =>
-  httpResource<Criar19Response>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? criar19Request(opts) : undefined;
-  });
-
-export const enviarMensagemResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<EnviarMensagemData, ThrowOnError> | undefined,
-) =>
-  httpResource<EnviarMensagemResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? enviarMensagemRequest(opts) : undefined;
-  });
-
-export const gerar1Resource2 = <ThrowOnError extends boolean = false>(
-  options: () => Options<Gerar12Data, ThrowOnError> | undefined,
-) =>
-  httpResource<Gerar12Response>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? gerar1Request2(opts) : undefined;
-  });
-
-export const cancelar2Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Cancelar2Data, ThrowOnError> | undefined,
-) =>
-  httpResource<Cancelar2Response>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? cancelar2Request(opts) : undefined;
-  });
-
-export const aplicarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AplicarData, ThrowOnError> | undefined,
-) =>
-  httpResource<AplicarResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? aplicarRequest(opts) : undefined;
-  });
-
-export const statusResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<StatusData, ThrowOnError> | undefined,
-) =>
-  httpResource<StatusResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? statusRequest(opts) : undefined;
-  });
-
-export const buscar19Resource = <ThrowOnError extends boolean = false>(
-  options: () => Options<Buscar19Data, ThrowOnError> | undefined,
-) =>
-  httpResource<Buscar19Response>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? buscar19Request(opts) : undefined;
-  });
-
-export const propostaResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<PropostaData, ThrowOnError> | undefined,
-) =>
-  httpResource<PropostaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? propostaRequest(opts) : undefined;
-  });
-
-export const blueprintsResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<BlueprintsData, ThrowOnError> | undefined,
-) =>
-  httpResource<BlueprintsResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? blueprintsRequest(opts) : undefined;
-  });
-
-export const bibliotecaResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<BibliotecaData, ThrowOnError> | undefined,
-) =>
-  httpResource<BibliotecaResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? bibliotecaRequest(opts) : undefined;
+    return opts ? docflowPaginaExcluirAnexoRequest(opts) : undefined;
   });

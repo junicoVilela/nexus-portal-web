@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Cliente } from '@modules/docflow/models/cliente.model';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
@@ -27,8 +27,9 @@ describe('ClientesComponent', () => {
 
   afterEach(() => http.verify());
 
+  /** O SDK dispara as requisições num microtask; cada bloco precisa de tick antes. */
   function flushListaVazia(): void {
-    http.expectOne(r => r.url === '/api/doc-flow/clientes').flush({
+    http.expectOne(r => r.url.startsWith('/api/v1/docflow/clientes?')).flush({
       items: [cliente],
       totalItems: 1,
       page: 1,
@@ -37,23 +38,30 @@ describe('ClientesComponent', () => {
       first: true,
       last: true,
     });
-    http.expectOne(r => r.url.startsWith('/api/doc-flow/projetos')).flush({ items: [], totalItems: 0 });
-    http.expectOne(r => r.url.startsWith('/api/doc-flow/modulos')).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith('/api/v1/docflow/projetos')).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith('/api/v1/docflow/modulos')).flush({ items: [], totalItems: 0 });
+    tick();
   }
 
-  it('carrega tokens de prévia ao abrir vínculos', () => {
+  it('carrega tokens de prévia ao abrir vínculos', fakeAsync(() => {
     fixture = TestBed.createComponent(ClientesComponent);
     fixture.detectChanges();
+    tick();
     flushListaVazia();
 
     fixture.componentInstance.abrirVinculos(cliente);
-    http.expectOne('/api/doc-flow/clientes/c1/vinculos').flush({
+    tick();
+    http.expectOne(r => r.url.startsWith('/api/v1/docflow/clientes/c1/vinculos')).flush({
       projetoIds: [],
       moduloIds: [],
       paginaIds: [],
     });
-    http.expectOne(r => r.url.startsWith('/api/doc-flow/paginas')).flush({ items: [], totalItems: 0 });
-    http.expectOne(r => r.url === '/api/doc-flow/preview-tokens').flush([
+    tick();
+    http.expectOne(r => r.url.startsWith('/api/v1/docflow/paginas')).flush({ items: [], totalItems: 0 });
+    tick();
+    http.expectOne(r => r.url.startsWith('/api/v1/preview-tokens')).flush([
       {
         id: 't1',
         clienteId: 'c1',
@@ -63,9 +71,15 @@ describe('ClientesComponent', () => {
         createdBy: 'admin',
       },
     ]);
+    tick();
     fixture.detectChanges();
 
     expect(fixture.componentInstance['previewTokens']().length).toBe(1);
     expect(fixture.componentInstance.previewTokenAtivo(fixture.componentInstance['previewTokens']()[0]!)).toBe(true);
-  });
+
+    // A tela recarrega a listagem depois de abrir os vínculos; drena o que sobrou
+    // para o verify() do afterEach não acusar requisição pendente.
+    http.match(() => true).forEach(pendente => pendente.flush({ items: [], totalItems: 0 }));
+    tick();
+  }));
 });

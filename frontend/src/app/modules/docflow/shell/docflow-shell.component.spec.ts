@@ -34,7 +34,7 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
     fixture.detectChanges();
   }
 
-  it('admin (todas permissões) vê todos os 10 itens', async () => {
+  it('admin (todas permissões) vê todos os itens do menu', async () => {
     await configurar([
       'CLIENTE:LER',
       'PROJETO:LER',
@@ -45,8 +45,9 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
       'AJUDA:LER',
     ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
-    expect(labels.length).toBe(10);
+    expect(labels.length).toBe(12);
     expect(labels).toContain('Revisões');
+    expect(labels).toContain('Trechos');
     expect(labels).toContain('Mídia');
     expect(labels).toContain('Configurações');
     expect(labels).toContain('Ajuda');

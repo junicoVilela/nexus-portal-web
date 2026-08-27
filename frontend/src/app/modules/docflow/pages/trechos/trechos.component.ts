@@ -112,8 +112,10 @@ export class TrechosComponent implements OnInit {
   protected async excluir(snippet: PaginaSnippet): Promise<void> {
     const confirmado = await this.confirm.confirm({
       title: 'Excluir trecho?',
-      message: `As páginas que citam ${snippet.referencia} passarão a exibir um aviso de trecho `
-        + 'indisponível no lugar do conteúdo.',
+      message: snippet.paginasQueUsam
+        ? `${snippet.paginasQueUsam} página(s) citam ${snippet.referencia} e passarão a exibir `
+          + 'um aviso de trecho indisponível no lugar do conteúdo.'
+        : `Nenhuma página cita ${snippet.referencia} no momento.`,
       acceptLabel: 'Excluir trecho',
       variant: 'danger',
       icon: 'Trash2',

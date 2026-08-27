@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { defer, map, Observable } from 'rxjs';
-import { resumo2 as resumoDashboardSdk } from '../../../api/generated/sdk.gen';
+import { docflowDocFlowDashboardResumo as resumoDashboardSdk } from '../../../api/generated/sdk.gen';
 import { DocFlowDashboardResumo } from '../models/dashboard.model';
 
 @Injectable({ providedIn: 'root' })

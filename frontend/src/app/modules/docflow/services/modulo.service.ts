@@ -4,11 +4,11 @@ import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
 import { SortDirection } from '@shared/utils/query-state';
 import {
-  atualizar17 as atualizarModuloSdk,
-  buscar15 as buscarModuloSdk,
-  criar16 as criarModuloSdk,
-  excluir12 as excluirModuloSdk,
-  listar21 as listarModulosSdk,
+  docflowModuloAtualizar as atualizarModuloSdk,
+  docflowModuloBuscar as buscarModuloSdk,
+  docflowModuloCriar as criarModuloSdk,
+  docflowModuloExcluir as excluirModuloSdk,
+  docflowModuloListar as listarModulosSdk,
 } from '../../../api/generated/sdk.gen';
 import type { ModuloRequest, ModuloResponse } from '../../../api/generated/types.gen';
 import { Modulo } from '../models/modulo.model';

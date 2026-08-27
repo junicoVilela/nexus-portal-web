@@ -4,9 +4,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
 import {
-  deleteLogo as deleteLogoSdk,
-  getLogo as getLogoSdk,
-  uploadLogo as uploadLogoSdk,
+  docflowEmpresaDeleteLogo as deleteLogoSdk,
+  docflowEmpresaGetLogo as getLogoSdk,
+  docflowEmpresaUploadLogo as uploadLogoSdk,
 } from '../../../api/generated/sdk.gen';
 
 /**
