@@ -27,21 +27,16 @@ import { PaginaService } from '@modules/docflow/services/pagina.service';
 import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ClienteService } from '@modules/docflow/services/cliente.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
-import { AiImagensStagingService } from '@modules/docflow/services/ai-imagens-staging.service';
 import { Modulo } from '@modules/docflow/models/modulo.model';
 import {
   Pagina,
   PaginaAnexo,
   PaginaQualidadeItem,
-  PaginaRevisao,
   PaginaTemplate,
-  PaginaTemplateAplicada,
-  PaginaTemplateCriacao,
-  PaginaTemplateVersao,
 } from '@modules/docflow/models/pagina.model';
 import { Projeto } from '@modules/docflow/models/projeto.model';
 import { Cliente } from '@modules/docflow/models/cliente.model';
-import { compactQueryParams, parseSortDirection, SortDirection } from '@shared/utils/query-state';
+import { compactQueryParams, parseSortDirection } from '@shared/utils/query-state';
 import {
   PageHeaderComponent,
   ButtonComponent,
@@ -54,13 +49,12 @@ import {
   adicionarColunaHtml,
   adicionarLinhaHtml,
   compactarCelulasTabelaHtml,
-  compactarCelulasTabelaNoDom,
+  decorarTabelasNoDom,
   contagemTabelasHtml,
   removerColunaHtml,
   removerUltimaLinhaHtml,
 } from '@modules/docflow/components/pagina-rich-editor/pagina-table-html';
 import { PaginaRevisoesComponent } from '@modules/docflow/components/pagina-revisoes';
-import { diffLinhasPalavras, DiffLinha } from '@modules/docflow/utils/diff.util';
 import { PaginaAnexosComponent } from '@modules/docflow/components/pagina-anexos';
 import {
   AtalhoEditor,
@@ -75,10 +69,7 @@ import {
   PaginaSecaoVisual,
   PaginaSectionOrganizerComponent,
 } from '@modules/docflow/components/pagina-section-organizer';
-import {
-  PaginaTemplateSalvarDados,
-  PaginaTemplateSaveComponent,
-} from '@modules/docflow/components/pagina-template-save';
+import { PaginaTemplateSaveComponent } from '@modules/docflow/components/pagina-template-save';
 import {
   PaginaCreationProgressComponent,
   PaginaCreationStep,
@@ -101,6 +92,9 @@ import { AiAssistenteService } from '@modules/docflow/services/ai-assistente.ser
 import { AiFeatureService } from '@modules/docflow/services/ai-feature.service';
 import { AiAjustePainelComponent } from '../../../components/ai-ajuste-painel/ai-ajuste-painel.component';
 import { AiAplicacao } from '../../../models/ai-proposta.model';
+import { PaginaFormModelos } from './pagina-form-modelos';
+import { PaginaFormIa } from './pagina-form-ia';
+import { PaginaFormRevisoes } from './pagina-form-revisoes';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
 type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
@@ -132,15 +126,18 @@ type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'er
   ],
   templateUrl: './pagina-form.component.html',
   styleUrl: './pagina-form.component.css',
+  providers: [PaginaFormModelos, PaginaFormRevisoes, PaginaFormIa],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy, CanDeactivateComponent {
   private readonly toast = inject(ToastService);
   private readonly auth = inject(AuthService);
   private readonly paginaDraftService = inject(PaginaDraftService);
-  private readonly aiImagensStaging = inject(AiImagensStagingService);
   private readonly aiAssistenteService = inject(AiAssistenteService);
   private readonly aiFeature = inject(AiFeatureService);
+  protected readonly modelos = inject(PaginaFormModelos);
+  protected readonly historico = inject(PaginaFormRevisoes);
+  private readonly ia = inject(PaginaFormIa);
   private tabelasDecoradasAssinatura = '';
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
@@ -152,8 +149,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   private readonly destroy$ = new Subject<void>();
   private dirty = false;
-  /** Sessão da IA que originou esta página nova; vinculada quando a página ganha id. */
-  private aiSessaoOrigem: string | null = null;
   private justSaved = false;
   private autosavePendente = false;
 
@@ -164,48 +159,27 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly modulos = signal<Modulo[]>([]);
   protected readonly paginas = signal<Pagina[]>([]);
   protected readonly anexos = signal<PaginaAnexo[]>([]);
-  protected readonly revisoes = signal<PaginaRevisao[]>([]);
-  protected readonly totalRevisoes = signal(0);
   protected readonly paginaAtual = signal<Pagina | undefined>(undefined);
   protected readonly editId = signal<string | undefined>(undefined);
   protected readonly saving = signal(false);
-  protected readonly showDiff = signal(false);
   protected readonly editorModo = signal<EditorModo>('rico');
-  protected readonly revisoesPage = signal(1);
-  protected readonly revisoesPageSize = signal(10);
-  protected readonly revisoesSort = signal('numero');
-  protected readonly revisoesDir = signal<SortDirection>('DESC');
-  protected readonly diffLinhas = signal<DiffLinha[]>([]);
-  protected readonly diffConteudoAnterior = signal('');
-  protected readonly diffConteudoAtual = signal('');
   protected readonly rascunhoSalvoEm = signal<Date | null>(null);
-  protected readonly templates = signal<PaginaTemplate[]>([]);
   protected readonly blocosCatalogo = signal<BlocoPagina[]>([]);
   protected readonly catalogoBlocosIndisponivel = signal(false);
-  protected readonly templateSelecionadoId = signal<string | null>(null);
-  protected readonly templateOrigemId = signal<string | undefined>(undefined);
-  protected readonly templateOrigemVersao = signal<number | undefined>(undefined);
-  protected readonly templateEmEdicao = signal<PaginaTemplate | null>(null);
-  protected readonly templateHistorico = signal<PaginaTemplate | null>(null);
-  protected readonly templateVersoes = signal<PaginaTemplateVersao[]>([]);
-  protected readonly versaoComparacaoA = signal<number | null>(null);
-  protected readonly versaoComparacaoB = signal<number | null>(null);
-  protected readonly versoesEmComparacao = computed(() => ({
-    a: this.templateVersoes().find(item => item.numero === this.versaoComparacaoA()),
-    b: this.templateVersoes().find(item => item.numero === this.versaoComparacaoB()),
-  }));
-  protected readonly templatePreview = signal<{
-    template: PaginaTemplate;
-    aplicado: PaginaTemplateAplicada;
-  } | null>(null);
-  protected readonly previsualizandoTemplateId = signal<string | null>(null);
-  protected readonly carregandoVersoesTemplate = signal(false);
-  protected readonly aplicandoTemplate = signal(false);
-  protected readonly somenteTemplatesContexto = signal(true);
-  protected readonly incluirTemplatesArquivados = signal(false);
-  protected readonly mostrarTemplates = signal(false);
-  protected readonly mostrarSalvarTemplate = signal(false);
-  protected readonly salvandoTemplate = signal(false);
+  // Estado dos modelos vive em PaginaFormModelos; aliases para o código e o template do editor.
+  protected readonly templates = this.modelos.templates;
+  protected readonly templateSelecionadoId = this.modelos.templateSelecionadoId;
+  protected readonly templateOrigemId = this.modelos.templateOrigemId;
+  protected readonly templateOrigemVersao = this.modelos.templateOrigemVersao;
+  protected readonly mostrarTemplates = this.modelos.mostrarTemplates;
+  // Histórico de revisões vive em PaginaFormRevisoes; aliases para o código e o template.
+  protected readonly revisoes = this.historico.revisoes;
+  protected readonly totalRevisoes = this.historico.totalRevisoes;
+  protected readonly revisoesPage = this.historico.revisoesPage;
+  protected readonly revisoesPageSize = this.historico.revisoesPageSize;
+  protected readonly revisoesSort = this.historico.revisoesSort;
+  protected readonly revisoesDir = this.historico.revisoesDir;
+  protected readonly showDiff = this.historico.showDiff;
   protected readonly autosaveStatus = signal<AutosaveStatus>('idle');
   protected readonly autosaveServidorEm = signal<Date | null>(null);
   protected readonly conflitoMensagem = signal<string | null>(null);
@@ -217,7 +191,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly podeEditarPagina = computed(() => this.auth.tem()('PAGINA:EDITAR'));
 
   /** "Ajustar com IA" (Fase B): só em página salva, editável e com o módulo de IA ligado. */
-  protected readonly painelAjusteAberto = signal(false);
+  protected readonly painelAjusteAberto = this.ia.painelAjusteAberto;
   protected readonly podeAjustarComIa = computed(() => {
     const pagina = this.paginaAtual();
     return (
@@ -397,9 +371,18 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   ngOnInit(): void {
+    this.modelos.configurar({
+      projetoId: () => this.form.controls.projetoId.value || undefined,
+      aplicacao: template => this.contextoAplicacaoTemplate(template),
+      conteudoHtml: () => this.form.controls.conteudoHtml.value,
+    });
+    this.historico.configurar({
+      paginaId: () => this.paginaAtual()?.id,
+      estadoMudou: () => this.atualizarEstadoEditor(),
+    });
     this.aiFeature.ensureLoaded();
     this.editId.set(this.route.snapshot.paramMap.get('id') ?? undefined);
-    if (!this.editId() && this.redirecionarAssistenteSeOrigemIa()) {
+    if (!this.editId() && this.ia.redirecionarSeOrigemIa()) {
       return;
     }
     this.route.queryParamMap.subscribe(params => {
@@ -445,7 +428,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
           this.aplicarContextoInicial();
           this.aplicarTipoPaginaInicial();
         }
-        this.carregarTemplates();
+        this.modelos.carregar();
         this.restaurarRascunho();
         if (!pagina) {
           this.aplicarPropostaAiSePresente();
@@ -823,7 +806,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   onProjetoChange(): void {
     this.atualizarModulosPorProjeto(true);
-    this.carregarTemplates();
+    this.modelos.carregar();
     this.resolverVariaveisPendentesLocalmente();
   }
 
@@ -886,58 +869,53 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   private alterarLinhasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
-    const atual = this.form.controls.conteudoHtml.value ?? '';
-    if (contagemTabelasHtml(atual) === 0) {
-      this.toast.warn('Inclua um dicionário/tabela no conteúdo antes de adicionar linhas.');
-      return;
-    }
-
-    if (this.editorModo() === 'rico' && this.richEditor?.podeAdicionar()) {
-      if (acao === 'add') this.richEditor.adicionarLinhaTabela();
-      else this.richEditor.removerLinhaTabela();
-      return;
-    }
-
-    const proximo =
-      acao === 'add' ? adicionarLinhaHtml(atual, tableIndex) : removerUltimaLinhaHtml(atual, tableIndex);
-    if (proximo === atual && acao === 'remove') {
-      this.toast.warn('A tabela precisa manter ao menos uma linha.');
-      return;
-    }
-    this.form.controls.conteudoHtml.setValue(proximo);
-    this.form.controls.conteudoHtml.markAsDirty();
-    this.dirty = true;
-    if (this.editorModo() === 'rico' && this.richEditor) {
-      this.richEditor.aplicarHtml(proximo);
-    }
-    this.tabelasDecoradasAssinatura = '';
+    this.alterarTabela('linha', acao, tableIndex);
   }
 
   private alterarColunasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
+    this.alterarTabela('coluna', acao, tableIndex);
+  }
+
+  /**
+   * No modo rico, a seleção do editor decide a célula; nos demais (ou sem seleção em tabela),
+   * altera a tabela {@code tableIndex} direto no HTML.
+   */
+  private alterarTabela(dimensao: 'linha' | 'coluna', acao: 'add' | 'remove', tableIndex: number): void {
     const atual = this.form.controls.conteudoHtml.value ?? '';
     if (contagemTabelasHtml(atual) === 0) {
-      this.toast.warn('Inclua um dicionário/tabela no conteúdo antes de alterar colunas.');
+      this.toast.warn(
+        dimensao === 'linha'
+          ? 'Inclua um dicionário/tabela no conteúdo antes de adicionar linhas.'
+          : 'Inclua um dicionário/tabela no conteúdo antes de alterar colunas.',
+      );
       return;
     }
 
-    if (this.editorModo() === 'rico' && this.richEditor?.podeAdicionarColuna()) {
-      if (acao === 'add') this.richEditor.adicionarColunaTabela();
-      else this.richEditor.removerColunaTabela();
+    const editor = this.editorModo() === 'rico' ? this.richEditor : undefined;
+    if (dimensao === 'linha' && editor?.podeAdicionar()) {
+      if (acao === 'add') editor.adicionarLinhaTabela();
+      else editor.removerLinhaTabela();
+      return;
+    }
+    if (dimensao === 'coluna' && editor?.podeAdicionarColuna()) {
+      if (acao === 'add') editor.adicionarColunaTabela();
+      else editor.removerColunaTabela();
       return;
     }
 
-    const proximo =
-      acao === 'add' ? adicionarColunaHtml(atual, tableIndex) : removerColunaHtml(atual, tableIndex);
+    const operacoes = {
+      linha: { add: adicionarLinhaHtml, remove: removerUltimaLinhaHtml },
+      coluna: { add: adicionarColunaHtml, remove: removerColunaHtml },
+    };
+    const proximo = operacoes[dimensao][acao](atual, tableIndex);
     if (proximo === atual && acao === 'remove') {
-      this.toast.warn('A tabela precisa manter ao menos uma coluna.');
+      this.toast.warn(`A tabela precisa manter ao menos uma ${dimensao}.`);
       return;
     }
     this.form.controls.conteudoHtml.setValue(proximo);
     this.form.controls.conteudoHtml.markAsDirty();
     this.dirty = true;
-    if (this.editorModo() === 'rico' && this.richEditor) {
-      this.richEditor.aplicarHtml(proximo);
-    }
+    editor?.aplicarHtml(proximo);
     this.tabelasDecoradasAssinatura = '';
   }
 
@@ -948,22 +926,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     const assinatura = `${this.editorModo()}|${html.length}|${contagemTabelasHtml(html)}`;
     if (assinatura === this.tabelasDecoradasAssinatura && root.querySelector('.pf-table-chrome')) return;
 
-    root.querySelectorAll('.pf-table-chrome').forEach(el => el.remove());
-    compactarCelulasTabelaNoDom(root);
-    const tables = Array.from(root.querySelectorAll('table'));
-    tables.forEach((table, index) => {
-      const chrome = document.createElement('div');
-      chrome.className = 'pf-table-chrome';
-      chrome.setAttribute('contenteditable', 'false');
-      chrome.innerHTML = `
-        <span class="pf-table-chrome__label">Tabela</span>
-        <button type="button" class="pf-table-chrome__btn" data-table-action="add-row" data-table-index="${index}">+ Linha</button>
-        <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-row" data-table-index="${index}">− Linha</button>
-        <button type="button" class="pf-table-chrome__btn" data-table-action="add-col" data-table-index="${index}">+ Coluna</button>
-        <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-col" data-table-index="${index}">− Coluna</button>
-      `;
-      table.parentElement?.insertBefore(chrome, table);
-    });
+    decorarTabelasNoDom(root);
     this.tabelasDecoradasAssinatura = assinatura;
   }
 
@@ -1127,16 +1090,14 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.irParaEtapa('contexto');
       return;
     }
-    this.aplicandoTemplate.set(true);
+    this.modelos.aplicandoTemplate.set(true);
     try {
-      const aplicado = await firstValueFrom(
-        this.paginaService.aplicarTemplatePagina(template.id, this.contextoAplicacaoTemplate(template)),
-      );
+      const aplicado = await this.modelos.aplicar(template);
       this.templateSelecionadoId.set(template.id);
       this.templateOrigemId.set(aplicado.templateId);
       this.templateOrigemVersao.set(aplicado.versao);
       this.form.controls.conteudoHtml.setValue(aplicado.conteudoHtml);
-      this.templatePreview.set(null);
+      this.modelos.templatePreview.set(null);
       this.mostrarTemplates.set(false);
       this.irParaEtapa('contexto');
       const pendencias = aplicado.variaveisPendentes.length;
@@ -1148,22 +1109,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     } catch (error) {
       this.toast.error(this.mensagemErro(error, 'Não foi possível aplicar o modelo neste contexto.'));
     } finally {
-      this.aplicandoTemplate.set(false);
-    }
-  }
-
-  async previsualizarTemplate(template: PaginaTemplate): Promise<void> {
-    if (this.previsualizandoTemplateId()) return;
-    this.previsualizandoTemplateId.set(template.id);
-    try {
-      const aplicado = await firstValueFrom(
-        this.paginaService.aplicarTemplatePagina(template.id, this.contextoAplicacaoTemplate(template)),
-      );
-      this.templatePreview.set({ template, aplicado });
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Não foi possível gerar a prévia deste modelo.'));
-    } finally {
-      this.previsualizandoTemplateId.set(null);
+      this.modelos.aplicandoTemplate.set(false);
     }
   }
 
@@ -1175,222 +1121,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       titulo: this.form.controls.titulo.value || undefined,
       codigoTela: this.form.controls.codigoTela.value || undefined,
     };
-  }
-
-  salvarTemplatePersonalizado(dados: PaginaTemplateSalvarDados): void {
-    const conteudoHtml = this.form.controls.conteudoHtml.value.trim();
-    if (!conteudoHtml || this.salvandoTemplate()) return;
-    const edicao = this.templateEmEdicao();
-    const payload: PaginaTemplateCriacao = {
-      nome: dados.nome,
-      descricao: dados.descricao,
-      projetoId: dados.projetoId,
-      clienteId: dados.clienteId,
-      conteudoHtml: edicao && !dados.substituirConteudo ? edicao.conteudoHtml : conteudoHtml,
-    };
-    this.salvandoTemplate.set(true);
-    const request = edicao
-      ? this.paginaService.atualizarTemplatePagina(edicao.id, payload)
-      : this.paginaService.criarTemplatePagina(payload);
-    request.subscribe({
-      next: template => {
-        this.templates.update(templates =>
-          edicao
-            ? templates.map(item => (item.id === template.id ? template : item))
-            : [...templates, template],
-        );
-        this.mostrarSalvarTemplate.set(false);
-        this.templateEmEdicao.set(null);
-        this.mostrarTemplates.set(true);
-        this.salvandoTemplate.set(false);
-        this.toast.success(
-          edicao
-            ? `Modelo "${template.nome}" atualizado para a versão ${template.versaoAtual}.`
-            : `Modelo "${template.nome}" criado para ${this.escopoTemplate(template)}.`,
-        );
-      },
-      error: error => {
-        this.salvandoTemplate.set(false);
-        this.toast.error(this.mensagemErro(error, 'Erro ao criar modelo personalizado.'));
-      },
-    });
-  }
-
-  editarTemplatePersonalizado(template: PaginaTemplate): void {
-    if (!template.personalizado) return;
-    this.templateEmEdicao.set(template);
-    this.mostrarSalvarTemplate.set(true);
-  }
-
-  async duplicarTemplate(template: PaginaTemplate): Promise<void> {
-    const clienteId = template.clienteId;
-    const projetoId = clienteId
-      ? undefined
-      : (template.projetoId ?? (this.form.controls.projetoId.value || undefined));
-    if (!projetoId && !clienteId) {
-      this.toast.error('Selecione um projeto antes de duplicar um modelo do sistema.');
-      return;
-    }
-    try {
-      const copia = await firstValueFrom(
-        this.paginaService.duplicarTemplatePagina(template.id, {
-          nome: `Cópia de ${template.nome}`.slice(0, 120),
-          projetoId,
-          clienteId,
-        }),
-      );
-      this.templates.update(items => [...items, copia]);
-      this.toast.success(`Modelo duplicado como "${copia.nome}".`);
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao duplicar modelo.'));
-    }
-  }
-
-  async arquivarTemplate(template: PaginaTemplate): Promise<void> {
-    const confirmado = await this.confirmService.confirm({
-      title: 'Arquivar modelo?',
-      message: `O modelo "${template.nome}" deixará de aparecer para criação de páginas, mas seu histórico será mantido.`,
-      acceptLabel: 'Arquivar modelo',
-      variant: 'danger',
-      icon: 'Archive',
-    });
-    if (!confirmado) return;
-    try {
-      const atualizado = await firstValueFrom(this.paginaService.arquivarTemplatePagina(template.id));
-      this.atualizarTemplateNaLista(atualizado);
-      this.toast.success('Modelo arquivado.');
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao arquivar modelo.'));
-    }
-  }
-
-  async reativarTemplate(template: PaginaTemplate): Promise<void> {
-    try {
-      const atualizado = await firstValueFrom(this.paginaService.reativarTemplatePagina(template.id));
-      this.atualizarTemplateNaLista(atualizado);
-      this.toast.success('Modelo reativado.');
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao reativar modelo.'));
-    }
-  }
-
-  abrirHistoricoTemplate(template: PaginaTemplate): void {
-    this.templateHistorico.set(template);
-    this.carregandoVersoesTemplate.set(true);
-    this.paginaService.versoesTemplatePagina(template.id).subscribe({
-      next: versoes => {
-        this.templateVersoes.set(versoes);
-        this.versaoComparacaoA.set(versoes[0]?.numero ?? null);
-        this.versaoComparacaoB.set(versoes[1]?.numero ?? null);
-        this.carregandoVersoesTemplate.set(false);
-      },
-      error: error => {
-        this.carregandoVersoesTemplate.set(false);
-        this.toast.error(this.mensagemErro(error, 'Erro ao carregar versões do modelo.'));
-      },
-    });
-  }
-
-  selecionarVersaoComparacao(versao: PaginaTemplateVersao): void {
-    if (this.versaoComparacaoA() === versao.numero) {
-      this.versaoComparacaoA.set(null);
-      return;
-    }
-    if (this.versaoComparacaoB() === versao.numero) {
-      this.versaoComparacaoB.set(null);
-      return;
-    }
-    if (this.versaoComparacaoA() === null) {
-      this.versaoComparacaoA.set(versao.numero);
-    } else if (this.versaoComparacaoB() === null) {
-      this.versaoComparacaoB.set(versao.numero);
-    } else {
-      this.versaoComparacaoA.set(this.versaoComparacaoB());
-      this.versaoComparacaoB.set(versao.numero);
-    }
-  }
-
-  async restaurarVersaoTemplate(versao: PaginaTemplateVersao): Promise<void> {
-    const template = this.templateHistorico();
-    if (!template || !template.personalizado || versao.numero === template.versaoAtual) return;
-    const confirmado = await this.confirmService.confirm({
-      title: `Restaurar versão ${versao.numero}?`,
-      message: 'O estado selecionado será salvo como uma nova versão, sem apagar o histórico atual.',
-      acceptLabel: 'Restaurar versão',
-      icon: 'History',
-    });
-    if (!confirmado) return;
-    try {
-      const atualizado = await firstValueFrom(
-        this.paginaService.restaurarVersaoTemplatePagina(template.id, versao.numero),
-      );
-      this.atualizarTemplateNaLista(atualizado);
-      this.templateHistorico.set(atualizado);
-      this.abrirHistoricoTemplate(atualizado);
-      this.toast.success(`Versão ${versao.numero} restaurada como versão ${atualizado.versaoAtual}.`);
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao restaurar versão do modelo.'));
-    }
-  }
-
-  alterarContextoTemplates(somenteContexto: boolean): void {
-    this.somenteTemplatesContexto.set(somenteContexto);
-    this.carregarTemplates();
-  }
-
-  alterarArquivadosTemplates(incluirArquivados: boolean): void {
-    this.incluirTemplatesArquivados.set(incluirArquivados);
-    this.carregarTemplates();
-  }
-
-  async excluirTemplatePersonalizado(template: PaginaTemplate): Promise<void> {
-    if (!template.personalizado) return;
-    const confirmado = await this.confirmService.confirm({
-      title: 'Excluir modelo personalizado?',
-      message: `O modelo "${template.nome}" será removido. Páginas que já usaram esta estrutura não serão alteradas.`,
-      acceptLabel: 'Excluir modelo',
-      variant: 'danger',
-      icon: 'Trash2',
-    });
-    if (!confirmado) return;
-    try {
-      await firstValueFrom(this.paginaService.excluirTemplatePagina(template.id));
-      this.templates.update(templates => templates.filter(item => item.id !== template.id));
-      if (this.templateSelecionadoId() === template.id) this.templateSelecionadoId.set(null);
-      if (this.templateHistorico()?.id === template.id) {
-        this.templateHistorico.set(null);
-        this.templateVersoes.set([]);
-      }
-      this.toast.success('Modelo personalizado excluído.');
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao excluir modelo personalizado.'));
-    }
-  }
-
-  private escopoTemplate(template: PaginaTemplate): string {
-    if (template.projetoNome) return `o projeto ${template.projetoNome}`;
-    if (template.clienteNome) return `o cliente ${template.clienteNome}`;
-    return 'o escopo selecionado';
-  }
-
-  private carregarTemplates(): void {
-    this.paginaService
-      .templatesPagina({
-        projetoId: this.form.controls.projetoId.value || undefined,
-        somenteContexto: this.somenteTemplatesContexto(),
-        incluirArquivados: this.incluirTemplatesArquivados(),
-      })
-      .subscribe({
-        next: templates => this.templates.set(templates),
-        error: error => this.toast.error(this.mensagemErro(error, 'Erro ao carregar modelos de página.')),
-      });
-  }
-
-  private atualizarTemplateNaLista(template: PaginaTemplate): void {
-    this.templates.update(items => items.map(item => (item.id === template.id ? template : item)));
-    if (this.templateSelecionadoId() === template.id && template.ativo === false) {
-      this.templateSelecionadoId.set(null);
-    }
   }
 
   private inicializarResolucaoVariaveis(): void {
@@ -1525,34 +1255,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     }
   }
 
-  alterarPaginaRevisoes(page: number): void {
-    this.revisoesPage.set(page);
-    this.carregarRevisoes();
-  }
-
-  alterarTamanhoPaginaRevisoes(size: number): void {
-    this.revisoesPageSize.set(size);
-    this.revisoesPage.set(1);
-    this.carregarRevisoes();
-  }
-
-  ordenarRevisoes(campo: string): void {
-    if (this.revisoesSort() === campo) {
-      this.revisoesDir.set(this.revisoesDir() === 'ASC' ? 'DESC' : 'ASC');
-    } else {
-      this.revisoesSort.set(campo);
-      this.revisoesDir.set('ASC');
-    }
-    this.revisoesPage.set(1);
-    this.atualizarEstadoEditor();
-    this.carregarRevisoes();
-  }
-
-  indicacaoOrdenacaoRevisoes(campo: string): string {
-    if (this.revisoesSort() !== campo) return '↕';
-    return this.revisoesDir() === 'ASC' ? '↑' : '↓';
-  }
-
   paginaLabel(pagina: Pagina): string {
     return `${'-- '.repeat(this.nivel(pagina))}${pagina.titulo}`;
   }
@@ -1601,8 +1303,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       { emitEvent: false },
     );
     this.atualizarModulosPorProjeto();
-    this.revisoesPage.set(1);
-    this.carregarRevisoes();
+    this.historico.recarregar();
     this.paginaService.anexosPagina(pagina.id).subscribe({
       next: anexos => this.anexos.set(anexos),
       error: () => this.toast.error('Erro ao carregar anexos.'),
@@ -1676,7 +1377,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   private ativarPaginaSalva(pagina: Pagina): void {
-    this.vincularPropostaAi(pagina.id);
+    this.ia.vincularPagina(pagina.id);
     this.editId.set(pagina.id);
     this.paginaAtual.set(pagina);
     this.form.controls.slug.setValue(pagina.slug, { emitEvent: false });
@@ -1688,8 +1389,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       docFlowRouterCommands(['paginas', pagina.id, 'editar']),
       this.queryParamsEditor(),
     );
-    this.revisoesPage.set(1);
-    this.carregarRevisoes();
+    this.historico.recarregar();
   }
 
   private prepararProximaPagina(paginaSalva: Pagina): void {
@@ -1697,13 +1397,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.editId.set(undefined);
     this.paginaAtual.set(undefined);
     this.anexos.set([]);
-    this.revisoes.set([]);
-    this.totalRevisoes.set(0);
+    this.historico.limpar();
     this.templateSelecionadoId.set(null);
     this.templateOrigemId.set(undefined);
     this.templateOrigemVersao.set(undefined);
-    this.templateHistorico.set(null);
-    this.templateVersoes.set([]);
+    this.modelos.templateHistorico.set(null);
+    this.modelos.templateVersoes.set([]);
     this.mostrarTemplates.set(true);
     this.form.reset(
       {
@@ -1798,52 +1497,10 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     if (template) void this.selecionarTemplate(template);
   }
 
-  /**
-   * `?origem=ia` (CTA lista) → wizard `/doc-flow/assistente`.
-   * Se já houver `history.state` com proposta, permanece no form.
-   */
-  private redirecionarAssistenteSeOrigemIa(): boolean {
-    const origem = this.route.snapshot.queryParamMap.get('origem');
-    if (origem !== 'ia' && origem !== 'ai') return false;
-
-    const state =
-      this.router.getCurrentNavigation()?.extras.state ??
-      (typeof history !== 'undefined' ? history.state : null);
-    if (state?.['origem'] === 'ai' && state?.['proposta']) return false;
-
-    const qp = this.route.snapshot.queryParamMap;
-    void this.router.navigate(docFlowRouterCommands(['assistente']), {
-      replaceUrl: true,
-      queryParams: compactQueryParams({
-        projetoId: qp.get('projetoId'),
-        moduloId: qp.get('moduloId'),
-        parentId: qp.get('parentId'),
-        templateId: qp.get('templateId'),
-      }),
-    });
-    return true;
-  }
-
-  /** Hidrata o form a partir do assistente IA do DocFlow (`router.navigate` com state). */
+  /** Hidrata o form com a proposta entregue pelo assistente IA (`history.state`). */
   private aplicarPropostaAiSePresente(): void {
-    const state =
-      this.router.getCurrentNavigation()?.extras.state ??
-      (typeof history !== 'undefined' ? history.state : null);
-    const proposta = state?.['proposta'] as
-      | {
-          sessaoId?: string | null;
-          titulo?: string;
-          slug?: string;
-          codigoTela?: string;
-          resumo?: string | null;
-          conteudoHtml?: string;
-          templateOrigemId?: string | null;
-          templateOrigemVersao?: number | null;
-          moduloId?: string | null;
-        }
-      | undefined;
-    if (!proposta || state?.['origem'] !== 'ai') return;
-    this.aiSessaoOrigem = proposta.sessaoId ?? null;
+    const proposta = this.ia.consumirProposta();
+    if (!proposta) return;
 
     this.mostrarTemplates.set(false);
     this.form.patchValue({
@@ -1871,37 +1528,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.justSaved = false;
     this.form.markAsDirty();
     this.toast.success('Proposta da IA aplicada no editor. Revise antes de salvar.');
-    this.consumirPropostaAiDoHistorico();
     void this.anexarImagensAiStaging();
-  }
-
-  /**
-   * `history.state` sobrevive ao F5: sem limpar, o reload restauraria o backup local e em seguida
-   * reaplicaria a proposta por cima das edições do autor.
-   */
-  /**
-   * A primeira vez que a página vinda de uma proposta da IA ganha id, a API marca a proposta como
-   * aceita e guarda a página — base do aceite e do "texto mantido" no painel de qualidade.
-   * Falhar aqui não pode atrapalhar o salvamento: o vínculo é só métrica.
-   */
-  private vincularPropostaAi(paginaId: string): void {
-    const sessaoId = this.aiSessaoOrigem;
-    if (!sessaoId) return;
-    this.aiSessaoOrigem = null;
-    this.aiAssistenteService.vincularPagina(sessaoId, paginaId).subscribe({ error: () => undefined });
-  }
-
-  private consumirPropostaAiDoHistorico(): void {
-    if (typeof history === 'undefined' || !history.state) return;
-    const state = { ...history.state };
-    delete state['origem'];
-    delete state['proposta'];
-    history.replaceState(state, '');
   }
 
   /** Imagens arrastadas no assistente → upload DocFlow + insert no HTML. */
   private async anexarImagensAiStaging(): Promise<void> {
-    const files = this.aiImagensStaging.consume();
+    const files = this.ia.imagensPendentes();
     if (!files.length) return;
     const paginaId = await this.garantirRascunhoParaAnexos();
     if (!paginaId) {
@@ -2087,48 +1719,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         this.form.controls.parentId.setValue('');
       }
     }
-  }
-
-  async toggleDiff(): Promise<void> {
-    this.showDiff.update(v => !v);
-    this.atualizarEstadoEditor();
-    const lista = this.revisoes();
-    if (this.showDiff() && lista.length >= 2) {
-      const htmlAnterior = lista[1].conteudoHtml ?? '';
-      const htmlAtual = lista[0].conteudoHtml ?? '';
-      this.diffConteudoAnterior.set(htmlAnterior);
-      this.diffConteudoAtual.set(htmlAtual);
-      const linhas = await diffLinhasPalavras(
-        htmlAnterior || lista[1].titulo || '',
-        htmlAtual || lista[0].titulo || '',
-      );
-      this.diffLinhas.set(linhas);
-    } else {
-      this.diffConteudoAnterior.set('');
-      this.diffConteudoAtual.set('');
-    }
-  }
-
-  private carregarRevisoes(): void {
-    const atual = this.paginaAtual();
-    if (!atual) return;
-    this.paginaService
-      .listarRevisoesPagina(
-        atual.id,
-        this.revisoesPage(),
-        this.revisoesPageSize(),
-        this.revisoesSort(),
-        this.revisoesDir(),
-      )
-      .subscribe({
-        next: response => {
-          this.revisoes.set(response.items);
-          this.totalRevisoes.set(response.totalItems);
-          this.revisoesPage.set(response.page);
-          this.revisoesPageSize.set(response.size);
-        },
-        error: () => this.toast.error('Erro ao carregar revisões.'),
-      });
   }
 
   private atualizarEstadoEditor(): void {

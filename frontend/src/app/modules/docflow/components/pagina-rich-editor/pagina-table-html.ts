@@ -143,7 +143,13 @@ export function contagemTabelasHtml(html: string): number {
   return tabelas(parseHtml(html)).length;
 }
 
-function inserirCelulaHtml(doc: Document, row: HTMLTableRowElement, insertAt: number, tag: 'td' | 'th', inner: string): void {
+function inserirCelulaHtml(
+  doc: Document,
+  row: HTMLTableRowElement,
+  insertAt: number,
+  tag: 'td' | 'th',
+  inner: string,
+): void {
   const cell = doc.createElement(tag);
   cell.innerHTML = inner;
   const ref = row.cells[insertAt] ?? null;
@@ -167,8 +173,7 @@ export function adicionarColunaHtml(html: string, tableIndex = 0, colIndex?: num
   const tbody = table.tBodies[0];
   if (tbody) {
     Array.from(tbody.rows).forEach((row, rowIndex) => {
-      const inner =
-        insertAt === 0 ? `<p><span class="number-badge">${rowIndex + 1}</span></p>` : '<p></p>';
+      const inner = insertAt === 0 ? `<p><span class="number-badge">${rowIndex + 1}</span></p>` : '<p></p>';
       inserirCelulaHtml(doc, row, insertAt, 'td', inner);
     });
     renumerarBadges(tbody);
@@ -193,4 +198,27 @@ export function removerColunaHtml(html: string, tableIndex = 0, colIndex?: numbe
   const tbody = table.tBodies[0];
   if (tbody) renumerarBadges(tbody);
   return serializeRoot(doc);
+}
+
+/**
+ * Coloca sobre cada tabela da prévia a barra "+ Linha / − Linha / + Coluna / − Coluna"
+ * ({@code data-table-action} e {@code data-table-index} são lidos pelo editor ao clicar).
+ * Idempotente: remove barras anteriores antes de recriar.
+ */
+export function decorarTabelasNoDom(root: HTMLElement): void {
+  root.querySelectorAll('.pf-table-chrome').forEach(el => el.remove());
+  compactarCelulasTabelaNoDom(root);
+  Array.from(root.querySelectorAll('table')).forEach((table, index) => {
+    const chrome = document.createElement('div');
+    chrome.className = 'pf-table-chrome';
+    chrome.setAttribute('contenteditable', 'false');
+    chrome.innerHTML = `
+      <span class="pf-table-chrome__label">Tabela</span>
+      <button type="button" class="pf-table-chrome__btn" data-table-action="add-row" data-table-index="${index}">+ Linha</button>
+      <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-row" data-table-index="${index}">− Linha</button>
+      <button type="button" class="pf-table-chrome__btn" data-table-action="add-col" data-table-index="${index}">+ Coluna</button>
+      <button type="button" class="pf-table-chrome__btn pf-table-chrome__btn--danger" data-table-action="remove-col" data-table-index="${index}">− Coluna</button>
+    `;
+    table.parentElement?.insertBefore(chrome, table);
+  });
 }

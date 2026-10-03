@@ -225,9 +225,9 @@ describe('PaginaFormComponent (smoke)', () => {
       }),
     );
 
-    await component.previsualizarTemplate(template);
+    await component['modelos'].previsualizarTemplate(template);
 
-    expect(component['templatePreview']()?.aplicado.conteudoHtml).toBe('<h2>Cadastro</h2>');
+    expect(component['modelos'].templatePreview()?.aplicado.conteudoHtml).toBe('<h2>Cadastro</h2>');
     expect(component['form'].controls.conteudoHtml.value).toBe('<p>Conteúdo atual</p>');
   });
 
@@ -246,7 +246,7 @@ describe('PaginaFormComponent (smoke)', () => {
     };
     const criar = spyOn(component['paginaService'], 'criarTemplatePagina').and.returnValue(of(template));
 
-    component.salvarTemplatePersonalizado({ nome: 'Cadastro padrão', projetoId: 'projeto-1' });
+    component['modelos'].salvarTemplatePersonalizado({ nome: 'Cadastro padrão', projetoId: 'projeto-1' });
 
     expect(criar).toHaveBeenCalledWith(
       jasmine.objectContaining({
@@ -275,7 +275,7 @@ describe('PaginaFormComponent (smoke)', () => {
     spyOn(component['confirmService'], 'confirm').and.resolveTo(true);
     const excluir = spyOn(component['paginaService'], 'excluirTemplatePagina').and.returnValue(of(undefined));
 
-    await component.excluirTemplatePersonalizado(template);
+    await component['modelos'].excluirTemplatePersonalizado(template);
 
     expect(excluir).toHaveBeenCalledWith('custom-1');
     expect(component['templates']()).toEqual([]);
