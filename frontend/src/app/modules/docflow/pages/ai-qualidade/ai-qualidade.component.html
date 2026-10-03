@@ -66,7 +66,8 @@
       <div class="aq__secao-cabecalho">
         <h2 id="aq-prompts">Por versão de prompt</h2>
         <p>
-          Compare versões depois de editar um prompt. "Regeneradas" são propostas descartadas por uma nova tentativa.
+          Compare versões depois de editar um prompt. "Regeneradas" são propostas descartadas por uma nova tentativa;
+          "Texto mantido" mostra quanto do texto da IA continua nas páginas salvas.
         </p>
       </div>
       <div class="aq__tabela-wrap">
@@ -81,6 +82,9 @@
               <th scope="col" class="aq__num">Pendentes</th>
               <th scope="col" class="aq__num">Com avisos</th>
               <th scope="col" class="aq__num">Aceite</th>
+              <th scope="col" class="aq__num" title="Quanto do texto da IA continua nas páginas salvas (média)">
+                Texto mantido
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -98,10 +102,13 @@
                 <td class="aq__num">
                   <strong>{{ p.taxaAceite === null ? '—' : (p.taxaAceite | percent: '1.0-0') }}</strong>
                 </td>
+                <td class="aq__num" [title]="p.amostrasTextoMantido + ' páginas na amostra'">
+                  {{ p.textoMantido === null ? '—' : (p.textoMantido | percent: '1.0-0') }}
+                </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="8" class="aq__vazio">Nenhuma proposta no período.</td>
+                <td colspan="9" class="aq__vazio">Nenhuma proposta no período.</td>
               </tr>
             }
           </tbody>

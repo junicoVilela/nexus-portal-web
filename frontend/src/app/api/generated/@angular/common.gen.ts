@@ -57,6 +57,8 @@ import type {
   AiAiSessaoPropostaResponse,
   AiAiSessaoRejeitarData,
   AiAiSessaoRejeitarResponse,
+  AiAiSessaoVincularPaginaData,
+  AiAiSessaoVincularPaginaResponse,
   AiAiStatusStatusData,
   AiAiStatusStatusResponse,
   AiAiTemplateRecomendarData,
@@ -2787,6 +2789,16 @@ export const aiAiSessaoRejeitarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const aiAiSessaoVincularPaginaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoVincularPaginaData, ThrowOnError>,
+): HttpRequest<AiAiSessaoVincularPaginaResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoVincularPaginaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/pagina',
+    ...options,
+  });
+
 export const aiAiSessaoCancelarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiSessaoCancelarData, ThrowOnError>,
 ): HttpRequest<AiAiSessaoCancelarResponse> =>
@@ -5478,6 +5490,14 @@ export const aiAiSessaoRejeitarResource = <ThrowOnError extends boolean = false>
   httpResource<AiAiSessaoRejeitarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoRejeitarRequest(opts) : undefined;
+  });
+
+export const aiAiSessaoVincularPaginaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoVincularPaginaData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoVincularPaginaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoVincularPaginaRequest(opts) : undefined;
   });
 
 export const aiAiSessaoCancelarResource = <ThrowOnError extends boolean = false>(

@@ -152,6 +152,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   private readonly destroy$ = new Subject<void>();
   private dirty = false;
+  /** Sessão da IA que originou esta página nova; vinculada quando a página ganha id. */
+  private aiSessaoOrigem: string | null = null;
   private justSaved = false;
   private autosavePendente = false;
 
@@ -1674,6 +1676,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   private ativarPaginaSalva(pagina: Pagina): void {
+    this.vincularPropostaAi(pagina.id);
     this.editId.set(pagina.id);
     this.paginaAtual.set(pagina);
     this.form.controls.slug.setValue(pagina.slug, { emitEvent: false });
@@ -1828,6 +1831,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       (typeof history !== 'undefined' ? history.state : null);
     const proposta = state?.['proposta'] as
       | {
+          sessaoId?: string | null;
           titulo?: string;
           slug?: string;
           codigoTela?: string;
@@ -1839,6 +1843,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         }
       | undefined;
     if (!proposta || state?.['origem'] !== 'ai') return;
+    this.aiSessaoOrigem = proposta.sessaoId ?? null;
 
     this.mostrarTemplates.set(false);
     this.form.patchValue({
@@ -1874,6 +1879,18 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
    * `history.state` sobrevive ao F5: sem limpar, o reload restauraria o backup local e em seguida
    * reaplicaria a proposta por cima das edições do autor.
    */
+  /**
+   * A primeira vez que a página vinda de uma proposta da IA ganha id, a API marca a proposta como
+   * aceita e guarda a página — base do aceite e do "texto mantido" no painel de qualidade.
+   * Falhar aqui não pode atrapalhar o salvamento: o vínculo é só métrica.
+   */
+  private vincularPropostaAi(paginaId: string): void {
+    const sessaoId = this.aiSessaoOrigem;
+    if (!sessaoId) return;
+    this.aiSessaoOrigem = null;
+    this.aiAssistenteService.vincularPagina(sessaoId, paginaId).subscribe({ error: () => undefined });
+  }
+
   private consumirPropostaAiDoHistorico(): void {
     if (typeof history === 'undefined' || !history.state) return;
     const state = { ...history.state };

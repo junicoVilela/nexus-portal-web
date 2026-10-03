@@ -502,6 +502,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
             state: {
               origem: 'ai',
               proposta: {
+                sessaoId: s.id,
                 titulo: app.titulo,
                 slug: app.slug,
                 codigoTela: app.codigoTela,

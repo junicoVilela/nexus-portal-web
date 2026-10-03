@@ -243,6 +243,7 @@ export class AiAssistenteRevisaoComponent implements OnInit, OnDestroy {
             state: {
               origem: 'ai',
               proposta: {
+                sessaoId: item.pagina.sessaoId,
                 titulo: aplicacao.titulo,
                 slug: aplicacao.slug,
                 codigoTela: aplicacao.codigoTela,

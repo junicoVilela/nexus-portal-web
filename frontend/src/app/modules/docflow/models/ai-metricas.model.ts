@@ -33,4 +33,7 @@ export interface AiMetricasPrompt {
   pendentes: number;
   comAvisos: number;
   taxaAceite: number | null;
+  /** Média do texto da IA que continua nas páginas salvas (0–1); nula sem amostra. */
+  textoMantido: number | null;
+  amostrasTextoMantido: number;
 }

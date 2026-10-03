@@ -33,6 +33,8 @@ describe('AiQualidadeComponent', () => {
         pendentes: 0,
         comAvisos: 1,
         taxaAceite: 0.5,
+        textoMantido: 0.8,
+        amostrasTextoMantido: 3,
       },
       {
         promptVersao: 'ajustar-pagina@1.1',
@@ -43,6 +45,8 @@ describe('AiQualidadeComponent', () => {
         pendentes: 0,
         comAvisos: 0,
         taxaAceite: 0.75,
+        textoMantido: 0.8,
+        amostrasTextoMantido: 3,
       },
     ],
     ajustes: {
@@ -88,6 +92,7 @@ describe('AiQualidadeComponent', () => {
     expect(linhas[0].textContent).toContain('gerar-page-spec@2.2');
     expect(linhas[0].textContent).toContain('50%');
     expect(linhas[1].textContent).toContain('75%');
+    expect(linhas[0].textContent).toContain('80%');
   });
 
   it('mostra só os tipos de mudança que tiveram propostas', () => {

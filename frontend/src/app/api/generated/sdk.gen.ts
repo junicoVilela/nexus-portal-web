@@ -64,6 +64,8 @@ import type {
   AiAiSessaoPropostaResponses,
   AiAiSessaoRejeitarData,
   AiAiSessaoRejeitarResponses,
+  AiAiSessaoVincularPaginaData,
+  AiAiSessaoVincularPaginaResponses,
   AiAiStatusStatusData,
   AiAiStatusStatusResponses,
   AiAiTemplateRecomendarData,
@@ -2997,6 +2999,19 @@ export const aiAiSessaoRejeitar = <ThrowOnError extends boolean = true>(
   (options.client ?? client).post<AiAiSessaoRejeitarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/proposta/rejeitar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiSessaoVincularPagina = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoVincularPaginaData, ThrowOnError>,
+): RequestResult<AiAiSessaoVincularPaginaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoVincularPaginaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/pagina',
     ...options,
     headers: {
       'Content-Type': 'application/json',

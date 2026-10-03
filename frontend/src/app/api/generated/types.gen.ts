@@ -2334,6 +2334,8 @@ export type PorPrompt = {
   pendentes?: number;
   comAvisos?: number;
   taxaAceite?: number;
+  textoMantido?: number;
+  amostrasTextoMantido?: number;
 };
 
 export type Ajustes = {
@@ -2370,6 +2372,10 @@ export type AiImportacaoResumoResponse = {
   paginasTotal?: number;
   paginasRevisadas?: number;
   atualizadoEm?: string;
+};
+
+export type AiVincularPaginaRequest = {
+  paginaId: string;
 };
 
 export type ReleaseorchestratorReleaseTemplateExcluirData = {
@@ -6340,6 +6346,25 @@ export type AiAiSessaoRejeitarResponses = {
 };
 
 export type AiAiSessaoRejeitarResponse = AiAiSessaoRejeitarResponses[keyof AiAiSessaoRejeitarResponses];
+
+export type AiAiSessaoVincularPaginaData = {
+  body: AiVincularPaginaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/pagina';
+};
+
+export type AiAiSessaoVincularPaginaResponses = {
+  /**
+   * OK
+   */
+  200: AiPropostaResponse;
+};
+
+export type AiAiSessaoVincularPaginaResponse =
+  AiAiSessaoVincularPaginaResponses[keyof AiAiSessaoVincularPaginaResponses];
 
 export type AiAiSessaoCancelarData = {
   body?: never;

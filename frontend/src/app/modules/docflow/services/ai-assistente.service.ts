@@ -194,6 +194,11 @@ export class AiAssistenteService {
     return this.http.post<AiAjustePaginaResposta>(`${this.base}/paginas/${paginaId}/ajustes`, payload);
   }
 
+  /** A página criada a partir da proposta foi salva: a API marca a proposta como aceita. */
+  vincularPagina(sessaoId: string, paginaId: string): Observable<AiProposta> {
+    return this.http.post<AiProposta>(`${this.base}/sessoes/${sessaoId}/pagina`, { paginaId });
+  }
+
   rejeitarProposta(id: string, motivo?: string | null): Observable<AiProposta> {
     const texto = motivo?.trim();
     return this.http.post<AiProposta>(

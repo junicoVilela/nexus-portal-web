@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginaFormComponent } from './pagina-form.component';
-import { AiAplicacao } from '../../../models/ai-proposta.model';
+import { AiAplicacao, AiProposta } from '../../../models/ai-proposta.model';
 import { Pagina, PaginaTemplate } from '../../../models/pagina.model';
 import { Modulo } from '../../../models/modulo.model';
 import { Projeto } from '../../../models/projeto.model';
@@ -122,6 +122,36 @@ describe('PaginaFormComponent (smoke)', () => {
 
     expect(aviso).toHaveBeenCalled();
     expect(component['painelAjusteAberto']()).toBeFalse();
+  });
+
+  it('página vinda da IA vincula a proposta quando ganha id pela primeira vez', () => {
+    const component = fixture.componentInstance;
+    const vincular = spyOn(component['aiAssistenteService'], 'vincularPagina').and.returnValue(
+      of({} as AiProposta),
+    );
+    const anterior = history.state;
+    history.replaceState(
+      { ...anterior, origem: 'ai', proposta: { sessaoId: 'sess-1', titulo: 'Consulta' } },
+      '',
+    );
+    try {
+      component['aplicarPropostaAiSePresente']();
+      component['ativarPaginaSalva']({
+        id: 'pag-1',
+        slug: 'consulta',
+        status: 'RASCUNHO',
+        version: 1,
+      } as Pagina);
+      component['ativarPaginaSalva']({
+        id: 'pag-1',
+        slug: 'consulta',
+        status: 'RASCUNHO',
+        version: 2,
+      } as Pagina);
+    } finally {
+      history.replaceState(anterior, '');
+    }
+    expect(vincular).toHaveBeenCalledOnceWith('sess-1', 'pag-1');
   });
 
   it('renderiza sem erros em modo novo', () => {
