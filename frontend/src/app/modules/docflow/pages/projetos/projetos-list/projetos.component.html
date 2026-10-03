@@ -67,6 +67,17 @@
           </td>
           <td class="projetos__td projetos__td--actions">
             <ui-button
+              *appPermissao="'PAGINA:LER'"
+              variant="ghost"
+              size="sm"
+              icon="Download"
+              title="Um Markdown por tela publicada, com metadados, para indexar num RAG"
+              [loading]="baixandoRagId() === projeto.id"
+              [disabled]="!!baixandoRagId()"
+              (clicked)="baixarRag(projeto)"
+              >Base RAG</ui-button
+            >
+            <ui-button
               *appPermissao="'PROJETO:EDITAR'"
               variant="secondary"
               size="sm"

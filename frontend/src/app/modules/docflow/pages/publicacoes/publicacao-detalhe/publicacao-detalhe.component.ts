@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { AuthService } from '@core/auth/services/auth.service';
+import { PreviewToken } from '@modules/docflow/models/cliente.model';
+import { ClienteService } from '@modules/docflow/services/cliente.service';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import {
@@ -61,6 +64,10 @@ interface PaginaArvoreItem {
 export class PublicacaoDetalheComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly clienteService = inject(ClienteService);
+  private readonly auth = inject(AuthService);
+  /** Link de prévia do cliente reaproveitado entre cópias (evita um token por clique). */
+  private previewToken: PreviewToken | null = null;
 
   protected id = '';
   protected readonly publicacao = signal<Publicacao | undefined>(undefined);
@@ -179,8 +186,9 @@ export class PublicacaoDetalheComponent implements OnInit {
     if (!pub || !this.podeCancelar() || this.cancelando()) return;
     const confirmado = await this.confirm.confirm({
       title: 'Cancelar a geração?',
-      message: `A geração da versão ${pub.versao} será interrompida e o pacote descartado. `
-        + 'O cancelamento não é imediato: o worker termina a etapa atual antes de parar.',
+      message:
+        `A geração da versão ${pub.versao} será interrompida e o pacote descartado. ` +
+        'O cancelamento não é imediato: o worker termina a etapa atual antes de parar.',
       acceptLabel: 'Cancelar geração',
       variant: 'danger',
       icon: 'CircleX',
@@ -219,9 +227,7 @@ export class PublicacaoDetalheComponent implements OnInit {
       error: (erro: { error?: { message?: string } }) => {
         this.diff.set(null);
         this.carregandoDiff.set(false);
-        this.erroDiff.set(
-          erro?.error?.message ?? 'Não foi possível comparar com a publicação anterior.',
-        );
+        this.erroDiff.set(erro?.error?.message ?? 'Não foi possível comparar com a publicação anterior.');
       },
     });
   }
@@ -330,6 +336,58 @@ export class PublicacaoDetalheComponent implements OnInit {
       },
       error: () => this.toast.error('Erro ao gerar link público.'),
     });
+  }
+
+  /**
+   * INT-106: link estável para uma tela — prévia online do cliente com {@code ?tela=CODIGO}. Usa
+   * um link de prévia válido do cliente ou cria um (72 h) para quem pode editar publicações.
+   */
+  copiarLinkTela(codigoTela: string): void {
+    const pub = this.publicacao();
+    if (!pub) return;
+    this.linkPreviewDoCliente(pub.clienteId).subscribe({
+      next: token => {
+        const url = `${this.clienteService.previewPublicoUrl(token.token)}?tela=${encodeURIComponent(codigoTela)}`;
+        const validade = new Date(token.expiresAt).toLocaleString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        navigator.clipboard
+          .writeText(url)
+          .then(() =>
+            this.toast.success(`Link da tela ${codigoTela} copiado (prévia válida até ${validade}).`),
+          )
+          .catch(() => this.toast.error('Não foi possível copiar o link.'));
+      },
+      error: (erro: unknown) =>
+        this.toast.error(erro instanceof Error ? erro.message : 'Não foi possível gerar o link da tela.'),
+    });
+  }
+
+  private linkPreviewDoCliente(clienteId: string): Observable<PreviewToken> {
+    const margem = Date.now() + 60 * 60 * 1000;
+    if (this.previewToken && new Date(this.previewToken.expiresAt).getTime() > margem)
+      return of(this.previewToken);
+    return this.clienteService.listarPreviewTokens(clienteId).pipe(
+      map(tokens =>
+        tokens
+          .filter(t => new Date(t.expiresAt).getTime() > margem)
+          .sort((a, b) => b.expiresAt.localeCompare(a.expiresAt))
+          .at(0),
+      ),
+      switchMap(valido => {
+        if (valido) return of(valido);
+        if (!this.auth.tem()('PUBLICACAO:EDITAR')) {
+          return throwError(
+            () => new Error('Não há link de prévia ativo para este cliente. Peça a quem edita publicações.'),
+          );
+        }
+        return this.clienteService.gerarPreviewToken(clienteId);
+      }),
+      tap(token => (this.previewToken = token)),
+    );
   }
 
   async excluir(): Promise<void> {

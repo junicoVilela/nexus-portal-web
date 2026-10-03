@@ -1,4 +1,6 @@
-import { Injectable, Injector } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector, inject } from '@angular/core';
+import { environment } from '@env/environment';
 import { defer, map, Observable, shareReplay, tap } from 'rxjs';
 import { TIMINGS } from '@core/config/timings';
 import { PageResult } from '@shared/models/page-result.model';
@@ -20,15 +22,23 @@ export class ProjetoService {
   private projetosCache$?: Observable<Projeto[]>;
   private projetosCacheAt = 0;
 
+  private readonly http = inject(HttpClient);
+
   constructor(private readonly injector: Injector) {}
+
+  /**
+   * Base de RAG do projeto (ZIP): um Markdown por tela publicada + `rag/index.json` (sha256 por
+   * arquivo), `llms.txt` e `llms-full.txt`.
+   */
+  baixarRag(id: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/projetos/${id}/rag.zip`, { responseType: 'blob' });
+  }
 
   listarProjetos(
     params: { nome?: string; sort?: string; dir?: SortDirection; page?: number; size?: number } = {},
   ): Observable<PageResult<Projeto>> {
     return defer(() => listarProjetosSdk({ query: params, injector: this.injector })).pipe(
-      map(resposta =>
-        this.mapearPageResult(resposta.data, params.size, item => this.mapearProjeto(item)),
-      ),
+      map(resposta => this.mapearPageResult(resposta.data, params.size, item => this.mapearProjeto(item))),
     );
   }
 

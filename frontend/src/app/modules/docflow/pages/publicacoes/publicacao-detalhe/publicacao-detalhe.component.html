@@ -6,22 +6,10 @@
   >
     <div actions>
       @if (podeBaixar()) {
-        <ui-button
-          variant="secondary"
-          size="sm"
-          icon="Download"
-          [loading]="baixandoZip()"
-          (clicked)="baixarZip()"
-        >
+        <ui-button variant="secondary" size="sm" icon="Download" [loading]="baixandoZip()" (clicked)="baixarZip()">
           Baixar ZIP
         </ui-button>
-        <ui-button
-          variant="secondary"
-          size="sm"
-          icon="FileText"
-          [loading]="baixandoPdf()"
-          (clicked)="baixarPdf()"
-        >
+        <ui-button variant="secondary" size="sm" icon="FileText" [loading]="baixandoPdf()" (clicked)="baixarPdf()">
           Baixar PDF do manual
         </ui-button>
       }
@@ -109,6 +97,16 @@
                       @if (pagina.tipoMudanca) {
                         <ui-badge tone="neutral">{{ pagina.tipoMudanca }}</ui-badge>
                       }
+                      @if (pagina.codigoTela) {
+                        <button
+                          type="button"
+                          class="pub-det__page-link pub-det__page-link--botao"
+                          title="Copia o link da prévia online já aberta nesta tela (?tela=)"
+                          (click)="copiarLinkTela(pagina.codigoTela)"
+                        >
+                          Copiar link
+                        </button>
+                      }
                       @if (pagina.id) {
                         <a class="pub-det__page-link" [routerLink]="nav('paginas', pagina.id, 'editar')">Editar</a>
                       }
@@ -149,8 +147,8 @@
             <p class="pub-det__empty">{{ erroDiff() }}</p>
           } @else if (diff()) {
             <p class="pub-det__meta">
-              Comparando <strong>{{ diff()!.versao }}</strong> com
-              <strong>{{ diff()!.versaoComparada }}</strong>.
+              Comparando <strong>{{ diff()!.versao }}</strong> com <strong>{{ diff()!.versaoComparada }}</strong
+              >.
             </p>
 
             <div class="pub-det__status-row u-mt-16">
@@ -205,9 +203,7 @@
               <div class="pub-det__conteudo-diff">
                 <header>
                   <strong>{{ comparada.titulo }}</strong>
-                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="fecharComparacao()"
-                    >Fechar</ui-button
-                  >
+                  <ui-button variant="ghost" size="sm" icon="X" (clicked)="fecharComparacao()">Fechar</ui-button>
                 </header>
                 @if (carregandoConteudo()) {
                   <p class="pub-det__empty">Carregando as duas versões…</p>
@@ -228,8 +224,8 @@
 
             @if (totalDaMudanca('INDETERMINADA')) {
               <p class="pub-det__hint u-mt-16">
-                Páginas marcadas como INDETERMINADA vêm de uma publicação gerada antes do
-                registro de conteúdo por página — não dá para afirmar se mudaram.
+                Páginas marcadas como INDETERMINADA vêm de uma publicação gerada antes do registro de conteúdo por
+                página — não dá para afirmar se mudaram.
               </p>
             }
           } @else {

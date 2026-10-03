@@ -245,6 +245,8 @@ import type {
   DocflowProjetoCriarResponses,
   DocflowProjetoExcluirData,
   DocflowProjetoExcluirResponses,
+  DocflowProjetoExportarRagData,
+  DocflowProjetoExportarRagResponses,
   DocflowProjetoListarData,
   DocflowProjetoListarResponses,
   DocflowPublicacaoArvorePaginasData,
@@ -3863,6 +3865,15 @@ export const docflowPublicacaoDiagnostico = <ThrowOnError extends boolean = true
   (options.client ?? client).get<DocflowPublicacaoDiagnosticoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/publicacoes/diagnostico',
+    ...options,
+  });
+
+export const docflowProjetoExportarRag = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowProjetoExportarRagData, ThrowOnError>,
+): RequestResult<DocflowProjetoExportarRagResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowProjetoExportarRagResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/projetos/{id}/rag.zip',
     ...options,
   });
 

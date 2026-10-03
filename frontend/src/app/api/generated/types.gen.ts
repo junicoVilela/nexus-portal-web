@@ -7844,6 +7844,25 @@ export type DocflowPublicacaoDiagnosticoResponses = {
 export type DocflowPublicacaoDiagnosticoResponse =
   DocflowPublicacaoDiagnosticoResponses[keyof DocflowPublicacaoDiagnosticoResponses];
 
+export type DocflowProjetoExportarRagData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/projetos/{id}/rag.zip';
+};
+
+export type DocflowProjetoExportarRagResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type DocflowProjetoExportarRagResponse =
+  DocflowProjetoExportarRagResponses[keyof DocflowProjetoExportarRagResponses];
+
 export type DocflowPaginaBaixarAnexoData = {
   body?: never;
   path: {

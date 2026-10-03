@@ -200,6 +200,13 @@
   text-decoration: underline;
 }
 
+.pub-det__page-link--botao {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .df-form {
     padding: 18px;

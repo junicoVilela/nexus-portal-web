@@ -36,6 +36,7 @@ import { PermissaoDirective } from '@modules/identity-access/directives';
 export class ProjetosComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  protected readonly baixandoRagId = signal<string | null>(null);
 
   protected readonly projetos = signal<Projeto[]>([]);
   protected readonly totalProjetos = signal(0);
@@ -94,6 +95,32 @@ export class ProjetosComponent implements OnInit {
 
   editar(projeto: Projeto): void {
     this.router.navigate(docFlowRouterCommands(['projetos', projeto.id, 'editar']));
+  }
+
+  /** Baixa `rag-<projeto>.zip` (Markdown por tela publicada) para alimentar o RAG do produto. */
+  baixarRag(projeto: Projeto): void {
+    if (this.baixandoRagId()) return;
+    this.baixandoRagId.set(projeto.id);
+    this.projetoService.baixarRag(projeto.id).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `rag-${projeto.slug}.zip`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.baixandoRagId.set(null);
+      },
+      error: error => {
+        this.baixandoRagId.set(null);
+        // Com responseType blob o corpo do erro não vem como JSON: decide pelo status.
+        this.toast.error(
+          error instanceof HttpErrorResponse && error.status === 422
+            ? `${projeto.nome} ainda não tem páginas publicadas para exportar.`
+            : this.errorMessage(error, 'Não foi possível baixar a base RAG.'),
+        );
+      },
+    });
   }
 
   async excluir(projeto: Projeto): Promise<void> {

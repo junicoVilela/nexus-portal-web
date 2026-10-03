@@ -234,6 +234,8 @@ import type {
   DocflowProjetoCriarResponse,
   DocflowProjetoExcluirData,
   DocflowProjetoExcluirResponse,
+  DocflowProjetoExportarRagData,
+  DocflowProjetoExportarRagResponse,
   DocflowProjetoListarData,
   DocflowProjetoListarResponse,
   DocflowPublicacaoArvorePaginasData,
@@ -3630,6 +3632,16 @@ export const docflowPublicacaoDiagnosticoRequest = <ThrowOnError extends boolean
     ...options,
   });
 
+export const docflowProjetoExportarRagRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowProjetoExportarRagData, ThrowOnError>,
+): HttpRequest<DocflowProjetoExportarRagResponse> =>
+  (options?.client ?? client).requestOptions<DocflowProjetoExportarRagResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/projetos/{id}/rag.zip',
+    ...options,
+  });
+
 export const docflowPaginaBaixarAnexoRequest = <ThrowOnError extends boolean = false>(
   options: Options<DocflowPaginaBaixarAnexoData, ThrowOnError>,
 ): HttpRequest<DocflowPaginaBaixarAnexoResponse> =>
@@ -6178,6 +6190,14 @@ export const docflowPublicacaoDiagnosticoResource = <ThrowOnError extends boolea
   httpResource<DocflowPublicacaoDiagnosticoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? docflowPublicacaoDiagnosticoRequest(opts) : undefined;
+  });
+
+export const docflowProjetoExportarRagResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowProjetoExportarRagData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowProjetoExportarRagResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowProjetoExportarRagRequest(opts) : undefined;
   });
 
 export const docflowPaginaBaixarAnexoResource = <ThrowOnError extends boolean = false>(

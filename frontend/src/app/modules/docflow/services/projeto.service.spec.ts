@@ -20,6 +20,13 @@ describe('ProjetoService', () => {
 
   afterEach(() => http.verify());
 
+  it('baixarRag() baixa o ZIP da base RAG do projeto', () => {
+    service.baixarRag('p1').subscribe(blob => expect(blob.size).toBe(3));
+    const req = http.expectOne('/api/doc-flow/projetos/p1/rag.zip');
+    expect(req.request.responseType).toBe('blob');
+    req.flush(new Blob(['zip']));
+  });
+
   it('listarProjetos() sends params', fakeAsync(() => {
     service.listarProjetos({ nome: 'a', page: 2, size: 5 }).subscribe();
     tick();
