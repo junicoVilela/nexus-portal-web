@@ -1,0 +1,29 @@
+<div class="geracao" role="status">
+  <lucide-icon name="Loader2" [size]="20" class="geracao__spin" />
+  <div class="geracao__corpo">
+    <div class="geracao__titulo">
+      <strong>{{ geracao.etapa() }}</strong>
+      <span>{{ geracao.progresso() }}%</span>
+    </div>
+    <div
+      class="geracao__barra"
+      role="progressbar"
+      aria-label="Progresso da geração"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="geracao.progresso()"
+    >
+      <i [style.width.%]="geracao.progresso()"></i>
+    </div>
+    @if (geracao.demorada()) {
+      <p>Continuamos acompanhando o processamento. Não é necessário iniciar novamente.</p>
+    } @else {
+      <p>
+        Acompanhamento em tempo real
+        @if (geracao.job()?.tentativa; as tentativa) {
+          · tentativa {{ tentativa }}
+        }
+      </p>
+    }
+  </div>
+</div>

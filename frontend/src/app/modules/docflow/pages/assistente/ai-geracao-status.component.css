@@ -1,0 +1,68 @@
+.geracao {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-xs);
+}
+
+.geracao__corpo {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.geracao__titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.geracao__titulo strong {
+  font: 700 13.5px/1.3 var(--font-body);
+  color: var(--text);
+}
+
+.geracao__titulo span {
+  font: 700 12px/1 var(--font-body);
+  color: var(--accent);
+}
+
+.geracao__barra {
+  height: 7px;
+  margin-top: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.geracao__barra i {
+  display: block;
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--info));
+  transition: width 280ms ease;
+}
+
+.geracao p {
+  margin: 4px 0 0;
+  font: 400 12.5px/1.4 var(--font-body);
+  color: var(--text-muted);
+}
+
+.geracao__spin {
+  animation: geracao-spin 1s linear infinite;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+@keyframes geracao-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

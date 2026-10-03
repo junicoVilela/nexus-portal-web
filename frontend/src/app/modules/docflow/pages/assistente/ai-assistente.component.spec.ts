@@ -211,7 +211,7 @@ describe('AiAssistenteComponent', () => {
       composicaoAjustadaManualmente: true,
     });
 
-    cmp['aplicarRecomendacao']({
+    cmp['recomendacao'].aplicar({
       recomendado: null,
       candidatos: [],
       exigeConfirmacao: false,
@@ -301,7 +301,7 @@ describe('AiAssistenteComponent', () => {
     ai.criarSessao.and.returnValue(of(criarSessaoTeste('PRONTA_PARA_GERAR')));
     const cmp = fixture.componentInstance;
     cmp['form'].patchValue({ briefing: 'x'.repeat(50) });
-    cmp['aplicarRecomendacao']({
+    cmp['recomendacao'].aplicar({
       recomendado: null,
       candidatos: [],
       exigeConfirmacao: false,
@@ -366,7 +366,7 @@ describe('AiAssistenteComponent', () => {
 
     expect(cmp['erro']()).toBeNull();
     expect(cmp['gerando']()).toBeTrue();
-    expect(cmp['geracaoDemorada']()).toBeTrue();
+    expect(cmp['geracao'].demorada()).toBeTrue();
     cmp.ngOnDestroy();
   }));
 
@@ -408,8 +408,8 @@ describe('AiAssistenteComponent', () => {
     fixture.detectChanges();
 
     expect(cmp['gerando']()).toBeTrue();
-    expect(cmp['progressoGeracao']()).toBe(50);
-    expect(cmp['etapaGeracao']()).toContain('Gerando o conteúdo');
+    expect(cmp['geracao'].progresso()).toBe(50);
+    expect(cmp['geracao'].etapa()).toContain('Gerando o conteúdo');
     expect(fixture.nativeElement.textContent).toContain('50%');
     cmp.ngOnDestroy();
   }));

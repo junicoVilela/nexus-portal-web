@@ -10,9 +10,8 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { Subscription, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap } from 'rxjs';
+import { Subscription, finalize } from 'rxjs';
 
-import { TIMINGS } from '@core/config/timings';
 import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
@@ -24,9 +23,8 @@ import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
 import { AiPaginaDocumentoSelecionada } from '../../models/ai-documento-importacao.model';
 import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
-import { AiJob, AiProposta } from '../../models/ai-proposta.model';
+import { AiProposta } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
-import { AiTemplateRecomendacao } from '../../models/ai-template-recomendacao.model';
 import { BlocoPagina } from '../../components/pagina-block-library';
 import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
 import { PaginaTemplate } from '../../models/pagina.model';
@@ -36,6 +34,9 @@ import { AiImagensStagingService } from '../../services/ai-imagens-staging.servi
 import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
 import { PaginaBlocoService } from '../../services/pagina-bloco.service';
 import { PaginaService } from '../../services/pagina.service';
+import { AiGeracaoAcompanhamento, AiGeracaoCallbacks, mensagemFalhaJob } from './ai-geracao-acompanhamento';
+import { AiGeracaoStatusComponent } from './ai-geracao-status.component';
+import { AiRecomendacaoModelo } from './ai-recomendacao-modelo';
 
 type WizardPasso = 'brief' | 'chat' | 'revisar';
 
@@ -56,7 +57,9 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
     AiImagensDropzoneComponent,
     AiDocumentoImportacaoComponent,
     AiComponentComposerComponent,
+    AiGeracaoStatusComponent,
   ],
+  providers: [AiGeracaoAcompanhamento, AiRecomendacaoModelo],
   templateUrl: './ai-assistente.component.html',
   styleUrl: './ai-assistente.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,20 +74,15 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private eventosSub?: Subscription;
+  private readonly geracao = inject(AiGeracaoAcompanhamento);
+  private readonly recomendacao = inject(AiRecomendacaoModelo);
   private formSub?: Subscription;
   private recomendacaoSub?: Subscription;
-  private pollTimer?: number;
-  private geracaoResolvida = false;
-  private geracaoIniciadaEm = 0;
 
   protected readonly sessao = signal<AiSessao | null>(null);
   protected readonly proposta = signal<AiProposta | null>(null);
-  protected readonly jobGeracao = signal<AiJob | null>(null);
   protected readonly carregando = signal(false);
-  protected readonly gerando = signal(false);
   protected readonly rejeitando = signal(false);
-  protected readonly geracaoDemorada = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly respostas = signal<Record<string, string>>({});
   protected readonly imagens = signal<AiImagemAnexo[]>([]);
@@ -93,10 +91,14 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly blocosCatalogo = signal<BlocoPagina[]>([]);
   protected readonly briefingAtual = signal('');
   protected readonly templateIdAtual = signal('');
-  protected readonly recomendacaoTemplate = signal<AiTemplateRecomendacao | null>(null);
-  protected readonly recomendandoTemplate = signal(false);
-  protected readonly componentesSelecionados = signal<string[]>([]);
-  private readonly componentesImportadosPendentes = signal<string[] | null>(null);
+
+  // Estado da geração e da recomendação vive nas peças extraídas; aliases para o template.
+  protected readonly gerando = this.geracao.gerando;
+  protected readonly recomendacaoTemplate = this.recomendacao.recomendacao;
+  protected readonly recomendandoTemplate = this.recomendacao.carregando;
+  protected readonly componentesSelecionados = this.recomendacao.componentesSelecionados;
+  protected readonly composicaoValida = this.recomendacao.composicaoValida;
+
   private readonly paginaImportadaContexto = signal<{
     importacaoId: string;
     paginaPlanoId: string;
@@ -144,16 +146,6 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     () => !this.templateIdAtual() && this.recomendacaoTemplate()?.exigeConfirmacao === true,
   );
 
-  protected readonly composicaoValida = computed(() => {
-    const componentes = this.recomendacaoTemplate()?.componentes ?? [];
-    const selecionados = this.componentesSelecionados();
-    if (!componentes.length && !selecionados.length) return true;
-    return (
-      selecionados.length >= 3 &&
-      componentes.filter(item => item.obrigatorio).every(item => selecionados.includes(item.id))
-    );
-  });
-
   protected readonly podeIniciar = computed(
     () =>
       this.briefingValido() &&
@@ -192,24 +184,6 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
 
   protected readonly pronta = computed(() => this.sessao()?.status === 'PRONTA');
 
-  protected readonly progressoGeracao = computed(() => this.jobGeracao()?.progresso ?? 0);
-
-  protected readonly etapaGeracao = computed(() => {
-    const etapa = this.jobGeracao()?.etapa ?? 'AGUARDANDO';
-    const rotulos: Record<AiJob['etapa'], string> = {
-      AGUARDANDO: 'Aguardando início',
-      PREPARANDO_CONTEXTO: 'Analisando o briefing',
-      SELECIONANDO_ESTRUTURA: 'Escolhendo blueprint e componentes',
-      GERANDO_CONTEUDO: 'Gerando o conteúdo da página',
-      VALIDANDO_QUALIDADE: 'Validando qualidade e consistência',
-      FINALIZANDO: 'Preparando a proposta para revisão',
-      CONCLUIDA: 'Rascunho concluído',
-      CANCELADA: 'Geração cancelada',
-      FALHA: 'Falha na geração',
-    };
-    return rotulos[etapa];
-  });
-
   protected readonly passoAtual = computed<WizardPasso>(() => {
     if (!this.sessao()) return 'brief';
     if (this.proposta() || this.pronta() || this.gerando()) return 'revisar';
@@ -234,36 +208,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       this.briefingAtual.set(v.briefing ?? '');
       this.templateIdAtual.set(v.templateId ?? '');
     });
-    this.recomendacaoSub = this.form.valueChanges
-      .pipe(
-        debounceTime(450),
-        distinctUntilChanged(
-          (anterior, atual) =>
-            anterior.briefing === atual.briefing && anterior.templateId === atual.templateId,
-        ),
-        switchMap(valor => {
-          const texto = valor.briefing?.trim() ?? '';
-          if (texto.length < 20) {
-            this.recomendacaoTemplate.set(null);
-            this.componentesSelecionados.set([]);
-            return of(null);
-          }
-          this.recomendandoTemplate.set(true);
-          const contextoImportado = this.paginaImportadaContexto();
-          return this.ai
-            .recomendarTemplate({
-              briefing: texto,
-              projetoId: contextoImportado?.projetoId ?? qp.get('projetoId'),
-              clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
-              templateId: valor.templateId || null,
-            })
-            .pipe(
-              catchError(() => of(null)),
-              finalize(() => this.recomendandoTemplate.set(false)),
-            );
-        }),
-      )
-      .subscribe(recomendacao => this.aplicarRecomendacao(recomendacao));
+    this.recomendacaoSub = this.recomendacao.observar(this.form.valueChanges, () => {
+      const contextoImportado = this.paginaImportadaContexto();
+      return {
+        projetoId: contextoImportado?.projetoId ?? qp.get('projetoId'),
+        clienteId: contextoImportado ? contextoImportado.clienteId : qp.get('clienteId'),
+      };
+    });
     this.paginaService
       .templatesPagina({
         projetoId: qp.get('projetoId') ?? undefined,
@@ -296,7 +247,6 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.formSub?.unsubscribe();
     this.recomendacaoSub?.unsubscribe();
-    this.limparEscutaGeracao();
     this.limparImagens();
   }
 
@@ -389,7 +339,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected atualizarComponentesSelecionados(ids: string[]): void {
-    this.componentesSelecionados.set(ids);
+    this.recomendacao.selecionar(ids);
     this.erro.set(null);
   }
 
@@ -401,7 +351,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       moduloId: pagina.moduloId,
       clienteId: pagina.clienteId,
     });
-    this.componentesImportadosPendentes.set([...(pagina.componentesSelecionados ?? [])]);
+    this.recomendacao.usarComponentesImportados(pagina.componentesSelecionados ?? []);
     this.form.patchValue({
       briefing: pagina.briefing,
       templateId: pagina.templateId ?? '',
@@ -507,26 +457,9 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected gerarRascunho(instrucao: string | null = null): void {
     const s = this.sessao();
     if (!s) return;
-    this.limparEscutaGeracao();
-    this.geracaoResolvida = false;
-    this.geracaoIniciadaEm = Date.now();
-    this.geracaoDemorada.set(false);
-    this.gerando.set(true);
     this.erro.set(null);
     this.proposta.set(null);
-    this.jobGeracao.set(null);
-    this.ai.gerar(s.id, instrucao).subscribe({
-      next: job => {
-        this.jobGeracao.set(job);
-        this.geracaoIniciadaEm = this.inicioJob(job);
-        this.ouvirGeracao(s.id);
-      },
-      error: err => {
-        this.erro.set(this.mensagemErro(err));
-        this.gerando.set(false);
-        this.finalizarAcompanhamento();
-      },
-    });
+    this.geracao.gerar(s.id, instrucao, this.aoAcompanharGeracao);
   }
 
   protected aplicarNoEditor(): void {
@@ -601,14 +534,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected reiniciar(): void {
-    this.finalizarAcompanhamento();
+    this.geracao.resetar();
     this.sessao.set(null);
     this.proposta.set(null);
-    this.jobGeracao.set(null);
     this.respostas.set({});
-    this.componentesSelecionados.set([]);
+    this.recomendacao.selecionar([]);
     this.erro.set(null);
-    this.gerando.set(false);
     this.limparImagens();
     this.imagensStaging.clear();
     const templateId = this.form.controls.templateId.value;
@@ -634,11 +565,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
         this.componentesSelecionados.set(s.componentesSelecionados ?? []);
         this.carregando.set(false);
         if (s.status === 'GERANDO') {
-          this.geracaoResolvida = false;
-          this.gerando.set(true);
-          this.geracaoIniciadaEm = this.inicioJob(s.jobAtual);
-          this.geracaoDemorada.set(Date.now() - this.geracaoIniciadaEm >= TIMINGS.aiGenerationExpectedMs);
-          this.ouvirGeracao(s.id);
+          this.geracao.retomar(s, this.aoAcompanharGeracao);
           return;
         }
         if (s.status === 'PRONTA') {
@@ -646,7 +573,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
           return;
         }
         if (s.status === 'ERRO') {
-          this.erro.set(this.mensagemFalhaJob(s.jobAtual));
+          this.erro.set(mensagemFalhaJob(s.jobAtual));
         }
       },
       error: err => {
@@ -671,25 +598,15 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     });
   }
 
+  private readonly aoAcompanharGeracao: AiGeracaoCallbacks = {
+    sessaoAtualizada: sessao => this.sessao.set(sessao),
+    concluida: proposta => this.proposta.set(proposta),
+    falhou: mensagem => this.erro.set(mensagem),
+  };
+
   private atualizarSessao(sessao: AiSessao): void {
     this.sessao.set(sessao);
-    if (sessao.jobAtual) {
-      this.jobGeracao.set(sessao.jobAtual);
-    }
-  }
-
-  private aplicarRecomendacao(recomendacao: AiTemplateRecomendacao | null): void {
-    this.recomendacaoTemplate.set(recomendacao);
-    const importados = this.componentesImportadosPendentes();
-    if (recomendacao && importados?.length) {
-      if (importados.length >= 3) {
-        this.componentesSelecionados.set(importados);
-        this.componentesImportadosPendentes.set(null);
-        return;
-      }
-    }
-    this.componentesSelecionados.set(recomendacao?.componentes.map(item => item.id) ?? []);
-    if (recomendacao) this.componentesImportadosPendentes.set(null);
+    this.geracao.sincronizarJob(sessao.jobAtual);
   }
 
   private persistirSessaoNaUrl(sessaoId: string | null): void {
@@ -699,17 +616,6 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
-  }
-
-  private inicioJob(job: AiJob | null): number {
-    if (!job?.startedAt) return Date.now();
-    const inicio = Date.parse(job.startedAt);
-    return Number.isFinite(inicio) ? inicio : Date.now();
-  }
-
-  private mensagemFalhaJob(job: AiJob | null): string {
-    const mensagem = job?.erroMensagem ?? 'Falha na geração do rascunho. Você pode tentar novamente.';
-    return job?.diagnosticoId ? `${mensagem} Diagnóstico: ${job.diagnosticoId}.` : mensagem;
   }
 
   private briefingComImagens(): string {
@@ -734,122 +640,6 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   private buscarBlueprint(codigo?: string | null): PaginaBlueprint | null {
     if (!codigo) return null;
     return this.blueprints().find(blueprint => blueprint.templatesCompativeis.includes(codigo)) ?? null;
-  }
-
-  private ouvirGeracao(sessaoId: string): void {
-    this.eventosSub = this.ai.eventosAi().subscribe({
-      next: ev => {
-        if (ev.sessaoId !== sessaoId) return;
-        this.jobGeracao.update(atual =>
-          atual && atual.id === ev.jobId
-            ? {
-                ...atual,
-                status: ev.status,
-                etapa: ev.etapa,
-                progresso: ev.progresso,
-                tentativa: ev.tentativa,
-                diagnosticoId: ev.diagnosticoId ?? atual.diagnosticoId,
-              }
-            : atual,
-        );
-        if (ev.status === 'CANCELADO') {
-          this.gerando.set(false);
-          this.finalizarAcompanhamento();
-          return;
-        }
-        if (ev.status === 'SUCESSO' || ev.status === 'ERRO') {
-          this.resolverGeracao(sessaoId, ev.status === 'ERRO');
-        }
-      },
-      error: () => {
-        /* polling cobre o fallback */
-      },
-    });
-    this.pollProposta(sessaoId);
-  }
-
-  private pollProposta(sessaoId: string): void {
-    if (this.geracaoResolvida) return;
-    const decorrido = Date.now() - this.geracaoIniciadaEm;
-    if (decorrido >= TIMINGS.aiGenerationExpectedMs) {
-      this.geracaoDemorada.set(true);
-    }
-    this.ai.buscarSessao(sessaoId).subscribe({
-      next: s => {
-        if (this.geracaoResolvida) return;
-        this.atualizarSessao(s);
-        if (s.status === 'PRONTA') {
-          this.resolverGeracao(sessaoId, false);
-          return;
-        }
-        if (s.status === 'ERRO') {
-          this.resolverGeracao(sessaoId, true);
-          return;
-        }
-        if (s.status === 'CANCELADA') {
-          this.gerando.set(false);
-          this.finalizarAcompanhamento();
-          return;
-        }
-        this.agendarProximoPoll(sessaoId);
-      },
-      error: () => {
-        if (this.geracaoResolvida) return;
-        this.agendarProximoPoll(sessaoId, true);
-      },
-    });
-  }
-
-  private agendarProximoPoll(sessaoId: string, aposFalha = false): void {
-    const decorrido = Date.now() - this.geracaoIniciadaEm;
-    const intervalo =
-      aposFalha || decorrido >= TIMINGS.aiGenerationExpectedMs
-        ? TIMINGS.aiGenerationSlowPollIntervalMs
-        : TIMINGS.aiGenerationPollIntervalMs;
-    this.pollTimer = window.setTimeout(() => this.pollProposta(sessaoId), intervalo);
-  }
-
-  private resolverGeracao(sessaoId: string, comErro: boolean): void {
-    if (this.geracaoResolvida) return;
-    this.geracaoResolvida = true;
-    this.limparEscutaGeracao();
-    if (comErro) {
-      this.gerando.set(false);
-      this.finalizarAcompanhamento();
-      this.ai.buscarSessao(sessaoId).subscribe(s => {
-        this.atualizarSessao(s);
-        this.erro.set(this.mensagemFalhaJob(s.jobAtual));
-      });
-      return;
-    }
-    this.ai.proposta(sessaoId).subscribe({
-      next: p => {
-        this.proposta.set(p);
-        this.gerando.set(false);
-        this.finalizarAcompanhamento();
-        this.ai.buscarSessao(sessaoId).subscribe(s => this.atualizarSessao(s));
-      },
-      error: err => {
-        this.erro.set(this.mensagemErro(err));
-        this.gerando.set(false);
-        this.finalizarAcompanhamento();
-      },
-    });
-  }
-
-  private limparEscutaGeracao(): void {
-    this.eventosSub?.unsubscribe();
-    this.eventosSub = undefined;
-    if (this.pollTimer !== undefined) {
-      window.clearTimeout(this.pollTimer);
-      this.pollTimer = undefined;
-    }
-  }
-
-  private finalizarAcompanhamento(): void {
-    this.limparEscutaGeracao();
-    this.geracaoIniciadaEm = 0;
-    this.geracaoDemorada.set(false);
   }
 
   private mensagemErro(err: unknown): string {

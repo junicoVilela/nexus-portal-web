@@ -272,40 +272,6 @@
   color: var(--text-muted);
 }
 
-.wiz__generation-status {
-  flex: 1 1 320px;
-  min-width: 0;
-}
-
-.wiz__generation-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.wiz__generation-heading span {
-  font: 700 12px/1 var(--font-body);
-  color: var(--accent);
-}
-
-.wiz__generation-progress {
-  height: 7px;
-  margin-top: 9px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
-}
-
-.wiz__generation-progress i {
-  display: block;
-  height: 100%;
-  min-width: 3px;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--info));
-  transition: width 280ms ease;
-}
-
 .wiz__template-options {
   display: flex;
   gap: 8px;
@@ -369,18 +335,6 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-left: auto;
-}
-
-.wiz__spin {
-  animation: wiz-spin 1s linear infinite;
-  color: var(--accent);
-  flex-shrink: 0;
-}
-
-@keyframes wiz-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 840px) {
