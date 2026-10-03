@@ -17,9 +17,8 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, firstValueFrom, forkJoin, of, Subject } from 'rxjs';
-import { debounceTime, startWith, takeUntil } from 'rxjs/operators';
+import { startWith, takeUntil } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TIMINGS } from '@core/config/timings';
 import { AuthService } from '@core/auth/services/auth.service';
 import { CanDeactivateComponent } from '@shared/guards';
 import { ModuloService } from '@modules/docflow/services/modulo.service';
@@ -86,18 +85,16 @@ import {
   aplicarPlaceholdersConteudo,
   ContextoPlaceholdersPagina,
 } from '@modules/docflow/utils/pagina-placeholders.util';
-import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
 import { PaginaBlocoService } from '@modules/docflow/services/pagina-bloco.service';
 import { AiAssistenteService } from '@modules/docflow/services/ai-assistente.service';
 import { AiFeatureService } from '@modules/docflow/services/ai-feature.service';
 import { AiAjustePainelComponent } from '../../../components/ai-ajuste-painel/ai-ajuste-painel.component';
 import { AiAplicacao } from '../../../models/ai-proposta.model';
+import { abrirJanelaPreview, escapeHtml } from '@shared/utils/janela-preview';
 import { PaginaFormModelos } from './pagina-form-modelos';
 import { PaginaFormIa } from './pagina-form-ia';
+import { PaginaFormPersistencia, SalvarDestino } from './pagina-form-persistencia';
 import { PaginaFormRevisoes } from './pagina-form-revisoes';
-
-type SalvarDestino = 'lista' | 'continuar' | 'nova';
-type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
 
 @Component({
   selector: 'app-pagina-form',
@@ -126,18 +123,18 @@ type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'er
   ],
   templateUrl: './pagina-form.component.html',
   styleUrl: './pagina-form.component.css',
-  providers: [PaginaFormModelos, PaginaFormRevisoes, PaginaFormIa],
+  providers: [PaginaFormModelos, PaginaFormRevisoes, PaginaFormIa, PaginaFormPersistencia],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy, CanDeactivateComponent {
   private readonly toast = inject(ToastService);
   private readonly auth = inject(AuthService);
-  private readonly paginaDraftService = inject(PaginaDraftService);
   private readonly aiAssistenteService = inject(AiAssistenteService);
   private readonly aiFeature = inject(AiFeatureService);
   protected readonly modelos = inject(PaginaFormModelos);
   protected readonly historico = inject(PaginaFormRevisoes);
   private readonly ia = inject(PaginaFormIa);
+  protected readonly persistencia = inject(PaginaFormPersistencia);
   private tabelasDecoradasAssinatura = '';
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
@@ -148,9 +145,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   @ViewChild(PaginaSectionOrganizerComponent) sectionOrganizer?: PaginaSectionOrganizerComponent;
 
   private readonly destroy$ = new Subject<void>();
-  private dirty = false;
-  private justSaved = false;
-  private autosavePendente = false;
 
   // ───── Signals: estado reativo ─────
   protected readonly projetos = signal<Projeto[]>([]);
@@ -161,9 +155,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly anexos = signal<PaginaAnexo[]>([]);
   protected readonly paginaAtual = signal<Pagina | undefined>(undefined);
   protected readonly editId = signal<string | undefined>(undefined);
-  protected readonly saving = signal(false);
+  protected readonly saving = this.persistencia.saving;
   protected readonly editorModo = signal<EditorModo>('rico');
-  protected readonly rascunhoSalvoEm = signal<Date | null>(null);
+  protected readonly rascunhoSalvoEm = this.persistencia.rascunhoSalvoEm;
   protected readonly blocosCatalogo = signal<BlocoPagina[]>([]);
   protected readonly catalogoBlocosIndisponivel = signal(false);
   // Estado dos modelos vive em PaginaFormModelos; aliases para o código e o template do editor.
@@ -180,9 +174,9 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly revisoesSort = this.historico.revisoesSort;
   protected readonly revisoesDir = this.historico.revisoesDir;
   protected readonly showDiff = this.historico.showDiff;
-  protected readonly autosaveStatus = signal<AutosaveStatus>('idle');
-  protected readonly autosaveServidorEm = signal<Date | null>(null);
-  protected readonly conflitoMensagem = signal<string | null>(null);
+  protected readonly autosaveStatus = this.persistencia.autosaveStatus;
+  protected readonly autosaveLabel = this.persistencia.autosaveLabel;
+  protected readonly conflitoMensagem = this.persistencia.conflitoMensagem;
   protected readonly previewing = signal(false);
   protected readonly organizandoSecoes = signal(false);
   protected readonly etapaAtiva = signal<PaginaCreationStepId>('modelo');
@@ -366,10 +360,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     private readonly confirmService: ConfirmService,
   ) {}
 
-  private get draftKey(): string {
-    return `docflow:pagina-form:${this.editId() ?? 'novo'}`;
-  }
-
   ngOnInit(): void {
     this.modelos.configurar({
       projetoId: () => this.form.controls.projetoId.value || undefined,
@@ -379,6 +369,19 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.historico.configurar({
       paginaId: () => this.paginaAtual()?.id,
       estadoMudou: () => this.atualizarEstadoEditor(),
+    });
+    this.persistencia.configurar({
+      form: this.form,
+      paginaId: () => this.editId(),
+      paginaAtual: () => this.paginaAtual(),
+      payload: () => this.payloadPagina(),
+      persistida: pagina => this.atualizarPaginaAposPersistencia(pagina),
+      ativada: pagina => this.ativarPaginaSalva(pagina),
+      recarregada: pagina => this.carregarPagina(pagina),
+      salva: (pagina, destino) => {
+        if (pagina.parentId) sincronizarIndicePai(this.paginaService, this.toast, pagina.parentId);
+        this.vincularImportacaoEContinuar(pagina, destino);
+      },
     });
     this.aiFeature.ensureLoaded();
     this.editId.set(this.route.snapshot.paramMap.get('id') ?? undefined);
@@ -429,13 +432,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
           this.aplicarTipoPaginaInicial();
         }
         this.modelos.carregar();
-        this.restaurarRascunho();
+        this.persistencia.restaurarRascunho();
         if (!pagina) {
           this.aplicarPropostaAiSePresente();
         }
         this.inicializarResolucaoVariaveis();
-        this.inicializarAutoSave();
-        if (this.rascunhoSalvoEm()) this.autosalvarServidor();
+        this.persistencia.iniciarAutosave();
       },
       error: () => this.toast.error('Erro ao carregar dados da página.'),
     });
@@ -447,99 +449,11 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   hasUnsavedChanges(): boolean {
-    return this.dirty && !this.justSaved;
-  }
-
-  private inicializarAutoSave(): void {
-    this.form.valueChanges
-      .pipe(debounceTime(TIMINGS.autosaveDebounceMs), takeUntil(this.destroy$))
-      .subscribe(value => {
-        this.dirty = true;
-        this.justSaved = false;
-        this.rascunhoSalvoEm.set(this.paginaDraftService.salvar(this.draftKey, value));
-        this.autosalvarServidor();
-      });
-  }
-
-  private restaurarRascunho(): void {
-    const snapshot = this.paginaDraftService.carregar<Record<string, unknown>>(this.draftKey, {
-      maxAgeDays: TIMINGS.draftMaxAgeDays,
-      servidorAtualizadoEm: this.paginaAtual()?.updatedAt,
-    });
-    if (!snapshot) return;
-
-    this.form.patchValue(snapshot.value);
-    this.rascunhoSalvoEm.set(snapshot.savedAt);
-    this.toast.success('Rascunho local restaurado.');
-  }
-
-  private limparRascunho(key = this.draftKey): void {
-    this.paginaDraftService.remover(key);
-    this.dirty = false;
-    this.rascunhoSalvoEm.set(null);
-  }
-
-  private autosalvarServidor(): void {
-    if (this.form.invalid || this.saving() || this.autosaveStatus() === 'conflict') return;
-    if (this.paginaAtual() && this.paginaAtual()!.status !== 'RASCUNHO') return;
-    if (this.autosaveStatus() === 'saving') {
-      this.autosavePendente = true;
-      return;
-    }
-    const id = this.editId();
-    const draftKeyAntesDoSave = this.draftKey;
-    this.autosaveStatus.set('saving');
-    const request = id
-      ? this.paginaService.autosavePagina(id, this.payloadPagina())
-      : this.paginaService.salvarPagina(this.payloadPagina());
-    request.subscribe({
-      next: pagina => {
-        this.limparRascunho(draftKeyAntesDoSave);
-        this.atualizarPaginaAposPersistencia(pagina);
-        this.autosaveServidorEm.set(new Date());
-        this.autosaveStatus.set('saved');
-        this.executarAutosavePendente();
-      },
-      error: error => {
-        this.tratarErroPersistencia(error, true);
-        this.executarAutosavePendente();
-      },
-    });
-  }
-
-  private executarAutosavePendente(): void {
-    if (!this.autosavePendente) return;
-    this.autosavePendente = false;
-    queueMicrotask(() => this.autosalvarServidor());
+    return this.persistencia.hasUnsavedChanges();
   }
 
   salvar(destino: SalvarDestino = 'lista'): void {
-    if (this.saving()) return;
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.toast.error('Preencha título, código da tela, projeto e módulo.');
-      return;
-    }
-    const draftKeyAntesDoSave = this.draftKey;
-    this.saving.set(true);
-    this.paginaService.salvarPagina(this.payloadPagina(), this.editId()).subscribe({
-      next: pagina => {
-        this.justSaved = true;
-        this.limparRascunho(draftKeyAntesDoSave);
-        this.saving.set(false);
-        this.autosaveStatus.set('saved');
-        this.autosaveServidorEm.set(new Date());
-        this.conflitoMensagem.set(null);
-        if (pagina.parentId) {
-          sincronizarIndicePai(this.paginaService, this.toast, pagina.parentId);
-        }
-        this.vincularImportacaoEContinuar(pagina, destino);
-      },
-      error: error => {
-        this.saving.set(false);
-        this.tratarErroPersistencia(error, false);
-      },
-    });
+    this.persistencia.salvar(destino);
   }
 
   imprimirPreview(): void {
@@ -553,81 +467,24 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.toast.error('Preencha os campos obrigatórios antes de abrir a prévia fiel.');
       return;
     }
-    const previewWindow = window.open('', '_blank');
-    if (!previewWindow) {
+    const janela = abrirJanelaPreview();
+    if (!janela) {
       this.toast.error('O navegador bloqueou a janela de prévia.');
       return;
     }
-    previewWindow.document.write(this.previewLoadingHtml());
-    previewWindow.document.close();
     this.previewing.set(true);
     try {
-      const pagina = await this.persistirParaPreview();
+      const pagina = await this.persistencia.sincronizarParaPreview();
       if (!pagina) {
-        this.escreverErroPreview(previewWindow, 'Não foi possível sincronizar a página para a prévia.');
+        janela.erro('Não foi possível sincronizar a página para a prévia.');
         return;
       }
-      const html = await firstValueFrom(this.paginaService.previewPaginaHtml(pagina.id));
-      previewWindow.document.open();
-      previewWindow.document.write(html);
-      previewWindow.document.close();
+      janela.exibir(await firstValueFrom(this.paginaService.previewPaginaHtml(pagina.id)));
     } catch (error) {
-      this.tratarErroPersistencia(error, false);
-      this.escreverErroPreview(previewWindow, this.mensagemErro(error, 'Erro ao gerar a prévia fiel.'));
+      this.persistencia.tratarErro(error, false);
+      janela.erro(this.mensagemErro(error, 'Erro ao gerar a prévia fiel.'));
     } finally {
       this.previewing.set(false);
-    }
-  }
-
-  async usarVersaoServidor(): Promise<void> {
-    const id = this.editId();
-    if (!id) return;
-    const confirmar = await this.confirmService.confirm({
-      title: 'Carregar versão do servidor?',
-      message: 'As alterações locais em conflito serão descartadas.',
-      acceptLabel: 'Carregar servidor',
-      variant: 'danger',
-      icon: 'AlertTriangle',
-    });
-    if (!confirmar) return;
-    try {
-      const pagina = await firstValueFrom(this.paginaService.pagina(id));
-      this.limparRascunho();
-      this.carregarPagina(pagina);
-      this.conflitoMensagem.set(null);
-      this.autosaveStatus.set('idle');
-      this.toast.success('Versão mais recente carregada.');
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao recarregar a página.'));
-    }
-  }
-
-  async sobrescreverConflito(): Promise<void> {
-    const id = this.editId();
-    if (!id || this.saving()) return;
-    const confirmar = await this.confirmService.confirm({
-      title: 'Sobrescrever a versão do servidor?',
-      message: 'Suas alterações locais serão mantidas e substituirão a edição feita por outra pessoa.',
-      acceptLabel: 'Sobrescrever',
-      variant: 'danger',
-      icon: 'AlertTriangle',
-    });
-    if (!confirmar) return;
-    this.saving.set(true);
-    try {
-      const atualServidor = await firstValueFrom(this.paginaService.pagina(id));
-      this.paginaAtual.set(atualServidor);
-      const pagina = await firstValueFrom(this.paginaService.salvarPagina(this.payloadPagina(), id));
-      this.limparRascunho();
-      this.ativarPaginaSalva(pagina);
-      this.conflitoMensagem.set(null);
-      this.autosaveStatus.set('saved');
-      this.autosaveServidorEm.set(new Date());
-      this.toast.success('Sua versão foi salva no servidor.');
-    } catch (error) {
-      this.tratarErroPersistencia(error, false);
-    } finally {
-      this.saving.set(false);
     }
   }
 
@@ -691,8 +548,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       resumo: aplicacao.resumo ?? '',
       conteudoHtml: aplicacao.conteudoHtml,
     });
-    this.dirty = true;
-    this.justSaved = false;
+    this.persistencia.marcarAlterado();
     this.form.markAsDirty();
     this.painelAjusteAberto.set(false);
     this.toast.success('Ajuste aplicado no editor. Revise e salve para registrar a revisão.');
@@ -914,7 +770,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     }
     this.form.controls.conteudoHtml.setValue(proximo);
     this.form.controls.conteudoHtml.markAsDirty();
-    this.dirty = true;
+    this.persistencia.marcarAlterado();
     editor?.aplicarHtml(proximo);
     this.tabelasDecoradasAssinatura = '';
   }
@@ -1233,28 +1089,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     }
   }
 
-  get autosaveLabel(): string {
-    switch (this.autosaveStatus()) {
-      case 'saving':
-        return 'Salvando no servidor…';
-      case 'saved':
-        return this.autosaveServidorEm()
-          ? `Salvo no servidor às ${this.autosaveServidorEm()!.toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}`
-          : 'Salvo no servidor';
-      case 'offline':
-        return 'Sem conexão · backup local ativo';
-      case 'conflict':
-        return 'Conflito de edição';
-      case 'error':
-        return 'Falha ao salvar · backup local ativo';
-      default:
-        return 'Autosave pronto';
-    }
-  }
-
   paginaLabel(pagina: Pagina): string {
     return `${'-- '.repeat(this.nivel(pagina))}${pagina.titulo}`;
   }
@@ -1315,7 +1149,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.paginaService.anexarPagina(id, file).subscribe({
         next: anexo => {
           this.anexos.update(list => [anexo, ...list]);
-          const safeName = this.escapeHtml(anexo.nomeOriginal);
+          const safeName = escapeHtml(anexo.nomeOriginal);
           resolve(
             `<figure class="photo"><img src="${this.paginaService.downloadAnexoUrl(anexo)}" alt="${safeName}"><figcaption>${safeName}</figcaption></figure>`,
           );
@@ -1325,28 +1159,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     });
   }
 
-  private async garantirRascunhoParaAnexos(): Promise<string | undefined> {
-    const existente = this.editId();
-    if (existente) return existente;
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.toast.error('Preencha título, código da tela, projeto e módulo antes de adicionar imagens.');
-      return undefined;
-    }
-    const draftKeyAntesDoSave = this.draftKey;
-    this.saving.set(true);
-    try {
-      const pagina = await firstValueFrom(this.paginaService.salvarPagina(this.payloadPagina()));
-      this.limparRascunho(draftKeyAntesDoSave);
-      this.ativarPaginaSalva(pagina);
-      this.toast.success('Rascunho criado para armazenar as imagens.');
-      return pagina.id;
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Não foi possível criar o rascunho.'));
-      return undefined;
-    } finally {
-      this.saving.set(false);
-    }
+  private garantirRascunhoParaAnexos(): Promise<string | undefined> {
+    return this.persistencia.garantirRascunho('adicionar imagens');
   }
 
   private payloadPagina(): Partial<Pagina> {
@@ -1373,7 +1187,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     }
     this.paginaAtual.set(pagina);
     this.form.controls.slug.setValue(pagina.slug, { emitEvent: false });
-    this.dirty = false;
   }
 
   private ativarPaginaSalva(pagina: Pagina): void {
@@ -1381,10 +1194,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.editId.set(pagina.id);
     this.paginaAtual.set(pagina);
     this.form.controls.slug.setValue(pagina.slug, { emitEvent: false });
-    this.dirty = false;
-    this.justSaved = false;
+    this.persistencia.marcarSincronizado();
     this.mostrarTemplates.set(false);
-    this.conflitoMensagem.set(null);
     this.atualizarUrlSemNavegar(
       docFlowRouterCommands(['paginas', pagina.id, 'editar']),
       this.queryParamsEditor(),
@@ -1419,12 +1230,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       },
       { emitEvent: false },
     );
-    this.dirty = false;
-    this.justSaved = false;
-    this.rascunhoSalvoEm.set(null);
-    this.autosaveStatus.set('idle');
-    this.autosaveServidorEm.set(null);
-    this.conflitoMensagem.set(null);
+    this.persistencia.reiniciar();
     this.atualizarUrlSemNavegar(docFlowRouterCommands(['paginas', 'novo']), {
       ...this.queryParamsEditor(),
       projetoId: atual.projetoId || null,
@@ -1524,8 +1330,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       this.templateSelecionadoId.set(proposta.templateOrigemId);
     }
     // Qualidade recalcula via `formValue`/`qualidadeItens`; marca dirty para canDeactivate.
-    this.dirty = true;
-    this.justSaved = false;
+    this.persistencia.marcarAlterado();
     this.form.markAsDirty();
     this.toast.success('Proposta da IA aplicada no editor. Revise antes de salvar.');
     void this.anexarImagensAiStaging();
@@ -1633,69 +1438,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     if (!(error instanceof HttpErrorResponse)) return fallback;
     if (typeof error.error?.message === 'string') return error.error.message;
     return fallback;
-  }
-
-  private tratarErroPersistencia(error: unknown, autosave: boolean): void {
-    if (error instanceof HttpErrorResponse && error.status === 409) {
-      const mensagem = this.mensagemErro(error, 'Esta página foi alterada por outro usuário.');
-      this.conflitoMensagem.set(mensagem);
-      this.autosaveStatus.set('conflict');
-      if (!autosave) this.toast.error(mensagem);
-      return;
-    }
-    if (autosave && error instanceof HttpErrorResponse && error.status === 0) {
-      this.autosaveStatus.set('offline');
-      return;
-    }
-    this.autosaveStatus.set('error');
-    if (!autosave) this.toast.error(this.mensagemErro(error, 'Erro ao salvar página.'));
-  }
-
-  private async persistirParaPreview(): Promise<Pagina | undefined> {
-    if (this.autosaveStatus() === 'saving') {
-      this.toast.error('Aguarde o salvamento automático terminar antes de abrir a prévia.');
-      return undefined;
-    }
-    const id = this.editId();
-    const atual = this.paginaAtual();
-    if (id && atual && !this.dirty) return atual;
-    const request = id
-      ? atual?.status === 'RASCUNHO'
-        ? this.paginaService.autosavePagina(id, this.payloadPagina())
-        : this.paginaService.salvarPagina(this.payloadPagina(), id)
-      : this.paginaService.salvarPagina(this.payloadPagina());
-    const draftKeyAntesDoSave = this.draftKey;
-    const pagina = await firstValueFrom(request);
-    this.limparRascunho(draftKeyAntesDoSave);
-    this.atualizarPaginaAposPersistencia(pagina);
-    this.autosaveStatus.set('saved');
-    this.autosaveServidorEm.set(new Date());
-    return pagina;
-  }
-
-  private previewLoadingHtml(): string {
-    return (
-      '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Preparando prévia</title>' +
-      '<body style="font:14px system-ui;padding:32px;color:#5f6368">Sincronizando conteúdo e preparando a prévia fiel…</body></html>'
-    );
-  }
-
-  private escreverErroPreview(previewWindow: Window, message: string): void {
-    previewWindow.document.open();
-    previewWindow.document.write(
-      '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Erro na prévia</title>' +
-        `<body style="font:14px system-ui;padding:32px;color:#b42318">${this.escapeHtml(message)}</body></html>`,
-    );
-    previewWindow.document.close();
-  }
-
-  private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
   }
 
   private atualizarModulosPorProjeto(limparSelecoes = false): void {

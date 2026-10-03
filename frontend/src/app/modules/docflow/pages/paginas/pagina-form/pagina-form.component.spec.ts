@@ -114,8 +114,8 @@ describe('PaginaFormComponent (smoke)', () => {
   it('não abre o ajuste da IA com alterações não salvas', () => {
     const component = fixture.componentInstance;
     spyOn(component as never, 'podeAjustarComIa' as never).and.returnValue(true as never);
-    component['dirty'] = true;
-    component['justSaved'] = false;
+    component['persistencia']['dirty'] = true;
+    component['persistencia']['justSaved'] = false;
     const aviso = spyOn(component['toast'], 'warn');
 
     component.abrirAjusteIa();
@@ -168,15 +168,15 @@ describe('PaginaFormComponent (smoke)', () => {
 
   it('hasUnsavedChanges retorna true quando dirty e justSaved falso', () => {
     const component = fixture.componentInstance;
-    component['dirty'] = true;
-    component['justSaved'] = false;
+    component['persistencia']['dirty'] = true;
+    component['persistencia']['justSaved'] = false;
     expect(component.hasUnsavedChanges()).toBe(true);
   });
 
   it('hasUnsavedChanges retorna false após salvar define justSaved', () => {
     const component = fixture.componentInstance;
-    component['dirty'] = true;
-    component['justSaved'] = true;
+    component['persistencia']['dirty'] = true;
+    component['persistencia']['justSaved'] = true;
     expect(component.hasUnsavedChanges()).toBe(false);
   });
 
@@ -441,7 +441,7 @@ describe('PaginaFormComponent (smoke)', () => {
       of({ ...pagina, version: 2 }),
     );
 
-    component['autosalvarServidor']();
+    component['persistencia'].autosalvarServidor();
 
     expect(autosave).toHaveBeenCalledWith(pagina.id, jasmine.objectContaining({ version: 1 }));
     expect(component['paginaAtual']()?.version).toBe(2);
@@ -486,7 +486,7 @@ describe('PaginaFormComponent (smoke)', () => {
       ),
     );
 
-    component['autosalvarServidor']();
+    component['persistencia'].autosalvarServidor();
 
     expect(component['autosaveStatus']()).toBe('conflict');
     expect(component['conflitoMensagem']()).toContain('outro usuário');
@@ -550,8 +550,8 @@ describe('PaginaFormComponent (smoke)', () => {
 
     it('bloqueia a saída quando o usuário cancela com alterações pendentes', async () => {
       const component = fixture.componentInstance;
-      component['dirty'] = true;
-      component['justSaved'] = false;
+      component['persistencia']['dirty'] = true;
+      component['persistencia']['justSaved'] = false;
       spyOn(component['confirmService'], 'confirm').and.resolveTo(false);
 
       const podeSair = await TestBed.runInInjectionContext(() =>
@@ -570,8 +570,8 @@ describe('PaginaFormComponent (smoke)', () => {
 
     it('permite sair quando o usuário confirma descarte das alterações', async () => {
       const component = fixture.componentInstance;
-      component['dirty'] = true;
-      component['justSaved'] = false;
+      component['persistencia']['dirty'] = true;
+      component['persistencia']['justSaved'] = false;
       spyOn(component['confirmService'], 'confirm').and.resolveTo(true);
 
       const podeSair = await TestBed.runInInjectionContext(() =>
@@ -597,7 +597,7 @@ describe('PaginaFormComponent (smoke)', () => {
       );
       const salvar = spyOn(component['paginaService'], 'salvarPagina').and.returnValue(of(pagina));
 
-      component['autosalvarServidor']();
+      component['persistencia'].autosalvarServidor();
 
       expect(salvar).toHaveBeenCalledWith(jasmine.objectContaining({ titulo: pagina.titulo }));
       expect(component['autosaveStatus']()).toBe('saved');
@@ -608,7 +608,7 @@ describe('PaginaFormComponent (smoke)', () => {
       const salvar = spyOn(component['paginaService'], 'salvarPagina');
       const autosave = spyOn(component['paginaService'], 'autosavePagina');
 
-      component['autosalvarServidor']();
+      component['persistencia'].autosalvarServidor();
 
       expect(salvar).not.toHaveBeenCalled();
       expect(autosave).not.toHaveBeenCalled();
@@ -618,18 +618,18 @@ describe('PaginaFormComponent (smoke)', () => {
     it('salva rascunho local e dispara autosave após debounce', fakeAsync(() => {
       const component = fixture.componentInstance;
       const savedAt = new Date();
-      spyOn(component['paginaDraftService'], 'salvar').and.returnValue(savedAt);
-      const autosalvar = spyOn(component as unknown as { autosalvarServidor(): void }, 'autosalvarServidor');
+      spyOn(component['persistencia']['draft'], 'salvar').and.returnValue(savedAt);
+      const autosalvar = spyOn(component['persistencia'], 'autosalvarServidor');
 
-      component['inicializarAutoSave']();
+      component['persistencia'].iniciarAutosave();
       component['form'].controls.titulo.setValue('Título alterado');
       tick(TIMINGS.autosaveDebounceMs);
 
-      expect(component['paginaDraftService'].salvar).toHaveBeenCalledWith(
+      expect(component['persistencia']['draft'].salvar).toHaveBeenCalledWith(
         'docflow:pagina-form:novo',
         jasmine.objectContaining({ titulo: 'Título alterado' }),
       );
-      expect(component['dirty']).toBe(true);
+      expect(component['persistencia']['dirty']).toBe(true);
       expect(component['rascunhoSalvoEm']()).toBe(savedAt);
       expect(autosalvar).toHaveBeenCalled();
     }));
@@ -646,13 +646,13 @@ describe('PaginaFormComponent (smoke)', () => {
         moduloId: 'modulo-1',
         conteudoHtml: '<p>Conteúdo salvo localmente</p>',
       };
-      spyOn(component['paginaDraftService'], 'carregar').and.returnValue({
+      spyOn(component['persistencia']['draft'], 'carregar').and.returnValue({
         value: draftValue,
         savedAt,
       });
       const toast = spyOn(component['toast'], 'success');
 
-      component['restaurarRascunho']();
+      component['persistencia'].restaurarRascunho();
 
       expect(component['form'].controls.titulo.value).toBe('Do rascunho');
       expect(component['form'].controls.conteudoHtml.value).toBe('<p>Conteúdo salvo localmente</p>');
@@ -662,11 +662,11 @@ describe('PaginaFormComponent (smoke)', () => {
 
     it('ignora restauração quando não há snapshot local', () => {
       const component = fixture.componentInstance;
-      spyOn(component['paginaDraftService'], 'carregar').and.returnValue(null);
+      spyOn(component['persistencia']['draft'], 'carregar').and.returnValue(null);
       const toast = spyOn(component['toast'], 'success');
       component['form'].controls.titulo.setValue('Original', { emitEvent: false });
 
-      component['restaurarRascunho']();
+      component['persistencia'].restaurarRascunho();
 
       expect(component['form'].controls.titulo.value).toBe('Original');
       expect(component['rascunhoSalvoEm']()).toBeNull();

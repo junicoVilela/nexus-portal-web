@@ -9,7 +9,7 @@
     <div class="pf-status-line">
       <span>Status editorial</span>
       <app-pagina-status-badge [status]="paginaAtual()!.status" />
-      <span class="pf-autosave" [attr.data-status]="autosaveStatus()">{{ autosaveLabel }}</span>
+      <span class="pf-autosave" [attr.data-status]="autosaveStatus()">{{ autosaveLabel() }}</span>
       <span class="pf-status-line__shortcut">Ctrl+S salva · Ctrl+P publica (quando aprovada)</span>
       @if (podeAjustarComIa() && !painelAjusteAberto()) {
         <ui-button type="button" size="sm" variant="secondary" icon="Sparkles" (clicked)="abrirAjusteIa()">
@@ -62,10 +62,10 @@
         <span>{{ conflitoMensagem() }} Seu conteúdo permanece no backup local.</span>
       </div>
       <div class="pf-conflict__actions">
-        <ui-button type="button" size="sm" variant="ghost" (clicked)="usarVersaoServidor()">
+        <ui-button type="button" size="sm" variant="ghost" (clicked)="persistencia.usarVersaoServidor()">
           Carregar servidor
         </ui-button>
-        <ui-button type="button" size="sm" variant="danger" (clicked)="sobrescreverConflito()">
+        <ui-button type="button" size="sm" variant="danger" (clicked)="persistencia.sobrescreverConflito()">
           Manter minha versão
         </ui-button>
       </div>
@@ -588,7 +588,7 @@
           Backup local às {{ rascunhoSalvoEm() | date: 'HH:mm' }}
         </span>
       } @else {
-        <span class="df-form__autosave">{{ autosaveLabel }}</span>
+        <span class="df-form__autosave">{{ autosaveLabel() }}</span>
       }
       <ui-button variant="ghost" type="button" (clicked)="voltar()">Cancelar</ui-button>
       <ui-button variant="secondary" type="button" [disabled]="form.invalid || saving()" (clicked)="salvar('nova')">
