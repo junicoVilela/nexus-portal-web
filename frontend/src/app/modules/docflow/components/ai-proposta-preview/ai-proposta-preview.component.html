@@ -155,37 +155,40 @@
     </div>
   }
 
-  <div class="ai-proposta__actions">
-    <ui-button
-      type="button"
-      variant="primary"
-      icon="FileText"
-      [loading]="loading()"
-      [disabled]="disabled() || !pendente()"
-      (clicked)="aplicar.emit()"
-    >
-      Aplicar no editor
-    </ui-button>
-    <ui-button
-      type="button"
-      variant="secondary"
-      icon="Sparkles"
-      [loading]="regenerando()"
-      [disabled]="disabled()"
-      (clicked)="emitirRegenerar()"
-    >
-      {{ instrucao().trim() ? 'Regenerar com ajuste' : 'Regenerar' }}
-    </ui-button>
-    @if (pendente() && !confirmandoRejeicao()) {
+  <!-- Durante a confirmação da rejeição, só as ações dela ficam visíveis. -->
+  @if (!confirmandoRejeicao()) {
+    <div class="ai-proposta__actions">
       <ui-button
         type="button"
-        variant="ghost"
-        icon="XCircle"
-        [disabled]="disabled()"
-        (clicked)="confirmandoRejeicao.set(true)"
+        variant="primary"
+        icon="FileText"
+        [loading]="loading()"
+        [disabled]="disabled() || !pendente()"
+        (clicked)="aplicar.emit()"
       >
-        Rejeitar
+        Aplicar no editor
       </ui-button>
-    }
-  </div>
+      <ui-button
+        type="button"
+        variant="secondary"
+        icon="Sparkles"
+        [loading]="regenerando()"
+        [disabled]="disabled()"
+        (clicked)="emitirRegenerar()"
+      >
+        {{ instrucao().trim() ? 'Regenerar com ajuste' : 'Regenerar' }}
+      </ui-button>
+      @if (pendente()) {
+        <ui-button
+          type="button"
+          variant="ghost"
+          icon="XCircle"
+          [disabled]="disabled()"
+          (clicked)="confirmandoRejeicao.set(true)"
+        >
+          Rejeitar
+        </ui-button>
+      }
+    </div>
+  }
 </div>

@@ -109,10 +109,16 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly aiDisponivel = this.feature.disponivel;
   protected readonly featureReady = this.feature.ready;
   protected readonly contextoImportacao = {
-    importacaoId: this.route.snapshot.queryParamMap.get('importacaoId'),
     projetoId: this.route.snapshot.queryParamMap.get('projetoId'),
     clienteId: this.route.snapshot.queryParamMap.get('clienteId'),
   };
+  /**
+   * Importação ativa. Precisa ser reativa: o passo 1 é recriado ao voltar dos passos 2/3 e,
+   * lido só uma vez da URL, perderia a importação feita depois de abrir a tela.
+   */
+  protected readonly importacaoIdAtual = signal<string | null>(
+    this.route.snapshot.queryParamMap.get('importacaoId'),
+  );
 
   protected readonly form = this.fb.nonNullable.group({
     briefing: ['', [Validators.required, Validators.minLength(40), Validators.maxLength(50_000)]],
@@ -344,6 +350,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   }
 
   protected usarPaginaImportada(pagina: AiPaginaDocumentoSelecionada): void {
+    this.importacaoIdAtual.set(pagina.importacaoId);
     this.paginaImportadaContexto.set({
       importacaoId: pagina.importacaoId,
       paginaPlanoId: pagina.id,
@@ -372,7 +379,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     window.setTimeout(() => document.getElementById('briefing')?.focus());
   }
 
+  /** Volta ao documento importado, mantendo a importação; a sessão atual fica para trás. */
+  protected voltarAoDocumento(): void {
+    this.reiniciar();
+  }
+
   protected persistirImportacaoNaUrl(importacaoId: string): void {
+    this.importacaoIdAtual.set(importacaoId);
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { importacaoId },

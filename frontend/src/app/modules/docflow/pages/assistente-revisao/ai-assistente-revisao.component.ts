@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { I18nPluralPipe } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -37,7 +38,14 @@ interface ItemRevisao {
 @Component({
   selector: 'app-ai-assistente-revisao',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, PageHeaderComponent, ButtonComponent, BadgeComponent],
+  imports: [
+    I18nPluralPipe,
+    RouterLink,
+    LucideAngularModule,
+    PageHeaderComponent,
+    ButtonComponent,
+    BadgeComponent,
+  ],
   templateUrl: './ai-assistente-revisao.component.html',
   styleUrl: './ai-assistente-revisao.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

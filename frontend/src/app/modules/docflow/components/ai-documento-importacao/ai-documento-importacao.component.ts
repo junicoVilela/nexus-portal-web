@@ -9,6 +9,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { DatePipe, I18nPluralPipe } from '@angular/common';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -24,6 +25,7 @@ import {
   AiModuloDocumento,
   AiPaginaDocumento,
   AiPaginaDocumentoSelecionada,
+  AiImportacaoResumo,
 } from '../../models/ai-documento-importacao.model';
 import { Cliente } from '../../models/cliente.model';
 import { Projeto } from '../../models/projeto.model';
@@ -38,6 +40,8 @@ import { AiDocumentoSugestoesComponent } from '../ai-documento-sugestoes/ai-docu
   selector: 'app-ai-documento-importacao',
   standalone: true,
   imports: [
+    I18nPluralPipe,
+    DatePipe,
     ReactiveFormsModule,
     RouterLink,
     LucideAngularModule,
@@ -59,6 +63,8 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   private carregouImportacaoInicial = false;
   private catalogosCarregados = false;
   private analiseTimer?: number;
+  /** Último arquivo enviado, para "Importar como novo" quando a API retomou uma importação. */
+  private ultimoArquivo?: File;
   private loteTimer?: number;
 
   readonly importacaoIdInicial = input<string | null>(null);
@@ -69,6 +75,10 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
   readonly importacaoChange = output<string>();
 
   protected readonly importacao = signal<AiDocumentoImportacao | null>(null);
+  /** Importações não concluídas do usuário: "Continuar de onde parou". */
+  protected readonly emAndamento = signal<AiImportacaoResumo[]>([]);
+  /** O arquivo enviado já estava em andamento e a API devolveu essa importação. */
+  protected readonly retomada = signal(false);
   protected readonly importando = signal(false);
   protected readonly confirmando = signal(false);
   protected readonly carregandoCatalogos = signal(false);
@@ -103,7 +113,36 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
     if (id && !this.carregouImportacaoInicial) {
       this.carregouImportacaoInicial = true;
       this.carregar(id);
+      return;
     }
+    this.carregarEmAndamento();
+  }
+
+  /** Retoma uma importação da lista "Continuar de onde parou". */
+  protected continuar(item: AiImportacaoResumo): void {
+    this.retomada.set(false);
+    this.carregar(item.id);
+    this.importacaoChange.emit(item.id);
+  }
+
+  /** A API retomou a importação existente; o autor pediu explicitamente uma nova. */
+  protected importarComoNova(): void {
+    if (!this.ultimoArquivo) return;
+    this.retomada.set(false);
+    this.importar(this.ultimoArquivo, true);
+  }
+
+  protected progressoResumo(item: AiImportacaoResumo): string {
+    if (!item.estruturaConfirmada) return 'Estrutura ainda não confirmada';
+    const total = item.paginasTotal;
+    return `${item.paginasRevisadas} de ${total} ${total === 1 ? 'página revisada' : 'páginas revisadas'}`;
+  }
+
+  private carregarEmAndamento(): void {
+    this.ai.importacoesEmAndamento().subscribe({
+      next: lista => this.emAndamento.set(Array.isArray(lista) ? lista : []),
+      error: () => this.emAndamento.set([]),
+    });
   }
 
   ngOnDestroy(): void {
@@ -397,7 +436,7 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
     }
   }
 
-  private importar(arquivo: File): void {
+  private importar(arquivo: File, novaImportacao = false): void {
     if (
       this.disabled() ||
       this.importando() ||
@@ -416,15 +455,29 @@ export class AiDocumentoImportacaoComponent implements OnInit, OnDestroy {
       this.erro.set('O arquivo excede o limite de 15 MB.');
       return;
     }
+    this.ultimoArquivo = arquivo;
     this.importando.set(true);
     this.erro.set(null);
     this.paginaAtivaId.set(null);
     this.paginasSelecionadas.set(new Set());
     this.estimativaLote.set(null);
     this.ai
-      .importarDocumento(arquivo, { projetoId: this.projetoId(), clienteId: this.clienteId() })
+      .importarDocumento(arquivo, {
+        projetoId: this.projetoId(),
+        clienteId: this.clienteId(),
+        novaImportacao,
+      })
       .subscribe({
         next: importacao => {
+          if (importacao.retomada) {
+            // Mesmo arquivo já em andamento: carrega como retomada (sincroniza páginas já criadas).
+            this.importando.set(false);
+            this.retomada.set(true);
+            this.carregar(importacao.id);
+            this.importacaoChange.emit(importacao.id);
+            return;
+          }
+          this.retomada.set(false);
           this.definirImportacao(importacao);
           this.prepararEstrutura(importacao);
           this.importando.set(false);

@@ -6,6 +6,10 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  max-width: var(--page-max-detail);
+  margin-inline: auto;
+  padding: var(--page-block) var(--page-gutter);
 }
 
 .manual-review__header-actions,
@@ -37,6 +41,24 @@
   background: color-mix(in srgb, var(--accent) 13%, var(--surface));
 }
 
+.manual-review__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font: 500 12.5px/1.3 var(--font-body);
+}
+
+.manual-review__breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.manual-review__breadcrumb a:hover {
+  text-decoration: underline;
+}
+
 .manual-review__summary {
   display: flex;
   flex-wrap: wrap;
@@ -60,11 +82,14 @@
 }
 
 .manual-review__progress i {
+  /* <i> é inline: sem display/flex a largura é ignorada e a trilha some. */
+  display: block;
+  flex: 0 0 88px;
   width: 88px;
   height: 5px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--surface-3);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
 }
 
 .manual-review__progress b {
@@ -164,7 +189,7 @@
   height: 19px;
   place-content: center;
   border-radius: 999px;
-  background: var(--surface-3);
+  background: color-mix(in srgb, var(--text) 8%, var(--surface));
   color: var(--text-subtle);
   font-size: 10px;
 }

@@ -31,6 +31,8 @@ import type {
   AiAiDocumentoImportacaoGerarLoteDocumentoResponses,
   AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData,
   AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponses,
+  AiAiDocumentoImportacaoImportacoesEmAndamentoData,
+  AiAiDocumentoImportacaoImportacoesEmAndamentoResponses,
   AiAiDocumentoImportacaoImportarDocumentoData,
   AiAiDocumentoImportacaoImportarDocumentoResponses,
   AiAiDocumentoImportacaoReordenarEstruturaDocumentoData,
@@ -3022,6 +3024,19 @@ export const aiAiSessaoAplicar = <ThrowOnError extends boolean = true>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+export const aiAiDocumentoImportacaoImportacoesEmAndamento = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiDocumentoImportacaoImportacoesEmAndamentoData, ThrowOnError>,
+): RequestResult<AiAiDocumentoImportacaoImportacoesEmAndamentoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    AiAiDocumentoImportacaoImportacoesEmAndamentoResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/importacoes',
+    ...options,
   });
 
 export const aiAiDocumentoImportacaoImportarDocumento = <ThrowOnError extends boolean = true>(

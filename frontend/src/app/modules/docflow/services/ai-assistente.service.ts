@@ -9,6 +9,7 @@ import {
   AiDocumentoImportacao,
   AiEstimativaLoteDocumento,
   AiReordenarEstruturaDocumentoPayload,
+  AiImportacaoResumo,
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
@@ -49,14 +50,20 @@ export class AiAssistenteService {
 
   importarDocumento(
     arquivo: File,
-    contexto?: { projetoId?: string | null; clienteId?: string | null },
+    contexto?: { projetoId?: string | null; clienteId?: string | null; novaImportacao?: boolean },
   ): Observable<AiDocumentoImportacao> {
     const formData = new FormData();
     formData.append('arquivo', arquivo, arquivo.name);
     const params: Record<string, string> = {};
     if (contexto?.projetoId) params['projetoId'] = contexto.projetoId;
     if (contexto?.clienteId) params['clienteId'] = contexto.clienteId;
+    if (contexto?.novaImportacao) params['novaImportacao'] = 'true';
     return this.http.post<AiDocumentoImportacao>(`${this.base}/importacoes`, formData, { params });
+  }
+
+  /** Importações não concluídas do usuário (mais recentes primeiro). */
+  importacoesEmAndamento(): Observable<AiImportacaoResumo[]> {
+    return this.http.get<AiImportacaoResumo[]>(`${this.base}/importacoes`);
   }
 
   buscarImportacao(id: string): Observable<AiDocumentoImportacao> {

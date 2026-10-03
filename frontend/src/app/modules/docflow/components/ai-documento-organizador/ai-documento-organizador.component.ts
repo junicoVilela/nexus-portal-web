@@ -13,6 +13,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { I18nPluralPipe } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 
 import { ConfirmService } from '@shared/ui';
@@ -41,7 +42,7 @@ type TipoPersistencia = 'normal' | 'undo';
 @Component({
   selector: 'app-ai-documento-organizador',
   standalone: true,
-  imports: [DragDropModule, LucideAngularModule],
+  imports: [I18nPluralPipe, DragDropModule, LucideAngularModule],
   templateUrl: './ai-documento-organizador.component.html',
   styleUrl: './ai-documento-organizador.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

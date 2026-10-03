@@ -19,7 +19,10 @@
         <lucide-icon name="RotateCcw" [size]="14" />
         Desfazer
       </button>
-      <span class="organizer__count">{{ modulos().length }} módulos · {{ totalPaginas() }} páginas</span>
+      <span class="organizer__count"
+        >{{ modulos().length }} {{ modulos().length | i18nPlural: { '=1': 'módulo', other: 'módulos' } }} ·
+        {{ totalPaginas() }} {{ totalPaginas() | i18nPlural: { '=1': 'página', other: 'páginas' } }}</span
+      >
     </div>
   </header>
 
@@ -78,7 +81,10 @@
           <span class="organizer__module-order">{{ modulo.ordem }}</span>
           <span class="organizer__module-copy">
             <strong>{{ modulo.nome }}</strong>
-            <small>{{ modulo.paginas.length }} páginas</small>
+            <small
+              >{{ modulo.paginas.length }}
+              {{ modulo.paginas.length | i18nPlural: { '=1': 'página', other: 'páginas' } }}</small
+            >
           </span>
           <span class="organizer__move-actions">
             <button

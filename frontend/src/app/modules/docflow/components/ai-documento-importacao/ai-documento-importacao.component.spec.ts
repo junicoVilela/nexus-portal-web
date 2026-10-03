@@ -26,7 +26,9 @@ describe('AiDocumentoImportacaoComponent', () => {
       'estimarLoteImportacao',
       'gerarLoteImportacao',
       'reordenarEstruturaImportada',
+      'importacoesEmAndamento',
     ]);
+    ai.importacoesEmAndamento.and.returnValue(of([]));
     clientes = jasmine.createSpyObj<ClienteService>('ClienteService', ['clientes']);
     projetos = jasmine.createSpyObj<ProjetoService>('ProjetoService', ['projetos', 'invalidarCache']);
     modulos = jasmine.createSpyObj<ModuloService>('ModuloService', ['invalidarCache']);
@@ -46,6 +48,60 @@ describe('AiDocumentoImportacaoComponent', () => {
     fixture.detectChanges();
   });
 
+  it('lista importações em andamento e retoma a escolhida', () => {
+    const emitido = jasmine.createSpy('importacaoChange');
+    ai.importacoesEmAndamento.and.returnValue(
+      of([
+        {
+          id: 'imp-1',
+          nomeArquivo: 'manual-vendas.docx',
+          projetoNome: 'Manual de vendas',
+          status: 'EM_REVISAO',
+          estruturaConfirmada: true,
+          paginasTotal: 8,
+          paginasRevisadas: 3,
+          atualizadoEm: '2026-10-02T15:30:00Z',
+        },
+      ]),
+    );
+    ai.buscarImportacao.and.returnValue(of(importacaoTeste()));
+    fixture = TestBed.createComponent(AiDocumentoImportacaoComponent);
+    fixture.componentInstance.importacaoChange.subscribe(emitido);
+    fixture.detectChanges();
+
+    const lista = fixture.nativeElement.querySelector('.doc-import__retomar') as HTMLElement;
+    expect(lista.textContent).toContain('Manual de vendas');
+    expect(lista.textContent).toContain('3 de 8 páginas revisadas');
+    (lista.querySelector('button') as HTMLButtonElement).click();
+
+    expect(ai.buscarImportacao).toHaveBeenCalledWith('imp-1');
+    expect(emitido).toHaveBeenCalledWith('imp-1');
+  });
+
+  it('mesmo arquivo em andamento é retomado e permite importar como novo', () => {
+    const existente = { ...importacaoTeste(), retomada: true };
+    ai.importarDocumento.and.returnValue(of(existente));
+    ai.buscarImportacao.and.returnValue(of(importacaoTeste()));
+    const arquivo = new File(['# Manual'], 'manual.txt', { type: 'text/plain' });
+    const input = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+    const transferencia = new DataTransfer();
+    transferencia.items.add(arquivo);
+    input.files = transferencia.files;
+    input.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    expect(ai.buscarImportacao).toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.doc-import__retomada')?.textContent).toContain(
+      'já estava em andamento',
+    );
+
+    ai.importarDocumento.and.returnValue(of(importacaoTeste()));
+    fixture.componentInstance['importarComoNova']();
+    expect(ai.importarDocumento.calls.mostRecent().args[1]).toEqual(
+      jasmine.objectContaining({ novaImportacao: true }),
+    );
+  });
+
   it('envia arquivo válido e apresenta o plano devolvido pelo backend', () => {
     ai.importarDocumento.and.returnValue(of(importacaoTeste()));
     const input = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
@@ -57,7 +113,11 @@ describe('AiDocumentoImportacaoComponent', () => {
     input.dispatchEvent(new Event('change'));
     fixture.detectChanges();
 
-    expect(ai.importarDocumento).toHaveBeenCalledWith(arquivo, { projetoId: null, clienteId: null });
+    expect(ai.importarDocumento).toHaveBeenCalledWith(arquivo, {
+      projetoId: null,
+      clienteId: null,
+      novaImportacao: false,
+    });
     expect(fixture.nativeElement.textContent).toContain('Estrutura sugerida para revisão');
     expect(fixture.nativeElement.textContent).toContain('Listagem de registros');
   });

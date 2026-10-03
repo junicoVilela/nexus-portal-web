@@ -25,6 +25,8 @@ import type {
   AiAiDocumentoImportacaoGerarLoteDocumentoResponse,
   AiAiDocumentoImportacaoIgnorarSugestaoDocumentoData,
   AiAiDocumentoImportacaoIgnorarSugestaoDocumentoResponse,
+  AiAiDocumentoImportacaoImportacoesEmAndamentoData,
+  AiAiDocumentoImportacaoImportacoesEmAndamentoResponse,
   AiAiDocumentoImportacaoImportarDocumentoData,
   AiAiDocumentoImportacaoImportarDocumentoResponse,
   AiAiDocumentoImportacaoReordenarEstruturaDocumentoData,
@@ -2805,6 +2807,19 @@ export const aiAiSessaoAplicarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const aiAiDocumentoImportacaoImportacoesEmAndamentoRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiDocumentoImportacaoImportacoesEmAndamentoData, ThrowOnError>,
+): HttpRequest<AiAiDocumentoImportacaoImportacoesEmAndamentoResponse> =>
+  (options?.client ?? client).requestOptions<
+    AiAiDocumentoImportacaoImportacoesEmAndamentoResponse,
+    ThrowOnError
+  >({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/importacoes',
+    ...options,
+  });
+
 export const aiAiDocumentoImportacaoImportarDocumentoRequest = <ThrowOnError extends boolean = false>(
   options?: Options<AiAiDocumentoImportacaoImportarDocumentoData, ThrowOnError>,
 ): HttpRequest<AiAiDocumentoImportacaoImportarDocumentoResponse> =>
@@ -5479,6 +5494,14 @@ export const aiAiSessaoAplicarResource = <ThrowOnError extends boolean = false>(
   httpResource<AiAiSessaoAplicarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoAplicarRequest(opts) : undefined;
+  });
+
+export const aiAiDocumentoImportacaoImportacoesEmAndamentoResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiDocumentoImportacaoImportacoesEmAndamentoData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiDocumentoImportacaoImportacoesEmAndamentoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiDocumentoImportacaoImportacoesEmAndamentoRequest(opts) : undefined;
   });
 
 export const aiAiDocumentoImportacaoImportarDocumentoResource = <ThrowOnError extends boolean = false>(

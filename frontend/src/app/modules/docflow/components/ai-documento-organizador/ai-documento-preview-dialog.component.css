@@ -99,10 +99,9 @@
 
 .document-preview__meta {
   display: grid;
-  grid-template-columns: minmax(70px, 0.35fr) minmax(130px, 0.8fr) minmax(140px, 1fr) minmax(
-      190px,
-      1.3fr
-    ) minmax(110px, 0.65fr);
+  grid-template-columns:
+    minmax(70px, 0.35fr) minmax(130px, 0.8fr) minmax(140px, 1fr) minmax(190px, 1.3fr)
+    minmax(110px, 0.65fr);
   gap: 1px;
   margin: 0;
   border-bottom: 1px solid var(--border);
@@ -134,8 +133,8 @@
   margin-left: 4px;
   padding: 2px 5px;
   border-radius: 999px;
-  color: var(--warning);
-  background: var(--warning-soft);
+  color: var(--warn);
+  background: var(--warn-soft);
   font-size: 8.5px;
   text-transform: uppercase;
 }

@@ -81,6 +81,8 @@ export interface AiDocumentoImportacao {
   avisos: string[];
   createdAt: string;
   updatedAt: string;
+  /** O mesmo arquivo já estava em andamento: a API devolveu essa importação em vez de duplicar. */
+  retomada?: boolean;
 }
 
 export interface AiPaginaDocumentoSelecionada extends AiPaginaDocumento {
@@ -129,4 +131,16 @@ export interface AiEstimativaLoteDocumento {
   tokensSaidaEstimados: number;
   modelo: string;
   observacao: string;
+}
+
+/** Importação não concluída do usuário, para "Continuar de onde parou". */
+export interface AiImportacaoResumo {
+  id: string;
+  nomeArquivo: string;
+  projetoNome: string;
+  status: AiImportacaoStatus;
+  estruturaConfirmada: boolean;
+  paginasTotal: number;
+  paginasRevisadas: number;
+  atualizadoEm: string;
 }

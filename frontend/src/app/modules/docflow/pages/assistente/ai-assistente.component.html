@@ -58,7 +58,7 @@
 
           <form class="wiz__form" [formGroup]="form" (ngSubmit)="iniciar()">
             <app-ai-documento-importacao
-              [importacaoIdInicial]="contextoImportacao.importacaoId"
+              [importacaoIdInicial]="importacaoIdAtual()"
               [projetoId]="contextoImportacao.projetoId"
               [clienteId]="contextoImportacao.clienteId"
               [disabled]="carregando()"
@@ -238,6 +238,11 @@
               Cancelar
             </ui-button>
             <div class="wiz__footer-right">
+              @if (importacaoIdAtual()) {
+                <ui-button type="button" variant="ghost" icon="ArrowLeft" (clicked)="voltarAoDocumento()">
+                  Voltar ao documento
+                </ui-button>
+              }
               <ui-button type="button" variant="ghost" (clicked)="reiniciar()">Novo briefing</ui-button>
             </div>
           </div>
@@ -291,6 +296,11 @@
               Cancelar
             </ui-button>
             <div class="wiz__footer-right">
+              @if (importacaoIdAtual()) {
+                <ui-button type="button" variant="ghost" icon="ArrowLeft" (clicked)="voltarAoDocumento()">
+                  Voltar ao documento
+                </ui-button>
+              }
               <ui-button type="button" variant="ghost" (clicked)="reiniciar()">Nova sessão</ui-button>
             </div>
           </div>

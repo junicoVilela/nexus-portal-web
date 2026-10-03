@@ -26,12 +26,14 @@ describe('AiAssistenteComponent', () => {
       'buscarSessao',
       'eventosAi',
       'recomendarTemplate',
+      'importacoesEmAndamento',
       'importarDocumento',
       'buscarImportacao',
       'selecionarPaginaImportada',
     ]);
     ai.eventosAi.and.returnValue(of());
     ai.recomendarTemplate.and.returnValue(of(recomendacaoVazia()));
+    ai.importacoesEmAndamento.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [AiAssistenteComponent],

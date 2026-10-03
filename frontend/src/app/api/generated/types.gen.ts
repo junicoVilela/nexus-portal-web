@@ -921,6 +921,7 @@ export type AiImportacaoDocumentoResponse = {
   avisos?: Array<string>;
   createdAt?: string;
   updatedAt?: string;
+  retomada?: boolean;
 };
 
 export type Modulo = {
@@ -2358,6 +2359,17 @@ export type Rejeicao = {
   motivo?: string;
   promptVersao?: string;
   em?: string;
+};
+
+export type AiImportacaoResumoResponse = {
+  id?: string;
+  nomeArquivo?: string;
+  projetoNome?: string;
+  status?: 'ANALISANDO_ESTRUTURA' | 'PRONTO_PARA_REVISAO' | 'EM_REVISAO' | 'CONCLUIDA';
+  estruturaConfirmada?: boolean;
+  paginasTotal?: number;
+  paginasRevisadas?: number;
+  atualizadoEm?: string;
 };
 
 export type ReleaseorchestratorReleaseTemplateExcluirData = {
@@ -6365,6 +6377,23 @@ export type AiAiSessaoAplicarResponses = {
 
 export type AiAiSessaoAplicarResponse = AiAiSessaoAplicarResponses[keyof AiAiSessaoAplicarResponses];
 
+export type AiAiDocumentoImportacaoImportacoesEmAndamentoData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/importacoes';
+};
+
+export type AiAiDocumentoImportacaoImportacoesEmAndamentoResponses = {
+  /**
+   * OK
+   */
+  200: Array<AiImportacaoResumoResponse>;
+};
+
+export type AiAiDocumentoImportacaoImportacoesEmAndamentoResponse =
+  AiAiDocumentoImportacaoImportacoesEmAndamentoResponses[keyof AiAiDocumentoImportacaoImportacoesEmAndamentoResponses];
+
 export type AiAiDocumentoImportacaoImportarDocumentoData = {
   body?: {
     arquivo: Blob | File;
@@ -6373,11 +6402,16 @@ export type AiAiDocumentoImportacaoImportarDocumentoData = {
   query?: {
     projetoId?: string;
     clienteId?: string;
+    novaImportacao?: boolean;
   };
   url: '/api/v1/ai/importacoes';
 };
 
 export type AiAiDocumentoImportacaoImportarDocumentoResponses = {
+  /**
+   * Created
+   */
+  200: AiImportacaoDocumentoResponse;
   /**
    * Created
    */

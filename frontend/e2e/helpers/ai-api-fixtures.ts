@@ -235,6 +235,10 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
       );
     }
 
+    if (method === 'GET' && path === '/api/v1/ai/importacoes') {
+      return responder([]);
+    }
+
     if (method === 'POST' && path === '/api/v1/ai/importacoes') {
       return responder(importacaoRascunho, 201);
     }

@@ -155,6 +155,10 @@
   display: block;
   min-width: 0;
 }
+.component-composer__copy {
+  /* Respiro entre a etiqueta de necessidade e os botões de ação. */
+  padding-right: 6px;
+}
 .component-composer__item-heading {
   display: flex !important;
   align-items: center;
@@ -174,13 +178,18 @@
 }
 .component-composer__copy small {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 3px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 6%, var(--surface));
   color: var(--text-muted);
-  font: 600 8.5px/1 var(--font-body);
+  font: 600 9px/1 var(--font-body);
   white-space: nowrap;
 }
 .component-composer__copy small[data-necessidade='OBRIGATORIA'] {
+  background: var(--accent-soft);
   color: var(--accent);
 }
 

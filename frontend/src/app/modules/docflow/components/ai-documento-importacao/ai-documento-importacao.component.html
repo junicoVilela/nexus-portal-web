@@ -8,6 +8,38 @@
     <ui-badge tone="neutral">Opcional</ui-badge>
   </div>
 
+  @if (!importacao() && emAndamento().length) {
+    <section class="doc-import__retomar" aria-labelledby="doc-import-retomar-title">
+      <h4 id="doc-import-retomar-title">
+        <lucide-icon name="History" [size]="15" aria-hidden="true" />
+        Continuar de onde parou
+      </h4>
+      <ul>
+        @for (item of emAndamento(); track item.id) {
+          <li>
+            <div class="doc-import__retomar-copy">
+              <strong>{{ item.projetoNome || item.nomeArquivo }}</strong>
+              <span
+                >{{ item.nomeArquivo }} · {{ progressoResumo(item) }} ·
+                {{ item.atualizadoEm | date: 'dd/MM HH:mm' }}</span
+              >
+            </div>
+            <ui-button
+              type="button"
+              size="sm"
+              variant="secondary"
+              icon="ArrowRight"
+              [disabled]="disabled() || importando()"
+              (clicked)="continuar(item)"
+            >
+              Continuar
+            </ui-button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
   <div
     class="doc-import__dropzone"
     [class.doc-import__dropzone--active]="arrastando()"
@@ -42,6 +74,16 @@
     </ui-button>
   </div>
 
+  @if (retomada() && importacao()) {
+    <p class="doc-import__retomada" role="status">
+      <lucide-icon name="History" [size]="15" aria-hidden="true" />
+      <span>Este arquivo já estava em andamento — continuamos de onde você parou.</span>
+      <ui-button type="button" size="sm" variant="ghost" [disabled]="importando()" (clicked)="importarComoNova()">
+        Importar como novo
+      </ui-button>
+    </p>
+  }
+
   @if (erro()) {
     <p class="doc-import__error" role="alert">{{ erro() }}</p>
   }
@@ -64,10 +106,12 @@
         </div>
         <div class="doc-import__metrics" aria-label="Resumo do plano">
           <span
-            ><strong>{{ doc.modulos.length }}</strong> módulos</span
+            ><strong>{{ doc.modulos.length }}</strong>
+            {{ doc.modulos.length | i18nPlural: { '=1': 'módulo', other: 'módulos' } }}</span
           >
           <span
-            ><strong>{{ totalPaginas(doc) }}</strong> páginas</span
+            ><strong>{{ totalPaginas(doc) }}</strong>
+            {{ totalPaginas(doc) | i18nPlural: { '=1': 'página', other: 'páginas' } }}</span
           >
           <span
             ><strong>{{ doc.caracteresExtraidos }}</strong> caracteres</span
@@ -229,7 +273,13 @@
                     <span class="sr-only">Nome do módulo {{ modulo.ordem }}</span>
                     <input type="text" maxlength="150" [formControl]="modulosForm.controls[indice]" />
                   </label>
-                  <small>{{ modulo.paginas.length }} páginas identificadas</small>
+                  <small
+                    >{{ modulo.paginas.length }}
+                    {{
+                      modulo.paginas.length
+                        | i18nPlural: { '=1': 'página identificada', other: 'páginas identificadas' }
+                    }}</small
+                  >
                 </li>
               }
             </ol>
@@ -284,7 +334,10 @@
         <section class="doc-import__progress" aria-label="Progresso das páginas do manual">
           <div class="doc-import__progress-copy">
             <span>Progresso do manual</span>
-            <strong>{{ paginasFinalizadas(doc) }} de {{ totalPaginas(doc) }} páginas concluídas</strong>
+            <strong
+              >{{ paginasFinalizadas(doc) }} de {{ totalPaginas(doc) }}
+              {{ totalPaginas(doc) | i18nPlural: { '=1': 'página concluída', other: 'páginas concluídas' } }}</strong
+            >
           </div>
           <span class="doc-import__progress-value">{{ progresso(doc) }}%</span>
           <div class="doc-import__progress-track" aria-hidden="true">
@@ -305,7 +358,10 @@
           </div>
           <div class="doc-import__batch-actions">
             <span
-              ><strong>{{ paginasSelecionadas().size }}</strong> páginas selecionadas</span
+              ><strong>{{ paginasSelecionadas().size }}</strong>
+              {{
+                paginasSelecionadas().size | i18nPlural: { '=1': 'página selecionada', other: 'páginas selecionadas' }
+              }}</span
             >
             <ui-button
               type="button"
@@ -340,7 +396,8 @@
                 [disabled]="gerandoLote()"
                 (clicked)="gerarLote()"
               >
-                Gerar {{ estimativa.paginas }} páginas
+                Gerar {{ estimativa.paginas }}
+                {{ estimativa.paginas | i18nPlural: { '=1': 'página', other: 'páginas' } }}
               </ui-button>
               <small>{{ estimativa.observacao }}</small>
             </div>
@@ -356,7 +413,10 @@
                 <span
                   ><b>{{ modulo.ordem }}</b> {{ modulo.nome }}</span
                 >
-                <small>{{ modulo.paginas.length }} páginas</small>
+                <small
+                  >{{ modulo.paginas.length }}
+                  {{ modulo.paginas.length | i18nPlural: { '=1': 'página', other: 'páginas' } }}</small
+                >
               </summary>
               <ol>
                 @for (pagina of modulo.paginas; track pagina.id) {

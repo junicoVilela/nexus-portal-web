@@ -685,8 +685,12 @@
 }
 
 .doc-import__page-order {
+  /* Largura fixa para o número não encostar no checkbox nem no título (1.1 … 12.10). */
+  min-width: 28px;
+  padding-inline: 4px;
   font: 700 10.5px/1 var(--font-body);
   color: var(--text-muted);
+  text-align: center;
 }
 
 .doc-import__page-copy {
@@ -800,4 +804,88 @@
     grid-column: 3;
     justify-self: start;
   }
+}
+
+.doc-import__retomar {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface));
+}
+
+.doc-import__retomar h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text);
+  font: 700 12.5px/1.2 var(--font-body);
+}
+
+.doc-import__retomar h4 lucide-icon {
+  color: var(--accent);
+}
+
+.doc-import__retomar ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc-import__retomar li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.doc-import__retomar-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.doc-import__retomar-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font: 600 12.5px/1.3 var(--font-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-import__retomar-copy span {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 400 11.5px/1.3 var(--font-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-import__retomada {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent-soft) 60%, var(--surface));
+  color: var(--text);
+  font-size: 12.5px;
+}
+
+.doc-import__retomada lucide-icon {
+  color: var(--accent);
+}
+
+.doc-import__retomada ui-button {
+  margin-left: auto;
 }

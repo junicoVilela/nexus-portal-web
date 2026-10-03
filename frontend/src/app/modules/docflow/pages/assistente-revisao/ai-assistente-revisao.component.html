@@ -5,7 +5,7 @@
       [subtitle]="'Compare o conteúdo de ' + doc.nomeArquivo + ' com cada proposta antes de criar as páginas.'"
       icon="ClipboardCheck"
     >
-      <nav breadcrumb aria-label="Navegação estrutural">
+      <nav breadcrumb class="manual-review__breadcrumb" aria-label="Navegação estrutural">
         <a routerLink="/doc-flow/assistente">Assistente</a>
         <span>/</span>
         <span>Revisão do manual</span>
@@ -27,16 +27,20 @@
       </div>
       <div meta class="manual-review__summary">
         <span
-          ><strong>{{ doc.modulos.length }}</strong> módulos</span
+          ><strong>{{ doc.modulos.length }}</strong>
+          {{ doc.modulos.length | i18nPlural: { '=1': 'módulo', other: 'módulos' } }}</span
         >
         <span
-          ><strong>{{ itens().length }}</strong> páginas planejadas</span
+          ><strong>{{ itens().length }}</strong>
+          {{ itens().length | i18nPlural: { '=1': 'página planejada', other: 'páginas planejadas' } }}</span
         >
         <span
-          ><strong>{{ totalSalvas() }}</strong> rascunhos salvos</span
+          ><strong>{{ totalSalvas() }}</strong>
+          {{ totalSalvas() | i18nPlural: { '=1': 'rascunho salvo', other: 'rascunhos salvos' } }}</span
         >
         <span
-          ><strong>{{ totalRevisadas() }}</strong> revisadas</span
+          ><strong>{{ totalRevisadas() }}</strong>
+          {{ totalRevisadas() | i18nPlural: { '=1': 'revisada', other: 'revisadas' } }}</span
         >
         <span class="manual-review__progress" aria-label="Progresso de criação das páginas">
           <i><b [style.width.%]="progresso()"></b></i>
@@ -97,7 +101,10 @@
           <header>
             <div>
               <span>Ordem do documento</span>
-              <strong>{{ itensFiltrados().length }} páginas neste filtro</strong>
+              <strong
+                >{{ itensFiltrados().length }}
+                {{ itensFiltrados().length | i18nPlural: { '=1': 'página', other: 'páginas' } }} neste filtro</strong
+              >
             </div>
             <lucide-icon name="ListTree" [size]="17" />
           </header>
