@@ -1667,6 +1667,41 @@ export type AiConfirmarEstruturaDocumentoRequest = {
   modulos: Array<Modulo>;
 };
 
+export type AiFilaPrItemResponse = {
+  id?: string;
+  repositorio?: string;
+  numeroPr?: number;
+  titulo?: string;
+  url?: string;
+  autor?: string;
+  branchBase?: string;
+  mergedAt?: string;
+  classificacao?: 'UI_NOVA' | 'UI_ALTERACAO' | 'SO_BACKEND' | 'IRRELEVANTE';
+  codigoTela?: string;
+  status?: 'RECEBIDO' | 'IGNORADO' | 'AGUARDANDO_RASCUNHO' | 'EM_FILA' | 'ERRO';
+  mensagem?: string;
+  sessaoId?: string;
+  sessaoStatus?:
+    | 'ABERTA'
+    | 'AGUARDANDO_USUARIO'
+    | 'PRONTA_PARA_GERAR'
+    | 'GERANDO'
+    | 'PRONTA'
+    | 'APLICADA'
+    | 'CANCELADA'
+    | 'ERRO';
+  paginaId?: string;
+  responsavel?: string;
+  createdAt?: string;
+  proposta?: AiPropostaResponse;
+  pendente?: boolean;
+};
+
+export type AiFilaAceitarRequest = {
+  moduloId?: string;
+  parentId?: string;
+};
+
 export type AlterarStatusTemplateRequest = {
   ativo: boolean;
 };
@@ -6256,6 +6291,25 @@ export type IdentityaccessAuthLoginResponses = {
 export type IdentityaccessAuthLoginResponse =
   IdentityaccessAuthLoginResponses[keyof IdentityaccessAuthLoginResponses];
 
+export type AiAiGithubWebhookReceberData = {
+  body?: string;
+  headers?: {
+    'X-GitHub-Event'?: string;
+    'X-GitHub-Delivery'?: string;
+    'X-Hub-Signature-256'?: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/api/v1/ai/webhooks/github';
+};
+
+export type AiAiGithubWebhookReceberResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type AiAiTemplateRecomendarData = {
   body: AiTemplateRecomendacaoRequest;
   path?: never;
@@ -6653,6 +6707,79 @@ export type AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses = {
 
 export type AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse =
   AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses[keyof AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponses];
+
+export type AiAiFilaPrReprocessarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}/reprocessar';
+};
+
+export type AiAiFilaPrReprocessarResponses = {
+  /**
+   * OK
+   */
+  200: AiFilaPrItemResponse;
+};
+
+export type AiAiFilaPrReprocessarResponse =
+  AiAiFilaPrReprocessarResponses[keyof AiAiFilaPrReprocessarResponses];
+
+export type AiAiFilaPrRejeitarData = {
+  body?: RejeitarAiPropostaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}/rejeitar';
+};
+
+export type AiAiFilaPrRejeitarResponses = {
+  /**
+   * OK
+   */
+  200: AiFilaPrItemResponse;
+};
+
+export type AiAiFilaPrRejeitarResponse = AiAiFilaPrRejeitarResponses[keyof AiAiFilaPrRejeitarResponses];
+
+export type AiAiFilaPrAssumirData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}/assumir';
+};
+
+export type AiAiFilaPrAssumirResponses = {
+  /**
+   * OK
+   */
+  200: AiFilaPrItemResponse;
+};
+
+export type AiAiFilaPrAssumirResponse = AiAiFilaPrAssumirResponses[keyof AiAiFilaPrAssumirResponses];
+
+export type AiAiFilaPrAceitarData = {
+  body?: AiFilaAceitarRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}/aceitar';
+};
+
+export type AiAiFilaPrAceitarResponses = {
+  /**
+   * OK
+   */
+  200: AiAplicacaoResponse;
+};
+
+export type AiAiFilaPrAceitarResponse = AiAiFilaPrAceitarResponses[keyof AiAiFilaPrAceitarResponses];
 
 export type ReleaseorchestratorReleaseTemplateAlterarStatusData = {
   body: AlterarStatusTemplateRequest;
@@ -8118,6 +8245,42 @@ export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses = {
 
 export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse =
   AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses[keyof AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponses];
+
+export type AiAiFilaPrListarData = {
+  body?: never;
+  path?: never;
+  query?: {
+    pendentes?: boolean;
+  };
+  url: '/api/v1/ai/fila-pr';
+};
+
+export type AiAiFilaPrListarResponses = {
+  /**
+   * OK
+   */
+  200: Array<AiFilaPrItemResponse>;
+};
+
+export type AiAiFilaPrListarResponse = AiAiFilaPrListarResponses[keyof AiAiFilaPrListarResponses];
+
+export type AiAiFilaPrBuscarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}';
+};
+
+export type AiAiFilaPrBuscarResponses = {
+  /**
+   * OK
+   */
+  200: AiFilaPrItemResponse;
+};
+
+export type AiAiFilaPrBuscarResponse = AiAiFilaPrBuscarResponses[keyof AiAiFilaPrBuscarResponses];
 
 export type AiAiEventEventosData = {
   body?: never;

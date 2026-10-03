@@ -24,8 +24,9 @@
       [paginaId]="pagina.id"
       [version]="pagina.version"
       [html]="pagina.conteudoHtml ?? ''"
+      [sessaoInicial]="sessaoAjuste()"
       (aplicado)="aplicarAjusteIa($event)"
-      (fechado)="painelAjusteAberto.set(false)"
+      (fechado)="ia.fecharAjuste()"
     />
   }
 

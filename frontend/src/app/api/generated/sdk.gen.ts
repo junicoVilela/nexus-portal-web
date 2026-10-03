@@ -46,6 +46,20 @@ import type {
   AiAiEventEventosData,
   AiAiEventEventosResponse,
   AiAiEventEventosResponses,
+  AiAiFilaPrAceitarData,
+  AiAiFilaPrAceitarResponses,
+  AiAiFilaPrAssumirData,
+  AiAiFilaPrAssumirResponses,
+  AiAiFilaPrBuscarData,
+  AiAiFilaPrBuscarResponses,
+  AiAiFilaPrListarData,
+  AiAiFilaPrListarResponses,
+  AiAiFilaPrRejeitarData,
+  AiAiFilaPrRejeitarResponses,
+  AiAiFilaPrReprocessarData,
+  AiAiFilaPrReprocessarResponses,
+  AiAiGithubWebhookReceberData,
+  AiAiGithubWebhookReceberResponses,
   AiAiMetricasMetricasData,
   AiAiMetricasMetricasResponses,
   AiAiSessaoAplicarData,
@@ -2919,6 +2933,19 @@ export const identityaccessAuthLogin = <ThrowOnError extends boolean = true>(
     },
   });
 
+export const aiAiGithubWebhookReceber = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiGithubWebhookReceberData, ThrowOnError>,
+): RequestResult<AiAiGithubWebhookReceberResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).post<AiAiGithubWebhookReceberResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/webhooks/github',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+  });
+
 export const aiAiTemplateRecomendar = <ThrowOnError extends boolean = true>(
   options: Options<AiAiTemplateRecomendarData, ThrowOnError>,
 ): RequestResult<AiAiTemplateRecomendarResponses, unknown, ThrowOnError> =>
@@ -3190,6 +3217,50 @@ export const aiAiDocumentoImportacaoConfirmarEstruturaDocumento = <ThrowOnError 
   >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/importacoes/{id}/estrutura/confirmar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiFilaPrReprocessar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrReprocessarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrReprocessarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiFilaPrReprocessarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}/reprocessar',
+    ...options,
+  });
+
+export const aiAiFilaPrRejeitar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrRejeitarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrRejeitarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiFilaPrRejeitarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}/rejeitar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiFilaPrAssumir = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrAssumirData, ThrowOnError>,
+): RequestResult<AiAiFilaPrAssumirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiFilaPrAssumirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}/assumir',
+    ...options,
+  });
+
+export const aiAiFilaPrAceitar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrAceitarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrAceitarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiFilaPrAceitarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}/aceitar',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -3994,6 +4065,24 @@ export const aiAiDocumentoImportacaoBuscarImportacaoDocumento = <ThrowOnError ex
   >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/importacoes/{id}',
+    ...options,
+  });
+
+export const aiAiFilaPrListar = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiFilaPrListarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrListarResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<AiAiFilaPrListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr',
+    ...options,
+  });
+
+export const aiAiFilaPrBuscar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrBuscarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrBuscarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<AiAiFilaPrBuscarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}',
     ...options,
   });
 

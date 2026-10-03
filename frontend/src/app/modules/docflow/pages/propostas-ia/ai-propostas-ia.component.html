@@ -1,0 +1,215 @@
+<div class="fp">
+  <ui-page-header
+    title="Propostas da IA"
+    subtitle="Páginas novas e ajustes preparados a partir de PRs mergeados. A IA não publica: você decide."
+    icon="GitPullRequest"
+  />
+
+  <div class="fp__barra">
+    <div class="fp__filtro" role="group" aria-label="Filtro">
+      <button
+        type="button"
+        class="fp__filtro-btn"
+        [class.fp__filtro-btn--ativo]="somentePendentes()"
+        [attr.aria-pressed]="somentePendentes()"
+        (click)="alternarFiltro(true)"
+      >
+        Pendentes
+      </button>
+      <button
+        type="button"
+        class="fp__filtro-btn"
+        [class.fp__filtro-btn--ativo]="!somentePendentes()"
+        [attr.aria-pressed]="!somentePendentes()"
+        (click)="alternarFiltro(false)"
+      >
+        Todos
+      </button>
+    </div>
+    <ui-button variant="ghost" size="sm" icon="RefreshCw" [loading]="carregando()" (clicked)="carregar()">
+      Atualizar
+    </ui-button>
+  </div>
+
+  @if (erro()) {
+    <p class="fp__erro" role="alert">{{ erro() }}</p>
+  }
+
+  @if (!itens().length && !carregando()) {
+    <ui-empty-state
+      icon="GitPullRequest"
+      [title]="somentePendentes() ? 'Nada pendente' : 'Nenhum PR recebido'"
+      description="PRs que mexem em tela aparecem aqui depois do merge. Configuração em docs/ai/GITHUB-WEBHOOK.md."
+    />
+  } @else {
+    <div class="fp__layout">
+      <ul class="fp__lista" aria-label="PRs recebidos">
+        @for (item of itens(); track item.id) {
+          <li>
+            <button
+              type="button"
+              class="fp__item"
+              [class.fp__item--ativo]="selecionado()?.id === item.id"
+              [attr.aria-current]="selecionado()?.id === item.id"
+              (click)="selecionadoId.set(item.id)"
+            >
+              <span class="fp__item-topo">
+                <code>{{ item.repositorio }}#{{ item.numeroPr }}</code>
+                <ui-badge [tone]="rotuloSituacao(item).tom">{{ rotuloSituacao(item).texto }}</ui-badge>
+              </span>
+              <strong>{{ item.titulo }}</strong>
+              <small>
+                @if (item.codigoTela) {
+                  {{ item.codigoTela }} ·
+                }
+                {{ item.mergedAt ?? item.createdAt | date: 'dd/MM HH:mm' }}
+              </small>
+            </button>
+          </li>
+        }
+      </ul>
+
+      @if (selecionado(); as item) {
+        <section class="fp__detalhe" aria-labelledby="fp-titulo">
+          <header class="fp__cabecalho">
+            <div>
+              <a class="fp__pr" [href]="item.url" target="_blank" rel="noopener">
+                {{ item.repositorio }}#{{ item.numeroPr }}
+                <lucide-icon name="ExternalLink" [size]="13" aria-hidden="true" />
+              </a>
+              <h2 id="fp-titulo">{{ item.titulo }}</h2>
+              <p class="fp__meta">
+                @if (item.autor) {
+                  por {{ item.autor }} ·
+                }
+                merge em {{ item.branchBase }}
+                @if (item.mergedAt) {
+                  {{ item.mergedAt | date: 'dd/MM/yyyy HH:mm' }}
+                }
+                @if (item.responsavel) {
+                  · assumido por {{ item.responsavel }}
+                }
+              </p>
+            </div>
+            <ui-badge [tone]="rotuloSituacao(item).tom">{{ rotuloSituacao(item).texto }}</ui-badge>
+          </header>
+
+          <!-- A mensagem é do processamento do PR; com proposta pronta ela já não diz nada. -->
+          @if (item.mensagem && ['erro', 'aguardando', 'ignorado'].includes(situacao(item))) {
+            <p class="fp__mensagem">{{ item.mensagem }}</p>
+          }
+
+          @switch (situacao(item)) {
+            @case ('gerando') {
+              <p class="fp__estado" role="status">
+                <lucide-icon name="Loader2" [size]="16" class="fp__girando" aria-hidden="true" />
+                A IA está preparando a proposta. A fila se atualiza sozinha.
+              </p>
+            }
+            @case ('erro') {
+              <div class="fp__acoes">
+                <ui-button icon="RotateCcw" [loading]="executando()" (clicked)="reprocessar(item)">
+                  Tentar de novo
+                </ui-button>
+              </div>
+            }
+            @case ('aguardando') {
+              <p class="fp__estado">
+                Volte a página para rascunho no editor e gere o ajuste. A IA não altera conteúdo aprovado ou publicado.
+              </p>
+              <div class="fp__acoes">
+                @if (item.paginaId) {
+                  <a class="fp__link" [routerLink]="['/doc-flow/paginas', item.paginaId, 'editar']">Abrir a página</a>
+                }
+                <ui-button icon="Sparkles" [loading]="executando()" (clicked)="reprocessar(item)">
+                  Gerar ajuste
+                </ui-button>
+              </div>
+            }
+            @case ('nova') {
+              @if (item.proposta; as proposta) {
+                <app-ai-proposta-preview
+                  [proposta]="proposta"
+                  [loading]="executando()"
+                  [disabled]="executando()"
+                  [podeAplicar]="podeAplicar()"
+                  (aplicar)="abrirPaginaNovaNoEditor(item)"
+                  (regenerar)="regenerar(item, $event)"
+                  (rejeitar)="rejeitar(item, $event)"
+                />
+                @if (podeCriar()) {
+                  <div class="fp__acoes">
+                    <ui-button
+                      variant="secondary"
+                      icon="Check"
+                      [loading]="executando()"
+                      (clicked)="aceitarComoRascunho(item)"
+                    >
+                      Aceitar e criar rascunho
+                    </ui-button>
+                  </div>
+                }
+              }
+            }
+            @case ('ajuste') {
+              @if (item.proposta; as proposta) {
+                <div class="fp__ajuste">
+                  <p>{{ proposta.resumoDaMudanca || 'Ajuste proposto para a página.' }}</p>
+                  <ul>
+                    @for (op of proposta.operacoes ?? []; track op.id) {
+                      <li>{{ op.motivo }}</li>
+                    }
+                  </ul>
+                </div>
+                <div class="fp__acoes">
+                  <ui-button
+                    icon="Pencil"
+                    [loading]="executando()"
+                    [disabled]="!podeAplicar()"
+                    (clicked)="abrirAjusteNoEditor(item)"
+                  >
+                    Revisar no editor
+                  </ui-button>
+                </div>
+                <div class="fp__rejeitar">
+                  <span id="fp-categoria">Não serve? Diga por quê:</span>
+                  <div class="fp__categorias" role="radiogroup" aria-labelledby="fp-categoria">
+                    @for (c of categorias; track c.valor) {
+                      <button
+                        type="button"
+                        role="radio"
+                        class="fp__categoria"
+                        [class.fp__categoria--ativa]="categoriaAjuste() === c.valor"
+                        [attr.aria-checked]="categoriaAjuste() === c.valor"
+                        (click)="categoriaAjuste.set(categoriaAjuste() === c.valor ? null : c.valor)"
+                      >
+                        {{ c.rotulo }}
+                      </button>
+                    }
+                  </div>
+                  <ui-button
+                    variant="danger"
+                    size="sm"
+                    icon="XCircle"
+                    [loading]="executando()"
+                    (clicked)="rejeitar(item, { categoria: categoriaAjuste(), motivo: null })"
+                  >
+                    Rejeitar ajuste
+                  </ui-button>
+                </div>
+              }
+            }
+            @case ('resolvida') {
+              <p class="fp__estado">
+                Proposta {{ rotuloSituacao(item).texto.toLowerCase() }}.
+                @if (item.proposta?.paginaId; as paginaId) {
+                  <a class="fp__link" [routerLink]="['/doc-flow/paginas', paginaId, 'editar']">Abrir a página</a>
+                }
+              </p>
+            }
+          }
+        </section>
+      }
+    </div>
+  }
+</div>

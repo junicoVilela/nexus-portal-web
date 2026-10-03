@@ -69,6 +69,14 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
       requerAi: true,
     },
     {
+      helpId: 'propostas-ia',
+      label: 'Propostas da IA',
+      icon: 'GitPullRequest',
+      route: ['/doc-flow', 'propostas-ia'],
+      permissao: 'PAGINA:AI_PROPOSTA',
+      requerAi: true,
+    },
+    {
       helpId: 'ia-qualidade',
       label: 'Qualidade da IA',
       icon: 'BarChart2',

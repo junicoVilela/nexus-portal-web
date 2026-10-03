@@ -39,6 +39,19 @@ import type {
   AiAiDocumentoImportacaoVincularPaginaImportadaResponse,
   AiAiEventEventosData,
   AiAiEventEventosResponse,
+  AiAiFilaPrAceitarData,
+  AiAiFilaPrAceitarResponse,
+  AiAiFilaPrAssumirData,
+  AiAiFilaPrAssumirResponse,
+  AiAiFilaPrBuscarData,
+  AiAiFilaPrBuscarResponse,
+  AiAiFilaPrListarData,
+  AiAiFilaPrListarResponse,
+  AiAiFilaPrRejeitarData,
+  AiAiFilaPrRejeitarResponse,
+  AiAiFilaPrReprocessarData,
+  AiAiFilaPrReprocessarResponse,
+  AiAiGithubWebhookReceberData,
   AiAiMetricasMetricasData,
   AiAiMetricasMetricasResponse,
   AiAiSessaoAplicarData,
@@ -2719,6 +2732,16 @@ export const identityaccessAuthLoginRequest = <ThrowOnError extends boolean = fa
     ...options,
   });
 
+export const aiAiGithubWebhookReceberRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiGithubWebhookReceberData, ThrowOnError>,
+): HttpRequest<unknown> =>
+  (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/webhooks/github',
+    ...options,
+  });
+
 export const aiAiTemplateRecomendarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiTemplateRecomendarData, ThrowOnError>,
 ): HttpRequest<AiAiTemplateRecomendarResponse> =>
@@ -2964,6 +2987,46 @@ export const aiAiDocumentoImportacaoConfirmarEstruturaDocumentoRequest = <
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/ai/importacoes/{id}/estrutura/confirmar',
+    ...options,
+  });
+
+export const aiAiFilaPrReprocessarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrReprocessarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrReprocessarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrReprocessarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/fila-pr/{id}/reprocessar',
+    ...options,
+  });
+
+export const aiAiFilaPrRejeitarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrRejeitarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrRejeitarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrRejeitarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/fila-pr/{id}/rejeitar',
+    ...options,
+  });
+
+export const aiAiFilaPrAssumirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrAssumirData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrAssumirResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrAssumirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/fila-pr/{id}/assumir',
+    ...options,
+  });
+
+export const aiAiFilaPrAceitarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrAceitarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrAceitarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrAceitarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/fila-pr/{id}/aceitar',
     ...options,
   });
 
@@ -3787,6 +3850,26 @@ export const aiAiDocumentoImportacaoBuscarImportacaoDocumentoRequest = <ThrowOnE
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/ai/importacoes/{id}',
+    ...options,
+  });
+
+export const aiAiFilaPrListarRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiFilaPrListarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrListarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrListarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/fila-pr',
+    ...options,
+  });
+
+export const aiAiFilaPrBuscarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrBuscarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrBuscarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrBuscarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/fila-pr/{id}',
     ...options,
   });
 
@@ -5436,6 +5519,14 @@ export const identityaccessAuthLoginResource = <ThrowOnError extends boolean = f
     return opts ? identityaccessAuthLoginRequest(opts) : undefined;
   });
 
+export const aiAiGithubWebhookReceberResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiGithubWebhookReceberData, ThrowOnError> | undefined,
+) =>
+  httpResource<unknown>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiGithubWebhookReceberRequest(opts) : undefined;
+  });
+
 export const aiAiTemplateRecomendarResource = <ThrowOnError extends boolean = false>(
   options: () => Options<AiAiTemplateRecomendarData, ThrowOnError> | undefined,
 ) =>
@@ -5611,6 +5702,38 @@ export const aiAiDocumentoImportacaoConfirmarEstruturaDocumentoResource = <
   httpResource<AiAiDocumentoImportacaoConfirmarEstruturaDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiDocumentoImportacaoConfirmarEstruturaDocumentoRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrReprocessarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrReprocessarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrReprocessarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrReprocessarRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrRejeitarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrRejeitarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrRejeitarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrRejeitarRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrAssumirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrAssumirData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrAssumirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrAssumirRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrAceitarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrAceitarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrAceitarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrAceitarRequest(opts) : undefined;
   });
 
 export const releaseorchestratorReleaseTemplateAlterarStatusResource = <ThrowOnError extends boolean = false>(
@@ -6233,6 +6356,22 @@ export const aiAiDocumentoImportacaoBuscarImportacaoDocumentoResource = <
   httpResource<AiAiDocumentoImportacaoBuscarImportacaoDocumentoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiDocumentoImportacaoBuscarImportacaoDocumentoRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrListarResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiFilaPrListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrListarRequest(opts) : undefined;
+  });
+
+export const aiAiFilaPrBuscarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrBuscarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrBuscarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrBuscarRequest(opts) : undefined;
   });
 
 export const aiAiEventEventosResource = <ThrowOnError extends boolean = false>(

@@ -12,6 +12,7 @@ import type {
   AiAtualizarComposicaoDocumentoRequest,
   AiConfirmarEstruturaDocumentoRequest,
   AiEstimativaLoteDocumentoResponse,
+  AiFilaPrItemResponse,
   AiImportacaoDocumentoResponse,
   AiImportacaoResumoResponse,
   AiJobResponse,
@@ -48,6 +49,7 @@ import type {
   AiProposta,
   AiQualidadeItem,
 } from '../models/ai-proposta.model';
+import type { AiFilaPrItem } from '../models/ai-fila-pr.model';
 import type { AiMetricas, AiMetricasPrompt } from '../models/ai-metricas.model';
 import type {
   AiMensagem,
@@ -113,6 +115,9 @@ export type ContratoRespostas = [
   Vazio<SoNoFront<AiDocumentoSugestao, Item<Importacao['sugestoes']>>>,
   Vazio<SoNoFront<AiEstimativaLoteDocumento, AiEstimativaLoteDocumentoResponse>>,
   Vazio<SoNoFront<AiImportacaoResumo, AiImportacaoResumoResponse>>,
+  Vazio<SoNoFront<AiFilaPrItem, AiFilaPrItemResponse>>,
+  Subconjunto<AiFilaPrItem['status'], NonNullable<AiFilaPrItemResponse['status']>>,
+  Subconjunto<NonNullable<AiFilaPrItem['classificacao']>, NonNullable<AiFilaPrItemResponse['classificacao']>>,
 ];
 
 export type ContratoRequests = [

@@ -82,6 +82,20 @@ describe('AiAjustePainelComponent', () => {
     fixture.detectChanges();
   }
 
+  it('com sessão inicial (fila de PR) abre direto na revisão', () => {
+    const outro = TestBed.createComponent(AiAjustePainelComponent);
+    outro.componentRef.setInput('paginaId', 'pag-1');
+    outro.componentRef.setInput('version', 3);
+    outro.componentRef.setInput('html', html);
+    outro.componentRef.setInput('sessaoInicial', 's9');
+    outro.detectChanges();
+
+    expect(ai.buscarSessao).toHaveBeenCalledWith('s9');
+    expect(ai.proposta).toHaveBeenCalledWith('s9');
+    expect(outro.componentInstance['etapa']()).toBe('revisao');
+    expect(outro.componentInstance['selecionadas']()).toEqual(new Set(['op1']));
+  });
+
   it('oferece as mesmas seções do editor como escopo', () => {
     const opcoes = Array.from(
       fixture.nativeElement.querySelectorAll('#ajuste-escopo option'),

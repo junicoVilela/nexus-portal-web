@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   input,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
@@ -41,7 +42,7 @@ type Etapa = 'pedido' | 'gerando' | 'revisao';
   styleUrl: './ai-ajuste-painel.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AiAjustePainelComponent {
+export class AiAjustePainelComponent implements OnInit {
   private readonly ai = inject(AiAssistenteService);
   private readonly sanitizer = inject(DomSanitizer);
   protected readonly geracao = inject(AiGeracaoAcompanhamento);
@@ -50,6 +51,11 @@ export class AiAjustePainelComponent {
   readonly version = input.required<number>();
   /** HTML salvo da página — o mesmo que o back usa para montar o esboço. */
   readonly html = input.required<string>();
+  /**
+   * Sessão de ajuste já aberta (ex.: item da fila de PR assumido): o painel abre direto na
+   * revisão, ou acompanha a geração se ainda estiver em andamento.
+   */
+  readonly sessaoInicial = input<string | null>(null);
 
   readonly aplicado = output<AiAplicacao>();
   readonly fechado = output<void>();
@@ -109,6 +115,25 @@ export class AiAjustePainelComponent {
         .then(pares => this.diffs.set(Object.fromEntries(pares)))
         // Sem a lib de diff, o template mostra antes/depois sem destaque por palavra.
         .catch(() => this.diffs.set({}));
+    });
+  }
+
+  ngOnInit(): void {
+    const sessaoId = this.sessaoInicial();
+    if (!sessaoId) return;
+    this.sessaoId.set(sessaoId);
+    this.ai.buscarSessao(sessaoId).subscribe({
+      next: sessao => {
+        if (sessao.status === 'GERANDO') {
+          this.geracao.retomar(sessao, this.aoAcompanhar);
+          return;
+        }
+        this.ai.proposta(sessaoId).subscribe({
+          next: proposta => this.receberProposta(proposta),
+          error: err => this.erro.set(mensagemErroHttp(err, 'Não foi possível carregar a proposta.')),
+        });
+      },
+      error: err => this.erro.set(mensagemErroHttp(err, 'Não foi possível abrir o ajuste.')),
     });
   }
 

@@ -17,6 +17,9 @@ export const TODAS_PERMISSOES_DOCFLOW = [
   'PAGINA:CRIAR',
   'PAGINA:EDITAR',
   'PAGINA:EXCLUIR',
+  'PAGINA:AI_GERAR',
+  'PAGINA:AI_APLICAR',
+  'PAGINA:AI_PROPOSTA',
   'PUBLICACAO:LER',
   'PUBLICACAO:CRIAR',
   'PUBLICACAO:EXCLUIR',
@@ -209,10 +212,7 @@ export const AUDITORIA_REGISTRO = {
   createdBy: USUARIO_ADMIN.username,
 };
 
-export function resultadoPaginado<T>(
-  items: T[],
-  options: { page?: number; size?: number } = {},
-) {
+export function resultadoPaginado<T>(items: T[], options: { page?: number; size?: number } = {}) {
   const page = options.page ?? 1;
   const size = options.size ?? 20;
   return {
@@ -392,7 +392,10 @@ export async function tryHandleRbacRoutes(ctx: MockRouteContext, responder: Mock
 }
 
 /** Rotas Doc Flow mínimas para dashboard, listas e a11y. */
-export async function tryHandleDocFlowRoutes(ctx: MockRouteContext, responder: MockResponder): Promise<boolean> {
+export async function tryHandleDocFlowRoutes(
+  ctx: MockRouteContext,
+  responder: MockResponder,
+): Promise<boolean> {
   const { path, method } = ctx;
   if (method !== 'GET' || !isDocFlowApiPath(path)) return false;
 

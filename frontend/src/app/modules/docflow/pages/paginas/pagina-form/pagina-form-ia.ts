@@ -33,6 +33,8 @@ export class PaginaFormIa {
 
   /** Painel "Ajustar com IA" (Fase B) aberto no editor. */
   readonly painelAjusteAberto = signal(false);
+  /** Ajuste já gerado (fila de PR, `?ajuste=<sessão>`): o painel abre direto na revisão. */
+  readonly sessaoAjuste = signal<string | null>(null);
   /** Sessão que originou esta página nova; vinculada quando a página ganha id. */
   private sessaoOrigem: string | null = null;
 
@@ -75,6 +77,19 @@ export class PaginaFormIa {
       history.replaceState(limpo, '');
     }
     return proposta;
+  }
+
+  /** `?ajuste=<sessaoId>` vindo da fila de propostas: abre o painel com o ajuste pronto. */
+  abrirAjusteDaUrl(): void {
+    const sessaoId = this.route.snapshot.queryParamMap.get('ajuste');
+    if (!sessaoId) return;
+    this.sessaoAjuste.set(sessaoId);
+    this.painelAjusteAberto.set(true);
+  }
+
+  fecharAjuste(): void {
+    this.painelAjusteAberto.set(false);
+    this.sessaoAjuste.set(null);
   }
 
   /** Imagens arrastadas no assistente, para anexar à página (entregues uma única vez). */

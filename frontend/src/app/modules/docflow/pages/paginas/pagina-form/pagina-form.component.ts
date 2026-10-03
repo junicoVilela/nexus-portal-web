@@ -133,7 +133,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private readonly aiFeature = inject(AiFeatureService);
   protected readonly modelos = inject(PaginaFormModelos);
   protected readonly historico = inject(PaginaFormRevisoes);
-  private readonly ia = inject(PaginaFormIa);
+  protected readonly ia = inject(PaginaFormIa);
   protected readonly persistencia = inject(PaginaFormPersistencia);
   protected readonly arquivos = inject(PaginaFormAnexos);
   protected readonly tabelas = inject(PaginaFormTabelas);
@@ -187,6 +187,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
 
   /** "Ajustar com IA" (Fase B): só em página salva, editável e com o módulo de IA ligado. */
   protected readonly painelAjusteAberto = this.ia.painelAjusteAberto;
+  protected readonly sessaoAjuste = this.ia.sessaoAjuste;
   protected readonly podeAjustarComIa = computed(() => {
     const pagina = this.paginaAtual();
     return (
@@ -434,6 +435,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         this.blocosCatalogo.set(blocos);
         if (pagina) {
           this.carregarPagina(pagina);
+          this.ia.abrirAjusteDaUrl();
         } else {
           this.mostrarTemplates.set(true);
           this.aplicarContextoInicial();
@@ -558,7 +560,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     });
     this.persistencia.marcarAlterado();
     this.form.markAsDirty();
-    this.painelAjusteAberto.set(false);
+    this.ia.fecharAjuste();
     this.toast.success('Ajuste aplicado no editor. Revise e salve para registrar a revisão.');
   }
 

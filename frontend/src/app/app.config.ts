@@ -109,6 +109,7 @@ import {
   Send,
   Server,
   ExternalLink,
+  GitPullRequest,
   // Page header icons
   PackagePlus,
   ClipboardCheck,
@@ -287,6 +288,7 @@ export const appConfig: ApplicationConfig = {
         Send,
         Server,
         ExternalLink,
+        GitPullRequest,
         PackagePlus,
         ClipboardCheck,
         LayoutTemplate,

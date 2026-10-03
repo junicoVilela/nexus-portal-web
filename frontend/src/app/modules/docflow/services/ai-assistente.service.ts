@@ -12,6 +12,7 @@ import {
   AiImportacaoResumo,
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
+import { AiFilaPrItem } from '../models/ai-fila-pr.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
 import {
   AiAjustePaginaPayload,
@@ -206,6 +207,33 @@ export class AiAssistenteService {
       ...(rejeicao.categoria ? { categoria: rejeicao.categoria } : {}),
       ...(motivo ? { motivo } : {}),
     });
+  }
+
+  /** Fila de propostas abertas a partir de PRs (Fase C). `pendentes`: só o que precisa de alguém. */
+  filaPr(pendentes = true): Observable<AiFilaPrItem[]> {
+    return this.http.get<AiFilaPrItem[]>(`${this.base}/fila-pr`, { params: { pendentes } });
+  }
+
+  /** A sessão do item passa a ser do usuário (para abrir no editor ou regenerar). */
+  assumirItemFila(id: string): Observable<AiFilaPrItem> {
+    return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/assumir`, {});
+  }
+
+  rejeitarItemFila(id: string, rejeicao: AiRejeicao): Observable<AiFilaPrItem> {
+    const motivo = rejeicao.motivo?.trim();
+    return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/rejeitar`, {
+      ...(rejeicao.categoria ? { categoria: rejeicao.categoria } : {}),
+      ...(motivo ? { motivo } : {}),
+    });
+  }
+
+  /** Página nova: cria o rascunho no DocFlow. */
+  aceitarItemFila(id: string): Observable<AiAplicacao> {
+    return this.http.post<AiAplicacao>(`${this.base}/fila-pr/${id}/aceitar`, {});
+  }
+
+  reprocessarItemFila(id: string): Observable<AiFilaPrItem> {
+    return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/reprocessar`, {});
   }
 
   proposta(id: string): Observable<AiProposta> {

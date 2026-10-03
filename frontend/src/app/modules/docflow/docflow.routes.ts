@@ -152,6 +152,15 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['AUDITORIA:VISUALIZAR'] },
       },
       {
+        path: 'propostas-ia',
+        loadComponent: () =>
+          import('./pages/propostas-ia/ai-propostas-ia.component').then(
+            component => component.AiPropostasIaComponent,
+          ),
+        canActivate: [permissaoGuard],
+        data: { permissoes: ['PAGINA:AI_PROPOSTA'] },
+      },
+      {
         path: 'revisoes',
         loadComponent: () =>
           import('./pages/revisoes/revisoes.component').then(component => component.RevisoesComponent),
