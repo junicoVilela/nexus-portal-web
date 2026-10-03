@@ -62,6 +62,69 @@
       />
     </div>
 
+    @if (comparacoes().length) {
+      <section class="aq__secao" aria-labelledby="aq-versoes">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-versoes">Versão atual × anterior</h2>
+          <p>
+            Depois de mudar um prompt, espere ao menos {{ minDecisoes }} propostas decididas antes de concluir. O ciclo
+            está em <code>docs/ai/PROMPT-OPS.md</code>.
+          </p>
+        </div>
+        <ul class="aq__versoes">
+          @for (c of comparacoes(); track c.familia) {
+            <li class="aq__versao">
+              <header>
+                <code>{{ c.atual.promptVersao }}</code>
+                @if (c.anterior) {
+                  <span
+                    >vs <code>{{ c.anterior.promptVersao }}</code></span
+                  >
+                }
+                @if (c.amostraPequena) {
+                  <span class="aq__selo" title="Poucas propostas decididas: a diferença ainda pode ser ruído"
+                    >amostra pequena</span
+                  >
+                }
+              </header>
+              <dl>
+                <div>
+                  <dt>Aceite</dt>
+                  <dd>
+                    {{ percentual(c.atual.taxaAceite) }}
+                    @if (c.deltaAceite !== null) {
+                      <small
+                        [class.aq__delta--melhor]="c.deltaAceite > 0"
+                        [class.aq__delta--pior]="c.deltaAceite < 0"
+                        >{{ pontos(c.deltaAceite) }}</small
+                      >
+                    }
+                  </dd>
+                </div>
+                <div>
+                  <dt>Texto mantido</dt>
+                  <dd>
+                    {{ percentual(c.atual.textoMantido) }}
+                    @if (c.deltaTextoMantido !== null) {
+                      <small
+                        [class.aq__delta--melhor]="c.deltaTextoMantido > 0"
+                        [class.aq__delta--pior]="c.deltaTextoMantido < 0"
+                        >{{ pontos(c.deltaTextoMantido) }}</small
+                      >
+                    }
+                  </dd>
+                </div>
+                <div>
+                  <dt>Mais rejeitada por</dt>
+                  <dd>{{ c.principalRejeicao ?? '—' }}</dd>
+                </div>
+              </dl>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
     <section class="aq__secao" aria-labelledby="aq-prompts">
       <div class="aq__secao-cabecalho">
         <h2 id="aq-prompts">Por versão de prompt</h2>

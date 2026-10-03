@@ -140,6 +140,23 @@ describe('AiQualidadeComponent', () => {
     expect(secao.textContent).toContain('50%');
   });
 
+  it('compara a versão atual de cada prompt com a anterior', () => {
+    fixture.componentInstance['metricas'].set({
+      ...metricas,
+      porPrompt: [
+        { ...metricas.porPrompt[0], promptVersao: 'gerar-page-spec@2.3', taxaAceite: 0.62 },
+        { ...metricas.porPrompt[0], promptVersao: 'gerar-page-spec@2.2', taxaAceite: 0.5 },
+      ],
+    });
+    fixture.detectChanges();
+    const secao = fixture.nativeElement.querySelector('[aria-labelledby="aq-versoes"]') as HTMLElement;
+    expect(secao.textContent).toContain('gerar-page-spec@2.3');
+    expect(secao.textContent).toContain('vs gerar-page-spec@2.2');
+    expect(secao.textContent).toContain('+12 p.p.');
+    expect(secao.textContent).toContain('Faltou informação');
+    expect(secao.textContent).toContain('amostra pequena');
+  });
+
   it('troca o período e recarrega', () => {
     const botao = Array.from(fixture.nativeElement.querySelectorAll('.aq__periodo-btn')).find(b =>
       (b as HTMLElement).textContent?.includes('7 dias'),

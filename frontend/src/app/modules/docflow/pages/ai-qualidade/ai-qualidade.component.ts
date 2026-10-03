@@ -6,6 +6,7 @@ import { EmptyStateComponent, KpiCardComponent, PageHeaderComponent } from '@sha
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { AiMetricas } from '../../models/ai-metricas.model';
 import { rotuloCategoriaRejeicao } from '../../models/ai-proposta.model';
+import { compararVersoesPrompt, MIN_DECISOES_COMPARACAO } from '../../utils/ai-prompt-comparacao.util';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 
 const ROTULOS_OPERACAO: Record<string, string> = {
@@ -62,6 +63,10 @@ export class AiQualidadeComponent implements OnInit {
     ].map(item => ({ ...item, fracao: item.total / a.amostras }));
   });
 
+  /** Versão atual × anterior de cada prompt (ciclo de prompt ops, `docs/ai/PROMPT-OPS.md`). */
+  protected readonly comparacoes = computed(() => compararVersoesPrompt(this.metricas()?.porPrompt ?? []));
+  protected readonly minDecisoes = MIN_DECISOES_COMPARACAO;
+
   protected readonly vazio = computed(() => {
     const m = this.metricas();
     return !!m && m.geracao.jobs === 0 && m.porPrompt.length === 0;
@@ -75,6 +80,13 @@ export class AiQualidadeComponent implements OnInit {
     if (dias === this.dias()) return;
     this.dias.set(dias);
     this.carregar();
+  }
+
+  /** Diferença em pontos percentuais com sinal (`+12 p.p.`). */
+  protected pontos(delta: number | null): string {
+    if (delta === null) return '';
+    const pp = Math.round(delta * 100);
+    return `${pp > 0 ? '+' : pp < 0 ? '−' : '±'}${Math.abs(pp)} p.p.`;
   }
 
   protected rotuloCategoria(categoria: string | null): string | null {

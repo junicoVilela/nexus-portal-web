@@ -133,6 +133,73 @@
   background: var(--accent);
 }
 
+.aq__versoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aq__versao {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.aq__versao header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.aq__versao dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.aq__versao dt {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.aq__versao dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+
+.aq__versao dd small {
+  margin-left: 4px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.aq__delta--melhor {
+  color: var(--success) !important;
+}
+
+.aq__delta--pior {
+  color: var(--danger) !important;
+}
+
+.aq__selo {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--warn-border);
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 11px;
+}
+
 .aq__barra--alerta {
   background: var(--danger-soft);
 }
