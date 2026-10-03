@@ -23,7 +23,7 @@ import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
 import { AiPaginaDocumentoSelecionada } from '../../models/ai-documento-importacao.model';
 import { AiImagemAnexo } from '../../models/ai-imagem-anexo.model';
-import { AiProposta } from '../../models/ai-proposta.model';
+import { AiProposta, AiRejeicao } from '../../models/ai-proposta.model';
 import { AiPergunta, AiSessao } from '../../models/ai-sessao.model';
 import { BlocoPagina } from '../../components/pagina-block-library';
 import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
@@ -456,13 +456,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       });
   }
 
-  protected rejeitarProposta(motivo: string | null): void {
+  protected rejeitarProposta(rejeicao: AiRejeicao): void {
     const s = this.sessao();
     if (!s) return;
     this.rejeitando.set(true);
     this.erro.set(null);
     this.ai
-      .rejeitarProposta(s.id, motivo)
+      .rejeitarProposta(s.id, rejeicao)
       .pipe(finalize(() => this.rejeitando.set(false)))
       .subscribe({
         next: proposta => this.proposta.set(proposta),

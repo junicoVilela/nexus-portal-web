@@ -19,6 +19,34 @@ export interface AiPatchOperacao {
   motivo: string | null;
 }
 
+/** Categoria fechada da rejeição (soma no painel de qualidade por versão de prompt). */
+export type AiCategoriaRejeicao =
+  | 'CONTEUDO_INCORRETO'
+  | 'FALTOU_INFORMACAO'
+  | 'ESTRUTURA_INADEQUADA'
+  | 'MODELO_ERRADO'
+  | 'LINGUAGEM'
+  | 'OUTRO';
+
+export const CATEGORIAS_REJEICAO: readonly { valor: AiCategoriaRejeicao; rotulo: string }[] = [
+  { valor: 'CONTEUDO_INCORRETO', rotulo: 'Conteúdo incorreto ou inventado' },
+  { valor: 'FALTOU_INFORMACAO', rotulo: 'Faltou informação' },
+  { valor: 'ESTRUTURA_INADEQUADA', rotulo: 'Estrutura ou seções inadequadas' },
+  { valor: 'MODELO_ERRADO', rotulo: 'Modelo ou componentes errados' },
+  { valor: 'LINGUAGEM', rotulo: 'Tom ou linguagem' },
+  { valor: 'OUTRO', rotulo: 'Outro motivo' },
+];
+
+export function rotuloCategoriaRejeicao(categoria: string | null | undefined): string | null {
+  return CATEGORIAS_REJEICAO.find(c => c.valor === categoria)?.rotulo ?? null;
+}
+
+/** O que o autor informou ao rejeitar; os dois campos são opcionais. */
+export interface AiRejeicao {
+  categoria: AiCategoriaRejeicao | null;
+  motivo: string | null;
+}
+
 export interface AiProposta {
   id: string;
   sessaoId: string;
@@ -40,6 +68,7 @@ export interface AiProposta {
   /** Não vazio quando a geração caiu em fallback; o conteúdo exige revisão redobrada. */
   avisosGeracao?: string[];
   motivoRejeicao?: string | null;
+  categoriaRejeicao?: AiCategoriaRejeicao | null;
   /** Ajuste de página: resumo da IA, mudanças propostas e as que o autor aplicou. */
   resumoDaMudanca?: string | null;
   operacoes?: AiPatchOperacao[];

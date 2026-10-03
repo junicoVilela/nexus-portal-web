@@ -2932,60 +2932,12 @@ export const aiAiTemplateRecomendar = <ThrowOnError extends boolean = true>(
     },
   });
 
-export const aiAiMetricasMetricas = <ThrowOnError extends boolean = true>(
-  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
-): RequestResult<AiAiMetricasMetricasResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<AiAiMetricasMetricasResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/metricas',
-    ...options,
-  });
-
-export const aiAiAjustePaginaPedir = <ThrowOnError extends boolean = true>(
-  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
-): RequestResult<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
 export const aiAiSessaoCriar = <ThrowOnError extends boolean = true>(
   options: Options<AiAiSessaoCriarData, ThrowOnError>,
 ): RequestResult<AiAiSessaoCriarResponses, unknown, ThrowOnError> =>
   (options.client ?? client).post<AiAiSessaoCriarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const aiAiSessaoEnviarMensagem = <ThrowOnError extends boolean = true>(
-  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
-): RequestResult<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/sessoes/{id}/mensagens',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-export const aiAiSessaoGerar = <ThrowOnError extends boolean = true>(
-  options: Options<AiAiSessaoGerarData, ThrowOnError>,
-): RequestResult<AiAiSessaoGerarResponses, unknown, ThrowOnError> =>
-  (options.client ?? client).post<AiAiSessaoGerarResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/ai/sessoes/{id}/gerar',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -3019,6 +2971,32 @@ export const aiAiSessaoVincularPagina = <ThrowOnError extends boolean = true>(
     },
   });
 
+export const aiAiSessaoEnviarMensagem = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
+): RequestResult<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoEnviarMensagemResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/mensagens',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiSessaoGerar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoGerarData, ThrowOnError>,
+): RequestResult<AiAiSessaoGerarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoGerarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/gerar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const aiAiSessaoCancelar = <ThrowOnError extends boolean = true>(
   options: Options<AiAiSessaoCancelarData, ThrowOnError>,
 ): RequestResult<AiAiSessaoCancelarResponses, unknown, ThrowOnError> =>
@@ -3034,6 +3012,19 @@ export const aiAiSessaoAplicar = <ThrowOnError extends boolean = true>(
   (options.client ?? client).post<AiAiSessaoAplicarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/aplicar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiAjustePaginaPedir = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
+): RequestResult<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -3981,6 +3972,15 @@ export const aiAiSessaoProposta = <ThrowOnError extends boolean = true>(
   (options.client ?? client).get<AiAiSessaoPropostaResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
+export const aiAiMetricasMetricas = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
+): RequestResult<AiAiMetricasMetricasResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<AiAiMetricasMetricasResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/metricas',
     ...options,
   });
 

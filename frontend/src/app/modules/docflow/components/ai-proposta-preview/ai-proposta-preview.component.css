@@ -272,6 +272,38 @@
   color: var(--text-muted);
 }
 
+.ai-proposta__categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ai-proposta__categoria {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: 500 12px/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.ai-proposta__categoria:hover:not(:disabled) {
+  border-color: var(--danger);
+}
+
+.ai-proposta__categoria--ativa {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.ai-proposta__categoria:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .ai-proposta__refinar-input {
   width: 100%;
   padding: 8px 12px;

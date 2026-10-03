@@ -35,6 +35,7 @@ describe('AiQualidadeComponent', () => {
         taxaAceite: 0.5,
         textoMantido: 0.8,
         amostrasTextoMantido: 3,
+        rejeicoesPorCategoria: { FALTOU_INFORMACAO: 1 },
       },
       {
         promptVersao: 'ajustar-pagina@1.1',
@@ -47,6 +48,7 @@ describe('AiQualidadeComponent', () => {
         taxaAceite: 0.75,
         textoMantido: 0.8,
         amostrasTextoMantido: 3,
+        rejeicoesPorCategoria: { FALTOU_INFORMACAO: 1 },
       },
     ],
     ajustes: {
@@ -62,8 +64,25 @@ describe('AiQualidadeComponent', () => {
     },
     avisosFrequentes: [{ aviso: 'A IA devolveu uma resposta inválida.', ocorrencias: 3 }],
     rejeicoesRecentes: [
-      { motivo: 'Texto genérico demais', promptVersao: 'gerar-page-spec@2.2', em: '2026-10-01T12:00:00Z' },
+      {
+        categoria: 'FALTOU_INFORMACAO',
+        motivo: 'Texto genérico demais',
+        promptVersao: 'gerar-page-spec@2.2',
+        em: '2026-10-01T12:00:00Z',
+      },
     ],
+    rejeicoesPorCategoria: [
+      { categoria: 'CONTEUDO_INCORRETO', rotulo: 'Conteúdo incorreto ou inventado', total: 0 },
+      { categoria: 'FALTOU_INFORMACAO', rotulo: 'Faltou informação', total: 2 },
+      { categoria: 'LINGUAGEM', rotulo: 'Tom ou linguagem', total: 1 },
+    ],
+    alteracoesPosAceite: {
+      amostras: 4,
+      tituloAlterado: 1,
+      resumoAlterado: 2,
+      codigoTelaAlterado: 0,
+      conteudoReescrito: 1,
+    },
   };
 
   beforeEach(async () => {
@@ -100,6 +119,25 @@ describe('AiQualidadeComponent', () => {
     expect(texto).toContain('Alterar texto');
     expect(texto).toContain('Remover trecho');
     expect(texto).not.toContain('Inserir bloco');
+  });
+
+  it('mostra as rejeições por categoria e a categoria nas recentes', () => {
+    const secao = fixture.nativeElement.querySelector('[aria-labelledby="aq-categorias"]') as HTMLElement;
+    expect(secao.textContent).toContain('Faltou informação');
+    const larguras = Array.from(secao.querySelectorAll('.aq__barra i')).map(
+      i => (i as HTMLElement).style.width,
+    );
+    expect(larguras).toEqual(['0%', '100%', '50%']);
+    const recentes = fixture.nativeElement.querySelector('[aria-labelledby="aq-rejeicoes"]') as HTMLElement;
+    expect(recentes.textContent).toContain('Faltou informação');
+    expect(recentes.textContent).toContain('Texto genérico demais');
+  });
+
+  it('mostra o que os autores mudaram depois do aceite', () => {
+    const secao = fixture.nativeElement.querySelector('[aria-labelledby="aq-pos-aceite"]') as HTMLElement;
+    expect(secao.textContent).toContain('4 na amostra');
+    expect(secao.textContent).toContain('Resumo');
+    expect(secao.textContent).toContain('50%');
   });
 
   it('troca o período e recarrega', () => {

@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 import { EmptyStateComponent, KpiCardComponent, PageHeaderComponent } from '@shared/ui';
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { AiMetricas } from '../../models/ai-metricas.model';
+import { rotuloCategoriaRejeicao } from '../../models/ai-proposta.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 
 const ROTULOS_OPERACAO: Record<string, string> = {
@@ -43,6 +44,24 @@ export class AiQualidadeComponent implements OnInit {
     return decididas ? aceitas / decididas : null;
   });
 
+  /** Barras proporcionais à categoria mais citada; vazio quando ninguém escolheu categoria. */
+  protected readonly categoriasRejeicao = computed(() => {
+    const categorias = this.metricas()?.rejeicoesPorCategoria ?? [];
+    const maior = Math.max(0, ...categorias.map(c => c.total));
+    return maior === 0 ? [] : categorias.map(c => ({ ...c, largura: (c.total / maior) * 100 }));
+  });
+
+  protected readonly alteracoes = computed(() => {
+    const a = this.metricas()?.alteracoesPosAceite;
+    if (!a?.amostras) return [];
+    return [
+      { rotulo: 'Título', total: a.tituloAlterado },
+      { rotulo: 'Código da tela', total: a.codigoTelaAlterado },
+      { rotulo: 'Resumo', total: a.resumoAlterado },
+      { rotulo: 'Conteúdo reescrito (mais da metade)', total: a.conteudoReescrito },
+    ].map(item => ({ ...item, fracao: item.total / a.amostras }));
+  });
+
   protected readonly vazio = computed(() => {
     const m = this.metricas();
     return !!m && m.geracao.jobs === 0 && m.porPrompt.length === 0;
@@ -56,6 +75,10 @@ export class AiQualidadeComponent implements OnInit {
     if (dias === this.dias()) return;
     this.dias.set(dias);
     this.carregar();
+  }
+
+  protected rotuloCategoria(categoria: string | null): string | null {
+    return rotuloCategoriaRejeicao(categoria);
   }
 
   protected rotuloOperacao(tipo: string): string {

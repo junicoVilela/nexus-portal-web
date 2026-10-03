@@ -103,7 +103,7 @@
   @if (rejeitada()) {
     <p class="ai-proposta__rejeitada" role="status">
       <lucide-icon name="XCircle" [size]="14" aria-hidden="true" />
-      Proposta rejeitada{{ proposta().motivoRejeicao ? ': ' + proposta().motivoRejeicao : '.' }}
+      Proposta rejeitada{{ rotuloRejeicao() ? ': ' + rotuloRejeicao() + '.' : '.' }}
       Descreva abaixo o que mudar e regenere, ou cancele a sessão.
     </p>
   }
@@ -126,9 +126,25 @@
 
   @if (confirmandoRejeicao()) {
     <div class="ai-proposta__refinar">
-      <label class="ai-proposta__refinar-label" for="ai-proposta-motivo">
+      <span class="ai-proposta__refinar-label" id="ai-proposta-categoria">
         Por que rejeitar? <span>(opcional — ajuda a melhorar o assistente)</span>
-      </label>
+      </span>
+      <div class="ai-proposta__categorias" role="radiogroup" aria-labelledby="ai-proposta-categoria">
+        @for (c of categorias; track c.valor) {
+          <button
+            type="button"
+            role="radio"
+            class="ai-proposta__categoria"
+            [class.ai-proposta__categoria--ativa]="categoriaRejeicao() === c.valor"
+            [attr.aria-checked]="categoriaRejeicao() === c.valor"
+            [disabled]="rejeitando()"
+            (click)="categoriaRejeicao.set(categoriaRejeicao() === c.valor ? null : c.valor)"
+          >
+            {{ c.rotulo }}
+          </button>
+        }
+      </div>
+      <label class="ai-proposta__refinar-label" for="ai-proposta-motivo"> Detalhes <span>(opcional)</span> </label>
       <textarea
         id="ai-proposta-motivo"
         class="ai-proposta__refinar-input"

@@ -2729,26 +2729,6 @@ export const aiAiTemplateRecomendarRequest = <ThrowOnError extends boolean = fal
     ...options,
   });
 
-export const aiAiMetricasMetricasRequest = <ThrowOnError extends boolean = false>(
-  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
-): HttpRequest<AiAiMetricasMetricasResponse> =>
-  (options?.client ?? client).requestOptions<AiAiMetricasMetricasResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'GET',
-    url: '/api/v1/ai/metricas',
-    ...options,
-  });
-
-export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
-): HttpRequest<AiAiAjustePaginaPedirResponse> =>
-  (options?.client ?? client).requestOptions<AiAiAjustePaginaPedirResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
-    ...options,
-  });
-
 export const aiAiSessaoCriarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiSessaoCriarData, ThrowOnError>,
 ): HttpRequest<AiAiSessaoCriarResponse> =>
@@ -2756,26 +2736,6 @@ export const aiAiSessaoCriarRequest = <ThrowOnError extends boolean = false>(
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/ai/sessoes',
-    ...options,
-  });
-
-export const aiAiSessaoEnviarMensagemRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
-): HttpRequest<AiAiSessaoEnviarMensagemResponse> =>
-  (options?.client ?? client).requestOptions<AiAiSessaoEnviarMensagemResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/mensagens',
-    ...options,
-  });
-
-export const aiAiSessaoGerarRequest = <ThrowOnError extends boolean = false>(
-  options: Options<AiAiSessaoGerarData, ThrowOnError>,
-): HttpRequest<AiAiSessaoGerarResponse> =>
-  (options?.client ?? client).requestOptions<AiAiSessaoGerarResponse, ThrowOnError>({
-    responseStyle: 'data',
-    method: 'POST',
-    url: '/api/v1/ai/sessoes/{id}/gerar',
     ...options,
   });
 
@@ -2799,6 +2759,26 @@ export const aiAiSessaoVincularPaginaRequest = <ThrowOnError extends boolean = f
     ...options,
   });
 
+export const aiAiSessaoEnviarMensagemRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoEnviarMensagemData, ThrowOnError>,
+): HttpRequest<AiAiSessaoEnviarMensagemResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoEnviarMensagemResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/mensagens',
+    ...options,
+  });
+
+export const aiAiSessaoGerarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoGerarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoGerarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoGerarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/gerar',
+    ...options,
+  });
+
 export const aiAiSessaoCancelarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiSessaoCancelarData, ThrowOnError>,
 ): HttpRequest<AiAiSessaoCancelarResponse> =>
@@ -2816,6 +2796,16 @@ export const aiAiSessaoAplicarRequest = <ThrowOnError extends boolean = false>(
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/ai/sessoes/{id}/aplicar',
+    ...options,
+  });
+
+export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
+): HttpRequest<AiAiAjustePaginaPedirResponse> =>
+  (options?.client ?? client).requestOptions<AiAiAjustePaginaPedirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
     ...options,
   });
 
@@ -3774,6 +3764,16 @@ export const aiAiSessaoPropostaRequest = <ThrowOnError extends boolean = false>(
     responseStyle: 'data',
     method: 'GET',
     url: '/api/v1/ai/sessoes/{id}/proposta',
+    ...options,
+  });
+
+export const aiAiMetricasMetricasRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
+): HttpRequest<AiAiMetricasMetricasResponse> =>
+  (options?.client ?? client).requestOptions<AiAiMetricasMetricasResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/metricas',
     ...options,
   });
 
@@ -5444,44 +5444,12 @@ export const aiAiTemplateRecomendarResource = <ThrowOnError extends boolean = fa
     return opts ? aiAiTemplateRecomendarRequest(opts) : undefined;
   });
 
-export const aiAiMetricasMetricasResource = <ThrowOnError extends boolean = false>(
-  options?: () => Options<AiAiMetricasMetricasData, ThrowOnError> | undefined,
-) =>
-  httpResource<AiAiMetricasMetricasResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? aiAiMetricasMetricasRequest(opts) : undefined;
-  });
-
-export const aiAiAjustePaginaPedirResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AiAiAjustePaginaPedirData, ThrowOnError> | undefined,
-) =>
-  httpResource<AiAiAjustePaginaPedirResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? aiAiAjustePaginaPedirRequest(opts) : undefined;
-  });
-
 export const aiAiSessaoCriarResource = <ThrowOnError extends boolean = false>(
   options: () => Options<AiAiSessaoCriarData, ThrowOnError> | undefined,
 ) =>
   httpResource<AiAiSessaoCriarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoCriarRequest(opts) : undefined;
-  });
-
-export const aiAiSessaoEnviarMensagemResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AiAiSessaoEnviarMensagemData, ThrowOnError> | undefined,
-) =>
-  httpResource<AiAiSessaoEnviarMensagemResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? aiAiSessaoEnviarMensagemRequest(opts) : undefined;
-  });
-
-export const aiAiSessaoGerarResource = <ThrowOnError extends boolean = false>(
-  options: () => Options<AiAiSessaoGerarData, ThrowOnError> | undefined,
-) =>
-  httpResource<AiAiSessaoGerarResponse>(() => {
-    const opts = options ? options() : undefined;
-    return opts ? aiAiSessaoGerarRequest(opts) : undefined;
   });
 
 export const aiAiSessaoRejeitarResource = <ThrowOnError extends boolean = false>(
@@ -5500,6 +5468,22 @@ export const aiAiSessaoVincularPaginaResource = <ThrowOnError extends boolean = 
     return opts ? aiAiSessaoVincularPaginaRequest(opts) : undefined;
   });
 
+export const aiAiSessaoEnviarMensagemResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoEnviarMensagemData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoEnviarMensagemResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoEnviarMensagemRequest(opts) : undefined;
+  });
+
+export const aiAiSessaoGerarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoGerarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoGerarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoGerarRequest(opts) : undefined;
+  });
+
 export const aiAiSessaoCancelarResource = <ThrowOnError extends boolean = false>(
   options: () => Options<AiAiSessaoCancelarData, ThrowOnError> | undefined,
 ) =>
@@ -5514,6 +5498,14 @@ export const aiAiSessaoAplicarResource = <ThrowOnError extends boolean = false>(
   httpResource<AiAiSessaoAplicarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoAplicarRequest(opts) : undefined;
+  });
+
+export const aiAiAjustePaginaPedirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiAjustePaginaPedirData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiAjustePaginaPedirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiAjustePaginaPedirRequest(opts) : undefined;
   });
 
 export const aiAiDocumentoImportacaoImportacoesEmAndamentoResource = <ThrowOnError extends boolean = false>(
@@ -6223,6 +6215,14 @@ export const aiAiSessaoPropostaResource = <ThrowOnError extends boolean = false>
   httpResource<AiAiSessaoPropostaResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoPropostaRequest(opts) : undefined;
+  });
+
+export const aiAiMetricasMetricasResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiMetricasMetricasData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiMetricasMetricasResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiMetricasMetricasRequest(opts) : undefined;
   });
 
 export const aiAiDocumentoImportacaoBuscarImportacaoDocumentoResource = <

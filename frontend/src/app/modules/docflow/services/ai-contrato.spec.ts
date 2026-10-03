@@ -42,6 +42,7 @@ import type {
   AiAjustePaginaPayload,
   AiAjustePaginaResposta,
   AiAplicacao,
+  AiCategoriaRejeicao,
   AiJob,
   AiPatchOperacao,
   AiProposta,
@@ -97,6 +98,12 @@ export type ContratoRespostas = [
   Vazio<SoNoFront<AiAjustePaginaResposta, AiAjustePaginaResponse>>,
   Vazio<SoNoFront<AiMetricas, AiMetricasResponse>>,
   Vazio<SoNoFront<AiMetricasPrompt, Item<AiMetricasResponse['porPrompt']>>>,
+  Vazio<SoNoFront<AiMetricas['rejeicoesRecentes'][number], Item<AiMetricasResponse['rejeicoesRecentes']>>>,
+  Vazio<
+    SoNoFront<AiMetricas['rejeicoesPorCategoria'][number], Item<AiMetricasResponse['rejeicoesPorCategoria']>>
+  >,
+  Vazio<SoNoFront<AiMetricas['alteracoesPosAceite'], NonNullable<AiMetricasResponse['alteracoesPosAceite']>>>,
+  Subconjunto<AiCategoriaRejeicao, NonNullable<AiPropostaResponse['categoriaRejeicao']>>,
   Vazio<SoNoFront<AiTemplateRecomendacao, Recomendacao>>,
   Vazio<SoNoFront<AiTemplateCandidato, Item<Recomendacao['candidatos']>>>,
   Vazio<SoNoFront<AiComponenteCandidato, Item<Recomendacao['componentes']>>>,
@@ -117,7 +124,7 @@ export type ContratoRequests = [
   Verdadeiro<Cabe<AiReordenarEstruturaDocumentoPayload, AiReordenarEstruturaDocumentoRequest>>,
   Verdadeiro<Cabe<AiAtualizarComposicaoDocumentoPayload, AiAtualizarComposicaoDocumentoRequest>>,
   Verdadeiro<Cabe<{ paginaId: string }, AiVincularPaginaRequest>>,
-  Verdadeiro<Cabe<{ motivo?: string }, RejeitarAiPropostaRequest>>,
+  Verdadeiro<Cabe<{ categoria?: AiCategoriaRejeicao; motivo?: string }, RejeitarAiPropostaRequest>>,
 ];
 
 describe('Contrato do cliente AI com o OpenAPI', () => {

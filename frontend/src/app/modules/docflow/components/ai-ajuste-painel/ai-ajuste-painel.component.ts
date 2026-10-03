@@ -174,7 +174,7 @@ export class AiAjustePainelComponent {
     if (!sessaoId) return;
     this.enviando.set(true);
     this.ai
-      .rejeitarProposta(sessaoId, this.motivoRejeicao().trim() || null)
+      .rejeitarProposta(sessaoId, { categoria: null, motivo: this.motivoRejeicao().trim() || null })
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => this.recomecar(),

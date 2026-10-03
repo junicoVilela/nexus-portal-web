@@ -4,7 +4,14 @@ import { LucideAngularModule } from 'lucide-angular';
 
 import { BadgeComponent, ButtonComponent } from '@shared/ui';
 import { BlocoPagina } from '../pagina-block-library';
-import { AiPageSpecResumo, AiProposta } from '../../models/ai-proposta.model';
+import {
+  AiCategoriaRejeicao,
+  AiPageSpecResumo,
+  AiProposta,
+  AiRejeicao,
+  CATEGORIAS_REJEICAO,
+  rotuloCategoriaRejeicao,
+} from '../../models/ai-proposta.model';
 
 @Component({
   selector: 'app-ai-proposta-preview',
@@ -30,12 +37,18 @@ export class AiPropostaPreviewComponent {
   readonly aplicar = output<void>();
   /** Emite a instrução de ajuste digitada pelo autor, ou `null` para só tentar de novo. */
   readonly regenerar = output<string | null>();
-  /** Emite o motivo opcional da rejeição. */
-  readonly rejeitar = output<string | null>();
+  /** Emite a categoria e o motivo da rejeição (ambos opcionais). */
+  readonly rejeitar = output<AiRejeicao>();
 
   protected readonly instrucao = signal('');
   protected readonly confirmandoRejeicao = signal(false);
   protected readonly motivoRejeicao = signal('');
+  protected readonly categoriaRejeicao = signal<AiCategoriaRejeicao | null>(null);
+  protected readonly categorias = CATEGORIAS_REJEICAO;
+  protected readonly rotuloRejeicao = computed(() => {
+    const p = this.proposta();
+    return [rotuloCategoriaRejeicao(p.categoriaRejeicao), p.motivoRejeicao].filter(Boolean).join(' — ');
+  });
 
   protected readonly pendente = computed(() => this.proposta().status === 'PENDENTE');
 
@@ -81,9 +94,10 @@ export class AiPropostaPreviewComponent {
 
   protected confirmarRejeicao(): void {
     const texto = this.motivoRejeicao().trim();
-    this.rejeitar.emit(texto || null);
+    this.rejeitar.emit({ categoria: this.categoriaRejeicao(), motivo: texto || null });
     this.confirmandoRejeicao.set(false);
     this.motivoRejeicao.set('');
+    this.categoriaRejeicao.set(null);
   }
 
   private humanizar(id: string): string {

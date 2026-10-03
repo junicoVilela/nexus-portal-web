@@ -120,11 +120,17 @@ describe('AiPropostaPreviewComponent', () => {
     expect(spy).toHaveBeenCalledWith(null);
   });
 
-  it('rejeita com motivo após confirmação', () => {
+  it('rejeita com categoria e motivo após confirmação', () => {
     const spy = jasmine.createSpy('rejeitar');
     fixture.componentInstance.rejeitar.subscribe(spy);
     botao('Rejeitar').click();
     fixture.detectChanges();
+    const categoria = Array.from(fixture.nativeElement.querySelectorAll('.ai-proposta__categoria')).find(b =>
+      (b as HTMLElement).textContent?.includes('Faltou informação'),
+    ) as HTMLButtonElement;
+    categoria.click();
+    fixture.detectChanges();
+    expect(categoria.getAttribute('aria-checked')).toBe('true');
     const motivo = fixture.nativeElement.querySelector('#ai-proposta-motivo') as HTMLTextAreaElement;
     motivo.value = 'Texto genérico';
     motivo.dispatchEvent(new Event('input'));
@@ -132,7 +138,7 @@ describe('AiPropostaPreviewComponent', () => {
 
     botao('Confirmar rejeição').click();
 
-    expect(spy).toHaveBeenCalledWith('Texto genérico');
+    expect(spy).toHaveBeenCalledWith({ categoria: 'FALTOU_INFORMACAO', motivo: 'Texto genérico' });
   });
 
   it('proposta rejeitada não pode ser aplicada e mostra o motivo', () => {
@@ -140,10 +146,12 @@ describe('AiPropostaPreviewComponent', () => {
       ...proposta,
       status: 'REJEITADA',
       motivoRejeicao: 'Genérico',
+      categoriaRejeicao: 'LINGUAGEM',
     });
     fixture.detectChanges();
     expect(botao('Aplicar no editor').disabled).toBeTrue();
-    expect(fixture.nativeElement.querySelector('.ai-proposta__rejeitada')?.textContent).toContain('Genérico');
+    const aviso = fixture.nativeElement.querySelector('.ai-proposta__rejeitada')?.textContent;
+    expect(aviso).toContain('Tom ou linguagem — Genérico');
     expect(botao('Rejeitar')?.textContent).not.toContain('Rejeitar proposta');
   });
 

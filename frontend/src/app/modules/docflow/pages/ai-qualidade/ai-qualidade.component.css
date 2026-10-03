@@ -133,6 +133,14 @@
   background: var(--accent);
 }
 
+.aq__barra--alerta {
+  background: var(--danger-soft);
+}
+
+.aq__barra--alerta i {
+  background: var(--danger);
+}
+
 .aq__duas-colunas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

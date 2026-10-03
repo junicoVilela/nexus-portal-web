@@ -145,6 +145,54 @@
     </section>
 
     <div class="aq__duas-colunas">
+      <section class="aq__secao" aria-labelledby="aq-categorias">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-categorias">Por que rejeitaram</h2>
+          <p>Categoria escolhida pelo autor ao rejeitar.</p>
+        </div>
+        @if (categoriasRejeicao().length) {
+          <ul class="aq__barras" aria-label="Rejeições por categoria">
+            @for (c of categoriasRejeicao(); track c.categoria) {
+              <li>
+                <span>{{ c.rotulo }}</span>
+                <span class="aq__barra aq__barra--alerta" aria-hidden="true"><i [style.width.%]="c.largura"></i></span>
+                <span class="aq__num">{{ c.total }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="aq__vazio">Nenhuma rejeição com categoria no período.</p>
+        }
+      </section>
+
+      <section class="aq__secao" aria-labelledby="aq-pos-aceite">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-pos-aceite">Depois do aceite</h2>
+          <p>
+            O que os autores mudaram nas páginas novas aceitas
+            @if (m.alteracoesPosAceite.amostras) {
+              ({{ m.alteracoesPosAceite.amostras }} na amostra)
+            }
+            .
+          </p>
+        </div>
+        @if (alteracoes().length) {
+          <ul class="aq__barras" aria-label="Campos alterados depois do aceite">
+            @for (a of alteracoes(); track a.rotulo) {
+              <li>
+                <span>{{ a.rotulo }}</span>
+                <span class="aq__barra" aria-hidden="true"><i [style.width.%]="a.fracao * 100"></i></span>
+                <span class="aq__num">{{ a.fracao | percent: '1.0-0' }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="aq__vazio">Nenhuma página aceita com amostra no período.</p>
+        }
+      </section>
+    </div>
+
+    <div class="aq__duas-colunas">
       <section class="aq__secao" aria-labelledby="aq-avisos">
         <div class="aq__secao-cabecalho">
           <h2 id="aq-avisos">Avisos mais frequentes</h2>
@@ -165,18 +213,23 @@
       <section class="aq__secao" aria-labelledby="aq-rejeicoes">
         <div class="aq__secao-cabecalho">
           <h2 id="aq-rejeicoes">Rejeições recentes</h2>
-          <p>Motivos informados pelos autores.</p>
+          <p>Categoria e detalhes informados pelos autores.</p>
         </div>
         <ul class="aq__lista">
           @for (r of m.rejeicoesRecentes; track $index) {
             <li class="aq__rejeicao">
-              <span>“{{ r.motivo }}”</span>
+              @if (rotuloCategoria(r.categoria); as categoria) {
+                <strong>{{ categoria }}</strong>
+              }
+              @if (r.motivo) {
+                <span>“{{ r.motivo }}”</span>
+              }
               <small
                 ><code>{{ r.promptVersao }}</code> · {{ r.em | date: 'dd/MM HH:mm' }}</small
               >
             </li>
           } @empty {
-            <li class="aq__vazio">Nenhuma rejeição com motivo no período.</li>
+            <li class="aq__vazio">Nenhuma rejeição explicada no período.</li>
           }
         </ul>
       </section>

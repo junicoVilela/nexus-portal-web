@@ -19,6 +19,7 @@ import {
   AiAplicacao,
   AiJob,
   AiProposta,
+  AiRejeicao,
 } from '../models/ai-proposta.model';
 import { AiMetricas } from '../models/ai-metricas.model';
 import { AiStatus } from '../models/ai-status.model';
@@ -199,12 +200,12 @@ export class AiAssistenteService {
     return this.http.post<AiProposta>(`${this.base}/sessoes/${sessaoId}/pagina`, { paginaId });
   }
 
-  rejeitarProposta(id: string, motivo?: string | null): Observable<AiProposta> {
-    const texto = motivo?.trim();
-    return this.http.post<AiProposta>(
-      `${this.base}/sessoes/${id}/proposta/rejeitar`,
-      texto ? { motivo: texto } : {},
-    );
+  rejeitarProposta(id: string, rejeicao: AiRejeicao): Observable<AiProposta> {
+    const motivo = rejeicao.motivo?.trim();
+    return this.http.post<AiProposta>(`${this.base}/sessoes/${id}/proposta/rejeitar`, {
+      ...(rejeicao.categoria ? { categoria: rejeicao.categoria } : {}),
+      ...(motivo ? { motivo } : {}),
+    });
   }
 
   proposta(id: string): Observable<AiProposta> {

@@ -1505,20 +1505,6 @@ export type AiPerguntaResponse = {
   obrigatoria?: boolean;
 };
 
-export type AiPatchOperacaoResponse = {
-  id?: string;
-  tipo?: string;
-  unidadeId?: string;
-  textoAntes?: string;
-  novoTexto?: string;
-  aposSecaoId?: string;
-  componenteId?: string;
-  textos?: {
-    [key: string]: string;
-  };
-  motivo?: string;
-};
-
 export type AiSessaoResponse = {
   id?: string;
   objetivo?: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
@@ -1544,11 +1530,84 @@ export type AiSessaoResponse = {
   updatedAt?: string;
 };
 
+export type RejeitarAiPropostaRequest = {
+  categoria?:
+    | 'CONTEUDO_INCORRETO'
+    | 'FALTOU_INFORMACAO'
+    | 'ESTRUTURA_INADEQUADA'
+    | 'MODELO_ERRADO'
+    | 'LINGUAGEM'
+    | 'OUTRO';
+  motivo?: string;
+};
+
+export type AiPatchOperacaoResponse = {
+  id?: string;
+  tipo?: string;
+  unidadeId?: string;
+  textoAntes?: string;
+  novoTexto?: string;
+  aposSecaoId?: string;
+  componenteId?: string;
+  textos?: {
+    [key: string]: string;
+  };
+  motivo?: string;
+};
+
+export type AiPropostaResponse = {
+  id?: string;
+  sessaoId?: string;
+  jobId?: string;
+  tipo?: 'NOVA' | 'ATUALIZACAO';
+  titulo?: string;
+  slug?: string;
+  codigoTela?: string;
+  resumo?: string;
+  conteudoHtml?: string;
+  templateId?: string;
+  templateVersao?: number;
+  pageSpecJson?: string;
+  aptoParaRevisao?: boolean;
+  qualidade?: Array<AiQualidadeItemResponse>;
+  status?: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';
+  paginaId?: string;
+  createdAt?: string;
+  avisosGeracao?: Array<string>;
+  motivoRejeicao?: string;
+  categoriaRejeicao?:
+    | 'CONTEUDO_INCORRETO'
+    | 'FALTOU_INFORMACAO'
+    | 'ESTRUTURA_INADEQUADA'
+    | 'MODELO_ERRADO'
+    | 'LINGUAGEM'
+    | 'OUTRO';
+  resumoDaMudanca?: string;
+  operacoes?: Array<AiPatchOperacaoResponse>;
+  operacoesAceitas?: Array<string>;
+};
+
+export type AiQualidadeItemResponse = {
+  codigo?: string;
+  titulo?: string;
+  descricao?: string;
+  ok?: boolean;
+  severidade?: string;
+};
+
+export type AiVincularPaginaRequest = {
+  paginaId: string;
+};
+
 export type AiMensagemRequest = {
   conteudo: string;
   respostas?: {
     [key: string]: string;
   };
+};
+
+export type GerarAiPropostaRequest = {
+  instrucao?: string;
 };
 
 export type AplicarAiPropostaRequest = {
@@ -1557,25 +1616,6 @@ export type AplicarAiPropostaRequest = {
   parentId?: string;
   ordem?: number;
   operacoesAceitas?: Array<string>;
-};
-
-export type GerarAiPropostaRequest = {
-  instrucao?: string;
-};
-
-export type RejeitarAiPropostaRequest = {
-  motivo?: string;
-};
-
-export type AiAjustePaginaRequest = {
-  instrucao: string;
-  secaoId?: string;
-  version: number;
-};
-
-export type AiAjustePaginaResponse = {
-  sessaoId?: string;
-  job?: AiJobResponse;
 };
 
 export type AiAplicacaoResponse = {
@@ -1590,6 +1630,17 @@ export type AiAplicacaoResponse = {
   templateOrigemId?: string;
   templateOrigemVersao?: number;
   moduloId?: string;
+};
+
+export type AiAjustePaginaRequest = {
+  instrucao: string;
+  secaoId?: string;
+  version: number;
+};
+
+export type AiAjustePaginaResponse = {
+  sessaoId?: string;
+  job?: AiJobResponse;
 };
 
 export type AiGerarLoteDocumentoRequest = {
@@ -2271,39 +2322,6 @@ export type AiStatusResponse = {
   mensagem?: string;
 };
 
-export type AiPropostaResponse = {
-  id?: string;
-  sessaoId?: string;
-  jobId?: string;
-  tipo?: 'NOVA' | 'ATUALIZACAO';
-  titulo?: string;
-  slug?: string;
-  codigoTela?: string;
-  resumo?: string;
-  conteudoHtml?: string;
-  templateId?: string;
-  templateVersao?: number;
-  pageSpecJson?: string;
-  aptoParaRevisao?: boolean;
-  qualidade?: Array<AiQualidadeItemResponse>;
-  status?: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';
-  paginaId?: string;
-  createdAt?: string;
-  avisosGeracao?: Array<string>;
-  motivoRejeicao?: string;
-  resumoDaMudanca?: string;
-  operacoes?: Array<AiPatchOperacaoResponse>;
-  operacoesAceitas?: Array<string>;
-};
-
-export type AiQualidadeItemResponse = {
-  codigo?: string;
-  titulo?: string;
-  descricao?: string;
-  ok?: boolean;
-  severidade?: string;
-};
-
 export type AiMetricasResponse = {
   periodoDias?: number;
   desde?: string;
@@ -2312,6 +2330,29 @@ export type AiMetricasResponse = {
   ajustes?: Ajustes;
   avisosFrequentes?: Array<AvisoFrequente>;
   rejeicoesRecentes?: Array<Rejeicao>;
+  rejeicoesPorCategoria?: Array<RejeicaoPorCategoria>;
+  alteracoesPosAceite?: AlteracoesPosAceite;
+};
+
+export type Ajustes = {
+  aplicados?: number;
+  operacoesPropostas?: number;
+  operacoesAceitas?: number;
+  taxaAceiteOperacoes?: number;
+  porTipo?: Array<PorTipoOperacao>;
+};
+
+export type AlteracoesPosAceite = {
+  amostras?: number;
+  tituloAlterado?: number;
+  resumoAlterado?: number;
+  codigoTelaAlterado?: number;
+  conteudoReescrito?: number;
+};
+
+export type AvisoFrequente = {
+  aviso?: string;
+  ocorrencias?: number;
 };
 
 export type Geracao = {
@@ -2336,14 +2377,9 @@ export type PorPrompt = {
   taxaAceite?: number;
   textoMantido?: number;
   amostrasTextoMantido?: number;
-};
-
-export type Ajustes = {
-  aplicados?: number;
-  operacoesPropostas?: number;
-  operacoesAceitas?: number;
-  taxaAceiteOperacoes?: number;
-  porTipo?: Array<PorTipoOperacao>;
+  rejeicoesPorCategoria?: {
+    [key: string]: number;
+  };
 };
 
 export type PorTipoOperacao = {
@@ -2352,15 +2388,17 @@ export type PorTipoOperacao = {
   aceitas?: number;
 };
 
-export type AvisoFrequente = {
-  aviso?: string;
-  ocorrencias?: number;
-};
-
 export type Rejeicao = {
+  categoria?: string;
   motivo?: string;
   promptVersao?: string;
   em?: string;
+};
+
+export type RejeicaoPorCategoria = {
+  categoria?: string;
+  rotulo?: string;
+  total?: number;
 };
 
 export type AiImportacaoResumoResponse = {
@@ -2372,10 +2410,6 @@ export type AiImportacaoResumoResponse = {
   paginasTotal?: number;
   paginasRevisadas?: number;
   atualizadoEm?: string;
-};
-
-export type AiVincularPaginaRequest = {
-  paginaId: string;
 };
 
 export type ReleaseorchestratorReleaseTemplateExcluirData = {
@@ -6239,43 +6273,6 @@ export type AiAiTemplateRecomendarResponses = {
 export type AiAiTemplateRecomendarResponse =
   AiAiTemplateRecomendarResponses[keyof AiAiTemplateRecomendarResponses];
 
-export type AiAiMetricasMetricasData = {
-  body?: never;
-  path?: never;
-  query?: {
-    dias?: number;
-  };
-  url: '/api/v1/ai/metricas';
-};
-
-export type AiAiMetricasMetricasResponses = {
-  /**
-   * OK
-   */
-  200: AiMetricasResponse;
-};
-
-export type AiAiMetricasMetricasResponse = AiAiMetricasMetricasResponses[keyof AiAiMetricasMetricasResponses];
-
-export type AiAiAjustePaginaPedirData = {
-  body: AiAjustePaginaRequest;
-  path: {
-    paginaId: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/paginas/{paginaId}/ajustes';
-};
-
-export type AiAiAjustePaginaPedirResponses = {
-  /**
-   * OK
-   */
-  200: AiAjustePaginaResponse;
-};
-
-export type AiAiAjustePaginaPedirResponse =
-  AiAiAjustePaginaPedirResponses[keyof AiAiAjustePaginaPedirResponses];
-
 export type AiAiSessaoCriarData = {
   body: CriarAiSessaoRequest;
   path?: never;
@@ -6291,43 +6288,6 @@ export type AiAiSessaoCriarResponses = {
 };
 
 export type AiAiSessaoCriarResponse = AiAiSessaoCriarResponses[keyof AiAiSessaoCriarResponses];
-
-export type AiAiSessaoEnviarMensagemData = {
-  body: AiMensagemRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/mensagens';
-};
-
-export type AiAiSessaoEnviarMensagemResponses = {
-  /**
-   * OK
-   */
-  200: AiSessaoResponse;
-};
-
-export type AiAiSessaoEnviarMensagemResponse =
-  AiAiSessaoEnviarMensagemResponses[keyof AiAiSessaoEnviarMensagemResponses];
-
-export type AiAiSessaoGerarData = {
-  body?: GerarAiPropostaRequest;
-  path: {
-    id: string;
-  };
-  query?: never;
-  url: '/api/v1/ai/sessoes/{id}/gerar';
-};
-
-export type AiAiSessaoGerarResponses = {
-  /**
-   * OK
-   */
-  200: AiJobResponse;
-};
-
-export type AiAiSessaoGerarResponse = AiAiSessaoGerarResponses[keyof AiAiSessaoGerarResponses];
 
 export type AiAiSessaoRejeitarData = {
   body?: RejeitarAiPropostaRequest;
@@ -6366,6 +6326,43 @@ export type AiAiSessaoVincularPaginaResponses = {
 export type AiAiSessaoVincularPaginaResponse =
   AiAiSessaoVincularPaginaResponses[keyof AiAiSessaoVincularPaginaResponses];
 
+export type AiAiSessaoEnviarMensagemData = {
+  body: AiMensagemRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/mensagens';
+};
+
+export type AiAiSessaoEnviarMensagemResponses = {
+  /**
+   * OK
+   */
+  200: AiSessaoResponse;
+};
+
+export type AiAiSessaoEnviarMensagemResponse =
+  AiAiSessaoEnviarMensagemResponses[keyof AiAiSessaoEnviarMensagemResponses];
+
+export type AiAiSessaoGerarData = {
+  body?: GerarAiPropostaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/gerar';
+};
+
+export type AiAiSessaoGerarResponses = {
+  /**
+   * OK
+   */
+  200: AiJobResponse;
+};
+
+export type AiAiSessaoGerarResponse = AiAiSessaoGerarResponses[keyof AiAiSessaoGerarResponses];
+
 export type AiAiSessaoCancelarData = {
   body?: never;
   path: {
@@ -6402,6 +6399,25 @@ export type AiAiSessaoAplicarResponses = {
 
 export type AiAiSessaoAplicarResponse = AiAiSessaoAplicarResponses[keyof AiAiSessaoAplicarResponses];
 
+export type AiAiAjustePaginaPedirData = {
+  body: AiAjustePaginaRequest;
+  path: {
+    paginaId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/paginas/{paginaId}/ajustes';
+};
+
+export type AiAiAjustePaginaPedirResponses = {
+  /**
+   * OK
+   */
+  200: AiAjustePaginaResponse;
+};
+
+export type AiAiAjustePaginaPedirResponse =
+  AiAiAjustePaginaPedirResponses[keyof AiAiAjustePaginaPedirResponses];
+
 export type AiAiDocumentoImportacaoImportacoesEmAndamentoData = {
   body?: never;
   path?: never;
@@ -6434,13 +6450,9 @@ export type AiAiDocumentoImportacaoImportarDocumentoData = {
 
 export type AiAiDocumentoImportacaoImportarDocumentoResponses = {
   /**
-   * Created
+   * OK
    */
   200: AiImportacaoDocumentoResponse;
-  /**
-   * Created
-   */
-  201: AiImportacaoDocumentoResponse;
 };
 
 export type AiAiDocumentoImportacaoImportarDocumentoResponse =
@@ -8069,6 +8081,24 @@ export type AiAiSessaoPropostaResponses = {
 };
 
 export type AiAiSessaoPropostaResponse = AiAiSessaoPropostaResponses[keyof AiAiSessaoPropostaResponses];
+
+export type AiAiMetricasMetricasData = {
+  body?: never;
+  path?: never;
+  query?: {
+    dias?: number;
+  };
+  url: '/api/v1/ai/metricas';
+};
+
+export type AiAiMetricasMetricasResponses = {
+  /**
+   * OK
+   */
+  200: AiMetricasResponse;
+};
+
+export type AiAiMetricasMetricasResponse = AiAiMetricasMetricasResponses[keyof AiAiMetricasMetricasResponses];
 
 export type AiAiDocumentoImportacaoBuscarImportacaoDocumentoData = {
   body?: never;

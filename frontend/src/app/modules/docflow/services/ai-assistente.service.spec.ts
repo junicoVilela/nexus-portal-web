@@ -272,10 +272,12 @@ describe('AiAssistenteService', () => {
   });
 
   it('rejeita proposta em POST /sessoes/{id}/proposta/rejeitar', () => {
-    service.rejeitarProposta('s1', 'Genérico').subscribe(p => expect(p.status).toBe('REJEITADA'));
+    service
+      .rejeitarProposta('s1', { categoria: 'FALTOU_INFORMACAO', motivo: 'Genérico' })
+      .subscribe(p => expect(p.status).toBe('REJEITADA'));
     const req = http.expectOne(`${environment.aiApiUrl}/sessoes/s1/proposta/rejeitar`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ motivo: 'Genérico' });
+    expect(req.request.body).toEqual({ categoria: 'FALTOU_INFORMACAO', motivo: 'Genérico' });
     req.flush({ id: 'p1', status: 'REJEITADA' });
   });
 
