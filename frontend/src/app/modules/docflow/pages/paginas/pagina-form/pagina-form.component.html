@@ -397,10 +397,10 @@
           [podeTabela]="temTabelaNoConteudo()"
           (atalhoSelecionado)="executarAtalho($event)"
           (modoChange)="definirEditorModo($event)"
-          (adicionarLinhaTabela)="adicionarLinhaTabela()"
-          (removerLinhaTabela)="removerLinhaTabela()"
-          (adicionarColunaTabela)="adicionarColunaTabela()"
-          (removerColunaTabela)="removerColunaTabela()"
+          (adicionarLinhaTabela)="tabelas.alterar('linha', 'add')"
+          (removerLinhaTabela)="tabelas.alterar('linha', 'remove')"
+          (adicionarColunaTabela)="tabelas.alterar('coluna', 'add')"
+          (removerColunaTabela)="tabelas.alterar('coluna', 'remove')"
         />
         <app-pagina-block-library
           [blocosCatalogo]="blocosCatalogo()"
@@ -507,7 +507,7 @@
                       #previewBody
                       class="pf-preview-body df-doc-content"
                       [innerHTML]="conteudoPreview"
-                      (click)="aoClicarAcaoTabelaPreview($event)"
+                      (click)="tabelas.aoClicarPrevia($event)"
                     ></div>
                   </article>
                 </div>
@@ -575,9 +575,9 @@
       @if (editId()) {
         <app-pagina-anexos
           [anexos]="anexos()"
-          [anexoUrl]="anexoUrlFn"
+          [anexoUrl]="arquivos.url"
           (anexarSolicitado)="abrirSeletorFotos()"
-          (excluirSolicitado)="excluirAnexo($event)"
+          (excluirSolicitado)="arquivos.excluir($event)"
         />
       }
     </div>

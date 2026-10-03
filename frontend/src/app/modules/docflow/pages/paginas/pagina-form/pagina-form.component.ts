@@ -27,12 +27,7 @@ import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ClienteService } from '@modules/docflow/services/cliente.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import { Modulo } from '@modules/docflow/models/modulo.model';
-import {
-  Pagina,
-  PaginaAnexo,
-  PaginaQualidadeItem,
-  PaginaTemplate,
-} from '@modules/docflow/models/pagina.model';
+import { Pagina, PaginaQualidadeItem, PaginaTemplate } from '@modules/docflow/models/pagina.model';
 import { Projeto } from '@modules/docflow/models/projeto.model';
 import { Cliente } from '@modules/docflow/models/cliente.model';
 import { compactQueryParams, parseSortDirection } from '@shared/utils/query-state';
@@ -45,13 +40,8 @@ import {
 } from '@shared/ui';
 import { PaginaRichEditorComponent } from '@modules/docflow/components/pagina-rich-editor';
 import {
-  adicionarColunaHtml,
-  adicionarLinhaHtml,
   compactarCelulasTabelaHtml,
-  decorarTabelasNoDom,
   contagemTabelasHtml,
-  removerColunaHtml,
-  removerUltimaLinhaHtml,
 } from '@modules/docflow/components/pagina-rich-editor/pagina-table-html';
 import { PaginaRevisoesComponent } from '@modules/docflow/components/pagina-revisoes';
 import { PaginaAnexosComponent } from '@modules/docflow/components/pagina-anexos';
@@ -90,11 +80,14 @@ import { AiAssistenteService } from '@modules/docflow/services/ai-assistente.ser
 import { AiFeatureService } from '@modules/docflow/services/ai-feature.service';
 import { AiAjustePainelComponent } from '../../../components/ai-ajuste-painel/ai-ajuste-painel.component';
 import { AiAplicacao } from '../../../models/ai-proposta.model';
-import { abrirJanelaPreview, escapeHtml } from '@shared/utils/janela-preview';
+import { abrirJanelaPreview } from '@shared/utils/janela-preview';
+import { PaginaFormAnexos } from './pagina-form-anexos';
 import { PaginaFormModelos } from './pagina-form-modelos';
 import { PaginaFormIa } from './pagina-form-ia';
 import { PaginaFormPersistencia, SalvarDestino } from './pagina-form-persistencia';
 import { PaginaFormRevisoes } from './pagina-form-revisoes';
+import { PaginaFormTabelas } from './pagina-form-tabelas';
+import { estruturaTipoPagina } from './pagina-tipo-inicial';
 
 @Component({
   selector: 'app-pagina-form',
@@ -123,7 +116,14 @@ import { PaginaFormRevisoes } from './pagina-form-revisoes';
   ],
   templateUrl: './pagina-form.component.html',
   styleUrl: './pagina-form.component.css',
-  providers: [PaginaFormModelos, PaginaFormRevisoes, PaginaFormIa, PaginaFormPersistencia],
+  providers: [
+    PaginaFormModelos,
+    PaginaFormRevisoes,
+    PaginaFormIa,
+    PaginaFormPersistencia,
+    PaginaFormAnexos,
+    PaginaFormTabelas,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy, CanDeactivateComponent {
@@ -135,7 +135,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly historico = inject(PaginaFormRevisoes);
   private readonly ia = inject(PaginaFormIa);
   protected readonly persistencia = inject(PaginaFormPersistencia);
-  private tabelasDecoradasAssinatura = '';
+  protected readonly arquivos = inject(PaginaFormAnexos);
+  protected readonly tabelas = inject(PaginaFormTabelas);
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('fotoInput') fotoInput?: ElementRef<HTMLInputElement>;
@@ -152,7 +153,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly todosModulos = signal<Modulo[]>([]);
   protected readonly modulos = signal<Modulo[]>([]);
   protected readonly paginas = signal<Pagina[]>([]);
-  protected readonly anexos = signal<PaginaAnexo[]>([]);
+  protected readonly anexos = this.arquivos.anexos;
   protected readonly paginaAtual = signal<Pagina | undefined>(undefined);
   protected readonly editId = signal<string | undefined>(undefined);
   protected readonly saving = this.persistencia.saving;
@@ -369,6 +370,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.historico.configurar({
       paginaId: () => this.paginaAtual()?.id,
       estadoMudou: () => this.atualizarEstadoEditor(),
+    });
+    this.tabelas.configurar({
+      conteudo: this.form.controls.conteudoHtml,
+      editorRico: () => (this.editorModo() === 'rico' ? this.richEditor : undefined),
+      previaRoot: () => this.previewBody?.nativeElement,
+      alterado: () => this.persistencia.marcarAlterado(),
     });
     this.persistencia.configurar({
       form: this.form,
@@ -681,7 +688,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   definirEditorModo(modo: EditorModo): void {
     this.editorModo.set(modo);
     this.atualizarEstadoEditor();
-    this.tabelasDecoradasAssinatura = '';
+    this.tabelas.invalidarDecoracao();
   }
 
   executarAtalho(atalho: AtalhoEditor): void {
@@ -693,113 +700,16 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   );
 
   ngAfterViewChecked(): void {
-    this.decorarTabelasPreview();
-  }
-
-  adicionarLinhaTabela(): void {
-    this.alterarLinhasTabela('add');
-  }
-
-  removerLinhaTabela(): void {
-    this.alterarLinhasTabela('remove');
-  }
-
-  adicionarColunaTabela(): void {
-    this.alterarColunasTabela('add');
-  }
-
-  removerColunaTabela(): void {
-    this.alterarColunasTabela('remove');
-  }
-
-  aoClicarAcaoTabelaPreview(event: MouseEvent): void {
-    const alvo = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-table-action]');
-    if (!alvo) return;
-    event.preventDefault();
-    const acao = alvo.dataset['tableAction'];
-    const index = Number(alvo.dataset['tableIndex'] ?? '0');
-    if (acao === 'add-row') this.alterarLinhasTabela('add', index);
-    if (acao === 'remove-row') this.alterarLinhasTabela('remove', index);
-    if (acao === 'add-col') this.alterarColunasTabela('add', index);
-    if (acao === 'remove-col') this.alterarColunasTabela('remove', index);
-  }
-
-  private alterarLinhasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
-    this.alterarTabela('linha', acao, tableIndex);
-  }
-
-  private alterarColunasTabela(acao: 'add' | 'remove', tableIndex = 0): void {
-    this.alterarTabela('coluna', acao, tableIndex);
-  }
-
-  /**
-   * No modo rico, a seleção do editor decide a célula; nos demais (ou sem seleção em tabela),
-   * altera a tabela {@code tableIndex} direto no HTML.
-   */
-  private alterarTabela(dimensao: 'linha' | 'coluna', acao: 'add' | 'remove', tableIndex: number): void {
-    const atual = this.form.controls.conteudoHtml.value ?? '';
-    if (contagemTabelasHtml(atual) === 0) {
-      this.toast.warn(
-        dimensao === 'linha'
-          ? 'Inclua um dicionário/tabela no conteúdo antes de adicionar linhas.'
-          : 'Inclua um dicionário/tabela no conteúdo antes de alterar colunas.',
-      );
-      return;
-    }
-
-    const editor = this.editorModo() === 'rico' ? this.richEditor : undefined;
-    if (dimensao === 'linha' && editor?.podeAdicionar()) {
-      if (acao === 'add') editor.adicionarLinhaTabela();
-      else editor.removerLinhaTabela();
-      return;
-    }
-    if (dimensao === 'coluna' && editor?.podeAdicionarColuna()) {
-      if (acao === 'add') editor.adicionarColunaTabela();
-      else editor.removerColunaTabela();
-      return;
-    }
-
-    const operacoes = {
-      linha: { add: adicionarLinhaHtml, remove: removerUltimaLinhaHtml },
-      coluna: { add: adicionarColunaHtml, remove: removerColunaHtml },
-    };
-    const proximo = operacoes[dimensao][acao](atual, tableIndex);
-    if (proximo === atual && acao === 'remove') {
-      this.toast.warn(`A tabela precisa manter ao menos uma ${dimensao}.`);
-      return;
-    }
-    this.form.controls.conteudoHtml.setValue(proximo);
-    this.form.controls.conteudoHtml.markAsDirty();
-    this.persistencia.marcarAlterado();
-    editor?.aplicarHtml(proximo);
-    this.tabelasDecoradasAssinatura = '';
-  }
-
-  private decorarTabelasPreview(): void {
-    const root = this.previewBody?.nativeElement;
-    if (!root || this.editorModo() === 'codigo') return;
-    const html = this.form.controls.conteudoHtml.value ?? '';
-    const assinatura = `${this.editorModo()}|${html.length}|${contagemTabelasHtml(html)}`;
-    if (assinatura === this.tabelasDecoradasAssinatura && root.querySelector('.pf-table-chrome')) return;
-
-    decorarTabelasNoDom(root);
-    this.tabelasDecoradasAssinatura = assinatura;
+    this.tabelas.decorarPrevia(this.editorModo());
   }
 
   async anexarFotos(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
     if (!files.length) return;
-    const paginaId = await this.garantirRascunhoParaAnexos();
-    if (!paginaId) {
-      input.value = '';
-      return;
-    }
     try {
-      const snippets = await Promise.all(files.map(file => this.uploadImagem(paginaId, file)));
-      this.inserirHtml(snippets.join('\n'));
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao anexar imagem.'));
+      const html = await this.arquivos.enviarImagens(files);
+      if (html) this.inserirHtml(html);
     } finally {
       input.value = '';
     }
@@ -1008,30 +918,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     };
   }
 
-  async excluirAnexo(anexo: PaginaAnexo): Promise<void> {
-    const id = this.editId();
-    if (!id) return;
-    const ok = await this.confirmService.confirm({
-      title: 'Remover anexo?',
-      message: `O arquivo "${anexo.nomeOriginal}" será removido permanentemente desta página.`,
-      acceptLabel: 'Remover',
-      variant: 'danger',
-      icon: 'Trash2',
-    });
-    if (!ok) return;
-    this.paginaService.excluirAnexoPagina(id, anexo.id).subscribe({
-      next: () => {
-        this.anexos.update(list => list.filter(item => item.id !== anexo.id));
-        this.toast.success('Anexo removido.');
-      },
-      error: () => this.toast.error('Erro ao remover anexo.'),
-    });
-  }
-
-  anexoUrl(anexo: PaginaAnexo): string {
-    return this.paginaService.downloadAnexoUrl(anexo);
-  }
-
   get parentOptions(): Pagina[] {
     const moduloId = this.form.controls.moduloId.value;
     return this.paginasHierarquia().filter(
@@ -1112,7 +998,6 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   readonly nomeUsuarioFn = (u?: string): string => this.nomeUsuario(u);
 
   /** Referência para o sub-componente PaginaAnexos (recebe via input). */
-  readonly anexoUrlFn = (anexo: PaginaAnexo): string => this.anexoUrl(anexo);
   readonly paginaLabelFn = (p: Pagina): string => this.paginaLabel(p);
 
   private carregarPagina(pagina: Pagina): void {
@@ -1138,29 +1023,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     );
     this.atualizarModulosPorProjeto();
     this.historico.recarregar();
-    this.paginaService.anexosPagina(pagina.id).subscribe({
-      next: anexos => this.anexos.set(anexos),
-      error: () => this.toast.error('Erro ao carregar anexos.'),
-    });
-  }
-
-  private uploadImagem(id: string, file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      this.paginaService.anexarPagina(id, file).subscribe({
-        next: anexo => {
-          this.anexos.update(list => [anexo, ...list]);
-          const safeName = escapeHtml(anexo.nomeOriginal);
-          resolve(
-            `<figure class="photo"><img src="${this.paginaService.downloadAnexoUrl(anexo)}" alt="${safeName}"><figcaption>${safeName}</figcaption></figure>`,
-          );
-        },
-        error: reject,
-      });
-    });
-  }
-
-  private garantirRascunhoParaAnexos(): Promise<string | undefined> {
-    return this.persistencia.garantirRascunho('adicionar imagens');
+    this.arquivos.carregar(pagina.id);
   }
 
   private payloadPagina(): Partial<Pagina> {
@@ -1207,7 +1070,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     const atual = this.form.getRawValue();
     this.editId.set(undefined);
     this.paginaAtual.set(undefined);
-    this.anexos.set([]);
+    this.arquivos.limpar();
     this.historico.limpar();
     this.templateSelecionadoId.set(null);
     this.templateOrigemId.set(undefined);
@@ -1340,63 +1203,24 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private async anexarImagensAiStaging(): Promise<void> {
     const files = this.ia.imagensPendentes();
     if (!files.length) return;
-    const paginaId = await this.garantirRascunhoParaAnexos();
-    if (!paginaId) {
+    const html = await this.arquivos.enviarImagens(files, 'Erro ao anexar imagens do assistente.');
+    if (!html) {
       this.toast.error(
         'Proposta aplicada, mas as imagens não puderam ser anexadas. Use o botão Foto na toolbar.',
       );
       return;
     }
-    try {
-      const snippets = await Promise.all(files.map(file => this.uploadImagem(paginaId, file)));
-      this.inserirHtml(`\n${snippets.join('\n')}\n`);
-      this.toast.success(
-        files.length === 1
-          ? 'Imagem do assistente anexada ao manual.'
-          : `${files.length} imagens do assistente anexadas.`,
-      );
-    } catch (error) {
-      this.toast.error(this.mensagemErro(error, 'Erro ao anexar imagens do assistente.'));
-    }
+    this.inserirHtml(`\n${html}\n`);
+    this.toast.success(
+      files.length === 1
+        ? 'Imagem do assistente anexada ao manual.'
+        : `${files.length} imagens do assistente anexadas.`,
+    );
   }
 
   private aplicarTipoPaginaInicial(): void {
-    const tipo = this.route.snapshot.queryParamMap.get('tipoPagina');
-    if (tipo !== 'lista' && tipo !== 'incluir' && tipo !== 'editar' && tipo !== 'indice' && tipo !== 'menu')
-      return;
-
-    const config = {
-      lista: {
-        titulo: 'Lista de registros',
-        codigo: 'LISTA-001',
-        resumo: 'Consulta e listagem de registros com filtros, grade de resultados e ações da tela.',
-        kitId: 'kit-lista',
-      },
-      incluir: {
-        titulo: 'Incluir registro',
-        codigo: 'INCLUIR-001',
-        resumo: 'Formulário para inclusão de novos registros com campos obrigatórios e validações.',
-        kitId: 'kit-incluir',
-      },
-      editar: {
-        titulo: 'Editar registro',
-        codigo: 'EDITAR-001',
-        resumo: 'Formulário para alteração de registros existentes com campos editáveis e validações.',
-        kitId: 'kit-editar',
-      },
-      indice: {
-        titulo: 'Operações',
-        codigo: 'OPS-001',
-        resumo: 'Índice das operações disponíveis neste módulo com links aos guias filhos.',
-        kitId: 'kit-indice',
-      },
-      menu: {
-        titulo: 'Menu',
-        codigo: 'MENU-001',
-        resumo: 'Pasta de navegação com links para as subpáginas desta seção.',
-        kitId: 'kit-menu',
-      },
-    }[tipo];
+    const config = estruturaTipoPagina(this.route.snapshot.queryParamMap.get('tipoPagina'));
+    if (!config) return;
 
     if (!this.form.controls.titulo.value.trim()) {
       this.form.controls.titulo.setValue(config.titulo, { emitEvent: false });

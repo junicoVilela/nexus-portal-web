@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginaFormComponent } from './pagina-form.component';
 import { AiAplicacao, AiProposta } from '../../../models/ai-proposta.model';
-import { Pagina, PaginaTemplate } from '../../../models/pagina.model';
+import { Pagina, PaginaAnexo, PaginaTemplate } from '../../../models/pagina.model';
 import { Modulo } from '../../../models/modulo.model';
 import { Projeto } from '../../../models/projeto.model';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -404,14 +404,11 @@ describe('PaginaFormComponent (smoke)', () => {
     const file = new File(['imagem'], 'tela.png', { type: 'image/png' });
     const input = document.createElement('input');
     Object.defineProperty(input, 'files', { value: [file] });
-    const garantir = spyOn(
-      component as unknown as { garantirRascunhoParaAnexos(): Promise<string | undefined> },
-      'garantirRascunhoParaAnexos',
-    ).and.resolveTo('pagina-1');
-    const upload = spyOn(
-      component as unknown as { uploadImagem(id: string, arquivo: File): Promise<string> },
-      'uploadImagem',
-    ).and.resolveTo('<img src="anexo.png">');
+    const garantir = spyOn(component['persistencia'], 'garantirRascunho').and.resolveTo('pagina-1');
+    const upload = spyOn(component['paginaService'], 'anexarPagina').and.returnValue(
+      of({ id: 'a1', nomeOriginal: 'tela.png' } as PaginaAnexo),
+    );
+    spyOn(component['paginaService'], 'downloadAnexoUrl').and.returnValue('anexo.png');
     const inserirHtml = jasmine.createSpy('inserirHtml');
     component.richEditor = { inserirHtml } as never;
 
@@ -419,7 +416,9 @@ describe('PaginaFormComponent (smoke)', () => {
 
     expect(garantir).toHaveBeenCalled();
     expect(upload).toHaveBeenCalledWith('pagina-1', file);
-    expect(inserirHtml).toHaveBeenCalledWith('<img src="anexo.png">');
+    expect(inserirHtml).toHaveBeenCalledWith(
+      '<figure class="photo"><img src="anexo.png" alt="tela.png"><figcaption>tela.png</figcaption></figure>',
+    );
   });
 
   it('envia autosave com a versão atual e atualiza a versão retornada', () => {
