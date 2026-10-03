@@ -81,6 +81,17 @@ export class AiGeracaoAcompanhamento implements OnDestroy {
     });
   }
 
+  /** Acompanha um job já enfileirado por outro endpoint (ex.: pedido de ajuste de página). */
+  acompanhar(sessaoId: string, job: AiJob, callbacks: AiGeracaoCallbacks): void {
+    this.limparEscuta();
+    this.resolvida = false;
+    this.demorada.set(false);
+    this.gerando.set(true);
+    this.job.set(job);
+    this.iniciadaEm = inicioJob(job);
+    this.ouvir(sessaoId, callbacks);
+  }
+
   /** Reabre o acompanhamento de uma sessão que já estava `GERANDO` (ex.: F5 durante a geração). */
   retomar(sessao: AiSessao, callbacks: AiGeracaoCallbacks): void {
     this.resolvida = false;

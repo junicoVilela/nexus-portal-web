@@ -11,6 +11,47 @@
       <app-pagina-status-badge [status]="paginaAtual()!.status" />
       <span class="pf-autosave" [attr.data-status]="autosaveStatus()">{{ autosaveLabel }}</span>
       <span class="pf-status-line__shortcut">Ctrl+S salva · Ctrl+P publica (quando aprovada)</span>
+      @if (podeAjustarComIa() && !painelAjusteAberto()) {
+        <ui-button type="button" size="sm" variant="secondary" icon="Sparkles" (clicked)="abrirAjusteIa()">
+          Ajustar com IA
+        </ui-button>
+      }
+    </div>
+  }
+
+  @if (painelAjusteAberto() && paginaAtual(); as pagina) {
+    <app-ai-ajuste-painel
+      [paginaId]="pagina.id"
+      [version]="pagina.version"
+      [html]="pagina.conteudoHtml ?? ''"
+      (aplicado)="aplicarAjusteIa($event)"
+      (fechado)="painelAjusteAberto.set(false)"
+    />
+  }
+
+  @if (conteudoTravado()) {
+    <div class="pf-travada" role="status">
+      <div>
+        <strong
+          >Conteúdo travado: página {{ paginaAtual()!.status === 'PUBLICADO' ? 'publicada' : 'aprovada' }}.</strong
+        >
+        <span>
+          Para alterar título, resumo ou conteúdo, volte a página para rascunho. Ela sai das próximas publicações até
+          ser aprovada de novo. Ordem, módulo e página pai continuam editáveis.
+        </span>
+      </div>
+      @if (podeEditarPagina()) {
+        <ui-button
+          type="button"
+          size="sm"
+          variant="secondary"
+          icon="RotateCcw"
+          [loading]="saving()"
+          (clicked)="voltarParaRascunho()"
+        >
+          Voltar para rascunho
+        </ui-button>
+      }
     </div>
   }
 

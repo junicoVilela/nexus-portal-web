@@ -12,7 +12,13 @@ import {
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
-import { AiAplicacao, AiJob, AiProposta } from '../models/ai-proposta.model';
+import {
+  AiAjustePaginaPayload,
+  AiAjustePaginaResposta,
+  AiAplicacao,
+  AiJob,
+  AiProposta,
+} from '../models/ai-proposta.model';
 import { AiStatus } from '../models/ai-status.model';
 import {
   AiTemplateRecomendacao,
@@ -170,6 +176,11 @@ export class AiAssistenteService {
     return this.http.post<AiJob>(`${this.base}/sessoes/${id}/gerar`, texto ? { instrucao: texto } : {});
   }
 
+  /** Ajuste de página existente (Fase B): cria a sessão sobre a versão aberta no editor. */
+  pedirAjuste(paginaId: string, payload: AiAjustePaginaPayload): Observable<AiAjustePaginaResposta> {
+    return this.http.post<AiAjustePaginaResposta>(`${this.base}/paginas/${paginaId}/ajustes`, payload);
+  }
+
   rejeitarProposta(id: string, motivo?: string | null): Observable<AiProposta> {
     const texto = motivo?.trim();
     return this.http.post<AiProposta>(
@@ -189,6 +200,8 @@ export class AiAssistenteService {
       moduloId?: string | null;
       parentId?: string | null;
       ordem?: number | null;
+      /** Ajuste de página: ids das mudanças aceitas. */
+      operacoesAceitas?: string[];
     },
   ): Observable<AiAplicacao> {
     return this.http.post<AiAplicacao>(`${this.base}/sessoes/${id}/aplicar`, payload);

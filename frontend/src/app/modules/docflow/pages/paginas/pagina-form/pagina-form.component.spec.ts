@@ -4,6 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { PaginaFormComponent } from './pagina-form.component';
+import { AiAplicacao } from '../../../models/ai-proposta.model';
 import { Pagina, PaginaTemplate } from '../../../models/pagina.model';
 import { Modulo } from '../../../models/modulo.model';
 import { Projeto } from '../../../models/projeto.model';
@@ -60,6 +61,67 @@ describe('PaginaFormComponent (smoke)', () => {
     } finally {
       history.replaceState(anterior, '');
     }
+  });
+
+  it('página publicada mostra o conteúdo travado e volta para rascunho após confirmar', async () => {
+    const component = fixture.componentInstance;
+    const publicada = { id: 'p1', status: 'PUBLICADO', version: 4 } as Pagina;
+    component['editId'].set('p1');
+    component['paginaAtual'].set(publicada);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.pf-travada')?.textContent).toContain('página publicada');
+
+    spyOn(component['confirmService'], 'confirm').and.resolveTo(true);
+    spyOn(component['paginaService'], 'salvarRascunho').and.returnValue(
+      of({ ...publicada, status: 'RASCUNHO', version: 5 } as Pagina),
+    );
+    await component.voltarParaRascunho();
+    fixture.detectChanges();
+
+    expect(component['paginaService'].salvarRascunho).toHaveBeenCalledWith('p1');
+    expect(component['paginaAtual']()?.version).toBe(5);
+    expect(fixture.nativeElement.querySelector('.pf-travada')).toBeNull();
+  });
+
+  it('não volta para rascunho se o autor cancelar a confirmação', async () => {
+    const component = fixture.componentInstance;
+    component['editId'].set('p1');
+    component['paginaAtual'].set({ id: 'p1', status: 'APROVADO', version: 2 } as Pagina);
+    spyOn(component['confirmService'], 'confirm').and.resolveTo(false);
+    const salvar = spyOn(component['paginaService'], 'salvarRascunho');
+
+    await component.voltarParaRascunho();
+
+    expect(salvar).not.toHaveBeenCalled();
+  });
+
+  it('ajuste da IA entra no editor como alteração pendente e fecha o painel', () => {
+    const component = fixture.componentInstance;
+    component['painelAjusteAberto'].set(true);
+
+    component.aplicarAjusteIa({
+      titulo: 'Consulta e exportação',
+      resumo: 'Resumo novo',
+      conteudoHtml: '<p>Perfil gestor.</p>',
+    } as AiAplicacao);
+
+    expect(component['form'].controls.titulo.value).toBe('Consulta e exportação');
+    expect(component['form'].controls.conteudoHtml.value).toBe('<p>Perfil gestor.</p>');
+    expect(component.hasUnsavedChanges()).toBeTrue();
+    expect(component['painelAjusteAberto']()).toBeFalse();
+  });
+
+  it('não abre o ajuste da IA com alterações não salvas', () => {
+    const component = fixture.componentInstance;
+    spyOn(component as never, 'podeAjustarComIa' as never).and.returnValue(true as never);
+    component['dirty'] = true;
+    component['justSaved'] = false;
+    const aviso = spyOn(component['toast'], 'warn');
+
+    component.abrirAjusteIa();
+
+    expect(aviso).toHaveBeenCalled();
+    expect(component['painelAjusteAberto']()).toBeFalse();
   });
 
   it('renderiza sem erros em modo novo', () => {

@@ -1,0 +1,188 @@
+<section class="ajuste" aria-labelledby="ajuste-titulo">
+  <header class="ajuste__header">
+    <h3 id="ajuste-titulo">
+      <lucide-icon name="Sparkles" [size]="16" aria-hidden="true" />
+      Ajustar com IA
+    </h3>
+    <ui-button type="button" variant="ghost" size="sm" icon="X" (clicked)="fechado.emit()">Fechar</ui-button>
+  </header>
+
+  @if (erro()) {
+    <p class="ajuste__erro" role="alert">
+      {{ erro() }}
+      @if (versaoObsoleta()) {
+        <ui-button type="button" size="sm" variant="secondary" icon="RotateCcw" (clicked)="recomecar()">
+          Gerar de novo
+        </ui-button>
+      }
+    </p>
+  }
+
+  @switch (etapa()) {
+    @case ('pedido') {
+      <div class="ajuste__campo">
+        <label for="ajuste-instrucao">O que ajustar?</label>
+        <textarea
+          id="ajuste-instrucao"
+          rows="3"
+          maxlength="2000"
+          placeholder="Ex.: reescreva os pré-requisitos para o perfil gestor; inclua um aviso sobre o limite de exportação"
+          [value]="instrucao()"
+          (input)="instrucao.set($any($event.target).value)"
+        ></textarea>
+      </div>
+      <div class="ajuste__campo">
+        <label for="ajuste-escopo">Onde</label>
+        <select id="ajuste-escopo" [value]="secaoId()" (change)="secaoId.set($any($event.target).value)">
+          <option value="">Página inteira</option>
+          @for (secao of secoes(); track secao.id) {
+            <option [value]="secao.id">{{ secao.rotulo }}</option>
+          }
+        </select>
+      </div>
+      <div class="ajuste__acoes">
+        <ui-button
+          type="button"
+          variant="primary"
+          icon="Sparkles"
+          [loading]="enviando()"
+          [disabled]="!podePedir()"
+          (clicked)="pedir()"
+        >
+          Propor ajuste
+        </ui-button>
+      </div>
+    }
+
+    @case ('gerando') {
+      <app-ai-geracao-status />
+    }
+
+    @case ('revisao') {
+      @if (proposta()?.resumoDaMudanca; as resumo) {
+        <p class="ajuste__resumo">{{ resumo }}</p>
+      }
+      @if (avisos().length) {
+        <ul class="ajuste__avisos" role="alert">
+          @for (aviso of avisos(); track aviso) {
+            <li>{{ aviso }}</li>
+          }
+        </ul>
+      }
+
+      @if (operacoes().length) {
+        <ol class="ajuste__operacoes" aria-label="Mudanças propostas">
+          @for (op of operacoes(); track op.id) {
+            <li class="ajuste__op" [attr.data-tipo]="op.tipo">
+              <label class="ajuste__op-cabecalho">
+                <input
+                  type="checkbox"
+                  [checked]="selecionadas().has(op.id)"
+                  [disabled]="!pendente()"
+                  (change)="alternar(op, $any($event.target).checked)"
+                />
+                <strong>{{ rotuloTipo(op) }}</strong>
+                @if (op.motivo) {
+                  <span>· {{ op.motivo }}</span>
+                }
+              </label>
+              @switch (op.tipo) {
+                @case ('ALTERAR_TEXTO') {
+                  <p class="ajuste__diff">
+                    @for (token of diffs()[op.id] ?? []; track $index) {
+                      <span [attr.data-diff]="token.tipo">{{ token.texto }}</span>
+                    } @empty {
+                      <del>{{ op.textoAntes }}</del> <ins>{{ op.novoTexto }}</ins>
+                    }
+                  </p>
+                }
+                @case ('INSERIR_BLOCO') {
+                  <div class="ajuste__diff ajuste__diff--novo">
+                    @for (texto of textosInseridos(op); track $index) {
+                      <p>{{ texto }}</p>
+                    }
+                  </div>
+                }
+                @case ('REMOVER_UNIDADE') {
+                  <p class="ajuste__diff">
+                    <del>{{ op.textoAntes }}</del>
+                  </p>
+                }
+              }
+            </li>
+          }
+        </ol>
+
+        @if (previa(); as html) {
+          <details class="ajuste__previa">
+            <summary>Prévia com todas as mudanças propostas</summary>
+            <div class="df-doc-content" [innerHTML]="html"></div>
+          </details>
+        }
+      }
+
+      @if (pendente()) {
+        <div class="ajuste__campo">
+          <label for="ajuste-refinar">Refinar a proposta</label>
+          <textarea
+            id="ajuste-refinar"
+            rows="2"
+            maxlength="2000"
+            placeholder="Ex.: mantenha o primeiro item; deixe o aviso mais curto"
+            [value]="refinamento()"
+            (input)="refinamento.set($any($event.target).value)"
+          ></textarea>
+        </div>
+      }
+
+      @if (confirmandoRejeicao()) {
+        <div class="ajuste__campo">
+          <label for="ajuste-motivo">Por que rejeitar? <span>(opcional)</span></label>
+          <textarea
+            id="ajuste-motivo"
+            rows="2"
+            maxlength="500"
+            [value]="motivoRejeicao()"
+            (input)="motivoRejeicao.set($any($event.target).value)"
+          ></textarea>
+        </div>
+      }
+
+      <div class="ajuste__acoes">
+        @if (confirmandoRejeicao()) {
+          <ui-button type="button" variant="danger" icon="XCircle" [loading]="enviando()" (clicked)="rejeitar()">
+            Confirmar rejeição
+          </ui-button>
+          <ui-button type="button" variant="ghost" (clicked)="confirmandoRejeicao.set(false)">Voltar</ui-button>
+        } @else {
+          <ui-button
+            type="button"
+            variant="primary"
+            icon="Check"
+            [loading]="enviando()"
+            [disabled]="!pendente() || !selecionadas().size || versaoObsoleta()"
+            (clicked)="aplicar()"
+          >
+            Aplicar {{ selecionadas().size }} de {{ operacoes().length }} no editor
+          </ui-button>
+          <ui-button
+            type="button"
+            variant="secondary"
+            icon="Sparkles"
+            [disabled]="!pendente() || !refinamento().trim()"
+            (clicked)="refinar()"
+          >
+            Refinar
+          </ui-button>
+          @if (pendente()) {
+            <ui-button type="button" variant="ghost" icon="XCircle" (clicked)="confirmandoRejeicao.set(true)">
+              Rejeitar
+            </ui-button>
+          } @else {
+            <ui-button type="button" variant="ghost" icon="RotateCcw" (clicked)="recomecar()">Novo pedido</ui-button>
+          }
+        }
+      </div>
+    }
+  }
+</section>

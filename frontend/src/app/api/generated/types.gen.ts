@@ -1504,6 +1504,20 @@ export type AiPerguntaResponse = {
   obrigatoria?: boolean;
 };
 
+export type AiPatchOperacaoResponse = {
+  id?: string;
+  tipo?: string;
+  unidadeId?: string;
+  textoAntes?: string;
+  novoTexto?: string;
+  aposSecaoId?: string;
+  componenteId?: string;
+  textos?: {
+    [key: string]: string;
+  };
+  motivo?: string;
+};
+
 export type AiSessaoResponse = {
   id?: string;
   objetivo?: 'CRIAR_PAGINA' | 'ATUALIZAR_PAGINA';
@@ -1541,6 +1555,7 @@ export type AplicarAiPropostaRequest = {
   moduloId?: string;
   parentId?: string;
   ordem?: number;
+  operacoesAceitas?: Array<string>;
 };
 
 export type GerarAiPropostaRequest = {
@@ -1549,6 +1564,17 @@ export type GerarAiPropostaRequest = {
 
 export type RejeitarAiPropostaRequest = {
   motivo?: string;
+};
+
+export type AiAjustePaginaRequest = {
+  instrucao: string;
+  secaoId?: string;
+  version: number;
+};
+
+export type AiAjustePaginaResponse = {
+  sessaoId?: string;
+  job?: AiJobResponse;
 };
 
 export type AiAplicacaoResponse = {
@@ -2264,6 +2290,9 @@ export type AiPropostaResponse = {
   createdAt?: string;
   avisosGeracao?: Array<string>;
   motivoRejeicao?: string;
+  resumoDaMudanca?: string;
+  operacoes?: Array<AiPatchOperacaoResponse>;
+  operacoesAceitas?: Array<string>;
 };
 
 export type AiQualidadeItemResponse = {
@@ -6134,6 +6163,25 @@ export type AiAiTemplateRecomendarResponses = {
 
 export type AiAiTemplateRecomendarResponse =
   AiAiTemplateRecomendarResponses[keyof AiAiTemplateRecomendarResponses];
+
+export type AiAiAjustePaginaPedirData = {
+  body: AiAjustePaginaRequest;
+  path: {
+    paginaId: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/paginas/{paginaId}/ajustes';
+};
+
+export type AiAiAjustePaginaPedirResponses = {
+  /**
+   * OK
+   */
+  200: AiAjustePaginaResponse;
+};
+
+export type AiAiAjustePaginaPedirResponse =
+  AiAiAjustePaginaPedirResponses[keyof AiAiAjustePaginaPedirResponses];
 
 export type AiAiSessaoCriarData = {
   body: CriarAiSessaoRequest;

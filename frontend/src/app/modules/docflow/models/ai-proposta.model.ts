@@ -6,6 +6,19 @@ export interface AiQualidadeItem {
   severidade: string;
 }
 
+/** Mudança proposta no ajuste de página (Fase B). */
+export interface AiPatchOperacao {
+  id: string;
+  tipo: 'ALTERAR_TEXTO' | 'INSERIR_BLOCO' | 'REMOVER_UNIDADE';
+  unidadeId: string | null;
+  textoAntes: string | null;
+  novoTexto: string | null;
+  aposSecaoId: string | null;
+  componenteId: string | null;
+  textos: Record<string, string>;
+  motivo: string | null;
+}
+
 export interface AiProposta {
   id: string;
   sessaoId: string;
@@ -27,6 +40,21 @@ export interface AiProposta {
   /** Não vazio quando a geração caiu em fallback; o conteúdo exige revisão redobrada. */
   avisosGeracao?: string[];
   motivoRejeicao?: string | null;
+  /** Ajuste de página: resumo da IA, mudanças propostas e as que o autor aplicou. */
+  resumoDaMudanca?: string | null;
+  operacoes?: AiPatchOperacao[];
+  operacoesAceitas?: string[];
+}
+
+export interface AiAjustePaginaPayload {
+  instrucao: string;
+  secaoId: string | null;
+  version: number;
+}
+
+export interface AiAjustePaginaResposta {
+  sessaoId: string;
+  job: AiJob;
 }
 
 export interface AiPageSpecResumo {

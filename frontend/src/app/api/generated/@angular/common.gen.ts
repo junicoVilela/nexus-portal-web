@@ -5,6 +5,8 @@ import { type HttpRequest, httpResource } from '@angular/common/http';
 import { client } from '../client.gen';
 import type { Options } from '../sdk.gen';
 import type {
+  AiAiAjustePaginaPedirData,
+  AiAiAjustePaginaPedirResponse,
   AiAiDocumentoImportacaoAceitarPaginaImportadaData,
   AiAiDocumentoImportacaoAceitarPaginaImportadaResponse,
   AiAiDocumentoImportacaoAceitarSugestaoDocumentoData,
@@ -2721,6 +2723,16 @@ export const aiAiTemplateRecomendarRequest = <ThrowOnError extends boolean = fal
     ...options,
   });
 
+export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
+): HttpRequest<AiAiAjustePaginaPedirResponse> =>
+  (options?.client ?? client).requestOptions<AiAiAjustePaginaPedirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
+    ...options,
+  });
+
 export const aiAiSessaoCriarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiSessaoCriarData, ThrowOnError>,
 ): HttpRequest<AiAiSessaoCriarResponse> =>
@@ -5391,6 +5403,14 @@ export const aiAiTemplateRecomendarResource = <ThrowOnError extends boolean = fa
   httpResource<AiAiTemplateRecomendarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiTemplateRecomendarRequest(opts) : undefined;
+  });
+
+export const aiAiAjustePaginaPedirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiAjustePaginaPedirData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiAjustePaginaPedirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiAjustePaginaPedirRequest(opts) : undefined;
   });
 
 export const aiAiSessaoCriarResource = <ThrowOnError extends boolean = false>(

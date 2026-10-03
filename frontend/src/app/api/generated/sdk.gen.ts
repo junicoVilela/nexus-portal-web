@@ -11,6 +11,8 @@ import {
 } from './client';
 import { client } from './client.gen';
 import type {
+  AiAiAjustePaginaPedirData,
+  AiAiAjustePaginaPedirResponses,
   AiAiDocumentoImportacaoAceitarPaginaImportadaData,
   AiAiDocumentoImportacaoAceitarPaginaImportadaResponses,
   AiAiDocumentoImportacaoAceitarSugestaoDocumentoData,
@@ -2917,6 +2919,19 @@ export const aiAiTemplateRecomendar = <ThrowOnError extends boolean = true>(
   (options.client ?? client).post<AiAiTemplateRecomendarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/templates/recomendacao',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiAjustePaginaPedir = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
+): RequestResult<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/paginas/{paginaId}/ajustes',
     ...options,
     headers: {
       'Content-Type': 'application/json',

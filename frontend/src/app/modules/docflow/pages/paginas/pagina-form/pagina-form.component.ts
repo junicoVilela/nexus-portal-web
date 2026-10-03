@@ -98,6 +98,9 @@ import {
 import { PaginaDraftService } from '@modules/docflow/services/pagina-draft.service';
 import { PaginaBlocoService } from '@modules/docflow/services/pagina-bloco.service';
 import { AiAssistenteService } from '@modules/docflow/services/ai-assistente.service';
+import { AiFeatureService } from '@modules/docflow/services/ai-feature.service';
+import { AiAjustePainelComponent } from '../../../components/ai-ajuste-painel/ai-ajuste-painel.component';
+import { AiAplicacao } from '../../../models/ai-proposta.model';
 
 type SalvarDestino = 'lista' | 'continuar' | 'nova';
 type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'error';
@@ -125,6 +128,7 @@ type AutosaveStatus = 'idle' | 'saving' | 'saved' | 'offline' | 'conflict' | 'er
     PaginaSectionOrganizerComponent,
     PaginaTemplateSaveComponent,
     PaginaCreationProgressComponent,
+    AiAjustePainelComponent,
   ],
   templateUrl: './pagina-form.component.html',
   styleUrl: './pagina-form.component.css',
@@ -136,6 +140,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   private readonly paginaDraftService = inject(PaginaDraftService);
   private readonly aiImagensStaging = inject(AiImagensStagingService);
   private readonly aiAssistenteService = inject(AiAssistenteService);
+  private readonly aiFeature = inject(AiFeatureService);
   private tabelasDecoradasAssinatura = '';
 
   @ViewChild('conteudoHtmlInput') conteudoHtmlInput?: ElementRef<HTMLTextAreaElement>;
@@ -207,6 +212,30 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   protected readonly etapaAtiva = signal<PaginaCreationStepId>('modelo');
   protected readonly podeCriarTemplate = computed(() => this.auth.tem()('PAGINA:CRIAR'));
   protected readonly podeEditarTemplate = computed(() => this.auth.tem()('PAGINA:EDITAR'));
+  protected readonly podeEditarPagina = computed(() => this.auth.tem()('PAGINA:EDITAR'));
+
+  /** "Ajustar com IA" (Fase B): só em página salva, editável e com o módulo de IA ligado. */
+  protected readonly painelAjusteAberto = signal(false);
+  protected readonly podeAjustarComIa = computed(() => {
+    const pagina = this.paginaAtual();
+    return (
+      !!this.editId() &&
+      !!pagina &&
+      pagina.status !== 'ARQUIVADO' &&
+      !this.conteudoTravado() &&
+      this.podeEditarPagina() &&
+      this.aiFeature.disponivel()
+    );
+  });
+
+  /**
+   * Aprovada ou publicada: o conteúdo só muda depois de voltar para rascunho (o back recusa com
+   * 422). O pacote publica o conteúdo atual das páginas publicadas.
+   */
+  protected readonly conteudoTravado = computed(() => {
+    const status = this.paginaAtual()?.status;
+    return status === 'APROVADO' || status === 'PUBLICADO';
+  });
   protected readonly podeExcluirTemplate = computed(() => this.auth.tem()('PAGINA:EXCLUIR'));
   protected readonly paginaDeImportacao =
     !!this.route.snapshot.queryParamMap.get('importacaoId') &&
@@ -366,6 +395,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   ngOnInit(): void {
+    this.aiFeature.ensureLoaded();
     this.editId.set(this.route.snapshot.paramMap.get('id') ?? undefined);
     if (!this.editId() && this.redirecionarAssistenteSeOrigemIa()) {
       return;
@@ -655,6 +685,59 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       error: () => {
         this.saving.set(false);
         this.toast.error('Erro ao publicar página.');
+      },
+    });
+  }
+
+  /** O esboço da IA parte do conteúdo salvo: alterações pendentes ficariam de fora. */
+  abrirAjusteIa(): void {
+    if (!this.podeAjustarComIa()) return;
+    if (this.hasUnsavedChanges()) {
+      this.toast.warn('Salve a página antes de pedir um ajuste à IA.');
+      return;
+    }
+    this.painelAjusteAberto.set(true);
+  }
+
+  /** Ajuste aceito no painel: entra no editor como alteração pendente; o autor revisa e salva. */
+  aplicarAjusteIa(aplicacao: AiAplicacao): void {
+    this.form.patchValue({
+      titulo: aplicacao.titulo,
+      resumo: aplicacao.resumo ?? '',
+      conteudoHtml: aplicacao.conteudoHtml,
+    });
+    this.dirty = true;
+    this.justSaved = false;
+    this.form.markAsDirty();
+    this.painelAjusteAberto.set(false);
+    this.toast.success('Ajuste aplicado no editor. Revise e salve para registrar a revisão.');
+  }
+
+  async voltarParaRascunho(): Promise<void> {
+    const id = this.editId();
+    const pagina = this.paginaAtual();
+    if (!id || !pagina || !this.conteudoTravado() || this.saving()) return;
+    const confirmar = await this.confirmService.confirm({
+      title: 'Voltar para rascunho?',
+      message:
+        pagina.status === 'PUBLICADO'
+          ? 'A página sai das próximas publicações até ser revisada, aprovada e publicada de novo. O manual já gerado não muda.'
+          : 'A aprovação é desfeita: depois de editar, a página precisa passar pela revisão de novo.',
+      acceptLabel: 'Voltar para rascunho',
+      variant: 'danger',
+      icon: 'AlertTriangle',
+    });
+    if (!confirmar) return;
+    this.saving.set(true);
+    this.paginaService.salvarRascunho(id).subscribe({
+      next: atualizada => {
+        this.paginaAtual.set(atualizada);
+        this.saving.set(false);
+        this.toast.success('Página em rascunho. O conteúdo pode ser editado.');
+      },
+      error: error => {
+        this.saving.set(false);
+        this.toast.error(this.mensagemErro(error, 'Não foi possível voltar a página para rascunho.'));
       },
     });
   }

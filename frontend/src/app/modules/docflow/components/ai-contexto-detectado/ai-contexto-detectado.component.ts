@@ -29,7 +29,7 @@ export class AiContextoDetectadoComponent {
   readonly corrigir = output<Record<string, string>>();
 
   protected readonly editando = signal(false);
-  protected readonly rascunho = signal<Record<string, string>>({});
+  protected readonly rascunho = signal<Partial<Record<string, string>>>({});
 
   protected readonly itens = computed(() =>
     CAMPOS.map(campo => ({ ...campo, valor: this.contexto()[campo.id]?.trim() ?? '' })),
@@ -49,7 +49,7 @@ export class AiContextoDetectadoComponent {
   protected salvar(): void {
     const alterados = Object.fromEntries(
       Object.entries(this.rascunho())
-        .map(([id, valor]) => [id, valor.trim()] as const)
+        .map(([id, valor]) => [id, (valor ?? '').trim()] as const)
         .filter(([id, valor]) => valor && valor !== (this.contexto()[id]?.trim() ?? '')),
     );
     this.editando.set(false);
