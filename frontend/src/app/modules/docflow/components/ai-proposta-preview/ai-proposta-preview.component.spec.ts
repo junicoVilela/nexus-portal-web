@@ -93,4 +93,20 @@ describe('AiPropostaPreviewComponent', () => {
     btn.click();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('não mostra avisos quando a geração saiu completa', () => {
+    expect(fixture.nativeElement.querySelector('.ai-proposta__avisos')).toBeNull();
+  });
+
+  it('destaca avisos quando a geração caiu em fallback', () => {
+    fixture.componentRef.setInput('proposta', {
+      ...proposta,
+      avisosGeracao: ['A IA devolveu uma resposta inválida; os blocos usam textos padrão do modelo.'],
+    });
+    fixture.detectChanges();
+    const avisos = fixture.nativeElement.querySelector('.ai-proposta__avisos') as HTMLElement;
+    expect(avisos).toBeTruthy();
+    expect(avisos.querySelectorAll('li').length).toBe(1);
+    expect(avisos.textContent).toContain('resposta inválida');
+  });
 });

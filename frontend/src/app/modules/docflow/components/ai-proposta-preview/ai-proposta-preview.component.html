@@ -31,6 +31,20 @@
     </div>
   </dl>
 
+  @if (avisosGeracao().length) {
+    <section class="ai-proposta__avisos" role="alert" aria-labelledby="ai-proposta-avisos-title">
+      <lucide-icon name="AlertTriangle" [size]="16" aria-hidden="true" />
+      <div>
+        <strong id="ai-proposta-avisos-title">A geração não saiu completa — revise com atenção</strong>
+        <ul>
+          @for (aviso of avisosGeracao(); track aviso) {
+            <li>{{ aviso }}</li>
+          }
+        </ul>
+      </div>
+    </section>
+  }
+
   @if (composicaoUsada().length) {
     <section class="ai-proposta__composition" aria-labelledby="ai-proposta-composition-title">
       <div>

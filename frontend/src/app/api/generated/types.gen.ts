@@ -2251,6 +2251,7 @@ export type AiPropostaResponse = {
   status?: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';
   paginaId?: string;
   createdAt?: string;
+  avisosGeracao?: Array<string>;
 };
 
 export type AiQualidadeItemResponse = {

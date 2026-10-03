@@ -35,6 +35,8 @@ export class AiPropostaPreviewComponent {
 
   protected readonly qualidadeTotal = computed(() => this.proposta().qualidade?.length ?? 0);
 
+  protected readonly avisosGeracao = computed(() => this.proposta().avisosGeracao ?? []);
+
   protected readonly composicaoUsada = computed(() => {
     const json = this.proposta().pageSpecJson;
     if (!json) return [];

@@ -24,6 +24,8 @@ export interface AiProposta {
   status: 'PENDENTE' | 'ACEITA' | 'REJEITADA' | 'DESCARTADA';
   paginaId: string | null;
   createdAt: string;
+  /** Não vazio quando a geração caiu em fallback; o conteúdo exige revisão redobrada. */
+  avisosGeracao?: string[];
 }
 
 export interface AiPageSpecResumo {
