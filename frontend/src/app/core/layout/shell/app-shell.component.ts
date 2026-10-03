@@ -190,7 +190,7 @@ export class AppShellComponent implements OnInit {
       modulos: 'Módulos',
       paginas: 'Páginas',
       assistente: 'Assistente IA',
-      'propostas-ia': 'Propostas IA',
+      'ia-qualidade': 'Qualidade da IA',
       publicacoes: 'Publicações',
       busca: 'Busca',
       releases: 'Releases',

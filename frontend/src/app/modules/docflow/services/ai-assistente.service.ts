@@ -19,6 +19,7 @@ import {
   AiJob,
   AiProposta,
 } from '../models/ai-proposta.model';
+import { AiMetricas } from '../models/ai-metricas.model';
 import { AiStatus } from '../models/ai-status.model';
 import {
   AiTemplateRecomendacao,
@@ -174,6 +175,11 @@ export class AiAssistenteService {
   gerar(id: string, instrucao?: string | null): Observable<AiJob> {
     const texto = instrucao?.trim();
     return this.http.post<AiJob>(`${this.base}/sessoes/${id}/gerar`, texto ? { instrucao: texto } : {});
+  }
+
+  /** Painel de qualidade da IA: aceite por versão de prompt, avisos, rejeições, custo. */
+  metricas(dias: number): Observable<AiMetricas> {
+    return this.http.get<AiMetricas>(`${this.base}/metricas`, { params: { dias } });
   }
 
   /** Ajuste de página existente (Fase B): cria a sessão sobre a versão aberta no editor. */

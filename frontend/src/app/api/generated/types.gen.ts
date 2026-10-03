@@ -2303,6 +2303,63 @@ export type AiQualidadeItemResponse = {
   severidade?: string;
 };
 
+export type AiMetricasResponse = {
+  periodoDias?: number;
+  desde?: string;
+  geracao?: Geracao;
+  porPrompt?: Array<PorPrompt>;
+  ajustes?: Ajustes;
+  avisosFrequentes?: Array<AvisoFrequente>;
+  rejeicoesRecentes?: Array<Rejeicao>;
+};
+
+export type Geracao = {
+  jobs?: number;
+  sucesso?: number;
+  erro?: number;
+  cancelados?: number;
+  latenciaP50Ms?: number;
+  latenciaP90Ms?: number;
+  tokensEntrada?: number;
+  tokensSaida?: number;
+};
+
+export type PorPrompt = {
+  promptVersao?: string;
+  propostas?: number;
+  aceitas?: number;
+  rejeitadas?: number;
+  regeneradas?: number;
+  pendentes?: number;
+  comAvisos?: number;
+  taxaAceite?: number;
+};
+
+export type Ajustes = {
+  aplicados?: number;
+  operacoesPropostas?: number;
+  operacoesAceitas?: number;
+  taxaAceiteOperacoes?: number;
+  porTipo?: Array<PorTipoOperacao>;
+};
+
+export type PorTipoOperacao = {
+  tipo?: string;
+  propostas?: number;
+  aceitas?: number;
+};
+
+export type AvisoFrequente = {
+  aviso?: string;
+  ocorrencias?: number;
+};
+
+export type Rejeicao = {
+  motivo?: string;
+  promptVersao?: string;
+  em?: string;
+};
+
 export type ReleaseorchestratorReleaseTemplateExcluirData = {
   body?: never;
   path: {
@@ -6163,6 +6220,24 @@ export type AiAiTemplateRecomendarResponses = {
 
 export type AiAiTemplateRecomendarResponse =
   AiAiTemplateRecomendarResponses[keyof AiAiTemplateRecomendarResponses];
+
+export type AiAiMetricasMetricasData = {
+  body?: never;
+  path?: never;
+  query?: {
+    dias?: number;
+  };
+  url: '/api/v1/ai/metricas';
+};
+
+export type AiAiMetricasMetricasResponses = {
+  /**
+   * OK
+   */
+  200: AiMetricasResponse;
+};
+
+export type AiAiMetricasMetricasResponse = AiAiMetricasMetricasResponses[keyof AiAiMetricasMetricasResponses];
 
 export type AiAiAjustePaginaPedirData = {
   body: AiAjustePaginaRequest;

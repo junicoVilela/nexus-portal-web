@@ -43,9 +43,11 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
       'PUBLICACAO:LER',
       'CONFIGURACAO:EDITAR',
       'AJUDA:LER',
+      'AUDITORIA:VISUALIZAR',
     ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
     expect(labels.length).toBe(12);
+    expect(labels).toContain('Qualidade da IA');
     expect(labels).toContain('Revisões');
     expect(labels).toContain('Trechos');
     expect(labels).toContain('Mídia');
@@ -64,6 +66,7 @@ describe('DocflowShellComponent (filtro de permissão no menu)', () => {
     ]);
     const labels = fixture.componentInstance['navItems']().map(i => i.label);
     expect(labels).not.toContain('Configurações');
+    expect(labels).not.toContain('Qualidade da IA');
     expect(labels).toContain('Clientes');
   });
 

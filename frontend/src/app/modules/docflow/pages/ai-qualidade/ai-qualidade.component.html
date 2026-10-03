@@ -1,0 +1,178 @@
+<div class="aq">
+  <ui-page-header
+    title="Qualidade da IA"
+    subtitle="Aceite das propostas por versão de prompt, avisos de geração, rejeições e custo."
+    icon="Sparkles"
+  />
+
+  <div class="aq__periodo" role="group" aria-label="Período">
+    @for (periodo of periodos; track periodo) {
+      <button
+        type="button"
+        class="aq__periodo-btn"
+        [class.aq__periodo-btn--ativo]="dias() === periodo"
+        [attr.aria-pressed]="dias() === periodo"
+        [disabled]="carregando()"
+        (click)="selecionarPeriodo(periodo)"
+      >
+        {{ periodo }} dias
+      </button>
+    }
+  </div>
+
+  @if (erro()) {
+    <p class="aq__erro" role="alert">{{ erro() }}</p>
+  }
+
+  @if (vazio()) {
+    <ui-empty-state
+      icon="Sparkles"
+      title="Sem uso da IA no período"
+      description="As métricas aparecem quando o assistente gerar ou ajustar páginas."
+    />
+  } @else if (metricas(); as m) {
+    <div class="aq__kpis">
+      <ui-kpi-card
+        label="Aceite das propostas"
+        [valor]="percentual(taxaAceiteGeral())"
+        icon="CheckCircle2"
+        tone="green"
+        description="Aceitas ÷ (aceitas + rejeitadas + regeneradas)"
+      />
+      <ui-kpi-card
+        label="Gerações"
+        [valor]="m.geracao.jobs"
+        icon="Activity"
+        tone="blue"
+        [description]="m.geracao.erro + ' com erro · ' + m.geracao.cancelados + ' canceladas'"
+      />
+      <ui-kpi-card
+        label="Tempo de geração"
+        [valor]="segundos(m.geracao.latenciaP50Ms)"
+        icon="Clock"
+        tone="purple"
+        [description]="'mediana · p90 ' + segundos(m.geracao.latenciaP90Ms)"
+      />
+      <ui-kpi-card
+        label="Tokens"
+        [valor]="milhares(m.geracao.tokensEntrada + m.geracao.tokensSaida)"
+        icon="BarChart2"
+        tone="neutral"
+        [description]="(m.geracao.tokensEntrada | number) + ' entrada · ' + (m.geracao.tokensSaida | number) + ' saída'"
+      />
+    </div>
+
+    <section class="aq__secao" aria-labelledby="aq-prompts">
+      <div class="aq__secao-cabecalho">
+        <h2 id="aq-prompts">Por versão de prompt</h2>
+        <p>
+          Compare versões depois de editar um prompt. "Regeneradas" são propostas descartadas por uma nova tentativa.
+        </p>
+      </div>
+      <div class="aq__tabela-wrap">
+        <table class="aq__tabela">
+          <thead>
+            <tr>
+              <th scope="col">Versão</th>
+              <th scope="col" class="aq__num">Propostas</th>
+              <th scope="col" class="aq__num">Aceitas</th>
+              <th scope="col" class="aq__num">Rejeitadas</th>
+              <th scope="col" class="aq__num">Regeneradas</th>
+              <th scope="col" class="aq__num">Pendentes</th>
+              <th scope="col" class="aq__num">Com avisos</th>
+              <th scope="col" class="aq__num">Aceite</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of m.porPrompt; track p.promptVersao) {
+              <tr>
+                <th scope="row">
+                  <code>{{ p.promptVersao }}</code>
+                </th>
+                <td class="aq__num">{{ p.propostas }}</td>
+                <td class="aq__num">{{ p.aceitas }}</td>
+                <td class="aq__num">{{ p.rejeitadas }}</td>
+                <td class="aq__num">{{ p.regeneradas }}</td>
+                <td class="aq__num">{{ p.pendentes }}</td>
+                <td class="aq__num">{{ p.comAvisos }}</td>
+                <td class="aq__num">
+                  <strong>{{ p.taxaAceite === null ? '—' : (p.taxaAceite | percent: '1.0-0') }}</strong>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8" class="aq__vazio">Nenhuma proposta no período.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="aq__secao" aria-labelledby="aq-ajustes">
+      <div class="aq__secao-cabecalho">
+        <h2 id="aq-ajustes">Ajustes de página</h2>
+        <p>
+          {{ m.ajustes.aplicados }} ajustes aplicados · {{ m.ajustes.operacoesAceitas }} de
+          {{ m.ajustes.operacoesPropostas }} mudanças aceitas
+          @if (m.ajustes.taxaAceiteOperacoes !== null) {
+            ({{ m.ajustes.taxaAceiteOperacoes | percent: '1.0-0' }})
+          }
+        </p>
+      </div>
+      @if (m.ajustes.operacoesPropostas) {
+        <ul class="aq__barras" aria-label="Aceite por tipo de mudança">
+          @for (t of m.ajustes.porTipo; track t.tipo) {
+            @if (t.propostas) {
+              <li>
+                <span>{{ rotuloOperacao(t.tipo) }}</span>
+                <span class="aq__barra" aria-hidden="true"
+                  ><i [style.width.%]="(t.aceitas / t.propostas) * 100"></i
+                ></span>
+                <span class="aq__num">{{ t.aceitas }}/{{ t.propostas }}</span>
+              </li>
+            }
+          }
+        </ul>
+      }
+    </section>
+
+    <div class="aq__duas-colunas">
+      <section class="aq__secao" aria-labelledby="aq-avisos">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-avisos">Avisos mais frequentes</h2>
+          <p>Gerações que caíram em fallback.</p>
+        </div>
+        <ul class="aq__lista">
+          @for (a of m.avisosFrequentes; track a.aviso) {
+            <li>
+              <span>{{ a.aviso }}</span
+              ><strong class="aq__num">{{ a.ocorrencias }}</strong>
+            </li>
+          } @empty {
+            <li class="aq__vazio">Nenhum aviso no período.</li>
+          }
+        </ul>
+      </section>
+
+      <section class="aq__secao" aria-labelledby="aq-rejeicoes">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-rejeicoes">Rejeições recentes</h2>
+          <p>Motivos informados pelos autores.</p>
+        </div>
+        <ul class="aq__lista">
+          @for (r of m.rejeicoesRecentes; track $index) {
+            <li class="aq__rejeicao">
+              <span>“{{ r.motivo }}”</span>
+              <small
+                ><code>{{ r.promptVersao }}</code> · {{ r.em | date: 'dd/MM HH:mm' }}</small
+              >
+            </li>
+          } @empty {
+            <li class="aq__vazio">Nenhuma rejeição com motivo no período.</li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+</div>

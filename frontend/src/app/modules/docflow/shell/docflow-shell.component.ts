@@ -69,11 +69,11 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
       requerAi: true,
     },
     {
-      helpId: 'propostas-ia',
-      label: 'Propostas IA',
-      icon: 'Inbox',
-      route: ['/doc-flow', 'propostas-ia'],
-      permissao: 'PAGINA:LER',
+      helpId: 'ia-qualidade',
+      label: 'Qualidade da IA',
+      icon: 'BarChart2',
+      route: ['/doc-flow', 'ia-qualidade'],
+      permissao: 'AUDITORIA:VISUALIZAR',
       requerAi: true,
     },
     {
@@ -125,8 +125,7 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
     const tem = this.auth.tem();
     const aiOn = this.aiFeature.disponivel() || !this.aiFeature.ready();
     return this.navItemsTodos.filter(
-      item =>
-        (!item.permissao || tem(item.permissao)) && (!item.requerAi || aiOn),
+      item => (!item.permissao || tem(item.permissao)) && (!item.requerAi || aiOn),
     );
   });
 
@@ -145,10 +144,10 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
         route: '/doc-flow/assistente',
       },
       {
-        id: 'df:propostas-ia',
-        label: 'DocFlow — Propostas IA',
+        id: 'df:ia-qualidade',
+        label: 'DocFlow — Qualidade da IA',
         group: 'DocFlow',
-        route: '/doc-flow/propostas-ia',
+        route: '/doc-flow/ia-qualidade',
       },
       {
         id: 'df:revisoes',

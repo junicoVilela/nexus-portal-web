@@ -44,6 +44,8 @@ import type {
   AiAiEventEventosData,
   AiAiEventEventosResponse,
   AiAiEventEventosResponses,
+  AiAiMetricasMetricasData,
+  AiAiMetricasMetricasResponses,
   AiAiSessaoAplicarData,
   AiAiSessaoAplicarResponses,
   AiAiSessaoBuscarData,
@@ -2924,6 +2926,15 @@ export const aiAiTemplateRecomendar = <ThrowOnError extends boolean = true>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+export const aiAiMetricasMetricas = <ThrowOnError extends boolean = true>(
+  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
+): RequestResult<AiAiMetricasMetricasResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<AiAiMetricasMetricasResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/metricas',
+    ...options,
   });
 
 export const aiAiAjustePaginaPedir = <ThrowOnError extends boolean = true>(

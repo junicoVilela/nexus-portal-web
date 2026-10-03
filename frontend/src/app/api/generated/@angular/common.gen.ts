@@ -37,6 +37,8 @@ import type {
   AiAiDocumentoImportacaoVincularPaginaImportadaResponse,
   AiAiEventEventosData,
   AiAiEventEventosResponse,
+  AiAiMetricasMetricasData,
+  AiAiMetricasMetricasResponse,
   AiAiSessaoAplicarData,
   AiAiSessaoAplicarResponse,
   AiAiSessaoBuscarData,
@@ -2723,6 +2725,16 @@ export const aiAiTemplateRecomendarRequest = <ThrowOnError extends boolean = fal
     ...options,
   });
 
+export const aiAiMetricasMetricasRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<AiAiMetricasMetricasData, ThrowOnError>,
+): HttpRequest<AiAiMetricasMetricasResponse> =>
+  (options?.client ?? client).requestOptions<AiAiMetricasMetricasResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/ai/metricas',
+    ...options,
+  });
+
 export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
 ): HttpRequest<AiAiAjustePaginaPedirResponse> =>
@@ -5403,6 +5415,14 @@ export const aiAiTemplateRecomendarResource = <ThrowOnError extends boolean = fa
   httpResource<AiAiTemplateRecomendarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiTemplateRecomendarRequest(opts) : undefined;
+  });
+
+export const aiAiMetricasMetricasResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<AiAiMetricasMetricasData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiMetricasMetricasResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiMetricasMetricasRequest(opts) : undefined;
   });
 
 export const aiAiAjustePaginaPedirResource = <ThrowOnError extends boolean = false>(

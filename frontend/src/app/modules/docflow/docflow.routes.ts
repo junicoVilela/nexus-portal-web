@@ -143,13 +143,13 @@ export const DOCFLOW_ROUTES: Routes = [
         data: { permissoes: ['PAGINA:CRIAR'] },
       },
       {
-        path: 'propostas-ia',
+        path: 'ia-qualidade',
         loadComponent: () =>
-          import('./pages/propostas-ia/ai-propostas.component').then(
-            component => component.AiPropostasComponent,
+          import('./pages/ai-qualidade/ai-qualidade.component').then(
+            component => component.AiQualidadeComponent,
           ),
         canActivate: [permissaoGuard],
-        data: { permissoes: ['PAGINA:LER'] },
+        data: { permissoes: ['AUDITORIA:VISUALIZAR'] },
       },
       {
         path: 'revisoes',
