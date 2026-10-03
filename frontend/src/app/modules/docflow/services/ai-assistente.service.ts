@@ -164,8 +164,18 @@ export class AiAssistenteService {
     return this.http.post<AiSessao>(`${this.base}/sessoes/${id}/cancelar`, {});
   }
 
-  gerar(id: string): Observable<AiJob> {
-    return this.http.post<AiJob>(`${this.base}/sessoes/${id}/gerar`, {});
+  /** `instrucao` opcional: ajuste pedido pelo autor sobre a proposta anterior. */
+  gerar(id: string, instrucao?: string | null): Observable<AiJob> {
+    const texto = instrucao?.trim();
+    return this.http.post<AiJob>(`${this.base}/sessoes/${id}/gerar`, texto ? { instrucao: texto } : {});
+  }
+
+  rejeitarProposta(id: string, motivo?: string | null): Observable<AiProposta> {
+    const texto = motivo?.trim();
+    return this.http.post<AiProposta>(
+      `${this.base}/sessoes/${id}/proposta/rejeitar`,
+      texto ? { motivo: texto } : {},
+    );
   }
 
   proposta(id: string): Observable<AiProposta> {

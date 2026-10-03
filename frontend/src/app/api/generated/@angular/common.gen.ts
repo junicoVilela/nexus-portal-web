@@ -49,6 +49,8 @@ import type {
   AiAiSessaoGerarResponse,
   AiAiSessaoPropostaData,
   AiAiSessaoPropostaResponse,
+  AiAiSessaoRejeitarData,
+  AiAiSessaoRejeitarResponse,
   AiAiStatusStatusData,
   AiAiStatusStatusResponse,
   AiAiTemplateRecomendarData,
@@ -2749,6 +2751,16 @@ export const aiAiSessaoGerarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const aiAiSessaoRejeitarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiSessaoRejeitarData, ThrowOnError>,
+): HttpRequest<AiAiSessaoRejeitarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiSessaoRejeitarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/sessoes/{id}/proposta/rejeitar',
+    ...options,
+  });
+
 export const aiAiSessaoCancelarRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiSessaoCancelarData, ThrowOnError>,
 ): HttpRequest<AiAiSessaoCancelarResponse> =>
@@ -5403,6 +5415,14 @@ export const aiAiSessaoGerarResource = <ThrowOnError extends boolean = false>(
   httpResource<AiAiSessaoGerarResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiSessaoGerarRequest(opts) : undefined;
+  });
+
+export const aiAiSessaoRejeitarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiSessaoRejeitarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiSessaoRejeitarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiSessaoRejeitarRequest(opts) : undefined;
   });
 
 export const aiAiSessaoCancelarResource = <ThrowOnError extends boolean = false>(

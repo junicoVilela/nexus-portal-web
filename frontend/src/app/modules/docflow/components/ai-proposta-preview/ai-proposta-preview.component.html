@@ -100,13 +100,68 @@
     </aside>
   </div>
 
+  @if (rejeitada()) {
+    <p class="ai-proposta__rejeitada" role="status">
+      <lucide-icon name="XCircle" [size]="14" aria-hidden="true" />
+      Proposta rejeitada{{ proposta().motivoRejeicao ? ': ' + proposta().motivoRejeicao : '.' }}
+      Descreva abaixo o que mudar e regenere, ou cancele a sessão.
+    </p>
+  }
+
+  <div class="ai-proposta__refinar">
+    <label class="ai-proposta__refinar-label" for="ai-proposta-instrucao">
+      O que ajustar? <span>(opcional — vazio tenta de novo com o mesmo contexto)</span>
+    </label>
+    <textarea
+      id="ai-proposta-instrucao"
+      class="ai-proposta__refinar-input"
+      rows="2"
+      maxlength="2000"
+      placeholder="Ex.: deixe mais curto, foque na exportação, explique os filtros obrigatórios"
+      [value]="instrucao()"
+      [disabled]="disabled() || regenerando()"
+      (input)="instrucao.set($any($event.target).value)"
+    ></textarea>
+  </div>
+
+  @if (confirmandoRejeicao()) {
+    <div class="ai-proposta__refinar">
+      <label class="ai-proposta__refinar-label" for="ai-proposta-motivo">
+        Por que rejeitar? <span>(opcional — ajuda a melhorar o assistente)</span>
+      </label>
+      <textarea
+        id="ai-proposta-motivo"
+        class="ai-proposta__refinar-input"
+        rows="2"
+        maxlength="500"
+        [value]="motivoRejeicao()"
+        [disabled]="rejeitando()"
+        (input)="motivoRejeicao.set($any($event.target).value)"
+      ></textarea>
+      <div class="ai-proposta__actions">
+        <ui-button
+          type="button"
+          variant="danger"
+          icon="XCircle"
+          [loading]="rejeitando()"
+          (clicked)="confirmarRejeicao()"
+        >
+          Confirmar rejeição
+        </ui-button>
+        <ui-button type="button" variant="ghost" [disabled]="rejeitando()" (clicked)="confirmandoRejeicao.set(false)">
+          Voltar
+        </ui-button>
+      </div>
+    </div>
+  }
+
   <div class="ai-proposta__actions">
     <ui-button
       type="button"
       variant="primary"
       icon="FileText"
       [loading]="loading()"
-      [disabled]="disabled()"
+      [disabled]="disabled() || !pendente()"
       (clicked)="aplicar.emit()"
     >
       Aplicar no editor
@@ -117,9 +172,20 @@
       icon="Sparkles"
       [loading]="regenerando()"
       [disabled]="disabled()"
-      (clicked)="regenerar.emit()"
+      (clicked)="emitirRegenerar()"
     >
-      Regenerar
+      {{ instrucao().trim() ? 'Regenerar com ajuste' : 'Regenerar' }}
     </ui-button>
+    @if (pendente() && !confirmandoRejeicao()) {
+      <ui-button
+        type="button"
+        variant="ghost"
+        icon="XCircle"
+        [disabled]="disabled()"
+        (clicked)="confirmandoRejeicao.set(true)"
+      >
+        Rejeitar
+      </ui-button>
+    }
   </div>
 </div>

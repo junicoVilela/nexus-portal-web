@@ -42,6 +42,26 @@ describe('PaginaFormComponent (smoke)', () => {
     fixture.detectChanges();
   });
 
+  it('aplica a proposta da IA uma vez só (F5 não sobrescreve edições)', () => {
+    const component = fixture.componentInstance;
+    const anterior = history.state;
+    history.replaceState(
+      { ...anterior, origem: 'ai', proposta: { titulo: 'Consulta de pedidos', codigoTela: 'PED-001' } },
+      '',
+    );
+    try {
+      component['aplicarPropostaAiSePresente']();
+      expect(component['form'].controls.titulo.value).toBe('Consulta de pedidos');
+      expect(history.state?.['proposta']).toBeUndefined();
+
+      component['form'].controls.titulo.setValue('Editado pelo autor');
+      component['aplicarPropostaAiSePresente']();
+      expect(component['form'].controls.titulo.value).toBe('Editado pelo autor');
+    } finally {
+      history.replaceState(anterior, '');
+    }
+  });
+
   it('renderiza sem erros em modo novo', () => {
     expect(fixture.nativeElement).toBeTruthy();
   });

@@ -198,6 +198,13 @@
             }
           </div>
 
+          <app-ai-contexto-detectado
+            [contexto]="contextoDetectado()"
+            [loading]="carregando()"
+            [disabled]="carregando() || gerando()"
+            (corrigir)="corrigirContexto($event)"
+          />
+
           @if (perguntasPendentes().length) {
             <app-ai-perguntas
               [perguntas]="perguntasPendentes()"
@@ -291,8 +298,10 @@
               [componentesCatalogo]="blocosCatalogo()"
               [loading]="carregando()"
               [regenerando]="gerando()"
+              [rejeitando]="rejeitando()"
               (aplicar)="aplicarNoEditor()"
-              (regenerar)="gerarRascunho()"
+              (regenerar)="gerarRascunho($event)"
+              (rejeitar)="rejeitarProposta($event)"
             />
 
             <div class="wiz__section">

@@ -1783,7 +1783,20 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     this.justSaved = false;
     this.form.markAsDirty();
     this.toast.success('Proposta da IA aplicada no editor. Revise antes de salvar.');
+    this.consumirPropostaAiDoHistorico();
     void this.anexarImagensAiStaging();
+  }
+
+  /**
+   * `history.state` sobrevive ao F5: sem limpar, o reload restauraria o backup local e em seguida
+   * reaplicaria a proposta por cima das edições do autor.
+   */
+  private consumirPropostaAiDoHistorico(): void {
+    if (typeof history === 'undefined' || !history.state) return;
+    const state = { ...history.state };
+    delete state['origem'];
+    delete state['proposta'];
+    history.replaceState(state, '');
   }
 
   /** Imagens arrastadas no assistente → upload DocFlow + insert no HTML. */

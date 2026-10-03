@@ -56,6 +56,8 @@ import type {
   AiAiSessaoGerarResponses,
   AiAiSessaoPropostaData,
   AiAiSessaoPropostaResponses,
+  AiAiSessaoRejeitarData,
+  AiAiSessaoRejeitarResponses,
   AiAiStatusStatusData,
   AiAiStatusStatusResponses,
   AiAiTemplateRecomendarData,
@@ -2955,6 +2957,23 @@ export const aiAiSessaoGerar = <ThrowOnError extends boolean = true>(
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/sessoes/{id}/gerar',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiSessaoRejeitar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiSessaoRejeitarData, ThrowOnError>,
+): RequestResult<AiAiSessaoRejeitarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiSessaoRejeitarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/sessoes/{id}/proposta/rejeitar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 export const aiAiSessaoCancelar = <ThrowOnError extends boolean = true>(

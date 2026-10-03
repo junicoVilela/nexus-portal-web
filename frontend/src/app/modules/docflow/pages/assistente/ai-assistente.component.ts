@@ -17,6 +17,7 @@ import { BadgeComponent, ButtonComponent, CardComponent, PageHeaderComponent } f
 import { mensagemErroHttp } from '@shared/utils/http-error-message';
 import { compactQueryParams } from '@shared/utils/query-state';
 import { AiComponentComposerComponent } from '../../components/ai-component-composer/ai-component-composer.component';
+import { AiContextoDetectadoComponent } from '../../components/ai-contexto-detectado/ai-contexto-detectado.component';
 import { AiDocumentoImportacaoComponent } from '../../components/ai-documento-importacao/ai-documento-importacao.component';
 import { AiImagensDropzoneComponent } from '../../components/ai-imagens-dropzone/ai-imagens-dropzone.component';
 import { AiPerguntasComponent } from '../../components/ai-perguntas/ai-perguntas.component';
@@ -50,6 +51,7 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
     ButtonComponent,
     BadgeComponent,
     AiPerguntasComponent,
+    AiContextoDetectadoComponent,
     AiPropostaPreviewComponent,
     AiImagensDropzoneComponent,
     AiDocumentoImportacaoComponent,
@@ -81,6 +83,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
   protected readonly jobGeracao = signal<AiJob | null>(null);
   protected readonly carregando = signal(false);
   protected readonly gerando = signal(false);
+  protected readonly rejeitando = signal(false);
   protected readonly geracaoDemorada = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly respostas = signal<Record<string, string>>({});
@@ -174,6 +177,13 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     if (!s || s.status !== 'AGUARDANDO_USUARIO') return [];
     const ultima = [...s.mensagens].reverse().find(m => m.papel === 'ASSISTENTE');
     return ultima?.perguntas ?? [];
+  });
+
+  /** O que a última triagem entendeu do briefing, para o autor confirmar ou corrigir. */
+  protected readonly contextoDetectado = computed<Record<string, string>>(() => {
+    const mensagens = this.sessao()?.mensagens ?? [];
+    const ultima = [...mensagens].reverse().find(m => m.papel === 'ASSISTENTE');
+    return ultima?.contexto ?? {};
   });
 
   protected readonly prontaParaGerar = computed(
@@ -464,7 +474,37 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       });
   }
 
-  protected gerarRascunho(): void {
+  /** Correção do contexto detectado vira resposta da sessão e refaz a triagem. */
+  protected corrigirContexto(respostas: Record<string, string>): void {
+    const s = this.sessao();
+    if (!s) return;
+    this.carregando.set(true);
+    this.erro.set(null);
+    this.ai
+      .enviarMensagem(s.id, { conteudo: 'Contexto corrigido pelo autor.', respostas })
+      .pipe(finalize(() => this.carregando.set(false)))
+      .subscribe({
+        next: atualizada => this.sessao.set(atualizada),
+        error: err => this.erro.set(this.mensagemErro(err)),
+      });
+  }
+
+  protected rejeitarProposta(motivo: string | null): void {
+    const s = this.sessao();
+    if (!s) return;
+    this.rejeitando.set(true);
+    this.erro.set(null);
+    this.ai
+      .rejeitarProposta(s.id, motivo)
+      .pipe(finalize(() => this.rejeitando.set(false)))
+      .subscribe({
+        next: proposta => this.proposta.set(proposta),
+        error: err => this.erro.set(this.mensagemErro(err)),
+      });
+  }
+
+  /** `instrucao`: ajuste pedido pelo autor sobre a proposta atual; `null` só tenta de novo. */
+  protected gerarRascunho(instrucao: string | null = null): void {
     const s = this.sessao();
     if (!s) return;
     this.limparEscutaGeracao();
@@ -475,7 +515,7 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     this.erro.set(null);
     this.proposta.set(null);
     this.jobGeracao.set(null);
-    this.ai.gerar(s.id).subscribe({
+    this.ai.gerar(s.id, instrucao).subscribe({
       next: job => {
         this.jobGeracao.set(job);
         this.geracaoIniciadaEm = this.inicioJob(job);

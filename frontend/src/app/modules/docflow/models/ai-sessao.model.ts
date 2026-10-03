@@ -26,6 +26,8 @@ export interface AiMensagem {
   papel: AiPapelMensagem;
   conteudo: string;
   perguntas: AiPergunta[];
+  /** O que a triagem entendeu do briefing (titulo, codigoTela, publico…); só em mensagens do assistente. */
+  contexto?: Record<string, string>;
   ordem: number;
   createdAt: string;
 }

@@ -1490,6 +1490,9 @@ export type AiMensagemResponse = {
   papel?: 'USUARIO' | 'ASSISTENTE' | 'SISTEMA';
   conteudo?: string;
   perguntas?: Array<AiPerguntaResponse>;
+  contexto?: {
+    [key: string]: string;
+  };
   ordem?: number;
   createdAt?: string;
 };
@@ -1538,6 +1541,14 @@ export type AplicarAiPropostaRequest = {
   moduloId?: string;
   parentId?: string;
   ordem?: number;
+};
+
+export type GerarAiPropostaRequest = {
+  instrucao?: string;
+};
+
+export type RejeitarAiPropostaRequest = {
+  motivo?: string;
 };
 
 export type AiAplicacaoResponse = {
@@ -2252,6 +2263,7 @@ export type AiPropostaResponse = {
   paginaId?: string;
   createdAt?: string;
   avisosGeracao?: Array<string>;
+  motivoRejeicao?: string;
 };
 
 export type AiQualidadeItemResponse = {
@@ -6159,7 +6171,7 @@ export type AiAiSessaoEnviarMensagemResponse =
   AiAiSessaoEnviarMensagemResponses[keyof AiAiSessaoEnviarMensagemResponses];
 
 export type AiAiSessaoGerarData = {
-  body?: never;
+  body?: GerarAiPropostaRequest;
   path: {
     id: string;
   };
@@ -6175,6 +6187,24 @@ export type AiAiSessaoGerarResponses = {
 };
 
 export type AiAiSessaoGerarResponse = AiAiSessaoGerarResponses[keyof AiAiSessaoGerarResponses];
+
+export type AiAiSessaoRejeitarData = {
+  body?: RejeitarAiPropostaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/sessoes/{id}/proposta/rejeitar';
+};
+
+export type AiAiSessaoRejeitarResponses = {
+  /**
+   * OK
+   */
+  200: AiPropostaResponse;
+};
+
+export type AiAiSessaoRejeitarResponse = AiAiSessaoRejeitarResponses[keyof AiAiSessaoRejeitarResponses];
 
 export type AiAiSessaoCancelarData = {
   body?: never;

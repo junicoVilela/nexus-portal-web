@@ -26,6 +26,7 @@ export interface AiProposta {
   createdAt: string;
   /** Não vazio quando a geração caiu em fallback; o conteúdo exige revisão redobrada. */
   avisosGeracao?: string[];
+  motivoRejeicao?: string | null;
 }
 
 export interface AiPageSpecResumo {

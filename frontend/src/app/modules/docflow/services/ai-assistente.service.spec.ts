@@ -264,6 +264,21 @@ describe('AiAssistenteService', () => {
     });
   });
 
+  it('gerar com instrução envia o ajuste no corpo', () => {
+    service.gerar('s1', '  Deixe mais curto ').subscribe();
+    const req = http.expectOne(`${environment.aiApiUrl}/sessoes/s1/gerar`);
+    expect(req.request.body).toEqual({ instrucao: 'Deixe mais curto' });
+    req.flush({ id: 'j1' });
+  });
+
+  it('rejeita proposta em POST /sessoes/{id}/proposta/rejeitar', () => {
+    service.rejeitarProposta('s1', 'Genérico').subscribe(p => expect(p.status).toBe('REJEITADA'));
+    const req = http.expectOne(`${environment.aiApiUrl}/sessoes/s1/proposta/rejeitar`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ motivo: 'Genérico' });
+    req.flush({ id: 'p1', status: 'REJEITADA' });
+  });
+
   it('eventosAi() abre stream SSE em /eventos', () => {
     const fetchSpy = spyOn(window, 'fetch').and.resolveTo(
       new Response(

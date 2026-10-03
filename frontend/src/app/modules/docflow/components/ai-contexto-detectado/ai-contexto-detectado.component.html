@@ -1,0 +1,64 @@
+@if (temAlgo() || editando()) {
+  <section class="ai-contexto" aria-labelledby="ai-contexto-title">
+    <header class="ai-contexto__header">
+      <h3 class="ai-contexto__title" id="ai-contexto-title">O que entendi do texto</h3>
+      @if (!editando()) {
+        <ui-button
+          type="button"
+          variant="ghost"
+          size="sm"
+          icon="Pencil"
+          [disabled]="disabled()"
+          (clicked)="iniciarEdicao()"
+        >
+          Corrigir
+        </ui-button>
+      }
+    </header>
+
+    @if (editando()) {
+      <div class="ai-contexto__fields">
+        @for (item of itens(); track item.id) {
+          <label class="ai-contexto__field">
+            <span class="ai-contexto__label">{{ item.label }}</span>
+            <input
+              class="ai-contexto__control"
+              type="text"
+              [value]="rascunho()[item.id] ?? ''"
+              [disabled]="disabled()"
+              (input)="setValor(item.id, $any($event.target).value)"
+            />
+          </label>
+        }
+      </div>
+      <div class="ai-contexto__actions">
+        <ui-button
+          type="button"
+          variant="primary"
+          icon="Check"
+          [loading]="loading()"
+          [disabled]="disabled()"
+          (clicked)="salvar()"
+        >
+          Salvar correção
+        </ui-button>
+        <ui-button type="button" variant="ghost" [disabled]="loading()" (clicked)="cancelar()">Cancelar</ui-button>
+      </div>
+    } @else {
+      <dl class="ai-contexto__list">
+        @for (item of itens(); track item.id) {
+          <div>
+            <dt>{{ item.label }}</dt>
+            <dd>
+              @if (item.valor) {
+                {{ item.valor }}
+              } @else {
+                <span class="ai-contexto__vazio">não identificado</span>
+              }
+            </dd>
+          </div>
+        }
+      </dl>
+    }
+  </section>
+}

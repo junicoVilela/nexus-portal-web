@@ -94,6 +94,59 @@ describe('AiPropostaPreviewComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  function botao(texto: string): HTMLButtonElement {
+    return Array.from(fixture.nativeElement.querySelectorAll('button')).find(b =>
+      (b as HTMLElement).textContent?.includes(texto),
+    ) as HTMLButtonElement;
+  }
+
+  it('regenera com a instrução digitada pelo autor', () => {
+    const spy = jasmine.createSpy('regenerar');
+    fixture.componentInstance.regenerar.subscribe(spy);
+    const textarea = fixture.nativeElement.querySelector('#ai-proposta-instrucao') as HTMLTextAreaElement;
+    textarea.value = '  Deixe mais curto  ';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    botao('Regenerar com ajuste').click();
+
+    expect(spy).toHaveBeenCalledWith('Deixe mais curto');
+  });
+
+  it('regenerar sem instrução emite null', () => {
+    const spy = jasmine.createSpy('regenerar');
+    fixture.componentInstance.regenerar.subscribe(spy);
+    botao('Regenerar').click();
+    expect(spy).toHaveBeenCalledWith(null);
+  });
+
+  it('rejeita com motivo após confirmação', () => {
+    const spy = jasmine.createSpy('rejeitar');
+    fixture.componentInstance.rejeitar.subscribe(spy);
+    botao('Rejeitar').click();
+    fixture.detectChanges();
+    const motivo = fixture.nativeElement.querySelector('#ai-proposta-motivo') as HTMLTextAreaElement;
+    motivo.value = 'Texto genérico';
+    motivo.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    botao('Confirmar rejeição').click();
+
+    expect(spy).toHaveBeenCalledWith('Texto genérico');
+  });
+
+  it('proposta rejeitada não pode ser aplicada e mostra o motivo', () => {
+    fixture.componentRef.setInput('proposta', {
+      ...proposta,
+      status: 'REJEITADA',
+      motivoRejeicao: 'Genérico',
+    });
+    fixture.detectChanges();
+    expect(botao('Aplicar no editor').disabled).toBeTrue();
+    expect(fixture.nativeElement.querySelector('.ai-proposta__rejeitada')?.textContent).toContain('Genérico');
+    expect(botao('Rejeitar')?.textContent).not.toContain('Rejeitar proposta');
+  });
+
   it('não mostra avisos quando a geração saiu completa', () => {
     expect(fixture.nativeElement.querySelector('.ai-proposta__avisos')).toBeNull();
   });

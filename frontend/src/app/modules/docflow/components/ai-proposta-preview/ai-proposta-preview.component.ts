@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LucideAngularModule } from 'lucide-angular';
 
@@ -23,8 +23,21 @@ export class AiPropostaPreviewComponent {
   readonly regenerando = input(false);
   readonly disabled = input(false);
 
+  readonly rejeitando = input(false);
+
   readonly aplicar = output<void>();
-  readonly regenerar = output<void>();
+  /** Emite a instrução de ajuste digitada pelo autor, ou `null` para só tentar de novo. */
+  readonly regenerar = output<string | null>();
+  /** Emite o motivo opcional da rejeição. */
+  readonly rejeitar = output<string | null>();
+
+  protected readonly instrucao = signal('');
+  protected readonly confirmandoRejeicao = signal(false);
+  protected readonly motivoRejeicao = signal('');
+
+  protected readonly pendente = computed(() => this.proposta().status === 'PENDENTE');
+
+  protected readonly rejeitada = computed(() => this.proposta().status === 'REJEITADA');
 
   protected readonly previewHtml = computed<SafeHtml | null>(() => {
     const html = this.proposta().conteudoHtml;
@@ -57,6 +70,19 @@ export class AiPropostaPreviewComponent {
       return [];
     }
   });
+
+  protected emitirRegenerar(): void {
+    const texto = this.instrucao().trim();
+    this.regenerar.emit(texto || null);
+    this.instrucao.set('');
+  }
+
+  protected confirmarRejeicao(): void {
+    const texto = this.motivoRejeicao().trim();
+    this.rejeitar.emit(texto || null);
+    this.confirmandoRejeicao.set(false);
+    this.motivoRejeicao.set('');
+  }
 
   private humanizar(id: string): string {
     return id
