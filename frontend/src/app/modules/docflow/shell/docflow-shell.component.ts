@@ -65,7 +65,7 @@ export class DocflowShellComponent implements OnInit, OnDestroy {
       label: 'Assistente IA',
       icon: 'Sparkles',
       route: ['/doc-flow', 'assistente'],
-      permissao: 'PAGINA:CRIAR',
+      permissao: 'PAGINA:AI_GERAR',
       requerAi: true,
     },
     {

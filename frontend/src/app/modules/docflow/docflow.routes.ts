@@ -131,7 +131,7 @@ export const DOCFLOW_ROUTES: Routes = [
             component => component.AiAssistenteRevisaoComponent,
           ),
         canActivate: [permissaoGuard],
-        data: { permissoes: ['PAGINA:CRIAR'] },
+        data: { permissoes: ['PAGINA:AI_GERAR'] },
       },
       {
         path: 'assistente',
@@ -140,7 +140,7 @@ export const DOCFLOW_ROUTES: Routes = [
             component => component.AiAssistenteComponent,
           ),
         canActivate: [permissaoGuard],
-        data: { permissoes: ['PAGINA:CRIAR'] },
+        data: { permissoes: ['PAGINA:AI_GERAR'] },
       },
       {
         path: 'ia-qualidade',

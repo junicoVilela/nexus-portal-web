@@ -29,6 +29,7 @@ import { BlocoPagina } from '../../components/pagina-block-library';
 import { PaginaBlueprint } from '../../models/pagina-blueprint.model';
 import { PaginaTemplate } from '../../models/pagina.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
+import { AuthService } from '@core/auth/services/auth.service';
 import { AiFeatureService } from '../../services/ai-feature.service';
 import { AiImagensStagingService } from '../../services/ai-imagens-staging.service';
 import { PaginaBlueprintService } from '../../services/pagina-blueprint.service';
@@ -66,6 +67,7 @@ type WizardPasso = 'brief' | 'chat' | 'revisar';
 })
 export class AiAssistenteComponent implements OnInit, OnDestroy {
   private readonly ai = inject(AiAssistenteService);
+  private readonly auth = inject(AuthService);
   private readonly feature = inject(AiFeatureService);
   private readonly paginaService = inject(PaginaService);
   private readonly imagensStaging = inject(AiImagensStagingService);
@@ -125,6 +127,8 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
     templateId: [''],
   });
 
+  /** Ler e gerar fica com `PAGINA:AI_GERAR`; levar ao editor exige `PAGINA:AI_APLICAR`. */
+  protected readonly podeAplicar = computed(() => this.auth.tem()('PAGINA:AI_APLICAR'));
   protected readonly briefingTamanho = computed(() => this.briefingAtual().trim().length);
 
   protected readonly briefingValido = computed(() => {

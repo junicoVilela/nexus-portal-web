@@ -16,15 +16,27 @@
 
   <div actions class="paginas__actions">
     <ui-more-actions *appPermissao="'PAGINA:CRIAR'" label="Nova por tipo">
-      <ui-button variant="menu" size="sm" icon="FileText" [fullWidth]="true" (clicked)="nova()">Página em branco</ui-button>
-      <ui-button variant="menu" size="sm" icon="List" [fullWidth]="true" (clicked)="novaPorTipo('lista')">Tipo lista</ui-button>
-      <ui-button variant="menu" size="sm" icon="FilePlus2" [fullWidth]="true" (clicked)="novaPorTipo('incluir')">Tipo inclusão</ui-button>
-      <ui-button variant="menu" size="sm" icon="Pencil" [fullWidth]="true" (clicked)="novaPorTipo('editar')">Tipo edição</ui-button>
-      <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')">Tipo índice</ui-button>
-      <ui-button variant="menu" size="sm" icon="FolderOpen" [fullWidth]="true" (clicked)="novaPorTipo('menu')">Menu / pasta</ui-button>
+      <ui-button variant="menu" size="sm" icon="FileText" [fullWidth]="true" (clicked)="nova()"
+        >Página em branco</ui-button
+      >
+      <ui-button variant="menu" size="sm" icon="List" [fullWidth]="true" (clicked)="novaPorTipo('lista')"
+        >Tipo lista</ui-button
+      >
+      <ui-button variant="menu" size="sm" icon="FilePlus2" [fullWidth]="true" (clicked)="novaPorTipo('incluir')"
+        >Tipo inclusão</ui-button
+      >
+      <ui-button variant="menu" size="sm" icon="Pencil" [fullWidth]="true" (clicked)="novaPorTipo('editar')"
+        >Tipo edição</ui-button
+      >
+      <ui-button variant="menu" size="sm" icon="LayoutGrid" [fullWidth]="true" (clicked)="novaPorTipo('indice')"
+        >Tipo índice</ui-button
+      >
+      <ui-button variant="menu" size="sm" icon="FolderOpen" [fullWidth]="true" (clicked)="novaPorTipo('menu')"
+        >Menu / pasta</ui-button
+      >
     </ui-more-actions>
     @if (aiDisponivel()) {
-      <ui-button *appPermissao="'PAGINA:CRIAR'" variant="secondary" icon="Sparkles" (clicked)="novaComIa()">
+      <ui-button *appPermissao="'PAGINA:AI_GERAR'" variant="secondary" icon="Sparkles" (clicked)="novaComIa()">
         Criar com IA
       </ui-button>
     }
@@ -180,9 +192,13 @@
             <ng-container *appPermissao="'PAGINA:EDITAR'">
               <ui-button variant="secondary" size="sm" icon="Pencil" (clicked)="editar(pagina)">Editar</ui-button>
               @if (pagina.status === 'RASCUNHO') {
-                <ui-button variant="secondary" size="sm" icon="Send" (clicked)="enviarRevisao(pagina)">Enviar revisão</ui-button>
+                <ui-button variant="secondary" size="sm" icon="Send" (clicked)="enviarRevisao(pagina)"
+                  >Enviar revisão</ui-button
+                >
               } @else if (pagina.status === 'EM_REVISAO') {
-                <ui-button variant="secondary" size="sm" icon="CheckCircle" (clicked)="aprovar(pagina)">Aprovar</ui-button>
+                <ui-button variant="secondary" size="sm" icon="CheckCircle" (clicked)="aprovar(pagina)"
+                  >Aprovar</ui-button
+                >
               } @else if (pagina.status === 'APROVADO') {
                 <ui-button variant="secondary" size="sm" icon="Upload" (clicked)="publicar(pagina)">Publicar</ui-button>
               }

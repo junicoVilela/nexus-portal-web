@@ -322,7 +322,13 @@
                   <ui-button variant="ghost" icon="RefreshCw" [loading]="executando()" (clicked)="gerarOuRegenerar()">
                     Regenerar
                   </ui-button>
-                  <ui-button variant="secondary" icon="Pencil" [loading]="executando()" (clicked)="editar()">
+                  <ui-button
+                    variant="secondary"
+                    icon="Pencil"
+                    [loading]="executando()"
+                    [disabled]="!podeAplicar()"
+                    (clicked)="editar()"
+                  >
                     Ajustar no editor
                   </ui-button>
                   <ui-button

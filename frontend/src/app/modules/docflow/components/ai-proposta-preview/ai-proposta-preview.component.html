@@ -163,7 +163,8 @@
         variant="primary"
         icon="FileText"
         [loading]="loading()"
-        [disabled]="disabled() || !pendente()"
+        [disabled]="disabled() || !pendente() || !podeAplicar()"
+        [attr.title]="podeAplicar() ? null : 'Sem permissão para aplicar propostas da IA (PAGINA:AI_APLICAR).'"
         (clicked)="aplicar.emit()"
       >
         Aplicar no editor

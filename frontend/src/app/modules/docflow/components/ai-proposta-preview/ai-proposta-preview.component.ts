@@ -22,6 +22,8 @@ export class AiPropostaPreviewComponent {
   readonly loading = input(false);
   readonly regenerando = input(false);
   readonly disabled = input(false);
+  /** Sem `PAGINA:AI_APLICAR` a proposta pode ser lida, regenerada ou rejeitada, mas não aplicada. */
+  readonly podeAplicar = input(true);
 
   readonly rejeitando = input(false);
 

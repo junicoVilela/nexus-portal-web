@@ -24,6 +24,7 @@ import {
 } from '../../models/ai-documento-importacao.model';
 import { AiProposta } from '../../models/ai-proposta.model';
 import { Pagina } from '../../models/pagina.model';
+import { AuthService } from '@core/auth/services/auth.service';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { PaginaService } from '../../services/pagina.service';
 
@@ -52,6 +53,7 @@ interface ItemRevisao {
 })
 export class AiAssistenteRevisaoComponent implements OnInit, OnDestroy {
   private readonly ai = inject(AiAssistenteService);
+  private readonly auth = inject(AuthService);
   private readonly paginaService = inject(PaginaService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly toast = inject(ToastService);
@@ -123,11 +125,18 @@ export class AiAssistenteRevisaoComponent implements OnInit, OnDestroy {
     return total ? Math.round((this.totalSalvas() / total) * 100) : 0;
   });
 
+  /** Levar a proposta para o editor ou criar o rascunho exige `PAGINA:AI_APLICAR`. */
+  protected readonly podeAplicar = computed(() => this.auth.tem()('PAGINA:AI_APLICAR'));
+
   protected readonly podeAceitar = computed(() => {
     const proposta = this.proposta();
     const pagina = this.selecionada()?.pagina;
     return (
-      !!pagina && !pagina.paginaId && !!proposta && (proposta.status === 'PENDENTE' || !!proposta.paginaId)
+      this.podeAplicar() &&
+      !!pagina &&
+      !pagina.paginaId &&
+      !!proposta &&
+      (proposta.status === 'PENDENTE' || !!proposta.paginaId)
     );
   });
 

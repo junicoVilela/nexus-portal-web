@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
+import { AuthService } from '@core/auth/services/auth.service';
 import { ToastService } from '@shared/ui';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 import { AiDocumentoImportacao } from '../../models/ai-documento-importacao.model';
@@ -15,8 +16,10 @@ describe('AiAssistenteRevisaoComponent', () => {
   let ai: jasmine.SpyObj<AiAssistenteService>;
   let paginas: jasmine.SpyObj<PaginaService>;
   let toast: jasmine.SpyObj<ToastService>;
+  let permissoes: Set<string>;
 
   beforeEach(async () => {
+    permissoes = new Set(['PAGINA:AI_GERAR', 'PAGINA:AI_APLICAR']);
     ai = jasmine.createSpyObj<AiAssistenteService>('AiAssistenteService', [
       'buscarImportacao',
       'sincronizarImportacao',
@@ -65,6 +68,7 @@ describe('AiAssistenteRevisaoComponent', () => {
         { provide: AiAssistenteService, useValue: ai },
         { provide: PaginaService, useValue: paginas },
         { provide: ToastService, useValue: toast },
+        { provide: AuthService, useValue: { tem: () => (codigo: string) => permissoes.has(codigo) } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(AiAssistenteRevisaoComponent);
@@ -96,6 +100,19 @@ describe('AiAssistenteRevisaoComponent', () => {
     expect(paginas.pagina).toHaveBeenCalledWith('pagina-real-1');
     expect(toast.success).toHaveBeenCalledWith('Proposta aceita e página criada como rascunho.');
     expect(fixture.nativeElement.textContent).toContain('Rascunho salvo');
+  });
+
+  it('sem PAGINA:AI_APLICAR não aceita nem leva a proposta ao editor', () => {
+    permissoes.delete('PAGINA:AI_APLICAR');
+    const semAplicar = TestBed.createComponent(AiAssistenteRevisaoComponent);
+    semAplicar.detectChanges();
+
+    semAplicar.componentInstance['aceitarComoRascunho']();
+
+    expect(ai.aceitarPaginaImportada).not.toHaveBeenCalled();
+    const botoes = Array.from(semAplicar.nativeElement.querySelectorAll('ui-button')) as HTMLElement[];
+    const ajustar = botoes.find(botao => botao.textContent?.includes('Ajustar no editor'));
+    expect(ajustar?.querySelector('button')?.disabled).toBeTrue();
   });
 });
 

@@ -195,6 +195,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
       pagina.status !== 'ARQUIVADO' &&
       !this.conteudoTravado() &&
       this.podeEditarPagina() &&
+      this.auth.tem()('PAGINA:AI_GERAR') &&
       this.aiFeature.disponivel()
     );
   });
