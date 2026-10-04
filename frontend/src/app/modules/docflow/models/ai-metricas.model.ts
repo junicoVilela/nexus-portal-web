@@ -25,6 +25,17 @@ export interface AiMetricas {
   /** Todas as categorias, inclusive zeradas, na ordem do backend. */
   rejeicoesPorCategoria: { categoria: string; rotulo: string; total: number }[];
   /** Páginas novas aceitas: quantas tiveram cada campo mudado pelo autor depois. */
+  /** Perguntas ao manual publicado (Onda E). */
+  manual: {
+    perguntas: number;
+    comIa: number;
+    soTrechos: number;
+    naoSei: number;
+    taxaNaoSei: number | null;
+    /** Perguntas que terminaram em "não sei": lacunas do manual. */
+    semResposta: { valor: string; ocorrencias: number }[];
+    telasMaisCitadas: { valor: string; ocorrencias: number }[];
+  };
   alteracoesPosAceite: {
     amostras: number;
     tituloAlterado: number;

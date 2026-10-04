@@ -1,0 +1,111 @@
+.pp {
+  display: grid;
+  gap: 16px;
+}
+
+.pp__bloco {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.pp__titulo {
+  margin: 0;
+  font: 600 15px/1.3 var(--font-body);
+}
+
+.pp__ajuda {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.pp__form {
+  display: flex;
+  gap: 8px;
+}
+
+.pp__campo {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.pp__erro {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.pp__resposta {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.pp__resposta--nao-sei {
+  border-left-color: var(--border);
+  color: var(--text-muted);
+}
+
+.pp__texto {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.pp__citacoes {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.pp__codigo {
+  margin-left: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+
+.pp__trecho {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+}
+
+.pp__rodape {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.pp__comando {
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font: 12px/1.5 var(--font-mono, monospace);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .pp__form {
+    flex-direction: column;
+  }
+}

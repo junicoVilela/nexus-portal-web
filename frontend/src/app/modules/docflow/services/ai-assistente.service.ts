@@ -13,6 +13,7 @@ import {
 } from '../models/ai-documento-importacao.model';
 import { AiJobEvento } from '../models/ai-evento.model';
 import { AiFilaPrItem } from '../models/ai-fila-pr.model';
+import { AiManualResposta } from '../models/ai-manual.model';
 import { AiMensagemPayload, AiSessao, CriarAiSessaoPayload } from '../models/ai-sessao.model';
 import {
   AiAjustePaginaPayload,
@@ -234,6 +235,13 @@ export class AiAssistenteService {
 
   reprocessarItemFila(id: string): Observable<AiFilaPrItem> {
     return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/reprocessar`, {});
+  }
+
+  /** Pergunta ao snapshot publicado (só lê; rascunhos não entram). */
+  perguntarPublicacao(publicacaoId: string, pergunta: string): Observable<AiManualResposta> {
+    return this.http.post<AiManualResposta>(`${this.base}/publicacoes/${publicacaoId}/perguntar`, {
+      pergunta,
+    });
   }
 
   proposta(id: string): Observable<AiProposta> {

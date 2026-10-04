@@ -1,0 +1,66 @@
+<section class="pp">
+  <div class="pp__bloco">
+    <h3 class="pp__titulo">Pergunte a esta versão do manual</h3>
+    <p class="pp__ajuda">
+      A resposta usa só o que foi publicado nesta versão e cita a tela de origem. Rascunhos não entram. Quando o manual
+      não cobre o assunto, a resposta é "não encontrei".
+    </p>
+    <form class="pp__form" (submit)="$event.preventDefault(); perguntar()">
+      <input
+        class="pp__campo"
+        aria-label="Pergunta"
+        maxlength="500"
+        placeholder="Ex.: como filtrar os pedidos por status?"
+        [value]="pergunta()"
+        (input)="pergunta.set($any($event.target).value)"
+      />
+      <ui-button type="submit" icon="Sparkles" [loading]="perguntando()" [disabled]="!podePerguntar()">
+        Perguntar
+      </ui-button>
+    </form>
+
+    @if (erro()) {
+      <p class="pp__erro" role="alert">{{ erro() }}</p>
+    }
+
+    @if (resposta(); as r) {
+      <div class="pp__resposta" [class.pp__resposta--nao-sei]="r.modo === 'NAO_SEI'" aria-live="polite">
+        <p class="pp__texto">{{ r.resposta }}</p>
+        @if (r.citacoes.length) {
+          <ul class="pp__citacoes">
+            @for (c of r.citacoes; track c.codigoTela + (c.secao ?? '')) {
+              <li>
+                <strong>{{ c.titulo }}{{ c.secao ? ' — ' + c.secao : '' }}</strong>
+                <span class="pp__codigo">{{ c.codigoTela }}</span>
+                @if (r.modo === 'TRECHOS') {
+                  <p class="pp__trecho">{{ c.trecho }}</p>
+                }
+              </li>
+            }
+          </ul>
+        }
+        <p class="pp__rodape">
+          {{ r.manual }} ·
+          {{ r.modo === 'IA' ? 'resposta da IA' : r.modo === 'TRECHOS' ? 'trechos sem IA' : 'sem base no manual' }}
+        </p>
+      </div>
+    }
+  </div>
+
+  <div class="pp__bloco">
+    <h3 class="pp__titulo">Conectar um agente (MCP)</h3>
+    <p class="pp__ajuda">
+      Agentes como Claude e Cursor consultam o manual <strong>vigente</strong> do cliente (a última publicação
+      concluída) pelas ferramentas <code>buscar</code>, <code>paginaPorCodigo</code> e <code>listarTelas</code>. O
+      acesso usa o token de prévia do cliente.
+    </p>
+    @if (comandoMcp(); as comando) {
+      <pre class="pp__comando">{{ comando }}</pre>
+      <ui-button variant="secondary" size="sm" icon="Copy" (clicked)="copiar(comando)">Copiar comando</ui-button>
+    } @else {
+      <ui-button variant="secondary" size="sm" icon="Link" [loading]="gerandoComando()" (clicked)="gerarComandoMcp()">
+        Gerar comando de conexão
+      </ui-button>
+    }
+  </div>
+</section>

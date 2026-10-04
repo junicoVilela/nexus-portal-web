@@ -52,6 +52,10 @@ import type {
   AiAiFilaPrReprocessarData,
   AiAiFilaPrReprocessarResponse,
   AiAiGithubWebhookReceberData,
+  AiAiManualPerguntarComTokenData,
+  AiAiManualPerguntarComTokenResponse,
+  AiAiManualPerguntarPublicacaoData,
+  AiAiManualPerguntarPublicacaoResponse,
   AiAiMetricasMetricasData,
   AiAiMetricasMetricasResponse,
   AiAiSessaoAplicarData,
@@ -124,6 +128,9 @@ import type {
   DocflowEmpresaGetLogoResponse,
   DocflowEmpresaUploadLogoData,
   DocflowEmpresaUploadLogoResponse,
+  DocflowManualMcpMensagemData,
+  DocflowManualMcpMensagemResponse,
+  DocflowManualMcpSemStreamData,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponse,
   DocflowModuloBuscarData,
@@ -2604,6 +2611,26 @@ export const docflowModuloCriarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const docflowManualMcpSemStreamRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowManualMcpSemStreamData, ThrowOnError>,
+): HttpRequest<unknown> =>
+  (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/mcp',
+    ...options,
+  });
+
+export const docflowManualMcpMensagemRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualMcpMensagemData, ThrowOnError>,
+): HttpRequest<DocflowManualMcpMensagemResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualMcpMensagemResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/mcp',
+    ...options,
+  });
+
 export const docflowEmpresaDeleteLogoRequest = <ThrowOnError extends boolean = false>(
   options?: Options<DocflowEmpresaDeleteLogoData, ThrowOnError>,
 ): HttpRequest<DocflowEmpresaDeleteLogoResponse> =>
@@ -2824,6 +2851,16 @@ export const aiAiSessaoAplicarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const aiAiManualPerguntarPublicacaoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiManualPerguntarPublicacaoData, ThrowOnError>,
+): HttpRequest<AiAiManualPerguntarPublicacaoResponse> =>
+  (options?.client ?? client).requestOptions<AiAiManualPerguntarPublicacaoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/publicacoes/{id}/perguntar',
+    ...options,
+  });
+
 export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
 ): HttpRequest<AiAiAjustePaginaPedirResponse> =>
@@ -2831,6 +2868,16 @@ export const aiAiAjustePaginaPedirRequest = <ThrowOnError extends boolean = fals
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/ai/paginas/{paginaId}/ajustes',
+    ...options,
+  });
+
+export const aiAiManualPerguntarComTokenRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiManualPerguntarComTokenData, ThrowOnError>,
+): HttpRequest<AiAiManualPerguntarComTokenResponse> =>
+  (options?.client ?? client).requestOptions<AiAiManualPerguntarComTokenResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/manual/{token}/perguntar',
     ...options,
   });
 
@@ -5427,6 +5474,22 @@ export const docflowModuloCriarResource = <ThrowOnError extends boolean = false>
     return opts ? docflowModuloCriarRequest(opts) : undefined;
   });
 
+export const docflowManualMcpSemStreamResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowManualMcpSemStreamData, ThrowOnError> | undefined,
+) =>
+  httpResource<unknown>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualMcpSemStreamRequest(opts) : undefined;
+  });
+
+export const docflowManualMcpMensagemResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualMcpMensagemData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualMcpMensagemResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualMcpMensagemRequest(opts) : undefined;
+  });
+
 export const docflowEmpresaDeleteLogoResource = <ThrowOnError extends boolean = false>(
   options?: () => Options<DocflowEmpresaDeleteLogoData, ThrowOnError> | undefined,
 ) =>
@@ -5603,12 +5666,28 @@ export const aiAiSessaoAplicarResource = <ThrowOnError extends boolean = false>(
     return opts ? aiAiSessaoAplicarRequest(opts) : undefined;
   });
 
+export const aiAiManualPerguntarPublicacaoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiManualPerguntarPublicacaoData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiManualPerguntarPublicacaoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiManualPerguntarPublicacaoRequest(opts) : undefined;
+  });
+
 export const aiAiAjustePaginaPedirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<AiAiAjustePaginaPedirData, ThrowOnError> | undefined,
 ) =>
   httpResource<AiAiAjustePaginaPedirResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? aiAiAjustePaginaPedirRequest(opts) : undefined;
+  });
+
+export const aiAiManualPerguntarComTokenResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiManualPerguntarComTokenData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiManualPerguntarComTokenResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiManualPerguntarComTokenRequest(opts) : undefined;
   });
 
 export const aiAiDocumentoImportacaoImportacoesEmAndamentoResource = <ThrowOnError extends boolean = false>(

@@ -234,6 +234,19 @@
         </ui-card>
       }
 
+      @case ('perguntar') {
+        @if (podeBaixar()) {
+          <app-publicacao-perguntar
+            [publicacaoId]="publicacao()!.id"
+            [clienteId]="publicacao()!.clienteId"
+            [clienteSlug]="clienteSlug()"
+          />
+        } @else {
+          <ui-card padding="md">
+            <p class="pub-det__empty">Perguntas disponíveis apenas para publicações concluídas com sucesso.</p>
+          </ui-card>
+        }
+      }
       @case ('downloads') {
         <ui-card padding="md">
           <h3 class="pub-det__section-title">Artefatos disponíveis</h3>

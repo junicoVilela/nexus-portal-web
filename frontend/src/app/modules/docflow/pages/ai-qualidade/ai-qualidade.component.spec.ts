@@ -76,6 +76,15 @@ describe('AiQualidadeComponent', () => {
       { categoria: 'FALTOU_INFORMACAO', rotulo: 'Faltou informação', total: 2 },
       { categoria: 'LINGUAGEM', rotulo: 'Tom ou linguagem', total: 1 },
     ],
+    manual: {
+      perguntas: 10,
+      comIa: 6,
+      soTrechos: 1,
+      naoSei: 3,
+      taxaNaoSei: 0.3,
+      semResposta: [{ valor: 'como emitir nota fiscal?', ocorrencias: 2 }],
+      telasMaisCitadas: [{ valor: 'PED-001', ocorrencias: 5 }],
+    },
     alteracoesPosAceite: {
       amostras: 4,
       tituloAlterado: 1,
@@ -155,6 +164,16 @@ describe('AiQualidadeComponent', () => {
     expect(secao.textContent).toContain('+12 p.p.');
     expect(secao.textContent).toContain('Faltou informação');
     expect(secao.textContent).toContain('amostra pequena');
+  });
+
+  it('mostra perguntas sem resposta e telas mais procuradas', () => {
+    const perguntas = fixture.nativeElement.querySelector('[aria-labelledby="aq-perguntas"]') as HTMLElement;
+    expect(perguntas.textContent).toContain('3 sem resposta');
+    expect(perguntas.textContent).toContain('como emitir nota fiscal?');
+    const telas = fixture.nativeElement.querySelector(
+      '[aria-labelledby="aq-telas-procuradas"]',
+    ) as HTMLElement;
+    expect(telas.textContent).toContain('PED-001');
   });
 
   it('troca o período e recarrega', () => {

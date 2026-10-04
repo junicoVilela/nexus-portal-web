@@ -16,6 +16,7 @@ import type {
   AiImportacaoDocumentoResponse,
   AiImportacaoResumoResponse,
   AiJobResponse,
+  AiManualRespostaResponse,
   AiMensagemRequest,
   AiMetricasResponse,
   AiPropostaResponse,
@@ -50,6 +51,7 @@ import type {
   AiQualidadeItem,
 } from '../models/ai-proposta.model';
 import type { AiFilaPrItem } from '../models/ai-fila-pr.model';
+import type { AiManualCitacao, AiManualResposta } from '../models/ai-manual.model';
 import type { AiMetricas, AiMetricasPrompt } from '../models/ai-metricas.model';
 import type {
   AiMensagem,
@@ -116,6 +118,10 @@ export type ContratoRespostas = [
   Vazio<SoNoFront<AiEstimativaLoteDocumento, AiEstimativaLoteDocumentoResponse>>,
   Vazio<SoNoFront<AiImportacaoResumo, AiImportacaoResumoResponse>>,
   Vazio<SoNoFront<AiFilaPrItem, AiFilaPrItemResponse>>,
+  Vazio<SoNoFront<AiManualResposta, AiManualRespostaResponse>>,
+  Vazio<SoNoFront<AiManualCitacao, Item<AiManualRespostaResponse['citacoes']>>>,
+  Subconjunto<AiManualResposta['modo'], NonNullable<AiManualRespostaResponse['modo']>>,
+  Vazio<SoNoFront<AiMetricas['manual'], NonNullable<AiMetricasResponse['manual']>>>,
   Subconjunto<AiFilaPrItem['status'], NonNullable<AiFilaPrItemResponse['status']>>,
   Subconjunto<NonNullable<AiFilaPrItem['classificacao']>, NonNullable<AiFilaPrItemResponse['classificacao']>>,
 ];

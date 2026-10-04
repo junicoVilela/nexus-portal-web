@@ -259,3 +259,9 @@
     order: 3;
   }
 }
+
+.aq__dica {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}

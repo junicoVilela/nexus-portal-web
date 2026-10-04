@@ -1632,6 +1632,27 @@ export type AiAplicacaoResponse = {
   moduloId?: string;
 };
 
+export type AiManualPerguntaRequest = {
+  pergunta: string;
+};
+
+export type AiManualRespostaResponse = {
+  manual?: string;
+  versao?: string;
+  modo?: 'IA' | 'TRECHOS' | 'NAO_SEI';
+  resposta?: string;
+  citacoes?: Array<Citacao>;
+};
+
+export type Citacao = {
+  codigoTela?: string;
+  titulo?: string;
+  secao?: string;
+  caminho?: string;
+  url?: string;
+  trecho?: string;
+};
+
 export type AiAjustePaginaRequest = {
   instrucao: string;
   secaoId?: string;
@@ -2367,6 +2388,7 @@ export type AiMetricasResponse = {
   rejeicoesRecentes?: Array<Rejeicao>;
   rejeicoesPorCategoria?: Array<RejeicaoPorCategoria>;
   alteracoesPosAceite?: AlteracoesPosAceite;
+  manual?: Manual;
 };
 
 export type Ajustes = {
@@ -2390,6 +2412,11 @@ export type AvisoFrequente = {
   ocorrencias?: number;
 };
 
+export type Contagem = {
+  valor?: string;
+  ocorrencias?: number;
+};
+
 export type Geracao = {
   jobs?: number;
   sucesso?: number;
@@ -2399,6 +2426,16 @@ export type Geracao = {
   latenciaP90Ms?: number;
   tokensEntrada?: number;
   tokensSaida?: number;
+};
+
+export type Manual = {
+  perguntas?: number;
+  comIa?: number;
+  soTrechos?: number;
+  naoSei?: number;
+  taxaNaoSei?: number;
+  semResposta?: Array<Contagem>;
+  telasMaisCitadas?: Array<Contagem>;
 };
 
 export type PorPrompt = {
@@ -6053,6 +6090,40 @@ export type DocflowModuloCriarResponses = {
 
 export type DocflowModuloCriarResponse = DocflowModuloCriarResponses[keyof DocflowModuloCriarResponses];
 
+export type DocflowManualMcpSemStreamData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/mcp';
+};
+
+export type DocflowManualMcpSemStreamResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type DocflowManualMcpMensagemData = {
+  body: string;
+  headers?: {
+    Authorization?: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/api/v1/docflow/mcp';
+};
+
+export type DocflowManualMcpMensagemResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type DocflowManualMcpMensagemResponse =
+  DocflowManualMcpMensagemResponses[keyof DocflowManualMcpMensagemResponses];
+
 export type DocflowEmpresaDeleteLogoData = {
   body?: never;
   path?: never;
@@ -6453,6 +6524,25 @@ export type AiAiSessaoAplicarResponses = {
 
 export type AiAiSessaoAplicarResponse = AiAiSessaoAplicarResponses[keyof AiAiSessaoAplicarResponses];
 
+export type AiAiManualPerguntarPublicacaoData = {
+  body: AiManualPerguntaRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/publicacoes/{id}/perguntar';
+};
+
+export type AiAiManualPerguntarPublicacaoResponses = {
+  /**
+   * OK
+   */
+  200: AiManualRespostaResponse;
+};
+
+export type AiAiManualPerguntarPublicacaoResponse =
+  AiAiManualPerguntarPublicacaoResponses[keyof AiAiManualPerguntarPublicacaoResponses];
+
 export type AiAiAjustePaginaPedirData = {
   body: AiAjustePaginaRequest;
   path: {
@@ -6471,6 +6561,25 @@ export type AiAiAjustePaginaPedirResponses = {
 
 export type AiAiAjustePaginaPedirResponse =
   AiAiAjustePaginaPedirResponses[keyof AiAiAjustePaginaPedirResponses];
+
+export type AiAiManualPerguntarComTokenData = {
+  body: AiManualPerguntaRequest;
+  path: {
+    token: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/manual/{token}/perguntar';
+};
+
+export type AiAiManualPerguntarComTokenResponses = {
+  /**
+   * OK
+   */
+  200: AiManualRespostaResponse;
+};
+
+export type AiAiManualPerguntarComTokenResponse =
+  AiAiManualPerguntarComTokenResponses[keyof AiAiManualPerguntarComTokenResponses];
 
 export type AiAiDocumentoImportacaoImportacoesEmAndamentoData = {
   body?: never;

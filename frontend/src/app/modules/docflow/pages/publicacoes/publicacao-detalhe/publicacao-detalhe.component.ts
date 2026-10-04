@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { AuthService } from '@core/auth/services/auth.service';
-import { PreviewToken } from '@modules/docflow/models/cliente.model';
-import { ClienteService } from '@modules/docflow/services/cliente.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ClientePreviewLinkService } from '@modules/docflow/services/cliente-preview-link.service';
+import { PublicacaoPerguntarComponent } from '@modules/docflow/components/publicacao-perguntar/publicacao-perguntar.component';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import {
@@ -29,7 +28,7 @@ import {
 } from '@shared/ui';
 import { PermissaoDirective } from '@modules/identity-access/directives';
 
-type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'comparar' | 'downloads';
+type PublicacaoDetalheTab = 'visao-geral' | 'paginas' | 'changelog' | 'comparar' | 'perguntar' | 'downloads';
 
 interface PaginaChangelogResumo {
   paginaTitulo: string;
@@ -56,6 +55,7 @@ interface PaginaArvoreItem {
     BadgeComponent,
     TabsComponent,
     PermissaoDirective,
+    PublicacaoPerguntarComponent,
   ],
   templateUrl: './publicacao-detalhe.component.html',
   styleUrl: './publicacao-detalhe.component.css',
@@ -64,10 +64,7 @@ interface PaginaArvoreItem {
 export class PublicacaoDetalheComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
-  private readonly clienteService = inject(ClienteService);
-  private readonly auth = inject(AuthService);
-  /** Link de prévia do cliente reaproveitado entre cópias (evita um token por clique). */
-  private previewToken: PreviewToken | null = null;
+  private readonly previewLink = inject(ClientePreviewLinkService);
 
   protected id = '';
   protected readonly publicacao = signal<Publicacao | undefined>(undefined);
@@ -131,6 +128,16 @@ export class PublicacaoDetalheComponent implements OnInit {
     }));
   });
 
+  /** Nome curto do servidor MCP (`manual-<cliente>`). */
+  protected readonly clienteSlug = computed(() =>
+    (this.publicacao()?.clienteNome ?? 'manual')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, ''),
+  );
+
   protected readonly tabsConfig = computed<TabItem<PublicacaoDetalheTab>[]>(() => [
     { id: 'visao-geral', label: 'Visão geral', icon: 'LayoutDashboard' },
     {
@@ -141,6 +148,7 @@ export class PublicacaoDetalheComponent implements OnInit {
     },
     { id: 'changelog', label: 'Changelog', icon: 'List', count: this.changelog().length || undefined },
     { id: 'comparar', label: 'Comparar', icon: 'GitCompare' },
+    { id: 'perguntar', label: 'Perguntar', icon: 'Sparkles' },
     { id: 'downloads', label: 'Downloads', icon: 'Download' },
   ]);
 
@@ -338,16 +346,12 @@ export class PublicacaoDetalheComponent implements OnInit {
     });
   }
 
-  /**
-   * INT-106: link estável para uma tela — prévia online do cliente com {@code ?tela=CODIGO}. Usa
-   * um link de prévia válido do cliente ou cria um (72 h) para quem pode editar publicações.
-   */
+  /** INT-106: link estável para uma tela — prévia online do cliente com `?tela=CODIGO`. */
   copiarLinkTela(codigoTela: string): void {
     const pub = this.publicacao();
     if (!pub) return;
-    this.linkPreviewDoCliente(pub.clienteId).subscribe({
+    this.previewLink.tokenValido(pub.clienteId).subscribe({
       next: token => {
-        const url = `${this.clienteService.previewPublicoUrl(token.token)}?tela=${encodeURIComponent(codigoTela)}`;
         const validade = new Date(token.expiresAt).toLocaleString('pt-BR', {
           day: '2-digit',
           month: '2-digit',
@@ -355,7 +359,7 @@ export class PublicacaoDetalheComponent implements OnInit {
           minute: '2-digit',
         });
         navigator.clipboard
-          .writeText(url)
+          .writeText(this.previewLink.urlPrevia(token, codigoTela))
           .then(() =>
             this.toast.success(`Link da tela ${codigoTela} copiado (prévia válida até ${validade}).`),
           )
@@ -364,30 +368,6 @@ export class PublicacaoDetalheComponent implements OnInit {
       error: (erro: unknown) =>
         this.toast.error(erro instanceof Error ? erro.message : 'Não foi possível gerar o link da tela.'),
     });
-  }
-
-  private linkPreviewDoCliente(clienteId: string): Observable<PreviewToken> {
-    const margem = Date.now() + 60 * 60 * 1000;
-    if (this.previewToken && new Date(this.previewToken.expiresAt).getTime() > margem)
-      return of(this.previewToken);
-    return this.clienteService.listarPreviewTokens(clienteId).pipe(
-      map(tokens =>
-        tokens
-          .filter(t => new Date(t.expiresAt).getTime() > margem)
-          .sort((a, b) => b.expiresAt.localeCompare(a.expiresAt))
-          .at(0),
-      ),
-      switchMap(valido => {
-        if (valido) return of(valido);
-        if (!this.auth.tem()('PUBLICACAO:EDITAR')) {
-          return throwError(
-            () => new Error('Não há link de prévia ativo para este cliente. Peça a quem edita publicações.'),
-          );
-        }
-        return this.clienteService.gerarPreviewToken(clienteId);
-      }),
-      tap(token => (this.previewToken = token)),
-    );
   }
 
   async excluir(): Promise<void> {

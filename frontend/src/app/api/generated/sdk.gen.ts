@@ -60,6 +60,10 @@ import type {
   AiAiFilaPrReprocessarResponses,
   AiAiGithubWebhookReceberData,
   AiAiGithubWebhookReceberResponses,
+  AiAiManualPerguntarComTokenData,
+  AiAiManualPerguntarComTokenResponses,
+  AiAiManualPerguntarPublicacaoData,
+  AiAiManualPerguntarPublicacaoResponses,
   AiAiMetricasMetricasData,
   AiAiMetricasMetricasResponses,
   AiAiSessaoAplicarData,
@@ -132,6 +136,10 @@ import type {
   DocflowEmpresaGetLogoResponses,
   DocflowEmpresaUploadLogoData,
   DocflowEmpresaUploadLogoResponses,
+  DocflowManualMcpMensagemData,
+  DocflowManualMcpMensagemResponses,
+  DocflowManualMcpSemStreamData,
+  DocflowManualMcpSemStreamResponses,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponses,
   DocflowModuloBuscarData,
@@ -2788,6 +2796,28 @@ export const docflowModuloCriar = <ThrowOnError extends boolean = true>(
     },
   });
 
+export const docflowManualMcpSemStream = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowManualMcpSemStreamData, ThrowOnError>,
+): RequestResult<DocflowManualMcpSemStreamResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowManualMcpSemStreamResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/mcp',
+    ...options,
+  });
+
+export const docflowManualMcpMensagem = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualMcpMensagemData, ThrowOnError>,
+): RequestResult<DocflowManualMcpMensagemResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowManualMcpMensagemResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/mcp',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const docflowEmpresaDeleteLogo = <ThrowOnError extends boolean = true>(
   options?: Options<DocflowEmpresaDeleteLogoData, ThrowOnError>,
 ): RequestResult<DocflowEmpresaDeleteLogoResponses, unknown, ThrowOnError> =>
@@ -3048,12 +3078,38 @@ export const aiAiSessaoAplicar = <ThrowOnError extends boolean = true>(
     },
   });
 
+export const aiAiManualPerguntarPublicacao = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiManualPerguntarPublicacaoData, ThrowOnError>,
+): RequestResult<AiAiManualPerguntarPublicacaoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiManualPerguntarPublicacaoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/publicacoes/{id}/perguntar',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const aiAiAjustePaginaPedir = <ThrowOnError extends boolean = true>(
   options: Options<AiAiAjustePaginaPedirData, ThrowOnError>,
 ): RequestResult<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError> =>
   (options.client ?? client).post<AiAiAjustePaginaPedirResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/ai/paginas/{paginaId}/ajustes',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const aiAiManualPerguntarComToken = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiManualPerguntarComTokenData, ThrowOnError>,
+): RequestResult<AiAiManualPerguntarComTokenResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiManualPerguntarComTokenResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/manual/{token}/perguntar',
     ...options,
     headers: {
       'Content-Type': 'application/json',

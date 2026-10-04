@@ -256,6 +256,50 @@
     </div>
 
     <div class="aq__duas-colunas">
+      <section class="aq__secao" aria-labelledby="aq-perguntas">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-perguntas">Perguntas ao manual</h2>
+          <p>
+            {{ m.manual.perguntas }} perguntas · {{ m.manual.comIa }} respondidas pela IA · {{ m.manual.soTrechos }} com
+            trechos · {{ m.manual.naoSei }} sem resposta
+            @if (m.manual.taxaNaoSei !== null) {
+              ({{ m.manual.taxaNaoSei | percent: '1.0-0' }})
+            }
+          </p>
+        </div>
+        <ul class="aq__lista" aria-label="Perguntas sem resposta">
+          @for (p of m.manual.semResposta; track p.valor) {
+            <li>
+              <span>“{{ p.valor }}”</span><strong class="aq__num">{{ p.ocorrencias }}</strong>
+            </li>
+          } @empty {
+            <li class="aq__vazio">Nenhuma pergunta sem resposta no período.</li>
+          }
+        </ul>
+        @if (m.manual.semResposta.length) {
+          <p class="aq__dica">Perguntas sem resposta são lacunas do manual: candidatas a página ou seção nova.</p>
+        }
+      </section>
+
+      <section class="aq__secao" aria-labelledby="aq-telas-procuradas">
+        <div class="aq__secao-cabecalho">
+          <h2 id="aq-telas-procuradas">Telas mais procuradas</h2>
+          <p>Telas citadas nas respostas.</p>
+        </div>
+        <ul class="aq__lista">
+          @for (t of m.manual.telasMaisCitadas; track t.valor) {
+            <li>
+              <code>{{ t.valor }}</code
+              ><strong class="aq__num">{{ t.ocorrencias }}</strong>
+            </li>
+          } @empty {
+            <li class="aq__vazio">Nenhuma tela citada no período.</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <div class="aq__duas-colunas">
       <section class="aq__secao" aria-labelledby="aq-avisos">
         <div class="aq__secao-cabecalho">
           <h2 id="aq-avisos">Avisos mais frequentes</h2>
