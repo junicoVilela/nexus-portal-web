@@ -178,9 +178,9 @@ export class PaginaService {
       size?: number;
     } = {},
   ): Observable<PageResult<Pagina>> {
-    return defer(() =>
-      listarPaginasSdk({ query: filtros, injector: this.injector }),
-    ).pipe(map(resposta => this.mapearPageResult(resposta.data, filtros.size, item => this.mapearPagina(item))));
+    return defer(() => listarPaginasSdk({ query: filtros, injector: this.injector })).pipe(
+      map(resposta => this.mapearPageResult(resposta.data, filtros.size, item => this.mapearPagina(item))),
+    );
   }
 
   paginas(
@@ -239,7 +239,9 @@ export class PaginaService {
   }
 
   excluirTemplatePagina(id: string): Observable<void> {
-    return defer(() => docflowPaginaExcluirTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() =>
+      docflowPaginaExcluirTemplate({ path: { templateId: id }, injector: this.injector }),
+    ).pipe(
       map(() => undefined),
       tap(() => this.invalidarCacheTemplates()),
     );
@@ -282,23 +284,27 @@ export class PaginaService {
   }
 
   arquivarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return defer(() => docflowPaginaArquivarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() =>
+      docflowPaginaArquivarTemplate({ path: { templateId: id }, injector: this.injector }),
+    ).pipe(
       map(resposta => this.mapearTemplate(resposta.data)),
       tap(() => this.invalidarCacheTemplates()),
     );
   }
 
   reativarTemplatePagina(id: string): Observable<PaginaTemplate> {
-    return defer(() => docflowPaginaReativarTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
+    return defer(() =>
+      docflowPaginaReativarTemplate({ path: { templateId: id }, injector: this.injector }),
+    ).pipe(
       map(resposta => this.mapearTemplate(resposta.data)),
       tap(() => this.invalidarCacheTemplates()),
     );
   }
 
   versoesTemplatePagina(id: string): Observable<PaginaTemplateVersao[]> {
-    return defer(() => docflowPaginaVersoesTemplate({ path: { templateId: id }, injector: this.injector })).pipe(
-      map(resposta => resposta.data.map(item => this.mapearVersaoTemplate(item))),
-    );
+    return defer(() =>
+      docflowPaginaVersoesTemplate({ path: { templateId: id }, injector: this.injector }),
+    ).pipe(map(resposta => resposta.data.map(item => this.mapearVersaoTemplate(item))));
   }
 
   restaurarVersaoTemplatePagina(id: string, numero: number): Observable<PaginaTemplate> {
@@ -370,9 +376,9 @@ export class PaginaService {
   salvarPagina(payload: Partial<Pagina>, id?: string): Observable<Pagina> {
     const body = payload as PaginaRequest;
     return id
-      ? defer(() =>
-          atualizarPaginaSdk({ path: { id }, body, injector: this.injector }),
-        ).pipe(map(resposta => this.mapearPagina(resposta.data)))
+      ? defer(() => atualizarPaginaSdk({ path: { id }, body, injector: this.injector })).pipe(
+          map(resposta => this.mapearPagina(resposta.data)),
+        )
       : defer(() => criarPaginaSdk({ body, injector: this.injector })).pipe(
           map(resposta => this.mapearPagina(resposta.data)),
         );
@@ -456,8 +462,12 @@ export class PaginaService {
         injector: this.injector,
       }),
     ).pipe(
-      map(resposta =>
-        this.mapearPageResult(resposta.data as PageResult<PaginaRevisao>, size) as PageResult<PaginaRevisao>,
+      map(
+        resposta =>
+          this.mapearPageResult(
+            resposta.data as PageResult<PaginaRevisao>,
+            size,
+          ) as PageResult<PaginaRevisao>,
       ),
     );
   }
@@ -468,14 +478,13 @@ export class PaginaService {
     );
   }
 
-  bibliotecaAnexos(busca = '', page = 1, size = 24): Observable<PageResult<PaginaAnexo>> {
+  bibliotecaAnexos(busca = '', page = 1, size = 24, codigoTela = ''): Observable<PageResult<PaginaAnexo>> {
     return defer(() =>
-      bibliotecaAnexosSdk({ query: { busca, page, size }, injector: this.injector }),
-    ).pipe(
-      map(resposta =>
-        this.mapearPageResult(resposta.data, size, item => item as PaginaAnexo),
-      ),
-    );
+      bibliotecaAnexosSdk({
+        query: { busca, page, size, ...(codigoTela.trim() ? { codigoTela: codigoTela.trim() } : {}) },
+        injector: this.injector,
+      }),
+    ).pipe(map(resposta => this.mapearPageResult(resposta.data, size, item => item as PaginaAnexo)));
   }
 
   comentarRevisaoPagina(id: string, comentario: string): Observable<PaginaRevisao> {
@@ -485,9 +494,9 @@ export class PaginaService {
   }
 
   anexarPagina(id: string, file: File): Observable<PaginaAnexo> {
-    return defer(() =>
-      anexarPaginaSdk({ path: { id }, body: { file }, injector: this.injector }),
-    ).pipe(map(resposta => resposta.data as PaginaAnexo));
+    return defer(() => anexarPaginaSdk({ path: { id }, body: { file }, injector: this.injector })).pipe(
+      map(resposta => resposta.data as PaginaAnexo),
+    );
   }
 
   excluirAnexoPagina(paginaId: string, anexoId: string): Observable<void> {
@@ -514,9 +523,9 @@ export class PaginaService {
   }
 
   reordenarPaginas(paginaIds: string[]): Observable<void> {
-    return defer(() =>
-      reordenarPaginasSdk({ body: { paginaIds }, injector: this.injector }),
-    ).pipe(map(() => undefined));
+    return defer(() => reordenarPaginasSdk({ body: { paginaIds }, injector: this.injector })).pipe(
+      map(() => undefined),
+    );
   }
 
   private mapearPagina(resposta: PaginaResponse): Pagina {

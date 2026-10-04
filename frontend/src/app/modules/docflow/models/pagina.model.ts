@@ -32,6 +32,8 @@ export interface Pagina {
   createdBy?: string;
   updatedBy?: string;
   tipo?: TipoPagina;
+  /** INT-302: release que alterou a tela depois da última publicação. */
+  desatualizadaPor?: string | null;
 }
 
 export interface PaginaAnexo {
@@ -44,6 +46,9 @@ export interface PaginaAnexo {
   createdAt: string;
   createdBy?: string;
   downloadUrl: string;
+  /** INT-601: tela que a captura mostra (padrão: a da página). */
+  codigoTela?: string | null;
+  seletor?: string | null;
 }
 
 export interface PaginaRevisao {

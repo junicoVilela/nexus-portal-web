@@ -52,6 +52,8 @@ import type {
   AiAiFilaPrAssumirResponses,
   AiAiFilaPrBuscarData,
   AiAiFilaPrBuscarResponses,
+  AiAiFilaPrDispensarData,
+  AiAiFilaPrDispensarResponses,
   AiAiFilaPrListarData,
   AiAiFilaPrListarResponses,
   AiAiFilaPrRejeitarData,
@@ -146,6 +148,8 @@ import type {
   DocflowManualMcpMensagemResponses,
   DocflowManualMcpSemStreamData,
   DocflowManualMcpSemStreamResponses,
+  DocflowManualPublicoEventoData,
+  DocflowManualPublicoEventoResponses,
   DocflowManualPublicoHelpBridgeData,
   DocflowManualPublicoHelpBridgeResponses,
   DocflowManualPublicoRaizData,
@@ -253,6 +257,8 @@ import type {
   DocflowPaginaTemplatesResponses,
   DocflowPaginaVersoesTemplateData,
   DocflowPaginaVersoesTemplateResponses,
+  DocflowPaginaVincularTelaAnexoData,
+  DocflowPaginaVincularTelaAnexoResponses,
   DocflowPreviewGerarTokenData,
   DocflowPreviewGerarTokenResponses,
   DocflowPreviewListarData,
@@ -2480,6 +2486,19 @@ export const docflowPreviewGerarToken = <ThrowOnError extends boolean = true>(
     ...options,
   });
 
+export const docflowManualPublicoEvento = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualPublicoEventoData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoEventoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowManualPublicoEventoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/{token}/eventos',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const docflowPublicacaoListar = <ThrowOnError extends boolean = true>(
   options?: Options<DocflowPublicacaoListarData, ThrowOnError>,
 ): RequestResult<DocflowPublicacaoListarResponses, unknown, ThrowOnError> =>
@@ -3342,6 +3361,15 @@ export const aiAiFilaPrRejeitar = <ThrowOnError extends boolean = true>(
     },
   });
 
+export const aiAiFilaPrDispensar = <ThrowOnError extends boolean = true>(
+  options: Options<AiAiFilaPrDispensarData, ThrowOnError>,
+): RequestResult<AiAiFilaPrDispensarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<AiAiFilaPrDispensarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ai/fila-pr/{id}/dispensar',
+    ...options,
+  });
+
 export const aiAiFilaPrAssumir = <ThrowOnError extends boolean = true>(
   options: Options<AiAiFilaPrAssumirData, ThrowOnError>,
 ): RequestResult<AiAiFilaPrAssumirResponses, unknown, ThrowOnError> =>
@@ -3574,6 +3602,19 @@ export const identityaccessEscopoAcessoAlterarStatus = <ThrowOnError extends boo
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos/{id}/status',
     ...options,
+  });
+
+export const docflowPaginaVincularTelaAnexo = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowPaginaVincularTelaAnexoData, ThrowOnError>,
+): RequestResult<DocflowPaginaVincularTelaAnexoResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<DocflowPaginaVincularTelaAnexoResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/paginas/{id}/anexos/{anexoId}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 export const releaseorchestratorReleasePdfGerar = <ThrowOnError extends boolean = true>(

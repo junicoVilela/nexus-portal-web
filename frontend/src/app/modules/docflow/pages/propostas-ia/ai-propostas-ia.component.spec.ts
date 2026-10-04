@@ -18,9 +18,11 @@ describe('AiPropostasIaComponent', () => {
   function item(parcial: Partial<AiFilaPrItem> = {}): AiFilaPrItem {
     return {
       id: 'i1',
+      origem: 'PR',
       repositorio: 'org/app',
       numeroPr: 42,
       titulo: 'Tela de exportação',
+      corpo: null,
       url: 'https://github.com/org/app/pull/42',
       autor: 'dev',
       branchBase: 'main',
@@ -45,6 +47,7 @@ describe('AiPropostasIaComponent', () => {
         status: 'PENDENTE',
       } as unknown as AiProposta,
       pendente: true,
+      capturasDaTela: 0,
       ...parcial,
     };
   }
@@ -56,6 +59,7 @@ describe('AiPropostasIaComponent', () => {
       'aceitarItemFila',
       'rejeitarItemFila',
       'reprocessarItemFila',
+      'dispensarItemFila',
       'aplicar',
       'gerar',
     ]);
@@ -139,5 +143,36 @@ describe('AiPropostasIaComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Nada pendente');
     botao('Todos').click();
     expect(ai.filaPr).toHaveBeenCalledWith(false);
+  });
+
+  it('item de release oferece gerar ajuste ou dispensar e avisa das capturas', async () => {
+    const release = item({
+      origem: 'RELEASE',
+      repositorio: 'Portal 1.5.0',
+      numeroPr: null,
+      status: 'PARA_REVISAR',
+      proposta: null,
+      sessaoId: null,
+      paginaId: 'pg7',
+      codigoTela: 'PED-001',
+      corpo: '- Filtro por status na PED-001',
+      url: '/release-orchestrator/releases/r1',
+      capturasDaTela: 2,
+    });
+    await criar([release, item({ id: 'i2' })]);
+    ai.dispensarItemFila.and.returnValue(of({ ...release, status: 'IGNORADO', pendente: false }));
+
+    const texto = fixture.nativeElement.textContent;
+    expect(texto).toContain('Portal 1.5.0 · PED-001');
+    expect(texto).toContain('Para revisar');
+    expect(texto).toContain('2 capturas da tela PED-001');
+    expect(texto).toContain('- Filtro por status na PED-001');
+
+    botao('Dispensar').click();
+    expect(ai.dispensarItemFila).toHaveBeenCalledWith('i1');
+
+    botao('Releases').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('.fp__item').length).toBe(1);
   });
 });

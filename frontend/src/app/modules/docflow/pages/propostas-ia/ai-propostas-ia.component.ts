@@ -30,14 +30,15 @@ import {
   CATEGORIAS_REJEICAO,
   AiCategoriaRejeicao,
 } from '../../models/ai-proposta.model';
-import { AiFilaPrItem } from '../../models/ai-fila-pr.model';
+import { AiFilaOrigem, AiFilaPrItem } from '../../models/ai-fila-pr.model';
 import { AiAssistenteService } from '../../services/ai-assistente.service';
 import { AiPropostaPreviewComponent } from '../../components/ai-proposta-preview/ai-proposta-preview.component';
 
 /** Enquanto houver geração em andamento, a fila se atualiza sozinha. */
 const ATUALIZACAO_MS = 5_000;
 
-type Situacao = 'gerando' | 'nova' | 'ajuste' | 'aguardando' | 'erro' | 'ignorado' | 'resolvida';
+type Situacao = 'gerando' | 'nova' | 'ajuste' | 'aguardando' | 'revisar' | 'erro' | 'ignorado' | 'resolvida';
+type FiltroOrigem = 'TODAS' | AiFilaOrigem;
 
 /**
  * Propostas da IA a partir de PRs mergeados (Fase C, `docs/ai/GITHUB-WEBHOOK.md`). Ao agir num
@@ -80,8 +81,14 @@ export class AiPropostasIaComponent implements OnInit {
   protected readonly podeAplicar = computed(() => this.auth.tem()('PAGINA:AI_APLICAR'));
   protected readonly podeCriar = computed(() => this.auth.tem()('PAGINA:CRIAR') && this.podeAplicar());
 
+  /** INT-303: PR do GitHub ou release do Release Orchestrator. */
+  protected readonly origem = signal<FiltroOrigem>('TODAS');
+  protected readonly visiveis = computed(() =>
+    this.origem() === 'TODAS' ? this.itens() : this.itens().filter(item => item.origem === this.origem()),
+  );
+
   protected readonly selecionado = computed<AiFilaPrItem | null>(
-    () => this.itens().find(item => item.id === this.selecionadoId()) ?? this.itens().at(0) ?? null,
+    () => this.visiveis().find(item => item.id === this.selecionadoId()) ?? this.visiveis().at(0) ?? null,
   );
 
   ngOnInit(): void {
@@ -105,6 +112,7 @@ export class AiPropostasIaComponent implements OnInit {
     if (item.status === 'IGNORADO') return 'ignorado';
     if (item.status === 'ERRO') return 'erro';
     if (item.status === 'AGUARDANDO_RASCUNHO') return 'aguardando';
+    if (item.status === 'PARA_REVISAR') return 'revisar';
     if (item.status === 'RECEBIDO' || item.sessaoStatus === 'GERANDO' || !item.proposta) return 'gerando';
     if (item.proposta.status !== 'PENDENTE') return 'resolvida';
     return item.proposta.tipo === 'ATUALIZACAO' ? 'ajuste' : 'nova';
@@ -120,6 +128,8 @@ export class AiPropostasIaComponent implements OnInit {
         return { texto: 'Ajuste', tom: 'accent' };
       case 'aguardando':
         return { texto: 'Aguardando rascunho', tom: 'warn' };
+      case 'revisar':
+        return { texto: 'Para revisar', tom: 'warn' };
       case 'erro':
         return { texto: 'Erro', tom: 'danger' };
       case 'ignorado':
@@ -205,6 +215,24 @@ export class AiPropostasIaComponent implements OnInit {
       },
       'Não foi possível rejeitar a proposta.',
     );
+  }
+
+  protected dispensar(item: AiFilaPrItem): void {
+    this.agir(
+      this.ai.dispensarItemFila(item.id),
+      atualizado => {
+        this.substituir(atualizado);
+        this.toast.success('Item dispensado: a página já estava certa.');
+      },
+      'Não foi possível dispensar o item.',
+    );
+  }
+
+  /** Rótulo da lista: "org/app#42" para PR, "Portal 1.5.0 · PED-001" para release. */
+  protected identificacao(item: AiFilaPrItem): string {
+    return item.origem === 'RELEASE'
+      ? `${item.repositorio} · ${item.codigoTela ?? ''}`
+      : `${item.repositorio}#${item.numeroPr ?? ''}`;
   }
 
   protected reprocessar(item: AiFilaPrItem): void {

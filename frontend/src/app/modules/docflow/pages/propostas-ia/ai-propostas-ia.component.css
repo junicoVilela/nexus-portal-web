@@ -223,3 +223,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+.fp__release {
+  margin: 0;
+  padding: 10px 12px;
+  max-height: 180px;
+  overflow: auto;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font: 12.5px/1.5 var(--font-body);
+  white-space: pre-wrap;
+}
+
+.fp__barra {
+  flex-wrap: wrap;
+}

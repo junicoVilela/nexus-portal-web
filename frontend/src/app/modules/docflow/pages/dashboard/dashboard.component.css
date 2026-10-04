@@ -331,3 +331,45 @@
     border-left: 0;
   }
 }
+
+.df-dash__lacunas {
+  display: grid;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.df-dash__lacunas p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.df-dash__lacunas-lista {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-dash__lacunas-lista li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.df-dash__lacunas-vazio {
+  font-size: 13px;
+}
+
+.df-dash__lacunas p a {
+  color: var(--primary);
+  font-weight: 500;
+}

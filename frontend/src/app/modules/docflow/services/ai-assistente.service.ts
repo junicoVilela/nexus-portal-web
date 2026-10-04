@@ -233,6 +233,11 @@ export class AiAssistenteService {
     return this.http.post<AiAplicacao>(`${this.base}/fila-pr/${id}/aceitar`, {});
   }
 
+  /** "Revisado, nada a mudar": tira da fila sem gerar ajuste. */
+  dispensarItemFila(id: string): Observable<AiFilaPrItem> {
+    return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/dispensar`, {});
+  }
+
   reprocessarItemFila(id: string): Observable<AiFilaPrItem> {
     return this.http.post<AiFilaPrItem>(`${this.base}/fila-pr/${id}/reprocessar`, {});
   }

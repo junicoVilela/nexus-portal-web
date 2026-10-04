@@ -740,6 +740,7 @@ export type PaginaRequest = {
   version?: number;
   templateOrigemId?: string;
   templateOrigemVersao?: number;
+  tipo?: 'ARTIGO' | 'MENU';
 };
 
 export type PaginaResponse = {
@@ -769,6 +770,8 @@ export type PaginaResponse = {
   updatedAt?: string;
   createdBy?: string;
   updatedBy?: string;
+  tipo?: 'ARTIGO' | 'MENU';
+  desatualizadaPor?: string;
 };
 
 export type PaginaTemplateRequest = {
@@ -1269,6 +1272,13 @@ export type PreviewTokenResponse = {
   createdBy?: string;
 };
 
+export type EventoRequest = {
+  tipo: 'BUSCA' | 'BUSCA_SEM_RESULTADO' | 'PAGINA_ABERTA';
+  termo?: string;
+  codigoTela?: string;
+  resultados?: number;
+};
+
 export type PublicacaoRequest = {
   clienteId: string;
   versao: string;
@@ -1347,6 +1357,8 @@ export type PaginaAnexoResponse = {
   createdAt?: string;
   createdBy?: string;
   downloadUrl?: string;
+  codigoTela?: string;
+  seletor?: string;
 };
 
 export type PaginaTemplateDuplicarRequest = {
@@ -1714,16 +1726,18 @@ export type AiConfirmarEstruturaDocumentoRequest = {
 
 export type AiFilaPrItemResponse = {
   id?: string;
+  origem?: 'PR' | 'RELEASE';
   repositorio?: string;
   numeroPr?: number;
   titulo?: string;
+  corpo?: string;
   url?: string;
   autor?: string;
   branchBase?: string;
   mergedAt?: string;
   classificacao?: 'UI_NOVA' | 'UI_ALTERACAO' | 'SO_BACKEND' | 'IRRELEVANTE';
   codigoTela?: string;
-  status?: 'RECEBIDO' | 'IGNORADO' | 'AGUARDANDO_RASCUNHO' | 'EM_FILA' | 'ERRO';
+  status?: 'RECEBIDO' | 'IGNORADO' | 'AGUARDANDO_RASCUNHO' | 'EM_FILA' | 'ERRO' | 'PARA_REVISAR';
   mensagem?: string;
   sessaoId?: string;
   sessaoStatus?:
@@ -1740,6 +1754,7 @@ export type AiFilaPrItemResponse = {
   createdAt?: string;
   proposta?: AiPropostaResponse;
   pendente?: boolean;
+  capturasDaTela?: number;
 };
 
 export type AiFilaAceitarRequest = {
@@ -1796,6 +1811,11 @@ export type AlterarStatusClienteRequest = {
 
 export type AlterarStatusGrupoRequest = {
   ativo: boolean;
+};
+
+export type VincularTelaRequest = {
+  codigoTela?: string;
+  seletor?: string;
 };
 
 export type PageResponseReleaseTemplateResponse = {
@@ -2376,6 +2396,19 @@ export type DocFlowDashboardResponse = {
   paginasPorStatus?: {
     [key: string]: number;
   };
+  paginasDesatualizadasPorRelease?: number;
+  lacunas?: Lacunas;
+};
+
+export type Lacunas = {
+  buscas?: number;
+  buscasSemResultado?: number;
+  termosSemResultado?: Array<Termo>;
+};
+
+export type Termo = {
+  termo?: string;
+  ocorrencias?: number;
 };
 
 export type AjudaMetricaItemResponse = {
@@ -5541,6 +5574,25 @@ export type DocflowPreviewGerarTokenResponses = {
 export type DocflowPreviewGerarTokenResponse =
   DocflowPreviewGerarTokenResponses[keyof DocflowPreviewGerarTokenResponses];
 
+export type DocflowManualPublicoEventoData = {
+  body: EventoRequest;
+  headers?: {
+    Origin?: string;
+  };
+  path: {
+    token: string;
+  };
+  query?: never;
+  url: '/api/v1/manual/{token}/eventos';
+};
+
+export type DocflowManualPublicoEventoResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type DocflowPublicacaoListarData = {
   body?: never;
   path?: never;
@@ -5894,7 +5946,10 @@ export type DocflowPaginaAnexarData = {
   path: {
     id: string;
   };
-  query?: never;
+  query?: {
+    codigoTela?: string;
+    seletor?: string;
+  };
   url: '/api/v1/docflow/paginas/{id}/anexos';
 };
 
@@ -6936,6 +6991,24 @@ export type AiAiFilaPrRejeitarResponses = {
 
 export type AiAiFilaPrRejeitarResponse = AiAiFilaPrRejeitarResponses[keyof AiAiFilaPrRejeitarResponses];
 
+export type AiAiFilaPrDispensarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/ai/fila-pr/{id}/dispensar';
+};
+
+export type AiAiFilaPrDispensarResponses = {
+  /**
+   * OK
+   */
+  200: AiFilaPrItemResponse;
+};
+
+export type AiAiFilaPrDispensarResponse = AiAiFilaPrDispensarResponses[keyof AiAiFilaPrDispensarResponses];
+
 export type AiAiFilaPrAssumirData = {
   body?: never;
   path: {
@@ -7244,6 +7317,26 @@ export type IdentityaccessEscopoAcessoAlterarStatusResponses = {
 
 export type IdentityaccessEscopoAcessoAlterarStatusResponse =
   IdentityaccessEscopoAcessoAlterarStatusResponses[keyof IdentityaccessEscopoAcessoAlterarStatusResponses];
+
+export type DocflowPaginaVincularTelaAnexoData = {
+  body: VincularTelaRequest;
+  path: {
+    id: string;
+    anexoId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/paginas/{id}/anexos/{anexoId}';
+};
+
+export type DocflowPaginaVincularTelaAnexoResponses = {
+  /**
+   * OK
+   */
+  200: PaginaAnexoResponse;
+};
+
+export type DocflowPaginaVincularTelaAnexoResponse =
+  DocflowPaginaVincularTelaAnexoResponses[keyof DocflowPaginaVincularTelaAnexoResponses];
 
 export type ReleaseorchestratorReleasePdfGerarData = {
   body?: never;
@@ -8361,6 +8454,7 @@ export type DocflowPaginaBibliotecaAnexosData = {
   path?: never;
   query?: {
     busca?: string;
+    codigoTela?: string;
     page?: number;
     size?: number;
   };

@@ -45,6 +45,8 @@ import type {
   AiAiFilaPrAssumirResponse,
   AiAiFilaPrBuscarData,
   AiAiFilaPrBuscarResponse,
+  AiAiFilaPrDispensarData,
+  AiAiFilaPrDispensarResponse,
   AiAiFilaPrListarData,
   AiAiFilaPrListarResponse,
   AiAiFilaPrRejeitarData,
@@ -137,6 +139,7 @@ import type {
   DocflowManualMcpMensagemData,
   DocflowManualMcpMensagemResponse,
   DocflowManualMcpSemStreamData,
+  DocflowManualPublicoEventoData,
   DocflowManualPublicoHelpBridgeData,
   DocflowManualPublicoHelpBridgeResponse,
   DocflowManualPublicoRaizData,
@@ -241,6 +244,8 @@ import type {
   DocflowPaginaTemplatesResponse,
   DocflowPaginaVersoesTemplateData,
   DocflowPaginaVersoesTemplateResponse,
+  DocflowPaginaVincularTelaAnexoData,
+  DocflowPaginaVincularTelaAnexoResponse,
   DocflowPreviewGerarTokenData,
   DocflowPreviewGerarTokenResponse,
   DocflowPreviewListarData,
@@ -2316,6 +2321,16 @@ export const docflowPreviewGerarTokenRequest = <ThrowOnError extends boolean = f
     ...options,
   });
 
+export const docflowManualPublicoEventoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualPublicoEventoData, ThrowOnError>,
+): HttpRequest<unknown> =>
+  (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/manual/{token}/eventos',
+    ...options,
+  });
+
 export const docflowPublicacaoListarRequest = <ThrowOnError extends boolean = false>(
   options?: Options<DocflowPublicacaoListarData, ThrowOnError>,
 ): HttpRequest<DocflowPublicacaoListarResponse> =>
@@ -3094,6 +3109,16 @@ export const aiAiFilaPrRejeitarRequest = <ThrowOnError extends boolean = false>(
     ...options,
   });
 
+export const aiAiFilaPrDispensarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<AiAiFilaPrDispensarData, ThrowOnError>,
+): HttpRequest<AiAiFilaPrDispensarResponse> =>
+  (options?.client ?? client).requestOptions<AiAiFilaPrDispensarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/ai/fila-pr/{id}/dispensar',
+    ...options,
+  });
+
 export const aiAiFilaPrAssumirRequest = <ThrowOnError extends boolean = false>(
   options: Options<AiAiFilaPrAssumirData, ThrowOnError>,
 ): HttpRequest<AiAiFilaPrAssumirResponse> =>
@@ -3283,6 +3308,16 @@ export const identityaccessEscopoAcessoAlterarStatusRequest = <ThrowOnError exte
     responseStyle: 'data',
     method: 'PATCH',
     url: '/api/v1/rbac/escopos/{id}/status',
+    ...options,
+  });
+
+export const docflowPaginaVincularTelaAnexoRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowPaginaVincularTelaAnexoData, ThrowOnError>,
+): HttpRequest<DocflowPaginaVincularTelaAnexoResponse> =>
+  (options?.client ?? client).requestOptions<DocflowPaginaVincularTelaAnexoResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PATCH',
+    url: '/api/v1/docflow/paginas/{id}/anexos/{anexoId}',
     ...options,
   });
 
@@ -5321,6 +5356,14 @@ export const docflowPreviewGerarTokenResource = <ThrowOnError extends boolean = 
     return opts ? docflowPreviewGerarTokenRequest(opts) : undefined;
   });
 
+export const docflowManualPublicoEventoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualPublicoEventoData, ThrowOnError> | undefined,
+) =>
+  httpResource<unknown>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoEventoRequest(opts) : undefined;
+  });
+
 export const docflowPublicacaoListarResource = <ThrowOnError extends boolean = false>(
   options?: () => Options<DocflowPublicacaoListarData, ThrowOnError> | undefined,
 ) =>
@@ -5922,6 +5965,14 @@ export const aiAiFilaPrRejeitarResource = <ThrowOnError extends boolean = false>
     return opts ? aiAiFilaPrRejeitarRequest(opts) : undefined;
   });
 
+export const aiAiFilaPrDispensarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<AiAiFilaPrDispensarData, ThrowOnError> | undefined,
+) =>
+  httpResource<AiAiFilaPrDispensarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? aiAiFilaPrDispensarRequest(opts) : undefined;
+  });
+
 export const aiAiFilaPrAssumirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<AiAiFilaPrAssumirData, ThrowOnError> | undefined,
 ) =>
@@ -6054,6 +6105,14 @@ export const identityaccessEscopoAcessoAlterarStatusResource = <ThrowOnError ext
   httpResource<IdentityaccessEscopoAcessoAlterarStatusResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? identityaccessEscopoAcessoAlterarStatusRequest(opts) : undefined;
+  });
+
+export const docflowPaginaVincularTelaAnexoResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowPaginaVincularTelaAnexoData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowPaginaVincularTelaAnexoResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowPaginaVincularTelaAnexoRequest(opts) : undefined;
   });
 
 export const releaseorchestratorReleasePdfGerarResource = <ThrowOnError extends boolean = false>(

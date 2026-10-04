@@ -75,11 +75,41 @@
         ><strong>{{ paginasDesatualizadas() }}</strong
         ><span>desatualizadas</span></a
       >
+      <a routerLink="/doc-flow/propostas-ia" aria-label="Abrir telas alteradas por release"
+        ><strong>{{ paginasDesatualizadasPorRelease() }}</strong
+        ><span>alteradas por release</span></a
+      >
       <a routerLink="/doc-flow/publicacoes" aria-label="Abrir publicações com taxa de sucesso"
         ><strong>{{ taxaSucessoPublicacoes() }}%</strong><span>sucesso nas publicações</span></a
       >
     </div>
   </section>
+
+  @if (lacunas(); as l) {
+    <section class="df-dash__lacunas" aria-labelledby="df-dash-lacunas-title">
+      <div class="df-dash__health-copy">
+        <span class="df-dash__structure-icon" aria-hidden="true"><lucide-icon name="SearchX" /></span>
+        <div>
+          <h2 id="df-dash-lacunas-title">Lacunas do manual</h2>
+          <p>
+            Buscas no manual hospedado nos últimos 30 dias: {{ l.buscas }}, das quais {{ l.buscasSemResultado }} sem
+            resultado. Perguntas sem resposta ficam em <a routerLink="/doc-flow/ia-qualidade">Qualidade da IA</a>.
+          </p>
+        </div>
+      </div>
+      @if (l.termosSemResultado.length) {
+        <ul class="df-dash__lacunas-lista" aria-label="Buscas sem resultado">
+          @for (t of l.termosSemResultado; track t.termo) {
+            <li>
+              <span>“{{ t.termo }}”</span><strong>{{ t.ocorrencias }}</strong>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="df-dash__lacunas-vazio">Nenhuma busca sem resultado no período.</p>
+      }
+    </section>
+  }
 
   <section class="df-dash__structure" aria-labelledby="df-dash-structure-title">
     <div class="df-dash__structure-copy">
@@ -112,7 +142,11 @@
       <table class="df-dash__table">
         <thead>
           <tr>
-            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('situacao')" aria-label="Ordenar por situação">
+            <th
+              class="df-dash__th df-dash__th--sort"
+              (click)="ordenarFila('situacao')"
+              aria-label="Ordenar por situação"
+            >
               Situação <span>{{ indicacaoOrdenacaoFila('situacao') }}</span>
             </th>
             <th
@@ -122,7 +156,11 @@
             >
               Qtd <span>{{ indicacaoOrdenacaoFila('quantidade') }}</span>
             </th>
-            <th class="df-dash__th df-dash__th--sort" (click)="ordenarFila('acao')" aria-label="Ordenar por ação recomendada">
+            <th
+              class="df-dash__th df-dash__th--sort"
+              (click)="ordenarFila('acao')"
+              aria-label="Ordenar por ação recomendada"
+            >
               Ação recomendada <span>{{ indicacaoOrdenacaoFila('acao') }}</span>
             </th>
           </tr>
@@ -210,18 +248,34 @@
     <table class="df-dash__table">
       <thead>
         <tr>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('cliente.nome')" aria-label="Ordenar por cliente">
+          <th
+            class="df-dash__th df-dash__th--sort"
+            (click)="ordenarHistorico('cliente.nome')"
+            aria-label="Ordenar por cliente"
+          >
             Cliente <span>{{ indicacaoOrdenacaoHistorico('cliente.nome') }}</span>
           </th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('versao')" aria-label="Ordenar por versão">
+          <th
+            class="df-dash__th df-dash__th--sort"
+            (click)="ordenarHistorico('versao')"
+            aria-label="Ordenar por versão"
+          >
             Versão <span>{{ indicacaoOrdenacaoHistorico('versao') }}</span>
           </th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('status')" aria-label="Ordenar por status">
+          <th
+            class="df-dash__th df-dash__th--sort"
+            (click)="ordenarHistorico('status')"
+            aria-label="Ordenar por status"
+          >
             Status <span>{{ indicacaoOrdenacaoHistorico('status') }}</span>
           </th>
           <th class="df-dash__th df-dash__th--center">Páginas</th>
           <th class="df-dash__th df-dash__th--center">Módulos</th>
-          <th class="df-dash__th df-dash__th--sort" (click)="ordenarHistorico('createdAt')" aria-label="Ordenar por data">
+          <th
+            class="df-dash__th df-dash__th--sort"
+            (click)="ordenarHistorico('createdAt')"
+            aria-label="Ordenar por data"
+          >
             Data <span>{{ indicacaoOrdenacaoHistorico('createdAt') }}</span>
           </th>
         </tr>

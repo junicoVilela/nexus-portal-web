@@ -30,6 +30,16 @@
     />
   }
 
+  @if (paginaAtual()?.desatualizadaPor; as release) {
+    <!-- INT-302: reaproveita o visual do aviso de conteúdo travado (orçamento de CSS do editor). -->
+    <div class="pf-travada pf-desatualizada" role="status">
+      <div>
+        <strong>A release {{ release }} alterou esta tela.</strong>
+        <p>Confira o conteúdo e as capturas; o aviso some quando a página for publicada de novo.</p>
+      </div>
+    </div>
+  }
+
   @if (conteudoTravado()) {
     <div class="pf-travada" role="status">
       <div>

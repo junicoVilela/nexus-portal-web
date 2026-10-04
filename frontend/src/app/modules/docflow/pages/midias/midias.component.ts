@@ -29,6 +29,8 @@ export class MidiasComponent implements OnInit {
   protected readonly pageSize = signal(24);
   protected readonly loading = signal(false);
   protected busca = '';
+  /** INT-602: capturas de uma tela (ex.: depois de um PR ou release que mexeu nela). */
+  protected codigoTela = '';
 
   ngOnInit(): void {
     this.carregar();
@@ -37,7 +39,7 @@ export class MidiasComponent implements OnInit {
   protected carregar(): void {
     this.loading.set(true);
     this.paginaService
-      .bibliotecaAnexos(this.busca, this.page(), this.pageSize())
+      .bibliotecaAnexos(this.busca, this.page(), this.pageSize(), this.codigoTela)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: response => {

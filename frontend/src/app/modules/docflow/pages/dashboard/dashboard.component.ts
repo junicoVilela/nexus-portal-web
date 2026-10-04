@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
+import { DocFlowDashboardResumo } from '@modules/docflow/models/dashboard.model';
 import { DocFlowDashboardService } from '@modules/docflow/services/docflow-dashboard.service';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
@@ -63,6 +64,8 @@ export class DashboardComponent implements OnInit {
   protected readonly clientesSemPublicacao = signal(0);
   protected readonly paginasSemResumo = signal(0);
   protected readonly paginasDesatualizadas = signal(0);
+  protected readonly paginasDesatualizadasPorRelease = signal(0);
+  protected readonly lacunas = signal<DocFlowDashboardResumo['lacunas'] | null>(null);
   protected readonly taxaSucessoPublicacoes = signal(0);
   protected readonly statusStats = signal<StatusStat[]>([]);
 
@@ -160,6 +163,8 @@ export class DashboardComponent implements OnInit {
           this.clientesSemPublicacao.set(resumo.clientesSemPublicacao);
           this.paginasSemResumo.set(resumo.paginasSemResumo);
           this.paginasDesatualizadas.set(resumo.paginasDesatualizadas);
+          this.paginasDesatualizadasPorRelease.set(resumo.paginasDesatualizadasPorRelease ?? 0);
+          this.lacunas.set(resumo.lacunas ?? null);
           this.taxaSucessoPublicacoes.set(resumo.taxaSucessoPublicacoes);
           this.statusStats.set(
             (['RASCUNHO', 'EM_REVISAO', 'APROVADO', 'PUBLICADO', 'ARQUIVADO'] as StatusPagina[])

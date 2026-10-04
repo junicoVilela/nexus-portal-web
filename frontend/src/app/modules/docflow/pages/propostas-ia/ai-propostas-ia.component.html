@@ -1,7 +1,7 @@
 <div class="fp">
   <ui-page-header
     title="Propostas da IA"
-    subtitle="Páginas novas e ajustes preparados a partir de PRs mergeados. A IA não publica: você decide."
+    subtitle="Páginas novas e ajustes a partir de PRs mergeados e releases publicadas. A IA não publica: você decide."
     icon="GitPullRequest"
   />
 
@@ -26,6 +26,19 @@
         Todos
       </button>
     </div>
+    <div class="fp__filtro" role="group" aria-label="Origem">
+      @for (o of ['TODAS', 'PR', 'RELEASE']; track o) {
+        <button
+          type="button"
+          class="fp__filtro-btn"
+          [class.fp__filtro-btn--ativo]="origem() === o"
+          [attr.aria-pressed]="origem() === o"
+          (click)="origem.set($any(o))"
+        >
+          {{ o === 'TODAS' ? 'Todas as origens' : o === 'PR' ? 'PRs' : 'Releases' }}
+        </button>
+      }
+    </div>
     <ui-button variant="ghost" size="sm" icon="RefreshCw" [loading]="carregando()" (clicked)="carregar()">
       Atualizar
     </ui-button>
@@ -35,7 +48,7 @@
     <p class="fp__erro" role="alert">{{ erro() }}</p>
   }
 
-  @if (!itens().length && !carregando()) {
+  @if (!visiveis().length && !carregando()) {
     <ui-empty-state
       icon="GitPullRequest"
       [title]="somentePendentes() ? 'Nada pendente' : 'Nenhum PR recebido'"
@@ -44,7 +57,7 @@
   } @else {
     <div class="fp__layout">
       <ul class="fp__lista" aria-label="PRs recebidos">
-        @for (item of itens(); track item.id) {
+        @for (item of visiveis(); track item.id) {
           <li>
             <button
               type="button"
@@ -54,7 +67,7 @@
               (click)="selecionadoId.set(item.id)"
             >
               <span class="fp__item-topo">
-                <code>{{ item.repositorio }}#{{ item.numeroPr }}</code>
+                <code>{{ identificacao(item) }}</code>
                 <ui-badge [tone]="rotuloSituacao(item).tom">{{ rotuloSituacao(item).texto }}</ui-badge>
               </span>
               <strong>{{ item.titulo }}</strong>
@@ -73,18 +86,29 @@
         <section class="fp__detalhe" aria-labelledby="fp-titulo">
           <header class="fp__cabecalho">
             <div>
-              <a class="fp__pr" [href]="item.url" target="_blank" rel="noopener">
-                {{ item.repositorio }}#{{ item.numeroPr }}
-                <lucide-icon name="ExternalLink" [size]="13" aria-hidden="true" />
-              </a>
+              @if (item.origem === 'RELEASE') {
+                <a class="fp__pr" [routerLink]="item.url">
+                  Release {{ item.repositorio }}
+                  <lucide-icon name="ExternalLink" [size]="13" aria-hidden="true" />
+                </a>
+              } @else {
+                <a class="fp__pr" [href]="item.url" target="_blank" rel="noopener">
+                  {{ item.repositorio }}#{{ item.numeroPr }}
+                  <lucide-icon name="ExternalLink" [size]="13" aria-hidden="true" />
+                </a>
+              }
               <h2 id="fp-titulo">{{ item.titulo }}</h2>
               <p class="fp__meta">
-                @if (item.autor) {
-                  por {{ item.autor }} ·
-                }
-                merge em {{ item.branchBase }}
-                @if (item.mergedAt) {
-                  {{ item.mergedAt | date: 'dd/MM/yyyy HH:mm' }}
+                @if (item.origem === 'RELEASE') {
+                  publicada no Release Orchestrator em {{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                } @else {
+                  @if (item.autor) {
+                    por {{ item.autor }} ·
+                  }
+                  merge em {{ item.branchBase }}
+                  @if (item.mergedAt) {
+                    {{ item.mergedAt | date: 'dd/MM/yyyy HH:mm' }}
+                  }
                 }
                 @if (item.responsavel) {
                   · assumido por {{ item.responsavel }}
@@ -95,8 +119,15 @@
           </header>
 
           <!-- A mensagem é do processamento do PR; com proposta pronta ela já não diz nada. -->
-          @if (item.mensagem && ['erro', 'aguardando', 'ignorado'].includes(situacao(item))) {
+          @if (item.mensagem && ['erro', 'aguardando', 'ignorado', 'revisar'].includes(situacao(item))) {
             <p class="fp__mensagem">{{ item.mensagem }}</p>
+          }
+          @if (item.capturasDaTela && item.codigoTela && situacao(item) !== 'ignorado') {
+            <p class="fp__estado">
+              {{ item.capturasDaTela }} {{ item.capturasDaTela === 1 ? 'captura' : 'capturas' }} da tela
+              {{ item.codigoTela }} podem estar desatualizadas.
+              <a class="fp__link" routerLink="/doc-flow/midias">Ver na Mídia</a>
+            </p>
           }
 
           @switch (situacao(item)) {
@@ -110,6 +141,22 @@
               <div class="fp__acoes">
                 <ui-button icon="RotateCcw" [loading]="executando()" (clicked)="reprocessar(item)">
                   Tentar de novo
+                </ui-button>
+              </div>
+            }
+            @case ('revisar') {
+              @if (item.corpo) {
+                <pre class="fp__release">{{ item.corpo }}</pre>
+              }
+              <div class="fp__acoes">
+                @if (item.paginaId) {
+                  <a class="fp__link" [routerLink]="['/doc-flow/paginas', item.paginaId, 'editar']">Abrir a página</a>
+                }
+                <ui-button icon="Sparkles" [loading]="executando()" (clicked)="reprocessar(item)">
+                  Gerar ajuste com IA
+                </ui-button>
+                <ui-button variant="ghost" icon="Check" [disabled]="executando()" (clicked)="dispensar(item)">
+                  Dispensar: já está certa
                 </ui-button>
               </div>
             }
