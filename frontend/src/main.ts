@@ -1,4 +1,3 @@
-import 'zone.js';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { bootstrapApplication } from '@angular/platform-browser';

@@ -4,7 +4,7 @@ import {
   importProvidersFrom,
   inject,
   provideAppInitializer,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {
   PreloadAllModules,
@@ -179,7 +179,7 @@ import { provideHeyApiClient } from './api/generated/client/client.gen';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(
       routes,
       withComponentInputBinding(),
