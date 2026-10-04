@@ -10,7 +10,12 @@ export interface PaginaQualityInput {
   conteudoHtml?: string | null;
   filhosCount?: number;
   indiceItemCount?: number;
+  /** PLAT-02: MENU segue as regras de pasta (iguais às do back). */
+  tipo?: 'ARTIGO' | 'MENU' | null;
 }
+
+/** Regras que só fazem sentido para artigo; o back também as remove para menu. */
+const REGRAS_SO_DE_ARTIGO = new Set(['SECOES', 'CAPTURA', 'RESULTADO', 'PRE_REQS']);
 
 export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidadeItem[] {
   const document = new DOMParser().parseFromString(raw.conteudoHtml || '', 'text/html');
@@ -44,9 +49,10 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
 
   // Páginas de menu/índice têm conteúdo mais enxuto; o backend ainda persiste como página normal.
   const parecePaginaIndice = contarItensIndiceGuias(raw.conteudoHtml) !== undefined;
-  const minimoConteudo = parecePaginaIndice ? 40 : 80;
+  const menu = raw.tipo === 'MENU';
+  const minimoConteudo = menu ? 20 : parecePaginaIndice ? 40 : 80;
 
-  return [
+  const itens: PaginaQualidadeItem[] = [
     item('TITULO', 'Título definido', 'Informe um título claro para a página.', !!raw.titulo?.trim(), 'ERRO'),
     item(
       'CODIGO_TELA',
@@ -65,9 +71,11 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
     item(
       'CONTEUDO',
       'Conteúdo desenvolvido',
-      parecePaginaIndice
-        ? 'A página de menu precisa ter pelo menos 40 caracteres de conteúdo útil.'
-        : 'A página precisa ter pelo menos 80 caracteres de conteúdo útil.',
+      menu
+        ? 'Apresente a seção em ao menos 20 caracteres; as subpáginas trazem o conteúdo.'
+        : parecePaginaIndice
+          ? 'A página de menu precisa ter pelo menos 40 caracteres de conteúdo útil.'
+          : 'A página precisa ter pelo menos 80 caracteres de conteúdo útil.',
       texto.length >= minimoConteudo,
       'ERRO',
     ),
@@ -170,6 +178,7 @@ export function avaliarQualidadePagina(raw: PaginaQualityInput): PaginaQualidade
       'AVISO',
     ),
   ];
+  return menu ? itens.filter(i => !REGRAS_SO_DE_ARTIGO.has(i.codigo)) : itens;
 }
 
 function indiceFilhosOk(filhosCount?: number, indiceItemCount?: number): boolean {

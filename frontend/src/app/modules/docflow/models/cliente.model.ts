@@ -4,8 +4,6 @@ export interface Cliente {
   slug: string;
   ativo: boolean;
   logoDisponivel?: boolean;
-  temaCorPrimaria?: string;
-  temaCorFundo?: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

@@ -140,4 +140,17 @@ describe('avaliarQualidadePagina', () => {
 
     expect(itens.find(item => item.codigo === 'CONTEUDO')?.ok).toBe(true);
   });
+
+  it('menu pede só uma apresentação curta e não cobra regras de artigo', () => {
+    const itens = avaliarQualidadePagina({
+      titulo: 'Vendas',
+      codigoTela: 'MENU-VENDAS',
+      projetoId: 'p',
+      moduloId: 'm',
+      conteudoHtml: '<p>Rotinas de vendas do sistema.</p>',
+      tipo: 'MENU',
+    });
+    expect(itens.map(i => i.codigo)).not.toContain('CAPTURA');
+    expect(itens.find(i => i.codigo === 'CONTEUDO')?.ok).toBeTrue();
+  });
 });

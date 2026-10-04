@@ -172,6 +172,9 @@
                 <span class="paginas__drag-handle" aria-label="Arrastar para reordenar" role="img">⋮⋮</span>
               }
               {{ pagina.titulo }}
+              @if (pagina.tipo === 'MENU') {
+                <span class="paginas__tipo-menu" title="Pasta que agrupa subpáginas">Menu</span>
+              }
             </strong>
             <small class="paginas__slug">{{ pagina.slug }}</small>
           </td>

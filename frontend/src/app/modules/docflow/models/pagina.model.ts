@@ -1,5 +1,8 @@
 export type StatusPagina = 'RASCUNHO' | 'EM_REVISAO' | 'APROVADO' | 'PUBLICADO' | 'ARQUIVADO';
 
+/** PLAT-02: ARTIGO = conteúdo da tela; MENU = pasta que agrupa subpáginas. */
+export type TipoPagina = 'ARTIGO' | 'MENU';
+
 export interface Pagina {
   id: string;
   version: number;
@@ -28,6 +31,7 @@ export interface Pagina {
   updatedAt?: string;
   createdBy?: string;
   updatedBy?: string;
+  tipo?: TipoPagina;
 }
 
 export interface PaginaAnexo {

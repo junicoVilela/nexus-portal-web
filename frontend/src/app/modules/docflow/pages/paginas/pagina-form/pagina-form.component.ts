@@ -27,7 +27,12 @@ import { ProjetoService } from '@modules/docflow/services/projeto.service';
 import { ClienteService } from '@modules/docflow/services/cliente.service';
 import { docFlowRouterCommands } from '@core/config/doc-flow-router.util';
 import { Modulo } from '@modules/docflow/models/modulo.model';
-import { Pagina, PaginaQualidadeItem, PaginaTemplate } from '@modules/docflow/models/pagina.model';
+import {
+  Pagina,
+  PaginaQualidadeItem,
+  PaginaTemplate,
+  TipoPagina,
+} from '@modules/docflow/models/pagina.model';
 import { Projeto } from '@modules/docflow/models/projeto.model';
 import { Cliente } from '@modules/docflow/models/cliente.model';
 import { compactQueryParams, parseSortDirection } from '@shared/utils/query-state';
@@ -255,6 +260,8 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
     projetoId: ['', Validators.required],
     moduloId: ['', Validators.required],
     parentId: [''],
+    /** PLAT-02: MENU é pasta de navegação (qualidade e pacote tratam diferente). */
+    tipo: ['ARTIGO' as TipoPagina],
   });
   private readonly formValue = toSignal(this.form.valueChanges.pipe(startWith(this.form.getRawValue())), {
     requireSync: true,
@@ -1018,6 +1025,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         conteudoHtml: compactarCelulasTabelaHtml(pagina.conteudoHtml ?? ''),
         ordem: pagina.ordem,
         ativo: pagina.ativo,
+        tipo: pagina.tipo ?? 'ARTIGO',
         projetoId: pagina.projetoId,
         moduloId: pagina.moduloId,
         parentId: pagina.parentId ?? '',
@@ -1090,6 +1098,7 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
         conteudoHtml: '',
         ordem: paginaSalva.ordem + 1,
         ativo: true,
+        tipo: 'ARTIGO',
         projetoId: atual.projetoId,
         moduloId: atual.moduloId,
         parentId: atual.parentId,
@@ -1222,8 +1231,12 @@ export class PaginaFormComponent implements OnInit, AfterViewChecked, OnDestroy,
   }
 
   private aplicarTipoPaginaInicial(): void {
-    const config = estruturaTipoPagina(this.route.snapshot.queryParamMap.get('tipoPagina'));
+    const tipoPagina = this.route.snapshot.queryParamMap.get('tipoPagina');
+    const config = estruturaTipoPagina(tipoPagina);
     if (!config) return;
+    if (tipoPagina === 'menu') {
+      this.form.controls.tipo.setValue('MENU', { emitEvent: false });
+    }
 
     if (!this.form.controls.titulo.value.trim()) {
       this.form.controls.titulo.setValue(config.titulo, { emitEvent: false });

@@ -21,7 +21,7 @@ import type { Projeto } from '../../models/projeto.model';
 })
 class HostComponent {
   private readonly fb = new FormBuilder();
-  form = this.fb.group({ projetoId: [''], moduloId: [''], parentId: [''] });
+  form = this.fb.group({ projetoId: [''], moduloId: [''], parentId: [''], tipo: ['ARTIGO'] });
   projetos: Projeto[] = [
     { id: 'p1', nome: 'Projeto Alfa', slug: 'alfa' } as Projeto,
     { id: 'p2', nome: 'Projeto Beta', slug: 'beta' } as Projeto,
@@ -44,8 +44,8 @@ describe('PaginaMetaFieldsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('renderiza 3 selects', () => {
-    expect(fixture.nativeElement.querySelectorAll('select').length).toBe(3);
+  it('renderiza 4 selects (projeto, módulo, pai e tipo)', () => {
+    expect(fixture.nativeElement.querySelectorAll('select').length).toBe(4);
   });
 
   it('lista projetos como options', () => {
