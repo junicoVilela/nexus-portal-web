@@ -136,10 +136,26 @@ import type {
   DocflowEmpresaGetLogoResponses,
   DocflowEmpresaUploadLogoData,
   DocflowEmpresaUploadLogoResponses,
+  DocflowManualAcessoCriarData,
+  DocflowManualAcessoCriarResponses,
+  DocflowManualAcessoListarData,
+  DocflowManualAcessoListarResponses,
+  DocflowManualAcessoRevogarData,
+  DocflowManualAcessoRevogarResponses,
   DocflowManualMcpMensagemData,
   DocflowManualMcpMensagemResponses,
   DocflowManualMcpSemStreamData,
   DocflowManualMcpSemStreamResponses,
+  DocflowManualPublicoHelpBridgeData,
+  DocflowManualPublicoHelpBridgeResponses,
+  DocflowManualPublicoRaizData,
+  DocflowManualPublicoRaizResponses,
+  DocflowManualPublicoSiteData,
+  DocflowManualPublicoSiteResponses,
+  DocflowManualPublicoTelaData,
+  DocflowManualPublicoTelaResponses,
+  DocflowManualPublicoVigenteData,
+  DocflowManualPublicoVigenteResponses,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponses,
   DocflowModuloBuscarData,
@@ -2917,6 +2933,28 @@ export const docflowClienteCopiarVinculos = <ThrowOnError extends boolean = true
     },
   });
 
+export const docflowManualAcessoListar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualAcessoListarData, ThrowOnError>,
+): RequestResult<DocflowManualAcessoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualAcessoListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual',
+    ...options,
+  });
+
+export const docflowManualAcessoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualAcessoCriarData, ThrowOnError>,
+): RequestResult<DocflowManualAcessoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowManualAcessoCriarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const docflowAjudaRegistrar = <ThrowOnError extends boolean = true>(
   options: Options<DocflowAjudaRegistrarData, ThrowOnError>,
 ): RequestResult<DocflowAjudaRegistrarResponses, unknown, ThrowOnError> =>
@@ -3807,6 +3845,51 @@ export const docflowPreviewPreview = <ThrowOnError extends boolean = true>(
     ...options,
   });
 
+export const docflowManualPublicoVigente = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualPublicoVigenteData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoVigenteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualPublicoVigenteResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/{token}/vigente',
+    ...options,
+  });
+
+export const docflowManualPublicoTela = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualPublicoTelaData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoTelaResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualPublicoTelaResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/{token}/tela/{codigoTela}',
+    ...options,
+  });
+
+export const docflowManualPublicoRaiz = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualPublicoRaizData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoRaizResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualPublicoRaizResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/{token}/site',
+    ...options,
+  });
+
+export const docflowManualPublicoSite = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualPublicoSiteData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoSiteResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualPublicoSiteResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/{token}/site/**',
+    ...options,
+  });
+
+export const docflowManualPublicoHelpBridge = <ThrowOnError extends boolean = true>(
+  options?: Options<DocflowManualPublicoHelpBridgeData, ThrowOnError>,
+): RequestResult<DocflowManualPublicoHelpBridgeResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<DocflowManualPublicoHelpBridgeResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manual/help-bridge.js',
+    ...options,
+  });
+
 export const docflowPublicacaoExcluir = <ThrowOnError extends boolean = true>(
   options: Options<DocflowPublicacaoExcluirData, ThrowOnError>,
 ): RequestResult<DocflowPublicacaoExcluirResponses, unknown, ThrowOnError> =>
@@ -4190,5 +4273,14 @@ export const docflowPaginaExcluirAnexo = <ThrowOnError extends boolean = true>(
   (options.client ?? client).delete<DocflowPaginaExcluirAnexoResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
+    ...options,
+  });
+
+export const docflowManualAcessoRevogar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualAcessoRevogarData, ThrowOnError>,
+): RequestResult<DocflowManualAcessoRevogarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowManualAcessoRevogarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/acessos-manual/{id}',
     ...options,
   });

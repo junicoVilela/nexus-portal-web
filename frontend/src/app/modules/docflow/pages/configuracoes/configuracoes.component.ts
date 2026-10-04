@@ -4,10 +4,20 @@ import { LucideAngularModule } from 'lucide-angular';
 import { ConfiguracaoService } from '@modules/docflow/services/configuracao.service';
 import { ButtonComponent, CardComponent, PageHeaderComponent, ToastService } from '@shared/ui';
 
+import { PermissaoDirective } from '@modules/identity-access/directives';
+import { ManualIntegracaoComponent } from '../../components/manual-integracao/manual-integracao.component';
+
 @Component({
   selector: 'app-configuracoes',
   standalone: true,
-  imports: [LucideAngularModule, PageHeaderComponent, CardComponent, ButtonComponent],
+  imports: [
+    LucideAngularModule,
+    PageHeaderComponent,
+    CardComponent,
+    ButtonComponent,
+    PermissaoDirective,
+    ManualIntegracaoComponent,
+  ],
   templateUrl: './configuracoes.component.html',
   styleUrl: './configuracoes.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

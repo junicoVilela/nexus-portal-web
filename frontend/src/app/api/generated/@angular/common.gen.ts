@@ -128,9 +128,24 @@ import type {
   DocflowEmpresaGetLogoResponse,
   DocflowEmpresaUploadLogoData,
   DocflowEmpresaUploadLogoResponse,
+  DocflowManualAcessoCriarData,
+  DocflowManualAcessoCriarResponse,
+  DocflowManualAcessoListarData,
+  DocflowManualAcessoListarResponse,
+  DocflowManualAcessoRevogarData,
+  DocflowManualAcessoRevogarResponse,
   DocflowManualMcpMensagemData,
   DocflowManualMcpMensagemResponse,
   DocflowManualMcpSemStreamData,
+  DocflowManualPublicoHelpBridgeData,
+  DocflowManualPublicoHelpBridgeResponse,
+  DocflowManualPublicoRaizData,
+  DocflowManualPublicoSiteData,
+  DocflowManualPublicoSiteResponse,
+  DocflowManualPublicoTelaData,
+  DocflowManualPublicoTelaResponse,
+  DocflowManualPublicoVigenteData,
+  DocflowManualPublicoVigenteResponse,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponse,
   DocflowModuloBuscarData,
@@ -2721,6 +2736,26 @@ export const docflowClienteCopiarVinculosRequest = <ThrowOnError extends boolean
     ...options,
   });
 
+export const docflowManualAcessoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualAcessoListarData, ThrowOnError>,
+): HttpRequest<DocflowManualAcessoListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualAcessoListarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual',
+    ...options,
+  });
+
+export const docflowManualAcessoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualAcessoCriarData, ThrowOnError>,
+): HttpRequest<DocflowManualAcessoCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualAcessoCriarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual',
+    ...options,
+  });
+
 export const docflowAjudaRegistrarRequest = <ThrowOnError extends boolean = false>(
   options: Options<DocflowAjudaRegistrarData, ThrowOnError>,
 ): HttpRequest<DocflowAjudaRegistrarResponse> =>
@@ -3549,6 +3584,56 @@ export const docflowPreviewPreviewRequest = <ThrowOnError extends boolean = fals
     ...options,
   });
 
+export const docflowManualPublicoVigenteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualPublicoVigenteData, ThrowOnError>,
+): HttpRequest<DocflowManualPublicoVigenteResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualPublicoVigenteResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/manual/{token}/vigente',
+    ...options,
+  });
+
+export const docflowManualPublicoTelaRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualPublicoTelaData, ThrowOnError>,
+): HttpRequest<DocflowManualPublicoTelaResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualPublicoTelaResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/manual/{token}/tela/{codigoTela}',
+    ...options,
+  });
+
+export const docflowManualPublicoRaizRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualPublicoRaizData, ThrowOnError>,
+): HttpRequest<unknown> =>
+  (options?.client ?? client).requestOptions<unknown, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/manual/{token}/site',
+    ...options,
+  });
+
+export const docflowManualPublicoSiteRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualPublicoSiteData, ThrowOnError>,
+): HttpRequest<DocflowManualPublicoSiteResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualPublicoSiteResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/manual/{token}/site/**',
+    ...options,
+  });
+
+export const docflowManualPublicoHelpBridgeRequest = <ThrowOnError extends boolean = false>(
+  options?: Options<DocflowManualPublicoHelpBridgeData, ThrowOnError>,
+): HttpRequest<DocflowManualPublicoHelpBridgeResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualPublicoHelpBridgeResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/manual/help-bridge.js',
+    ...options,
+  });
+
 export const docflowPublicacaoExcluirRequest = <ThrowOnError extends boolean = false>(
   options: Options<DocflowPublicacaoExcluirData, ThrowOnError>,
 ): HttpRequest<DocflowPublicacaoExcluirResponse> =>
@@ -3972,6 +4057,16 @@ export const docflowPaginaExcluirAnexoRequest = <ThrowOnError extends boolean = 
     responseStyle: 'data',
     method: 'DELETE',
     url: '/api/v1/docflow/paginas/{paginaId}/anexos/{anexoId}',
+    ...options,
+  });
+
+export const docflowManualAcessoRevogarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualAcessoRevogarData, ThrowOnError>,
+): HttpRequest<DocflowManualAcessoRevogarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualAcessoRevogarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/docflow/acessos-manual/{id}',
     ...options,
   });
 
@@ -5562,6 +5657,22 @@ export const docflowClienteCopiarVinculosResource = <ThrowOnError extends boolea
     return opts ? docflowClienteCopiarVinculosRequest(opts) : undefined;
   });
 
+export const docflowManualAcessoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualAcessoListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualAcessoListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualAcessoListarRequest(opts) : undefined;
+  });
+
+export const docflowManualAcessoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualAcessoCriarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualAcessoCriarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualAcessoCriarRequest(opts) : undefined;
+  });
+
 export const docflowAjudaRegistrarResource = <ThrowOnError extends boolean = false>(
   options: () => Options<DocflowAjudaRegistrarData, ThrowOnError> | undefined,
 ) =>
@@ -6167,6 +6278,46 @@ export const docflowPreviewPreviewResource = <ThrowOnError extends boolean = fal
     return opts ? docflowPreviewPreviewRequest(opts) : undefined;
   });
 
+export const docflowManualPublicoVigenteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualPublicoVigenteData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualPublicoVigenteResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoVigenteRequest(opts) : undefined;
+  });
+
+export const docflowManualPublicoTelaResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualPublicoTelaData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualPublicoTelaResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoTelaRequest(opts) : undefined;
+  });
+
+export const docflowManualPublicoRaizResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualPublicoRaizData, ThrowOnError> | undefined,
+) =>
+  httpResource<unknown>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoRaizRequest(opts) : undefined;
+  });
+
+export const docflowManualPublicoSiteResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualPublicoSiteData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualPublicoSiteResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoSiteRequest(opts) : undefined;
+  });
+
+export const docflowManualPublicoHelpBridgeResource = <ThrowOnError extends boolean = false>(
+  options?: () => Options<DocflowManualPublicoHelpBridgeData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualPublicoHelpBridgeResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualPublicoHelpBridgeRequest(opts) : undefined;
+  });
+
 export const docflowPublicacaoExcluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<DocflowPublicacaoExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -6503,4 +6654,12 @@ export const docflowPaginaExcluirAnexoResource = <ThrowOnError extends boolean =
   httpResource<DocflowPaginaExcluirAnexoResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? docflowPaginaExcluirAnexoRequest(opts) : undefined;
+  });
+
+export const docflowManualAcessoRevogarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualAcessoRevogarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualAcessoRevogarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualAcessoRevogarRequest(opts) : undefined;
   });

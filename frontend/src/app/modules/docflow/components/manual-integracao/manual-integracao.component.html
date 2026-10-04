@@ -1,0 +1,92 @@
+<section class="mi" aria-labelledby="mi-titulo">
+  <h3 class="mi__titulo" id="mi-titulo">Manual nos sistemas do cliente</h3>
+  <p class="mi__desc">
+    Com uma chave, o sistema do cliente abre a ajuda da tela atual (<code
+      >NexusManual.open(&#123; codigoTela &#125;)</code
+    >), pergunta ao manual e conecta agentes via MCP. Tudo usa o manual <strong>vigente</strong>, a última publicação
+    concluída.
+  </p>
+
+  <label class="mi__rotulo" for="mi-cliente">Cliente</label>
+  <select
+    id="mi-cliente"
+    class="mi__campo"
+    [value]="clienteId()"
+    (change)="selecionarCliente($any($event.target).value)"
+  >
+    <option value="">Selecione…</option>
+    @for (c of clientes(); track c.id) {
+      <option [value]="c.id">{{ c.nome }}</option>
+    }
+  </select>
+
+  @if (clienteId()) {
+    @if (criada(); as nova) {
+      <div class="mi__criada" role="status">
+        <strong>Chave "{{ nova.acesso.nome }}" criada. Copie agora: ela não aparece de novo.</strong>
+        <div class="mi__token">
+          <code>{{ nova.token }}</code>
+          <ui-button variant="secondary" size="sm" icon="Copy" (clicked)="copiar(nova.token)">Copiar chave</ui-button>
+        </div>
+        <span class="mi__rotulo">Cole no sistema do cliente</span>
+        <pre class="mi__snippet">{{ snippet() }}</pre>
+        <ui-button variant="secondary" size="sm" icon="Copy" (clicked)="copiar(snippet())">Copiar snippet</ui-button>
+      </div>
+    }
+
+    <ul class="mi__lista" aria-label="Chaves do cliente">
+      @for (chave of chaves(); track chave.id) {
+        <li class="mi__chave" [class.mi__chave--inativa]="!chave.ativo">
+          <div class="mi__chave-info">
+            <strong>{{ chave.nome }}</strong>
+            <code>{{ chave.prefixo }}…</code>
+            <ui-badge [tone]="chave.ativo ? 'success' : 'neutral'">{{ chave.ativo ? 'Ativa' : 'Inativa' }}</ui-badge>
+          </div>
+          <small>
+            Origens: {{ chave.origens.length ? chave.origens.join(', ') : 'qualquer (servidor a servidor)' }} ·
+            {{ chave.expiraEm ? 'expira ' + (chave.expiraEm | date: 'dd/MM/yyyy') : 'sem expiração' }} · último uso:
+            {{ chave.ultimoUsoEm ? (chave.ultimoUsoEm | date: 'dd/MM HH:mm') : 'nunca' }}
+          </small>
+          @if (chave.ativo && podeEditar()) {
+            <ui-button variant="ghost" size="sm" icon="Trash2" (clicked)="revogar(chave)">Revogar</ui-button>
+          }
+        </li>
+      } @empty {
+        <li class="mi__vazio">{{ carregando() ? 'Carregando…' : 'Nenhuma chave para este cliente.' }}</li>
+      }
+    </ul>
+
+    @if (podeEditar()) {
+      <form class="mi__form" (submit)="$event.preventDefault(); criar()">
+        <span class="mi__rotulo">Nova chave</span>
+        <input
+          class="mi__campo"
+          aria-label="Nome da chave"
+          maxlength="120"
+          placeholder="Nome (ex.: NEXUS-LD produção)"
+          [value]="nome()"
+          (input)="nome.set($any($event.target).value)"
+        />
+        <textarea
+          class="mi__campo"
+          aria-label="Origens permitidas"
+          rows="2"
+          placeholder="Origens permitidas, uma por linha (ex.: https://app.cliente.com). Vazio = só servidor a servidor."
+          [value]="origens()"
+          (input)="origens.set($any($event.target).value)"
+        ></textarea>
+        <select
+          class="mi__campo"
+          aria-label="Validade"
+          [value]="dias()"
+          (change)="dias.set(+$any($event.target).value)"
+        >
+          @for (v of validades; track v.dias) {
+            <option [value]="v.dias">{{ v.rotulo }}</option>
+          }
+        </select>
+        <ui-button type="submit" icon="KeyRound" [loading]="criando()" [disabled]="!podeCriar()">Criar chave</ui-button>
+      </form>
+    }
+  }
+</section>

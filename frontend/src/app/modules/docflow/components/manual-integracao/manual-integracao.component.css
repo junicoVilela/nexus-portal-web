@@ -1,0 +1,109 @@
+.mi {
+  display: grid;
+  gap: 10px;
+}
+
+.mi__titulo {
+  margin: 0;
+  font: 600 16px/1.3 var(--font-body);
+}
+
+.mi__desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.mi__rotulo {
+  font: 600 12.5px/1.3 var(--font-body);
+}
+
+.mi__campo {
+  width: 100%;
+  max-width: 560px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.mi__criada {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius-md);
+  background: var(--warn-bg);
+}
+
+.mi__token {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.mi__token code,
+.mi__snippet {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font: 12px/1.5 var(--font-mono, monospace);
+  word-break: break-all;
+}
+
+.mi__snippet {
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.mi__lista {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mi__chave {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.mi__chave--inativa {
+  opacity: 0.65;
+}
+
+.mi__chave ui-button {
+  justify-self: start;
+}
+
+.mi__chave-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.mi__chave small,
+.mi__vazio {
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.mi__form {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.mi__form ui-button {
+  justify-self: start;
+}

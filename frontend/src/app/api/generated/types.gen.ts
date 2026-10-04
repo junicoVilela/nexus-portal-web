@@ -1382,6 +1382,30 @@ export type CopiarVinculosRequest = {
   origemClienteId: string;
 };
 
+export type CriarRequest = {
+  nome: string;
+  origens?: Array<string>;
+  diasValidade?: number;
+};
+
+export type AcessoResponse = {
+  id?: string;
+  clienteId?: string;
+  nome?: string;
+  prefixo?: string;
+  origens?: Array<string>;
+  ativo?: boolean;
+  expiraEm?: string;
+  ultimoUsoEm?: string;
+  createdAt?: string;
+  createdBy?: string;
+};
+
+export type CriadoResponse = {
+  acesso?: AcessoResponse;
+  token?: string;
+};
+
 export type AjudaEventoRequest = {
   tipo:
     | 'BUSCA'
@@ -2125,6 +2149,23 @@ export type PageResponseAcessoTemporarioResponse = {
   totalPages?: number;
   first?: boolean;
   last?: boolean;
+};
+
+export type Vigente = {
+  cliente?: string;
+  versao?: string;
+  publicacaoId?: string;
+  publicadaEm?: string;
+  quantidadePaginas?: number;
+  site?: string;
+};
+
+export type Tela = {
+  codigoTela?: string;
+  titulo?: string;
+  caminho?: string;
+  versao?: string;
+  url?: string;
 };
 
 export type PageResponsePublicacaoResponse = {
@@ -6293,6 +6334,44 @@ export type DocflowClienteCopiarVinculosResponses = {
 export type DocflowClienteCopiarVinculosResponse =
   DocflowClienteCopiarVinculosResponses[keyof DocflowClienteCopiarVinculosResponses];
 
+export type DocflowManualAcessoListarData = {
+  body?: never;
+  path: {
+    clienteId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual';
+};
+
+export type DocflowManualAcessoListarResponses = {
+  /**
+   * OK
+   */
+  200: Array<AcessoResponse>;
+};
+
+export type DocflowManualAcessoListarResponse =
+  DocflowManualAcessoListarResponses[keyof DocflowManualAcessoListarResponses];
+
+export type DocflowManualAcessoCriarData = {
+  body: CriarRequest;
+  path: {
+    clienteId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/clientes/{clienteId}/acessos-manual';
+};
+
+export type DocflowManualAcessoCriarResponses = {
+  /**
+   * Created
+   */
+  201: CriadoResponse;
+};
+
+export type DocflowManualAcessoCriarResponse =
+  DocflowManualAcessoCriarResponses[keyof DocflowManualAcessoCriarResponses];
+
 export type DocflowAjudaRegistrarData = {
   body: AjudaEventoRequest;
   path?: never;
@@ -6564,6 +6643,9 @@ export type AiAiAjustePaginaPedirResponse =
 
 export type AiAiManualPerguntarComTokenData = {
   body: AiManualPerguntaRequest;
+  headers?: {
+    Origin?: string;
+  };
   path: {
     token: string;
   };
@@ -7704,6 +7786,103 @@ export type DocflowPreviewPreviewResponses = {
 export type DocflowPreviewPreviewResponse =
   DocflowPreviewPreviewResponses[keyof DocflowPreviewPreviewResponses];
 
+export type DocflowManualPublicoVigenteData = {
+  body?: never;
+  headers?: {
+    Origin?: string;
+  };
+  path: {
+    token: string;
+  };
+  query?: never;
+  url: '/api/v1/manual/{token}/vigente';
+};
+
+export type DocflowManualPublicoVigenteResponses = {
+  /**
+   * OK
+   */
+  200: Vigente;
+};
+
+export type DocflowManualPublicoVigenteResponse =
+  DocflowManualPublicoVigenteResponses[keyof DocflowManualPublicoVigenteResponses];
+
+export type DocflowManualPublicoTelaData = {
+  body?: never;
+  headers?: {
+    Origin?: string;
+  };
+  path: {
+    token: string;
+    codigoTela: string;
+  };
+  query?: never;
+  url: '/api/v1/manual/{token}/tela/{codigoTela}';
+};
+
+export type DocflowManualPublicoTelaResponses = {
+  /**
+   * OK
+   */
+  200: Tela;
+};
+
+export type DocflowManualPublicoTelaResponse =
+  DocflowManualPublicoTelaResponses[keyof DocflowManualPublicoTelaResponses];
+
+export type DocflowManualPublicoRaizData = {
+  body?: never;
+  path: {
+    token: string;
+  };
+  query?: never;
+  url: '/api/v1/manual/{token}/site';
+};
+
+export type DocflowManualPublicoRaizResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type DocflowManualPublicoSiteData = {
+  body?: never;
+  path: {
+    token: string;
+  };
+  query?: never;
+  url: '/api/v1/manual/{token}/site/**';
+};
+
+export type DocflowManualPublicoSiteResponses = {
+  /**
+   * OK
+   */
+  200: string;
+};
+
+export type DocflowManualPublicoSiteResponse =
+  DocflowManualPublicoSiteResponses[keyof DocflowManualPublicoSiteResponses];
+
+export type DocflowManualPublicoHelpBridgeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/api/v1/manual/help-bridge.js';
+};
+
+export type DocflowManualPublicoHelpBridgeResponses = {
+  /**
+   * OK
+   */
+  200: Blob | File;
+};
+
+export type DocflowManualPublicoHelpBridgeResponse =
+  DocflowManualPublicoHelpBridgeResponses[keyof DocflowManualPublicoHelpBridgeResponses];
+
 export type DocflowPublicacaoExcluirData = {
   body?: never;
   path: {
@@ -8482,3 +8661,22 @@ export type DocflowPaginaExcluirAnexoResponses = {
 
 export type DocflowPaginaExcluirAnexoResponse =
   DocflowPaginaExcluirAnexoResponses[keyof DocflowPaginaExcluirAnexoResponses];
+
+export type DocflowManualAcessoRevogarData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/acessos-manual/{id}';
+};
+
+export type DocflowManualAcessoRevogarResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowManualAcessoRevogarResponse =
+  DocflowManualAcessoRevogarResponses[keyof DocflowManualAcessoRevogarResponses];
