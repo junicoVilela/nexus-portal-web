@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
@@ -137,6 +137,18 @@ describe('AiAssistenteComponent', () => {
     cmp['enviarRespostas']();
     expect(cmp['erro']()).toContain('Responda');
     expect(ai.enviarMensagem).not.toHaveBeenCalled();
+  });
+
+  it('preenche o briefing vindo da URL (lacuna do manual)', async () => {
+    const briefing = 'Leitores do manual buscaram "nota fiscal" 5 vezes nos últimos 30 dias.';
+    await TestBed.inject(Router).navigateByUrl(`/?briefing=${encodeURIComponent(briefing)}`);
+    const comBriefing = TestBed.createComponent(AiAssistenteComponent);
+    comBriefing.detectChanges();
+
+    const campo = comBriefing.nativeElement.querySelector(
+      'textarea[formcontrolname="briefing"]',
+    ) as HTMLTextAreaElement;
+    expect(campo.value).toBe(briefing);
   });
 
   it('inicia sessão com briefing válido', () => {

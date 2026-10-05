@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { finalize, interval, Observable, switchMap } from 'rxjs';
 
@@ -40,6 +40,11 @@ const ATUALIZACAO_MS = 5_000;
 type Situacao = 'gerando' | 'nova' | 'ajuste' | 'aguardando' | 'revisar' | 'erro' | 'ignorado' | 'resolvida';
 type FiltroOrigem = 'TODAS' | AiFilaOrigem;
 
+/** `?origem=RELEASE` vem do dashboard ("alteradas por release"). */
+function origemDaUrl(valor: string | null): FiltroOrigem {
+  return valor === 'PR' || valor === 'RELEASE' ? valor : 'TODAS';
+}
+
 /**
  * Propostas da IA a partir de PRs mergeados (Fase C, `docs/ai/GITHUB-WEBHOOK.md`). Ao agir num
  * item o usuário o assume: a sessão da IA passa a ser dele e o editor/assistente funcionam como
@@ -67,6 +72,7 @@ export class AiPropostasIaComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly somentePendentes = signal(true);
@@ -82,7 +88,9 @@ export class AiPropostasIaComponent implements OnInit {
   protected readonly podeCriar = computed(() => this.auth.tem()('PAGINA:CRIAR') && this.podeAplicar());
 
   /** INT-303: PR do GitHub ou release do Release Orchestrator. */
-  protected readonly origem = signal<FiltroOrigem>('TODAS');
+  protected readonly origem = signal<FiltroOrigem>(
+    origemDaUrl(this.route.snapshot.queryParamMap.get('origem')),
+  );
   protected readonly visiveis = computed(() =>
     this.origem() === 'TODAS' ? this.itens() : this.itens().filter(item => item.origem === this.origem()),
   );

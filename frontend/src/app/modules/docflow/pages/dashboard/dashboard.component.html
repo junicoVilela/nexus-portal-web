@@ -75,7 +75,10 @@
         ><strong>{{ paginasDesatualizadas() }}</strong
         ><span>desatualizadas</span></a
       >
-      <a routerLink="/doc-flow/propostas-ia" aria-label="Abrir telas alteradas por release"
+      <a
+        routerLink="/doc-flow/propostas-ia"
+        [queryParams]="{ origem: 'RELEASE' }"
+        aria-label="Abrir telas alteradas por release na fila da IA"
         ><strong>{{ paginasDesatualizadasPorRelease() }}</strong
         ><span>alteradas por release</span></a
       >
@@ -101,7 +104,24 @@
         <ul class="df-dash__lacunas-lista" aria-label="Buscas sem resultado">
           @for (t of l.termosSemResultado; track t.termo) {
             <li>
-              <span>“{{ t.termo }}”</span><strong>{{ t.ocorrencias }}</strong>
+              <span class="df-dash__lacuna-termo">“{{ t.termo }}”</span>
+              <strong [attr.aria-label]="t.ocorrencias + ' buscas'">{{ t.ocorrencias }}</strong>
+              <span class="df-dash__lacuna-acoes">
+                <a
+                  routerLink="/doc-flow/paginas"
+                  [queryParams]="{ busca: t.termo }"
+                  [attr.aria-label]="'Procurar ' + t.termo + ' nas páginas'"
+                  >Procurar</a
+                >
+                @if (podeCriarComIa()) {
+                  <a
+                    routerLink="/doc-flow/assistente"
+                    [queryParams]="{ briefing: briefingDaLacuna(t.termo, t.ocorrencias) }"
+                    [attr.aria-label]="'Criar página sobre ' + t.termo + ' com IA'"
+                    ><lucide-icon name="Sparkles" [size]="13" aria-hidden="true" /> Criar com IA</a
+                  >
+                }
+              </span>
             </li>
           }
         </ul>

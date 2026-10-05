@@ -214,6 +214,12 @@ export class AiAssistenteComponent implements OnInit, OnDestroy {
       this.form.controls.templateId.setValue(templateIdQp);
       this.templateIdAtual.set(templateIdQp);
     }
+    // Briefing sugerido por outra tela (ex.: lacuna do manual no dashboard); sessão retomada prevalece.
+    const briefingQp = qp.get('briefing')?.trim();
+    if (briefingQp && !qp.get('sessaoId') && !this.form.controls.briefing.value) {
+      this.form.controls.briefing.setValue(briefingQp);
+      this.briefingAtual.set(briefingQp);
+    }
     this.formSub = this.form.valueChanges.subscribe(v => {
       this.briefingAtual.set(v.briefing ?? '');
       this.templateIdAtual.set(v.templateId ?? '');

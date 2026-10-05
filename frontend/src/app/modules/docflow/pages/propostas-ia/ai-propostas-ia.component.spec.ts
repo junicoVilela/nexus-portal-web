@@ -52,7 +52,7 @@ describe('AiPropostasIaComponent', () => {
     };
   }
 
-  async function criar(itens: AiFilaPrItem[]): Promise<void> {
+  async function criar(itens: AiFilaPrItem[], url = '/'): Promise<void> {
     ai = jasmine.createSpyObj<AiAssistenteService>('AiAssistenteService', [
       'filaPr',
       'assumirItemFila',
@@ -75,6 +75,7 @@ describe('AiPropostasIaComponent', () => {
       ],
     }).compileComponents();
     router = TestBed.inject(Router);
+    await router.navigateByUrl(url);
     spyOn(router, 'navigate').and.resolveTo(true);
     fixture = TestBed.createComponent(AiPropostasIaComponent);
     fixture.detectChanges();
@@ -143,6 +144,16 @@ describe('AiPropostasIaComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Nada pendente');
     botao('Todos').click();
     expect(ai.filaPr).toHaveBeenCalledWith(false);
+  });
+
+  it('?origem=RELEASE abre a fila filtrada nas releases', async () => {
+    await criar(
+      [item(), item({ id: 'r1', origem: 'RELEASE', numeroPr: null, titulo: 'Portal 9.9.0' })],
+      '/?origem=RELEASE',
+    );
+    const texto = fixture.nativeElement.textContent as string;
+    expect(texto).toContain('Portal 9.9.0');
+    expect(texto).not.toContain('org/app#42');
   });
 
   it('item de release oferece gerar ajuste ou dispensar e avisa das capturas', async () => {

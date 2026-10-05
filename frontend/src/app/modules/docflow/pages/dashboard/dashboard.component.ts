@@ -5,6 +5,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { DocFlowDashboardResumo } from '@modules/docflow/models/dashboard.model';
 import { DocFlowDashboardService } from '@modules/docflow/services/docflow-dashboard.service';
+import { AiFeatureService } from '@modules/docflow/services/ai-feature.service';
+import { briefingDaLacuna } from '@modules/docflow/utils/lacuna-briefing.util';
+import { AuthService } from '@core/auth/services/auth.service';
 import { PublicacaoService } from '@modules/docflow/services/publicacao.service';
 import { TablePaginationComponent } from '@shared/components/table-pagination/table-pagination.component';
 import { StatusPagina } from '@modules/docflow/models/pagina.model';
@@ -66,6 +69,13 @@ export class DashboardComponent implements OnInit {
   protected readonly paginasDesatualizadas = signal(0);
   protected readonly paginasDesatualizadasPorRelease = signal(0);
   protected readonly lacunas = signal<DocFlowDashboardResumo['lacunas'] | null>(null);
+  private readonly auth = inject(AuthService);
+  private readonly aiFeature = inject(AiFeatureService);
+  /** Lacuna vira página: só com o assistente ligado e permissão de gerar. */
+  protected readonly podeCriarComIa = computed(
+    () => this.aiFeature.disponivel() && this.auth.tem()('PAGINA:AI_GERAR'),
+  );
+  protected readonly briefingDaLacuna = briefingDaLacuna;
   protected readonly taxaSucessoPublicacoes = signal(0);
   protected readonly statusStats = signal<StatusStat[]>([]);
 
@@ -131,6 +141,7 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.aiFeature.ensureLoaded();
     this.route.queryParams.subscribe(params => {
       const state = readUrlState(params, this.urlSchema);
       this.ultimasPublicacoesPage.set(state.page);
