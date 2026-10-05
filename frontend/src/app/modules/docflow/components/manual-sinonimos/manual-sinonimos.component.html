@@ -1,0 +1,65 @@
+<section class="ms" id="manual-sinonimos" aria-labelledby="ms-titulo">
+  <h4 class="ms__titulo" id="ms-titulo">Sinônimos da busca</h4>
+  <p class="ms__desc">
+    Palavras que o cliente usa e o manual escreve de outro jeito ("NF" e "nota fiscal"). Valem na hora para perguntas,
+    agentes (MCP) e o manual hospedado; o ZIP baixado leva os sinônimos da publicação.
+  </p>
+
+  <ul class="ms__lista" aria-label="Grupos de sinônimos">
+    @for (grupo of grupos(); track grupo.id) {
+      <li class="ms__grupo">
+        @if (editandoId() === grupo.id) {
+          <input
+            class="ms__campo"
+            aria-label="Termos equivalentes"
+            [value]="edicao()"
+            (input)="edicao.set($any($event.target).value)"
+            (keydown.enter)="salvarEdicao(grupo)"
+            (keydown.escape)="editandoId.set(null)"
+          />
+          <span class="ms__acoes">
+            <ui-button
+              size="sm"
+              icon="Check"
+              [loading]="salvando()"
+              [disabled]="!termosValidos(edicao())"
+              (clicked)="salvarEdicao(grupo)"
+              >Salvar</ui-button
+            >
+            <ui-button size="sm" variant="ghost" (clicked)="editandoId.set(null)">Cancelar</ui-button>
+          </span>
+        } @else {
+          <span class="ms__termos">
+            @for (termo of grupo.termos; track termo) {
+              <span class="ms__termo">{{ termo }}</span>
+            }
+          </span>
+          @if (podeEditar()) {
+            <span class="ms__acoes">
+              <ui-button size="sm" variant="ghost" icon="Pencil" (clicked)="editar(grupo)">Editar</ui-button>
+              <ui-button size="sm" variant="ghost" icon="Trash2" (clicked)="excluir(grupo)">Excluir</ui-button>
+            </span>
+          }
+        }
+      </li>
+    } @empty {
+      <li class="ms__vazio">{{ carregando() ? 'Carregando…' : 'Nenhum sinônimo para este cliente.' }}</li>
+    }
+  </ul>
+
+  @if (podeEditar()) {
+    <form class="ms__form" (submit)="$event.preventDefault(); adicionar()">
+      <input
+        class="ms__campo"
+        aria-label="Novos sinônimos"
+        maxlength="600"
+        placeholder="Termos equivalentes separados por vírgula (ex.: nota fiscal, NF, NF-e)"
+        [value]="novo()"
+        (input)="novo.set($any($event.target).value)"
+      />
+      <ui-button type="submit" icon="Plus" [loading]="salvando()" [disabled]="!termosValidos(novo())"
+        >Adicionar</ui-button
+      >
+    </form>
+  }
+</section>

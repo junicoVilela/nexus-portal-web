@@ -160,6 +160,14 @@ import type {
   DocflowManualPublicoTelaResponses,
   DocflowManualPublicoVigenteData,
   DocflowManualPublicoVigenteResponses,
+  DocflowManualSinonimoAtualizarData,
+  DocflowManualSinonimoAtualizarResponses,
+  DocflowManualSinonimoCriarData,
+  DocflowManualSinonimoCriarResponses,
+  DocflowManualSinonimoExcluirData,
+  DocflowManualSinonimoExcluirResponses,
+  DocflowManualSinonimoListarData,
+  DocflowManualSinonimoListarResponses,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponses,
   DocflowModuloBuscarData,
@@ -1426,6 +1434,28 @@ export const identityaccessEscopoAcessoAtualizar = <ThrowOnError extends boolean
   (options.client ?? client).put<IdentityaccessEscopoAcessoAtualizarResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/rbac/escopos/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowManualSinonimoExcluir = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualSinonimoExcluirData, ThrowOnError>,
+): RequestResult<DocflowManualSinonimoExcluirResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<DocflowManualSinonimoExcluirResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/sinonimos-manual/{id}',
+    ...options,
+  });
+
+export const docflowManualSinonimoAtualizar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualSinonimoAtualizarData, ThrowOnError>,
+): RequestResult<DocflowManualSinonimoAtualizarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).put<DocflowManualSinonimoAtualizarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/sinonimos-manual/{id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -2945,6 +2975,28 @@ export const docflowClienteCopiarVinculos = <ThrowOnError extends boolean = true
   (options.client ?? client).post<DocflowClienteCopiarVinculosResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/docflow/clientes/{id}/copiar-vinculos',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const docflowManualSinonimoListar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualSinonimoListarData, ThrowOnError>,
+): RequestResult<DocflowManualSinonimoListarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).get<DocflowManualSinonimoListarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual',
+    ...options,
+  });
+
+export const docflowManualSinonimoCriar = <ThrowOnError extends boolean = true>(
+  options: Options<DocflowManualSinonimoCriarData, ThrowOnError>,
+): RequestResult<DocflowManualSinonimoCriarResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<DocflowManualSinonimoCriarResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual',
     ...options,
     headers: {
       'Content-Type': 'application/json',

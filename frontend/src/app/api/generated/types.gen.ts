@@ -708,6 +708,19 @@ export type EscopoAcessoResponse = {
   atualizadoEm?: string;
 };
 
+export type SinonimoRequest = {
+  termos: Array<string>;
+};
+
+export type SinonimoResponse = {
+  id?: string;
+  clienteId?: string;
+  termos?: Array<string>;
+  createdAt?: string;
+  createdBy?: string;
+  updatedAt?: string;
+};
+
 export type ProjetoRequest = {
   nome: string;
   slug?: string;
@@ -3817,6 +3830,44 @@ export type IdentityaccessEscopoAcessoAtualizarResponses = {
 export type IdentityaccessEscopoAcessoAtualizarResponse =
   IdentityaccessEscopoAcessoAtualizarResponses[keyof IdentityaccessEscopoAcessoAtualizarResponses];
 
+export type DocflowManualSinonimoExcluirData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/sinonimos-manual/{id}';
+};
+
+export type DocflowManualSinonimoExcluirResponses = {
+  /**
+   * No Content
+   */
+  204: void;
+};
+
+export type DocflowManualSinonimoExcluirResponse =
+  DocflowManualSinonimoExcluirResponses[keyof DocflowManualSinonimoExcluirResponses];
+
+export type DocflowManualSinonimoAtualizarData = {
+  body: SinonimoRequest;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/sinonimos-manual/{id}';
+};
+
+export type DocflowManualSinonimoAtualizarResponses = {
+  /**
+   * OK
+   */
+  200: SinonimoResponse;
+};
+
+export type DocflowManualSinonimoAtualizarResponse =
+  DocflowManualSinonimoAtualizarResponses[keyof DocflowManualSinonimoAtualizarResponses];
+
 export type DocflowProjetoExcluirData = {
   body?: never;
   path: {
@@ -6388,6 +6439,44 @@ export type DocflowClienteCopiarVinculosResponses = {
 
 export type DocflowClienteCopiarVinculosResponse =
   DocflowClienteCopiarVinculosResponses[keyof DocflowClienteCopiarVinculosResponses];
+
+export type DocflowManualSinonimoListarData = {
+  body?: never;
+  path: {
+    clienteId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual';
+};
+
+export type DocflowManualSinonimoListarResponses = {
+  /**
+   * OK
+   */
+  200: Array<SinonimoResponse>;
+};
+
+export type DocflowManualSinonimoListarResponse =
+  DocflowManualSinonimoListarResponses[keyof DocflowManualSinonimoListarResponses];
+
+export type DocflowManualSinonimoCriarData = {
+  body: SinonimoRequest;
+  path: {
+    clienteId: string;
+  };
+  query?: never;
+  url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual';
+};
+
+export type DocflowManualSinonimoCriarResponses = {
+  /**
+   * Created
+   */
+  201: SinonimoResponse;
+};
+
+export type DocflowManualSinonimoCriarResponse =
+  DocflowManualSinonimoCriarResponses[keyof DocflowManualSinonimoCriarResponses];
 
 export type DocflowManualAcessoListarData = {
   body?: never;

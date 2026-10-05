@@ -1,0 +1,80 @@
+.ms {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.ms__titulo {
+  margin: 0;
+  font: 600 14px/1.3 var(--font-body);
+}
+
+.ms__desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.ms__lista {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ms__grupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.ms__termos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ms__termo {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.ms__acoes {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.ms__vazio {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.ms__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ms__campo {
+  flex: 1 1 320px;
+  min-width: 0;
+  max-width: 560px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}

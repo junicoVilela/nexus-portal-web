@@ -113,6 +113,14 @@
                   [attr.aria-label]="'Procurar ' + t.termo + ' nas páginas'"
                   >Procurar</a
                 >
+                @if (podeCriarSinonimo()) {
+                  <a
+                    routerLink="/doc-flow/configuracoes"
+                    [queryParams]="{ sinonimo: t.termo }"
+                    [attr.aria-label]="'Cadastrar sinônimo para ' + t.termo"
+                    >Sinônimo</a
+                  >
+                }
                 @if (podeCriarComIa()) {
                   <a
                     routerLink="/doc-flow/assistente"

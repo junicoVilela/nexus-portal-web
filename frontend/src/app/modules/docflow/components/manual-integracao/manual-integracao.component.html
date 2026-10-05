@@ -20,6 +20,10 @@
     }
   </select>
 
+  @if (termoSugerido() && !clienteId()) {
+    <p class="mi__dica" role="status">Escolha o cliente para cadastrar sinônimos de “{{ termoSugerido() }}”.</p>
+  }
+
   @if (clienteId()) {
     @if (criada(); as nova) {
       <div class="mi__criada" role="status">
@@ -88,5 +92,7 @@
         <ui-button type="submit" icon="KeyRound" [loading]="criando()" [disabled]="!podeCriar()">Criar chave</ui-button>
       </form>
     }
+
+    <app-manual-sinonimos [clienteId]="clienteId()" [podeEditar]="podeEditar()" [termoInicial]="termoSugerido()" />
   }
 </section>

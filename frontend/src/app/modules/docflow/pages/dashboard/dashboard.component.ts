@@ -76,6 +76,8 @@ export class DashboardComponent implements OnInit {
     () => this.aiFeature.disponivel() && this.auth.tem()('PAGINA:AI_GERAR'),
   );
   protected readonly briefingDaLacuna = briefingDaLacuna;
+  /** Lacuna vira sinônimo ("NF" = "nota fiscal") em Configurações. */
+  protected readonly podeCriarSinonimo = computed(() => this.auth.tem()('PUBLICACAO:EDITAR'));
   protected readonly taxaSucessoPublicacoes = signal(0);
   protected readonly statusStats = signal<StatusStat[]>([]);
 

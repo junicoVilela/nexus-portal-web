@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { lucideTestIcons } from 'src/testing/lucide-test-icons';
 
@@ -8,6 +9,7 @@ import { Cliente } from '../../models/cliente.model';
 import { ManualAcesso } from '../../models/manual-acesso.model';
 import { ClienteService } from '../../services/cliente.service';
 import { ManualAcessoService } from '../../services/manual-acesso.service';
+import { ManualSinonimoService } from '../../services/manual-sinonimo.service';
 import { ManualIntegracaoComponent } from './manual-integracao.component';
 
 describe('ManualIntegracaoComponent', () => {
@@ -43,8 +45,10 @@ describe('ManualIntegracaoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ManualIntegracaoComponent],
       providers: [
+        provideRouter([]),
         lucideTestIcons,
         { provide: ManualAcessoService, useValue: acessos },
+        { provide: ManualSinonimoService, useValue: { listar: () => of([]) } },
         { provide: ClienteService, useValue: clientes },
         { provide: ConfirmService, useValue: confirm },
         { provide: AuthService, useValue: { tem: () => () => true } },

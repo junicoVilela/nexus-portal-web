@@ -107,3 +107,11 @@
 .mi__form ui-button {
   justify-self: start;
 }
+
+.mi__dica {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font-size: 13px;
+}

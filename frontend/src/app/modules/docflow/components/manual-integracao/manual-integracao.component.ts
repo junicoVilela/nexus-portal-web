@@ -1,5 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '@core/auth/services/auth.service';
@@ -9,6 +19,7 @@ import { Cliente } from '../../models/cliente.model';
 import { ManualAcesso, ManualAcessoCriado } from '../../models/manual-acesso.model';
 import { ClienteService } from '../../services/cliente.service';
 import { ManualAcessoService } from '../../services/manual-acesso.service';
+import { ManualSinonimosComponent } from '../manual-sinonimos/manual-sinonimos.component';
 
 /**
  * Integração do manual nos sistemas do cliente (Onda D, INT-405): chaves por cliente, origens
@@ -17,7 +28,7 @@ import { ManualAcessoService } from '../../services/manual-acesso.service';
 @Component({
   selector: 'app-manual-integracao',
   standalone: true,
-  imports: [ButtonComponent, BadgeComponent, DatePipe],
+  imports: [ButtonComponent, BadgeComponent, DatePipe, ManualSinonimosComponent],
   templateUrl: './manual-integracao.component.html',
   styleUrl: './manual-integracao.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +39,16 @@ export class ManualIntegracaoComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly confirm = inject(ConfirmService);
   private readonly toast = inject(ToastService);
+  private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  /** `?sinonimo=NF` vem de uma lacuna do dashboard: o termo já entra no formulário de sinônimos. */
+  protected readonly termoSugerido = signal(inject(ActivatedRoute).snapshot.queryParamMap.get('sinonimo'));
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.termoSugerido()) this.elemento.nativeElement.scrollIntoView({ block: 'start' });
+    });
+  }
 
   protected readonly validades = [
     { dias: 0, rotulo: 'Sem expiração' },

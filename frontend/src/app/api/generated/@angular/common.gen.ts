@@ -149,6 +149,14 @@ import type {
   DocflowManualPublicoTelaResponse,
   DocflowManualPublicoVigenteData,
   DocflowManualPublicoVigenteResponse,
+  DocflowManualSinonimoAtualizarData,
+  DocflowManualSinonimoAtualizarResponse,
+  DocflowManualSinonimoCriarData,
+  DocflowManualSinonimoCriarResponse,
+  DocflowManualSinonimoExcluirData,
+  DocflowManualSinonimoExcluirResponse,
+  DocflowManualSinonimoListarData,
+  DocflowManualSinonimoListarResponse,
   DocflowModuloAtualizarData,
   DocflowModuloAtualizarResponse,
   DocflowModuloBuscarData,
@@ -1357,6 +1365,26 @@ export const identityaccessEscopoAcessoAtualizarRequest = <ThrowOnError extends 
     responseStyle: 'data',
     method: 'PUT',
     url: '/api/v1/rbac/escopos/{id}',
+    ...options,
+  });
+
+export const docflowManualSinonimoExcluirRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualSinonimoExcluirData, ThrowOnError>,
+): HttpRequest<DocflowManualSinonimoExcluirResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualSinonimoExcluirResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'DELETE',
+    url: '/api/v1/docflow/sinonimos-manual/{id}',
+    ...options,
+  });
+
+export const docflowManualSinonimoAtualizarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualSinonimoAtualizarData, ThrowOnError>,
+): HttpRequest<DocflowManualSinonimoAtualizarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualSinonimoAtualizarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PUT',
+    url: '/api/v1/docflow/sinonimos-manual/{id}',
     ...options,
   });
 
@@ -2748,6 +2776,26 @@ export const docflowClienteCopiarVinculosRequest = <ThrowOnError extends boolean
     responseStyle: 'data',
     method: 'POST',
     url: '/api/v1/docflow/clientes/{id}/copiar-vinculos',
+    ...options,
+  });
+
+export const docflowManualSinonimoListarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualSinonimoListarData, ThrowOnError>,
+): HttpRequest<DocflowManualSinonimoListarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualSinonimoListarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual',
+    ...options,
+  });
+
+export const docflowManualSinonimoCriarRequest = <ThrowOnError extends boolean = false>(
+  options: Options<DocflowManualSinonimoCriarData, ThrowOnError>,
+): HttpRequest<DocflowManualSinonimoCriarResponse> =>
+  (options?.client ?? client).requestOptions<DocflowManualSinonimoCriarResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/v1/docflow/clientes/{clienteId}/sinonimos-manual',
     ...options,
   });
 
@@ -4627,6 +4675,22 @@ export const identityaccessEscopoAcessoAtualizarResource = <ThrowOnError extends
     return opts ? identityaccessEscopoAcessoAtualizarRequest(opts) : undefined;
   });
 
+export const docflowManualSinonimoExcluirResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualSinonimoExcluirData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualSinonimoExcluirResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualSinonimoExcluirRequest(opts) : undefined;
+  });
+
+export const docflowManualSinonimoAtualizarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualSinonimoAtualizarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualSinonimoAtualizarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualSinonimoAtualizarRequest(opts) : undefined;
+  });
+
 export const docflowProjetoExcluirResource = <ThrowOnError extends boolean = false>(
   options: () => Options<DocflowProjetoExcluirData, ThrowOnError> | undefined,
 ) =>
@@ -5698,6 +5762,22 @@ export const docflowClienteCopiarVinculosResource = <ThrowOnError extends boolea
   httpResource<DocflowClienteCopiarVinculosResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? docflowClienteCopiarVinculosRequest(opts) : undefined;
+  });
+
+export const docflowManualSinonimoListarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualSinonimoListarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualSinonimoListarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualSinonimoListarRequest(opts) : undefined;
+  });
+
+export const docflowManualSinonimoCriarResource = <ThrowOnError extends boolean = false>(
+  options: () => Options<DocflowManualSinonimoCriarData, ThrowOnError> | undefined,
+) =>
+  httpResource<DocflowManualSinonimoCriarResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? docflowManualSinonimoCriarRequest(opts) : undefined;
   });
 
 export const docflowManualAcessoListarResource = <ThrowOnError extends boolean = false>(
