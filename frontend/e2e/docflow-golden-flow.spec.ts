@@ -4,6 +4,7 @@ import {
   TODAS_PERMISSOES,
   authMePayload,
   e2eJwtToken,
+  isAiStatusPath,
   resultadoPaginado,
 } from './helpers/docflow-api-fixtures';
 
@@ -197,6 +198,8 @@ async function instalarApiDocFlow(
       localStorage.clear();
       localStorage.setItem('doc-flow-jwt', token);
       localStorage.setItem('doc-flow-username', 'admin');
+      // Sem o aviso de boas-vindas: ele cobre cartões e botões durante os cliques.
+      localStorage.setItem('docflow:onboarding:v1:visualizado', 'true');
     },
     { token: e2eJwtToken() },
   );
@@ -204,13 +207,17 @@ async function instalarApiDocFlow(
   await page.context().route('**/api/**', async route => {
     const request = route.request();
     const url = new URL(request.url());
-    const path = url.pathname;
+    // Serviços antigos usam o proxy /api/doc-flow; o cliente gerado chama /api/v1/docflow direto.
+    const path = url.pathname.replace(/^\/api\/v1\/docflow\//, '/api/doc-flow/');
     const method = request.method();
     const responder = (body: unknown, status = 200) =>
       route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 
     if (method === 'GET' && path === '/api/v1/auth/me') {
       return responder(authMePayload(permissoes));
+    }
+    if (method === 'GET' && isAiStatusPath(path)) {
+      return responder({ enabled: false });
     }
 
     if (method === 'GET' && path === '/api/doc-flow/dashboard/resumo') {
@@ -587,9 +594,14 @@ test.describe('DocFlow — fluxo de ouro', () => {
     expect(filho?.parentId).toBe('pagina-1');
 
     await page.goto('/doc-flow/paginas?moduloId=modulo-1');
-    const linhas = page.locator('tr').filter({ hasText: 'Operações' }).or(page.locator('tr').filter({ hasText: 'Lista de fornecedores' }));
+    const linhas = page
+      .locator('tr')
+      .filter({ hasText: 'Operações' })
+      .or(page.locator('tr').filter({ hasText: 'Lista de fornecedores' }));
     await expect(linhas).toHaveCount(2);
-    await expect(page.locator('tr').filter({ hasText: 'Lista de fornecedores' })).toContainText('--');
+    // A subpágina vem logo depois da mãe, recuada um nível.
+    await expect(linhas.nth(1)).toContainText('Lista de fornecedores');
+    await expect(linhas.nth(1).locator('.paginas__indent')).toHaveCSS('padding-left', '20px');
   });
 
   test('bloqueia rota de criação e oculta ações sem permissão', async ({ page }) => {
@@ -630,7 +642,7 @@ test.describe('DocFlow — fluxo de ouro', () => {
     await expect(acionador).toBeFocused();
 
     await acionador.click();
-    await page.getByRole('button', { name: 'Fazer tour pelo Doc Flow' }).click();
+    await page.getByRole('button', { name: 'Fazer tour pelo DocFlow' }).click();
     const tour = page.locator('.tour-card');
     await expect(tour).toBeFocused();
     await expect(tour).toContainText('Acompanhe o trabalho');

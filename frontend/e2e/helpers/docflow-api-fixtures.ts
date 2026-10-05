@@ -275,7 +275,12 @@ export interface MockRouteContext {
   method: string;
 }
 
-/** Rotas de auth compartilhadas (login + /me). */
+/** Status do assistente: o shell do DocFlow consulta em toda tela. IA desligada nos mocks. */
+export function isAiStatusPath(path: string): boolean {
+  return path === '/api/ai/status' || path === '/api/v1/ai/status';
+}
+
+/** Rotas compartilhadas: auth (login + /me) e status do assistente. */
 export async function tryHandleAuthRoutes(
   ctx: MockRouteContext,
   responder: MockResponder,
@@ -290,6 +295,11 @@ export async function tryHandleAuthRoutes(
 
   if (method === 'GET' && path === '/api/v1/auth/me') {
     await responder(authMePayload(permissoes));
+    return true;
+  }
+
+  if (method === 'GET' && isAiStatusPath(path)) {
+    await responder({ enabled: false });
     return true;
   }
 

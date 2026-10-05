@@ -23,7 +23,7 @@ test.describe('Smoke', () => {
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.name).toBe('Nexus Portal');
-    expect(body.theme_color).toBe('#2563eb');
+    expect(body.theme_color).toBe('#0f1c2e');
   });
 
   test('título da página é Nexus Portal', async ({ page }) => {

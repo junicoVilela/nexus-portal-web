@@ -3,6 +3,7 @@ import {
   TODAS_PERMISSOES,
   authMePayload,
   e2eJwtToken,
+  isAiStatusPath,
   tryHandleAuthRoutes,
   tryHandleDocFlowFallbackGet,
   tryHandleDocFlowRoutes,
@@ -74,8 +75,8 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
               '# Projeto: Cadastro de produto\n\n## Módulo: Cadastros\n\n' +
               '### Página: Listagem de registros\n\nA tela apresenta filtros, tabela e paginação.',
             templateId: null,
-            templateCodigo: 'LISTAR_REGISTROS',
-            templateNome: 'Listar e consultar registros',
+            templateCodigo: 'LISTAR_REGISTROS' as string | null,
+            templateNome: 'Listar e consultar registros' as string | null,
             confiancaTemplate: 0.9,
             motivoTemplate: 'Listagem e filtros identificados.',
             status: statusPagina,
@@ -84,8 +85,8 @@ function importacaoDocumento(statusPagina = 'PENDENTE', estruturaConfirmada = fa
             erroMensagem: null,
             origem: 'DOCUMENTO',
             ajustadaManualmente: false,
-            blueprintId: 'consulta-operacional',
-            blueprintNome: 'Consulta operacional',
+            blueprintId: 'consulta-operacional' as string | null,
+            blueprintNome: 'Consulta operacional' as string | null,
             componentesSelecionados: COMPONENTES_RECOMENDADOS.map(item => item.id),
             componentesObrigatorios: COMPONENTES_RECOMENDADOS.filter(item => item.obrigatorio).map(
               item => item.id,
@@ -173,10 +174,8 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
     const responder = (body: unknown, status = 200) =>
       route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 
-    if (await tryHandleAuthRoutes(ctx, responder, TODAS_PERMISSOES)) return;
-    if (await tryHandleRbacRoutes(ctx, responder)) return;
-
-    if (method === 'GET' && path === '/api/v1/ai/status') {
+    // Antes das rotas compartilhadas, que respondem a IA como desligada.
+    if (method === 'GET' && isAiStatusPath(path)) {
       return responder({
         enabled: true,
         prontoParaGerar: true,
@@ -185,6 +184,9 @@ export async function instalarMocksAiAssistente(page: Page): Promise<void> {
         mensagem: 'E2E mock',
       });
     }
+
+    if (await tryHandleAuthRoutes(ctx, responder, TODAS_PERMISSOES)) return;
+    if (await tryHandleRbacRoutes(ctx, responder)) return;
 
     if (method === 'POST' && path === '/api/v1/ai/templates/recomendacao') {
       return responder({

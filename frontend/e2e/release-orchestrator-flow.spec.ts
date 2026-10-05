@@ -1,9 +1,10 @@
 import { expect, test, Page } from '@playwright/test';
+import { instalarMocksSeguranca } from './helpers/identity-access-mock';
 
 /**
  * E2E do módulo Release Orchestrator após login admin/admin.
  *
- * Estes testes **não exigem backend real** — eles validam que cada tela
+ * Estes testes **não exigem backend real** (login e GETs mockados, listas vazias) — eles validam que cada tela
  * monta, renderiza o cabeçalho/skeleton e não emite erros runtime de
  * JavaScript (ícones faltantes, components quebrados, etc.). Chamadas de
  * API que falham silenciosamente caem em error-state — também é cobertura
@@ -35,6 +36,7 @@ test.describe('Release Orchestrator — telas após login', () => {
   test.beforeEach(async ({ page }, info) => {
     errosConsole.length = 0;
     await instrumentar(page, info.title);
+    await instalarMocksSeguranca(page);
     await logar(page);
   });
 
@@ -43,10 +45,7 @@ test.describe('Release Orchestrator — telas após login', () => {
     // cair em error-state graciosamente. Falha o teste só se houver erros
     // runtime de JS (ícones faltantes, components quebrados, etc.).
     const relevantes = errosConsole.filter(
-      e =>
-        !/fonts\.googleapis\.com|status of 500|status of 404|Failed to fetch|NetworkError/i.test(
-          e.msg,
-        ),
+      e => !/fonts\.googleapis\.com|status of 500|status of 404|Failed to fetch|NetworkError/i.test(e.msg),
     );
     if (relevantes.length > 0) {
       // eslint-disable-next-line no-console
